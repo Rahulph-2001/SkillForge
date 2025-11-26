@@ -1,0 +1,1 @@
+export type OTPType = 'email' | 'password_reset'

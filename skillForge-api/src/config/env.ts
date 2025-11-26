@@ -1,0 +1,70 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+export const env = {
+  NODE_ENV: process.env.NODE_ENV || 'development',
+  PORT: parseInt(process.env.PORT || '3000', 10),
+  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3001',
+  DATABASE_URL:
+    process.env.DATABASE_URL ||
+    'postgresql://user:password@localhost:5432/skillswap?schema=public',
+  REDIS_URL: process.env.REDIS_URL || 'redis://localhost:6379',
+  REDIS_PASSWORD: process.env.REDIS_PASSWORD,
+  REDIS_HOST: process.env.REDIS_HOST || 'localhost',
+  REDIS_PORT: parseInt(process.env.REDIS_PORT || '6379', 10),
+  JWT_SECRET:
+    process.env.JWT_SECRET || 'your-very-strong-access-token-secret-key',
+  JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '1h',
+  JWT_REFRESH_SECRET:
+    process.env.JWT_REFRESH_SECRET ||
+    'your-very-strong-refresh-token-secret-key',
+  JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN || '30d',
+
+  EMAIL_HOST: process.env.EMAIL_HOST || 'smtp.gmail.com',
+  EMAIL_PORT: parseInt(process.env.EMAIL_PORT || '587', 10),
+  EMAIL_SECURE: process.env.EMAIL_SECURE === 'true',
+  EMAIL_USER: process.env.EMAIL_USER,
+  EMAIL_PASSWORD: process.env.EMAIL_PASSWORD,
+  EMAIL_FROM: process.env.EMAIL_FROM || 'SkillSwap <noreply@skillswap.com>',
+  OTP_EXPIRY_MINUTES: parseInt(process.env.OTP_EXPIRY_MINUTES || '2', 10),
+  OTP_MAX_ATTEMPTS: parseInt(process.env.OTP_MAX_ATTEMPTS || '3', 10),
+  RATE_LIMIT_WINDOW_MS: parseInt(
+    process.env.RATE_LIMIT_WINDOW_MS || '900000',
+    10
+  ),
+  RATE_LIMIT_MAX_REQUESTS: parseInt(
+    process.env.RATE_LIMIT_MAX_REQUESTS || '100',
+    10
+  ),
+  AUTH_RATE_LIMIT_WINDOW_MS: parseInt(
+    process.env.AUTH_RATE_LIMIT_WINDOW_MS || '900000',
+    10
+  ),
+  AUTH_RATE_LIMIT_MAX_REQUESTS: parseInt(
+    process.env.AUTH_RATE_LIMIT_MAX_REQUESTS || '5',
+    10
+  ),
+  OTP_RATE_LIMIT_WINDOW_MS: parseInt(
+    process.env.OTP_RATE_LIMIT_WINDOW_MS || '3600000',
+    10
+  ),
+  OTP_RATE_LIMIT_MAX_REQUESTS: parseInt(
+    process.env.OTP_RATE_LIMIT_MAX_REQUESTS || '3',
+    10
+  ),
+  PASSWORD_RESET_RATE_LIMIT_WINDOW_MS: parseInt(
+    process.env.PASSWORD_RESET_RATE_LIMIT_WINDOW_MS || '3600000',
+    10
+  ),
+  PASSWORD_RESET_RATE_LIMIT_MAX_REQUESTS: parseInt(
+    process.env.PASSWORD_RESET_RATE_LIMIT_MAX_REQUESTS || '3',
+    10
+  ),
+  DEFAULT_BONUS_CREDITS: parseInt(
+    process.env.DEFAULT_BONUS_CREDITS || '20',
+    10
+  ),
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/v1/auth/google/callback'
+} as const;

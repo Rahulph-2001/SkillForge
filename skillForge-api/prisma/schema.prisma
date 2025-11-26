@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+}
+
+// --- Enums ---
+
+enum UserRole {
+  user
+  admin
+}
+
+enum SubscriptionPlanType {
+  free
+  starter
+  professional
+  enterprise
+}
+
+enum PlanBadge {
+  Free
+  Starter
+  Professional
+  Enterprise
+}
+
+enum ProfileVisibility {
+  public
+  private
+}
+
+// OTPType ENUM is no longer needed in Prisma as OTPs are in Redis and we only support email verification.
+// If it were in DB, it would need updating, but we keep the structure simple.
+
+// --- Models ---
+
+model User {
+  id                      String           @id @default(uuid()) @db.Uuid
+  name                    String           @db.VarChar(255)
+  email                   String           @unique @db.VarChar(255)
+  passwordHash            String           @map("password_hash") @db.VarChar(255)
+  avatarUrl               String?          @map("avatar_url") @db.Text
+  bio                     String?          @db.Text
+  location                String?          @db.VarChar(255)
+  role                    UserRole         @default(user)
+
+  // Credit System
+  credits                 Int              @default(0)
+  earnedCredits           Int              @default(0) @map("earned_credits")
+  bonusCredits            Int              @default(0) @map("bonus_credits")
+  purchasedCredits        Int              @default(0) @map("purchased_credits")
+  walletBalance           Decimal          @default(0) @map("wallet_balance") @db.Decimal(10, 2)
+
+  // Profile Data
+  skillsOffered           String[]         @default([]) @map("skills_offered")
+  skillsLearning          String[]         @default([]) @map("skills_learning")
+  rating                  Decimal?         @default(0) @db.Decimal(3, 2)
+  reviewCount             Int              @default(0) @map("review_count")
+  totalSessionsCompleted  Int              @default(0) @map("total_sessions_completed")
+  memberSince             DateTime         @default(now()) @map("member_since") @db.Timestamptz(6)
+
+  // Verification Status (JSONB) - Updated for Email-Only Verification
+  verification            Json             @default("{\"email_verified\":false,\"email_verified_at\":null,\"bank_details\":{\"account_number\":null,\"ifsc_code\":null,\"account_holder_name\":null,\"bank_name\":null,\"upi_id\":null,\"verified\":false,\"verified_at\":null,\"verification_method\":null}}")
+
+  // Anti-Fraud Tracking (JSONB) - Updated to remove device_fingerprint
+  antiFraud               Json             @default("{\"registration_ip\":null,\"last_login_ip\":null,\"account_age_days\":0,\"suspicious_activity_flags\":[],\"last_redemption_date\":null,\"redemption_count\":0,\"risk_score\":0,\"flagged_for_review\":false}") @map("anti_fraud")
+
+  // Subscription Info
+  subscriptionPlan        SubscriptionPlanType @default(free) @map("subscription_plan")
+  subscriptionValidUntil  DateTime?        @map("subscription_valid_until") @db.Timestamptz(6)
+  subscriptionAutoRenew   Boolean          @default(false) @map("subscription_auto_renew")
+  subscriptionStartedAt   DateTime?        @map("subscription_started_at") @db.Timestamptz(6)
+
+  // Admin Permissions (JSONB, nullable - only for admin role)
+  adminPermissions        Json?            @map("admin_permissions")
+
+  // Settings (JSONB) - Updated to remove SMS/Phone preferences
+  settings                Json             @default("{\"marketing_emails\":true,\"notification_preferences\":{\"email\":true,\"push\":true,\"booking_notifications\":true,\"message_notifications\":true,\"credit_notifications\":true,\"community_notifications\":true,\"project_notifications\":true},\"privacy_settings\":{\"profile_visibility\":\"public\",\"show_location\":true,\"show_email\":false},\"language\":\"en\",\"timezone\":\"UTC\"}")
+
+  // Metadata
+  createdAt               DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLogin               DateTime?        @map("last_login") @db.Timestamptz(6)
+  lastActive              DateTime?        @map("last_active") @db.Timestamptz(6)
+  isActive                Boolean          @default(true) @map("is_active")
+  isDeleted               Boolean          @default(false) @map("is_deleted")
+  deletedAt               DateTime?        @map("deleted_at") @db.Timestamptz(6)
+
+  // Relations
+  passwordResetTokens     PasswordResetToken[]
+  
+  // NOTE: OTPToken relation removed as OTP is stored in Redis.
+
+  @@index([email])
+  @@index([subscriptionPlan])
+  @@index([createdAt])
+  @@index([role])
+  @@index([isActive])
+  @@index([isDeleted])
+  @@map("users")
+}
+
+model PasswordResetToken {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  token         String    @unique @db.VarChar(255)
+  isUsed        Boolean   @default(false) @map("is_used")
+  ipAddress     String?   @map("ip_address") @db.VarChar(45)
+  userAgent     String?   @map("user_agent") @db.Text
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt        DateTime? @map("used_at") @db.Timestamptz(6)
+
+  // Relations
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+// --- Subscription Management Models ---
+
+model SubscriptionPlanModel {
+  id                String      @id @default(uuid()) @db.Uuid
+  name              String      @unique @db.VarChar(100)
+  price             Decimal     @db.Decimal(10, 2)
+  projectPosts      Int?        @map("project_posts") // null = unlimited
+  communityPosts    Int?        @map("community_posts") // null = unlimited
+  badge             PlanBadge
+  color             String      @default("blue") @db.VarChar(50)
+  isActive          Boolean     @default(true) @map("is_active")
+  
+  // Features stored as JSONB array: [{id: string, name: string}]
+  features          Json        @default("[]")
+  
+  // Metadata
+  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([name])
+  @@index([badge])
+  @@index([isActive])
+  @@index([price])
+  @@map("subscription_plans")
+}
