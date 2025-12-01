@@ -1,10 +1,4 @@
-/**
- * Utility functions for managing localStorage and handling storage errors
- */
 
-/**
- * Safely clear all persisted state
- */
 export const clearAllPersistedState = (): void => {
   try {
     console.log('[StorageUtils] Clearing all persisted state...');
@@ -29,9 +23,7 @@ export const clearAllPersistedState = (): void => {
   }
 };
 
-/**
- * Check if localStorage data might be corrupted
- */
+
 export const checkStorageHealth = (): boolean => {
   try {
     const persistedData = localStorage.getItem('persist:root');
@@ -48,9 +40,7 @@ export const checkStorageHealth = (): boolean => {
   }
 };
 
-/**
- * Repair corrupted localStorage
- */
+
 export const repairStorage = (): void => {
   if (!checkStorageHealth()) {
     console.warn('[StorageUtils] Repairing corrupted storage...');
@@ -58,9 +48,7 @@ export const repairStorage = (): void => {
   }
 };
 
-/**
- * Check if we have valid user data in storage
- */
+
 export const hasValidUserData = (): boolean => {
   try {
     const persistedData = localStorage.getItem('persist:root');

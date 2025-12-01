@@ -15,10 +15,7 @@ interface RequestWithZodDetails extends Request {
   zodDetails?: unknown;
 }
 
-/**
- * Centralized error handler middleware for Express
- * Handles both operational (AppError) and unexpected errors
- */
+
 export const errorHandler = (
   err: unknown,
   req: Request,

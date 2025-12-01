@@ -1,9 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-/**
- * API Client Configuration
- * Centralized axios instance with interceptors for authentication and error handling
- */
+
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1',
     headers: {
@@ -26,17 +23,53 @@ api.interceptors.request.use(
 );
 
 
-/**
- * Response Interceptor
- * Handles token refresh and error responses
- */
+
 api.interceptors.response.use(
     (response) => {
         return response;
     },
     async (error: AxiosError) => {
-        // Just reject the error - let Redux handle the logic
-        // Avoid hard redirects that interfere with PersistGate and React Router
+        // Handle 403 Forbidden - User account suspended
+        if (error.response?.status === 403) {
+            const errorData = error.response?.data as any;
+            
+            // Check if this is a suspension error
+            if (errorData?.error?.toLowerCase().includes('suspended') || 
+                errorData?.error?.toLowerCase().includes('account')) {
+                
+                // Lazy import to avoid circular dependency
+                const { store } = await import('../store/store');
+                const { resetAuth } = await import('../store/slices/authSlice');
+                
+                // Clear user data from Redux store
+                store.dispatch(resetAuth());
+                
+                // Redirect to login page with suspension message
+                if (window.location.pathname !== '/login' && 
+                    window.location.pathname !== '/admin/login') {
+                    
+                    const isAdminRoute = window.location.pathname.startsWith('/admin');
+                    const loginPath = isAdminRoute ? '/admin/login' : '/login';
+                    
+                    // Store suspension message in sessionStorage for display on login page
+                    sessionStorage.setItem('suspensionMessage', 
+                        errorData?.error || 'Your account has been suspended. Please contact support.');
+                    
+                    window.location.href = loginPath;
+                }
+            }
+        }
+        
+        // Handle 401 Unauthorized - Invalid/expired token
+        if (error.response?.status === 401) {
+            // Lazy import to avoid circular dependency
+            const { store } = await import('../store/store');
+            const { resetAuth } = await import('../store/slices/authSlice');
+            
+            // Clear user data from Redux store
+            store.dispatch(resetAuth());
+        }
+        
         return Promise.reject(error);
     }
 );

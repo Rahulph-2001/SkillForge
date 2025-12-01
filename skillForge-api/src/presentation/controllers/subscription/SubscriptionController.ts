@@ -7,7 +7,6 @@ import { CreateSubscriptionPlanUseCase } from '../../../application/useCases/sub
 import { UpdateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/UpdateSubscriptionPlanUseCase';
 import { DeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { handleAsync } from '../../middlewares/responseHandler';
 
 
 @injectable()
@@ -26,7 +25,7 @@ export class SubscriptionController {
    * List all subscription plans
    */
   async listPlans(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const result = await this.listPlansUseCase.execute(adminUserId);
       const response = this.responseBuilder.success(
@@ -34,7 +33,9 @@ export class SubscriptionController {
         'Subscription plans retrieved successfully'
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
@@ -42,7 +43,7 @@ export class SubscriptionController {
    * Get subscription statistics
    */
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const stats = await this.getStatsUseCase.execute(adminUserId);
       const response = this.responseBuilder.success(
@@ -50,7 +51,9 @@ export class SubscriptionController {
         'Subscription statistics retrieved successfully'
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
@@ -58,7 +61,7 @@ export class SubscriptionController {
    * Create a new subscription plan
    */
   async createPlan(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const dto = req.body;
       const plan = await this.createPlanUseCase.execute(adminUserId, dto);
@@ -67,7 +70,9 @@ export class SubscriptionController {
         'Subscription plan created successfully'
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
@@ -75,7 +80,7 @@ export class SubscriptionController {
    * Update an existing subscription plan
    */
   async updatePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const planId = req.params.id;
       const dto = { ...req.body, planId };
@@ -85,7 +90,9 @@ export class SubscriptionController {
         'Subscription plan updated successfully'
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
@@ -93,7 +100,7 @@ export class SubscriptionController {
    * Delete (soft delete) a subscription plan
    */
   async deletePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const planId = req.params.id;
       await this.deletePlanUseCase.execute(adminUserId, planId);
@@ -102,6 +109,8 @@ export class SubscriptionController {
         'Subscription plan deleted successfully'
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 }

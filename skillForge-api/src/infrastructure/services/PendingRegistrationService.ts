@@ -6,10 +6,7 @@ import {
   PendingRegistrationData 
 } from '../../domain/services/IPendingRegistrationService';
 
-/**
- * Redis-based implementation of Pending Registration Service
- * Following Clean Architecture and Industrial Standards
- */
+
 @injectable()
 export class PendingRegistrationService implements IPendingRegistrationService {
   private readonly PENDING_REG_PREFIX = 'pending_registration:';

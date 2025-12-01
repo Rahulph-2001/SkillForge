@@ -10,12 +10,16 @@ import VerifyForgotPasswordOtpPage from './pages/auth/VerifyForgotPasswordOtpPag
 import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import HomePage from './pages/user/HomePage';
 import SubscriptionPlansPage from './pages/user/SubscriptionPlansPage';
+import SkillsPage from './pages/user/SkillsPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import SubscriptionManagement from './pages/admin/SubscriptionManagement';
+import SkillTemplateListPage from './pages/admin/SkillTemplateListPage';
+import SkillTemplateCreatePage from './pages/admin/SkillTemplateCreatePage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import GuestRoute from './components/auth/GuestRoute';
+import UserStatusMonitor from './components/auth/UserStatusMonitor';
 import { useAppSelector } from './store/hooks';
 
 function App() {
@@ -24,7 +28,11 @@ function App() {
   const isAdmin = user?.role === 'admin';
 
   return (
-    <Routes>
+    <>
+      {/* Global user status monitor - runs for all logged-in users */}
+      <UserStatusMonitor />
+      
+      <Routes>
       {/* Public Routes */}
       <Route
         path="/"
@@ -96,6 +104,30 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/skill-templates"
+        element={
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+            <SkillTemplateListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/skill-templates/new"
+        element={
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+            <SkillTemplateCreatePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/skill-templates/:id/edit"
+        element={
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+            <SkillTemplateCreatePage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* User Protected Routes */}
       <Route path="/welcome" element={<WelcomePage />} />
@@ -121,7 +153,7 @@ function App() {
         path="/my-skills" 
         element={
           <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
-            <div>My Skills Page</div>
+            <SkillsPage />
           </ProtectedRoute>
         } 
       />
@@ -137,6 +169,7 @@ function App() {
       {/* Catch all */}
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
+    </>
   );
 }
 

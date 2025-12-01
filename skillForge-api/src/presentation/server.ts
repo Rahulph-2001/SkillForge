@@ -10,6 +10,9 @@ import { HttpStatusCode } from '../domain/enums/HttpStatusCode';
 import { AuthRoutes } from './routes/auth/authRoutes';
 import { AdminRoutes } from './routes/admin/adminRoutes';
 import { PublicSubscriptionRoutes } from './routes/subscription/publicSubscriptionRoutes';
+import { SkillRoutes } from './routes/skill/skillRoutes';
+import { SkillTemplateRoutes } from './routes/skillTemplate/skillTemplateRoutes';
+import { TemplateQuestionRoutes } from './routes/templateQuestion/templateQuestionRoutes';
 import { generalLimiter } from './middlewares/rateLimitMiddileWare';
 import { PassportService } from '../infrastructure/services/PassportService';
 
@@ -21,6 +24,9 @@ export class App {
     @inject(TYPES.AuthRoutes) private readonly authRoutes: AuthRoutes,
     @inject(TYPES.AdminRoutes) private readonly adminRoutes: AdminRoutes,
     @inject(TYPES.PublicSubscriptionRoutes) private readonly publicSubscriptionRoutes: PublicSubscriptionRoutes,
+    @inject(TYPES.SkillRoutes) private readonly skillRoutes: SkillRoutes,
+    @inject(TYPES.SkillTemplateRoutes) private readonly skillTemplateRoutes: SkillTemplateRoutes,
+    @inject(TYPES.TemplateQuestionRoutes) private readonly templateQuestionRoutes: TemplateQuestionRoutes,
     @inject(TYPES.PassportService) private readonly passportService: PassportService
   ) {
     this.app = express();
@@ -73,6 +79,9 @@ export class App {
     this.app.use('/api/v1/auth', this.authRoutes.router);
     this.app.use('/api/v1/admin', this.adminRoutes.router);
     this.app.use('/api/v1/subscriptions', this.publicSubscriptionRoutes.router);
+    this.app.use('/api/v1/skills', this.skillRoutes.router);
+    this.app.use('/api/v1/admin/skill-templates', this.skillTemplateRoutes.router);
+    this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
     this.app.all('*', notFoundHandler);
   }
 

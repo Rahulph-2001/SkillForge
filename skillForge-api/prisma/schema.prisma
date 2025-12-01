@@ -1,5 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -36,10 +34,146 @@ enum ProfileVisibility {
   private
 }
 
-// OTPType ENUM is no longer needed in Prisma as OTPs are in Redis and we only support email verification.
-// If it were in DB, it would need updating, but we keep the structure simple.
-
 // --- Models ---
+
+model Skill {
+  id              String    @id @default(uuid()) @db.Uuid
+  providerId      String    @map("provider_id") @db.Uuid
+  title           String    @db.VarChar(255)
+  description     String    @db.Text
+  category        String    @db.VarChar(100)
+  level           String    @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
+  durationHours   Int       @map("duration_hours") // Structured: 1, 2, 3, 4, 5, etc.
+  creditsPerHour  Int       @map("credits_per_hour")
+  tags            String[]  @default([])
+  imageUrl        String?   @map("image_url") @db.Text
+  status          String    @default("pending-verification") // pending-verification, verified, approved, rejected
+  
+  // Verification System
+  verificationStatus    String?   @default("not_started") @map("verification_status") // not_started, in_progress, passed, failed
+  mcqScore              Int?      @default(0) @map("mcq_score")
+  mcqTotalQuestions     Int?      @default(0) @map("mcq_total_questions")
+  mcqPassingScore       Int?      @default(70) @map("mcq_passing_score") // Percentage
+  verifiedAt            DateTime? @map("verified_at") @db.Timestamptz(6)
+  rejectionReason       String?   @map("rejection_reason") @db.Text
+  
+  // Stats
+  totalSessions   Int       @default(0) @map("total_sessions")
+  rating          Decimal?  @default(0) @db.Decimal(3, 2)
+  
+  // Metadata
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isDeleted       Boolean   @default(false) @map("is_deleted")
+
+  // Relations
+  provider        User      @relation(fields: [providerId], references: [id])
+  verificationAttempts SkillVerificationAttempt[]
+
+  @@index([providerId])
+  @@index([category])
+  @@index([status])
+  @@index([verificationStatus])
+  @@map("skills")
+}
+
+// Skill Template (Admin-managed)
+model SkillTemplate {
+  id              String    @id @default(uuid()) @db.Uuid
+  title           String    @db.VarChar(255)
+  category        String    @db.VarChar(100)
+  description     String    @db.Text
+  creditsMin      Int       @map("credits_min")
+  creditsMax      Int       @map("credits_max")
+  mcqCount        Int       @map("mcq_count")
+  passRange       Int       @default(70) @map("pass_range") // Percentage
+  levels          String[]  @default([]) // ["Beginner", "Intermediate", "Advanced"]
+  tags            String[]  @default([])
+  status          String    @default("Active") // Active, Inactive
+  
+  // Metadata
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isActive        Boolean   @default(true) @map("is_active")
+
+  // Relations
+  questions       TemplateQuestion[]
+
+  @@index([category])
+  @@index([status])
+  @@index([isActive])
+  @@map("skill_templates")
+}
+
+// MCQ Questions for Skill Templates
+model TemplateQuestion {
+  id              String          @id @default(uuid()) @db.Uuid
+  templateId      String          @map("template_id") @db.Uuid
+  level           String          @db.VarChar(50) // Beginner, Intermediate, Advanced
+  question        String          @db.Text
+  options         Json            // Array of options: ["Option A", "Option B", "Option C", "Option D"]
+  correctAnswer   Int             @map("correct_answer") // Index of correct option (0-3)
+  explanation     String?         @db.Text // Optional explanation for the answer
+  
+  // Metadata
+  isActive        Boolean         @default(true) @map("is_active")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  template        SkillTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([templateId])
+  @@index([level])
+  @@index([isActive])
+  @@map("template_questions")
+}
+
+// Keep original SkillQuestion for backward compatibility
+model SkillQuestion {
+  id              String    @id @default(uuid()) @db.Uuid
+  category        String    @db.VarChar(100)
+  level           String    @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
+  question        String    @db.Text
+  options         Json      // Array of options: ["Option A", "Option B", "Option C", "Option D"]
+  correctAnswer   Int       @map("correct_answer") // Index of correct option (0-3)
+  difficulty      String    @default("medium") // easy, medium, hard
+  tags            String[]  @default([])
+  
+  // Metadata
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([category])
+  @@index([level])
+  @@index([difficulty])
+  @@index([isActive])
+  @@map("skill_questions")
+}
+
+// Track verification attempts
+model SkillVerificationAttempt {
+  id              String    @id @default(uuid()) @db.Uuid
+  skillId         String    @map("skill_id") @db.Uuid
+  userId          String    @map("user_id") @db.Uuid
+  questionsAsked  Json      @map("questions_asked") // Array of question IDs
+  userAnswers     Json      @map("user_answers") // Array of user's answers
+  score           Int       // Percentage score
+  passed          Boolean   @default(false)
+  timeTaken       Int?      @map("time_taken") // Seconds
+  
+  // Metadata
+  attemptedAt     DateTime  @default(now()) @map("attempted_at") @db.Timestamptz(6)
+
+  // Relations
+  skill           Skill     @relation(fields: [skillId], references: [id])
+
+  @@index([skillId])
+  @@index([userId])
+  @@index([attemptedAt])
+  @@map("skill_verification_attempts")
+}
 
 model User {
   id                      String           @id @default(uuid()) @db.Uuid
@@ -95,6 +229,9 @@ model User {
 
   // Relations
   passwordResetTokens     PasswordResetToken[]
+  skills Skill[]
+
+
   
   // NOTE: OTPToken relation removed as OTP is stored in Redis.
 

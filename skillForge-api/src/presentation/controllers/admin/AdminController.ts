@@ -5,7 +5,6 @@ import { ListUsersUseCase } from '../../../application/useCases/admin/ListUsersU
 import { SuspendUserUseCase } from '../../../application/useCases/admin/SuspendUserUseCase';
 import { UnsuspendUserUseCase } from '../../../application/useCases/admin/UnsuspendUserUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { handleAsync } from '../../middlewares/responseHandler';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 @injectable()
@@ -18,7 +17,7 @@ export class AdminController {
   ) {}
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId; // Typed via middleware
       const result = await this.listUsersUseCase.execute(adminUserId);
       const response = this.responseBuilder.success(
@@ -26,11 +25,13 @@ export class AdminController {
         SUCCESS_MESSAGES.AUTH.LIST_USERS_SUCCESS
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const { userId, reason } = req.body;
       const result = await this.suspendUserUseCase.execute(adminUserId, { userId, reason });
@@ -39,11 +40,13 @@ export class AdminController {
         result.message
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async unsuspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const adminUserId = (req as any).user.userId;
       const { userId } = req.body;
       const result = await this.unsuspendUserUseCase.execute(adminUserId, { userId });
@@ -52,6 +55,8 @@ export class AdminController {
         result.message
       );
       res.status(response.statusCode).json(response.body);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 }

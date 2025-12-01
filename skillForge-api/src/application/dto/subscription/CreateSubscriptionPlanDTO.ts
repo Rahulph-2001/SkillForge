@@ -1,7 +1,4 @@
-/**
- * CreateSubscriptionPlanDTO
- * Data Transfer Object for creating a subscription plan
- */
+
 
 export interface FeatureDTO {
   id?: string; // Optional for updates, auto-generated for new features

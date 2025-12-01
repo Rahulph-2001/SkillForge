@@ -14,6 +14,13 @@ export const SUCCESS_MESSAGES = {
   GENERAL: {
     HEALTH_CHECK: 'Service is healthy.',
   },
+
+  SKILL: {
+    CREATED: 'Skill created successfully.',
+    FETCHED: 'Skills retrieved successfully.',
+    UPDATED: 'Skill updated successfully.',
+    DELETED: 'Skill deleted successfully.',
+  },
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -48,5 +55,14 @@ export const ERROR_MESSAGES = {
     INTERNAL_SERVER_ERROR: 'Internal server error',
     TOO_MANY_REQUESTS: 'Too many requests, try again later.',
     EMAIL_SEND_FAILED: 'Failed to send email. Please try again.',
+  },
+
+   SKILL: {
+    CREATION_FAILED: 'Failed to create skill.',
+    NOT_FOUND: 'Skill not found.',
+    UPDATE_FAILED: 'Failed to update skill.',
+    DELETE_FAILED: 'Failed to delete skill.',
+    INVALID_DATA: 'Invalid skill data provided.',
+    IMAGE_UPLOAD_FAILED: 'Failed to upload skill image.',
   },
 } as const;

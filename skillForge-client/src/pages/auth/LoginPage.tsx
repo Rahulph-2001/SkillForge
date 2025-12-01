@@ -2,13 +2,23 @@ import { LoginForm, LoginFormData } from '../../components/shared/Login';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login, clearError } from '../../store/slices/authSlice';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ErrorModal } from '../../components/shared/Modal';
 
 export default function LoginPage() {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { loading, error, user } = useAppSelector((state) => state.auth);
+    const [suspensionMessage, setSuspensionMessage] = useState<string | null>(null);
+
+    // Check for suspension message on mount
+    useEffect(() => {
+        const message = sessionStorage.getItem('suspensionMessage');
+        if (message) {
+            setSuspensionMessage(message);
+            sessionStorage.removeItem('suspensionMessage');
+        }
+    }, []);
 
     // Navigate to home after successful login (OTP verification not required)
     useEffect(() => {
@@ -31,8 +41,20 @@ export default function LoginPage() {
         dispatch(clearError());
     };
 
+    const handleCloseSuspensionMessage = () => {
+        setSuspensionMessage(null);
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            {/* Suspension Message Modal */}
+            <ErrorModal
+                isOpen={!!suspensionMessage}
+                title="Account Suspended"
+                message={suspensionMessage || ''}
+                onClose={handleCloseSuspensionMessage}
+            />
+
             {/* Error Modal */}
             <ErrorModal
                 isOpen={!!error}

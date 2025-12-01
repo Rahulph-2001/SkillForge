@@ -1,0 +1,98 @@
+import { Clock, Users, Star } from 'lucide-react';
+
+interface SkillCardProps {
+  skill: {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    level: string;
+    duration: string;
+    creditsHour: number;
+    status: string;
+    sessions?: number;
+    image?: string;
+    totalSessions?: number;
+    creditsPerHour?: number;
+    imageUrl?: string;
+  };
+}
+
+export default function SkillCard({ skill }: SkillCardProps) {
+  const statusColors = {
+    approved: 'bg-green-100 text-green-800',
+    pending: 'bg-yellow-100 text-yellow-800',
+    'in-review': 'bg-blue-100 text-blue-800',
+    rejected: 'bg-red-100 text-red-800',
+  };
+
+  const statusColor = statusColors[skill.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
+
+  return (
+    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      {/* Skill Image */}
+      <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+        {skill.image || skill.imageUrl ? (
+          <img
+            src={skill.image || skill.imageUrl}
+            alt={skill.title}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+            <span className="text-4xl font-bold text-blue-300">
+              {skill.title.charAt(0).toUpperCase()}
+            </span>
+          </div>
+        )}
+        {/* Status Badge */}
+        <div className="absolute right-2 top-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColor}`}>
+            {skill.status.charAt(0).toUpperCase() + skill.status.slice(1)}
+          </span>
+        </div>
+      </div>
+
+      {/* Skill Content */}
+      <div className="p-4">
+        {/* Title */}
+        <h3 className="mb-2 text-lg font-bold text-gray-900 line-clamp-1">
+          {skill.title}
+        </h3>
+
+        {/* Description */}
+        <p className="mb-3 text-sm text-gray-600 line-clamp-2">
+          {skill.description}
+        </p>
+
+        {/* Category & Level */}
+        <div className="mb-3 flex items-center gap-2">
+          <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+            {skill.category}
+          </span>
+          <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700">
+            {skill.level}
+          </span>
+        </div>
+
+        {/* Stats */}
+        <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <Clock className="h-4 w-4" />
+            <span>{skill.duration}</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="h-4 w-4" />
+            <span>{skill.sessions || skill.totalSessions || 0} sessions</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Star className="h-4 w-4 text-yellow-500" />
+            <span className="font-semibold text-blue-600">
+              {skill.creditsHour || skill.creditsPerHour || 0}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

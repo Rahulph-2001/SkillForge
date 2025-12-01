@@ -99,5 +99,11 @@ export class AuthRoutes {
       validate(ResetPasswordSchema),
       this.authController.resetPassword.bind(this.authController)
     );
+
+    // GET /api/v1/auth/validate-status (requires authentication)
+    this.router.get('/validate-status',
+      authMiddleware,
+      this.authController.validateUserStatus.bind(this.authController)
+    );
   }
 }

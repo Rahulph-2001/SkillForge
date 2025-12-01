@@ -3,7 +3,6 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ListPublicSubscriptionPlansUseCase } from '../../../application/useCases/subscription/ListPublicSubscriptionPlansUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { handleAsync } from '../../middlewares/responseHandler';
 
 
 @injectable()
@@ -15,8 +14,8 @@ export class PublicSubscriptionController {
   ) {}
 
   
-  async listPlans(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+  async listPlans(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
       // No authentication required - public endpoint
       const result = await this.listPublicPlansUseCase.execute();
 
@@ -26,6 +25,8 @@ export class PublicSubscriptionController {
       );
 
       res.status(response.statusCode).json(response);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 }

@@ -34,6 +34,7 @@ export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProp
         { label: 'Dashboard', path: '/admin/dashboard' },
         { label: 'Users', path: '/admin/users' },
         { label: 'Skills', path: '/admin/skills' },
+        { label: 'Skill Templates', path: '/admin/skill-templates' },
         { label: 'Projects', path: '/admin/projects' },
         { label: 'Subscriptions', path: '/admin/subscriptions' },
         { label: 'Sessions', path: '/admin/sessions' },

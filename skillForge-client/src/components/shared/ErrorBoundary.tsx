@@ -10,10 +10,7 @@ interface State {
   error: Error | null;
 }
 
-/**
- * Error Boundary to catch rendering errors
- * Prevents white screen of death
- */
+
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,

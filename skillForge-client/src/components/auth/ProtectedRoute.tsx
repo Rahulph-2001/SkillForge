@@ -20,6 +20,9 @@ export default function ProtectedRoute({
     const { user } = useAppSelector((state) => state.auth)
     const location = useLocation()
 
+    // Note: User status validation is handled globally by UserStatusMonitor component
+    // No need to duplicate the validation logic here
+
     // Not authenticated
     if (!user) {
         return <Navigate to={redirectTo} replace state={{ from: location }} />

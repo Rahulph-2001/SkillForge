@@ -79,11 +79,14 @@ const baseOptions = {
 };
 
 const useRedis = Boolean(env.REDIS_URL || env.REDIS_HOST);
-const generalWindowMs = env.RATE_LIMIT_WINDOW_MS;
+const generalWindowMs = env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000;
+
+// Increase default max requests for development
+const defaultMax = process.env.NODE_ENV === 'development' ? 1000 : 100;
 
 export const generalLimiter = rateLimit({
   windowMs: generalWindowMs,
-  max: env.RATE_LIMIT_MAX_REQUESTS,
+  max: env.RATE_LIMIT_MAX_REQUESTS || defaultMax,
   message: {
     success: false,
     error: 'Too many requests, try again later.',
@@ -92,10 +95,10 @@ export const generalLimiter = rateLimit({
   store: useRedis ? createRedisStore(generalWindowMs, 'rl:gen') : undefined,
 });
 
-const authWindowMs = env.AUTH_RATE_LIMIT_WINDOW_MS;
+const authWindowMs = env.AUTH_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000;
 export const authLimiter = rateLimit({
   windowMs: authWindowMs,
-  max: env.AUTH_RATE_LIMIT_MAX_REQUESTS,
+  max: env.AUTH_RATE_LIMIT_MAX_REQUESTS || defaultMax,
   message: {
     success: false,
     error: 'Too many auth attempts, try again in 15 minutes.',

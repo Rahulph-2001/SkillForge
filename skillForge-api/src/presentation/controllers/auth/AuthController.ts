@@ -15,7 +15,6 @@ import { ResetPasswordUseCase } from '../../../application/useCases/auth/ResetPa
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { env } from '../../../config/env';
-import { handleAsync } from '../../middlewares/responseHandler';
 import { AuthResponseMapper } from './AuthResponseMapper';
 
 const getClientIp = (req: Request): string | undefined => {
@@ -47,17 +46,19 @@ export class AuthController {
   public readonly googleLogin: ReturnType<PassportService['authenticateGoogle']>;
 
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const registrationIp = getClientIp(req);
       const { email, expiresAt, message } = await this.registerUseCase.execute(req.body, registrationIp);
       res
         .status(HttpStatusCode.CREATED)
         .json(AuthResponseMapper.mapRegisterResponse(email, expiresAt, message));
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const ipAddress = getClientIp(req);
       const { user, token, refreshToken } = await this.loginUseCase.execute(req.body, ipAddress);
       
@@ -82,11 +83,13 @@ export class AuthController {
       res
         .status(HttpStatusCode.OK)
         .json(AuthResponseMapper.mapLoginResponse(user, token, refreshToken));
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const { user, message, token, refreshToken } = await this.verifyOtpUseCase.execute(req.body);
       
       // Set accessToken cookie (HTTP-only for security)
@@ -112,11 +115,13 @@ export class AuthController {
         .json(
           AuthResponseMapper.mapVerifyOtpResponse(user, message, token, refreshToken)
         );
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async resendOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const ipAddress = getClientIp(req);
       const result = await this.resendOtpUseCase.execute(req.body, ipAddress);
       res.status(HttpStatusCode.OK).json({
@@ -126,11 +131,13 @@ export class AuthController {
           expiresAt: result.expiresAt,
         },
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       // User token payload is attached to req by auth middleware
       const tokenPayload = (req as any).user;
       if (!tokenPayload || !tokenPayload.userId) {
@@ -166,11 +173,13 @@ export class AuthController {
           },
         },
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       // Clear both accessToken and refreshToken cookies
       res.clearCookie('accessToken', {
         httpOnly: true,
@@ -190,11 +199,13 @@ export class AuthController {
         success: true,
         message: 'Logged out successfully',
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async adminLogin(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const ipAddress = getClientIp(req);
       const { user, token, refreshToken } =
         await this.adminLoginUseCase.execute(req.body, ipAddress);
@@ -220,11 +231,13 @@ export class AuthController {
       res
         .status(HttpStatusCode.OK)
         .json(AuthResponseMapper.mapLoginResponse(user, token, refreshToken));
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async googleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const googleProfile = req.user as Profile;
       if (!googleProfile) {
         res.redirect(`${env.FRONTEND_URL}/login?error=google_auth_failed`);
@@ -255,11 +268,13 @@ export class AuthController {
         ? `${env.FRONTEND_URL}/auth/google/callback?isNewUser=true`
         : `${env.FRONTEND_URL}/auth/google/callback`;
       res.redirect(redirectUrl);
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async forgotPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const ipAddress = getClientIp(req);
       const result = await this.forgotPasswordUseCase.execute(req.body, ipAddress);
       res.status(HttpStatusCode.OK).json({
@@ -269,11 +284,13 @@ export class AuthController {
           expiresAt: result.expiresAt,
         },
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async verifyForgotPasswordOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const result = await this.verifyForgotPasswordOtpUseCase.execute(req.body);
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -282,16 +299,65 @@ export class AuthController {
           verified: result.verified,
         },
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
   }
 
   async resetPassword(req: Request, res: Response, next: NextFunction): Promise<void> {
-    await handleAsync(async () => {
+    try {
       const result = await this.resetPasswordUseCase.execute(req.body);
       res.status(HttpStatusCode.OK).json({
         success: true,
         message: result.message,
       });
-    }, req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async validateUserStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = (req as any).user?.userId;
+      
+      if (!userId) {
+        res.status(HttpStatusCode.UNAUTHORIZED).json({
+          success: false,
+          error: 'User not authenticated',
+        });
+        return;
+      }
+
+      const user = await this.userRepository.findById(userId);
+      
+      if (!user) {
+        res.status(HttpStatusCode.NOT_FOUND).json({
+          success: false,
+          error: 'User not found',
+        });
+        return;
+      }
+
+      // Check if user is suspended or deleted
+      if (!user.isActive || user.isDeleted) {
+        res.status(HttpStatusCode.FORBIDDEN).json({
+          success: false,
+          error: 'Your account has been suspended. Please contact support.',
+          data: {
+            isActive: false,
+          },
+        });
+        return;
+      }
+
+      res.status(HttpStatusCode.OK).json({
+        success: true,
+        data: {
+          isActive: true,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 }

@@ -11,12 +11,14 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage
 import authReducer from './slices/authSlice';
+import skillReducer from './slices/skillSlice';
 
 
 
 // Root reducer combining all slices
 const rootReducer = combineReducers({
   auth: authReducer,
+  skills: skillReducer,
 });
 
 // Persist configuration
@@ -24,7 +26,7 @@ const persistConfig = {
   key: 'root', // Key for localStorage
   version: 1, // Version for migrations
   storage, // Use localStorage
-  whitelist: ['auth'], // Only persist auth slice (add more slices here if needed)
+  whitelist: ['auth', 'skills'], // Persist auth and skills slices
   // blacklist: [], // Slices to NOT persist (if needed)
 };
 

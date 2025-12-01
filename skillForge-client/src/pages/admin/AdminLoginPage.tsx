@@ -1,10 +1,9 @@
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, Mail, Lock, Shield } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { adminLogin, clearError } from "../../store/slices/authSlice"
-import { useEffect } from "react"
 import { ErrorModal } from "../../components/shared/Modal"
 
 export default function AdminLoginPage() {
@@ -14,6 +13,16 @@ export default function AdminLoginPage() {
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [suspensionMessage, setSuspensionMessage] = useState<string | null>(null)
+
+    // Check for suspension message on mount
+    useEffect(() => {
+        const message = sessionStorage.getItem('suspensionMessage')
+        if (message) {
+            setSuspensionMessage(message)
+            sessionStorage.removeItem('suspensionMessage')
+        }
+    }, [])
 
     // Redirect to admin dashboard if already logged in as admin
     useEffect(() => {
@@ -38,8 +47,20 @@ export default function AdminLoginPage() {
         dispatch(clearError())
     }
 
+    const handleCloseSuspensionMessage = () => {
+        setSuspensionMessage(null)
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
+            {/* Suspension Message Modal */}
+            <ErrorModal
+                isOpen={!!suspensionMessage}
+                title="Account Suspended"
+                message={suspensionMessage || ''}
+                onClose={handleCloseSuspensionMessage}
+            />
+
             {/* Error Modal */}
             <ErrorModal
                 isOpen={!!error}

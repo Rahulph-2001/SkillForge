@@ -174,5 +174,14 @@ export const authService = {
       throw error.response?.data || error;
     }
   },
+
+  validateUserStatus: async (): Promise<{ success: boolean; data: { isActive: boolean } }> => {
+    try {
+      const response = await api.get<{ success: boolean; data: { isActive: boolean } }>('/auth/validate-status');
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  },
 };
 

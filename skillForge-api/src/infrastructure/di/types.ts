@@ -45,4 +45,32 @@ export const TYPES = {
   App: Symbol.for('App'),
   // Response Builder
   IResponseBuilder: Symbol.for('IResponseBuilder'),
+
+  //Skills
+  ISkillRepository:Symbol.for('ISkillRepository'),
+  IS3Service: Symbol.for('IS3Service'),
+  CreateSkillUseCase: Symbol.for('CreateSkillUseCase'),
+  ListUserSkillsUseCase: Symbol.for('ListUserSkillsUseCase'),
+  SkillController: Symbol.for('SkillController'),
+  SkillRoutes: Symbol.for('SkillRoutes'),
+
+  // Skill Templates
+  ISkillTemplateRepository: Symbol.for('ISkillTemplateRepository'),
+  CreateSkillTemplateUseCase: Symbol.for('CreateSkillTemplateUseCase'),
+  ListSkillTemplatesUseCase: Symbol.for('ListSkillTemplatesUseCase'),
+  UpdateSkillTemplateUseCase: Symbol.for('UpdateSkillTemplateUseCase'),
+  DeleteSkillTemplateUseCase: Symbol.for('DeleteSkillTemplateUseCase'),
+  ToggleSkillTemplateStatusUseCase: Symbol.for('ToggleSkillTemplateStatusUseCase'),
+  SkillTemplateController: Symbol.for('SkillTemplateController'),
+  SkillTemplateRoutes: Symbol.for('SkillTemplateRoutes'),
+
+  // Template Questions
+  ITemplateQuestionRepository: Symbol.for('ITemplateQuestionRepository'),
+  CreateTemplateQuestionUseCase: Symbol.for('CreateTemplateQuestionUseCase'),
+  ListTemplateQuestionsUseCase: Symbol.for('ListTemplateQuestionsUseCase'),
+  UpdateTemplateQuestionUseCase: Symbol.for('UpdateTemplateQuestionUseCase'),
+  DeleteTemplateQuestionUseCase: Symbol.for('DeleteTemplateQuestionUseCase'),
+  TemplateQuestionController: Symbol.for('TemplateQuestionController'),
+  TemplateQuestionRoutes: Symbol.for('TemplateQuestionRoutes')
+
 };

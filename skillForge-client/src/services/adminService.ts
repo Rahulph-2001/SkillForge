@@ -12,36 +12,23 @@ export interface User {
     emailVerified: boolean;
 }
 
-/**
- * List Users Response Interface
- */
+
 export interface ListUsersResponse {
     users: User[];
     total: number;
 }
 
-/**
- * Suspend User Request Interface
- */
+
 export interface SuspendUserRequest {
     userId: string;
     reason?: string;
 }
 
-/**
- * Admin Service
- * Handles all admin-related API calls following clean architecture principles
- * - Single Responsibility: Only handles admin API communication
- * - Dependency Inversion: Depends on api abstraction
- */
+
 class AdminService {
     private readonly baseUrl = '/admin';
 
-    /**
-     * List all users
-     * @returns Promise<ListUsersResponse>
-     * @throws Error if request fails
-     */
+   
     async listUsers(): Promise<ListUsersResponse> {
         try {
             console.log('[AdminService] Fetching users list...');
@@ -86,13 +73,7 @@ class AdminService {
         }
     }
 
-    /**
-     * Suspend a user
-     * @param userId - ID of the user to suspend
-     * @param reason - Optional reason for suspension
-     * @returns Promise with success status and message
-     * @throws Error if request fails
-     */
+    
     async suspendUser(userId: string, reason?: string): Promise<{ success: boolean; message: string }> {
         try {
             console.log('[AdminService] Suspending user:', { userId, reason });
@@ -138,12 +119,7 @@ class AdminService {
         }
     }
 
-    /**
-     * Unsuspend (reactivate) a user
-     * @param userId - ID of the user to unsuspend
-     * @returns Promise with success status and message
-     * @throws Error if request fails
-     */
+    
     async unsuspendUser(userId: string): Promise<{ success: boolean; message: string }> {
         try {
             console.log('[AdminService] Unsuspending user:', { userId });
