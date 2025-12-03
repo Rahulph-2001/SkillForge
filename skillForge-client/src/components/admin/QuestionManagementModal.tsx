@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Edit2, Trash2, Loader2 } from "lucide-react";
 import templateQuestionService, { TemplateQuestion } from "../../services/templateQuestionService";
+import { ErrorModal, ConfirmModal } from "../shared/Modal";
 
 interface Props {
   isOpen: boolean;
@@ -23,6 +24,10 @@ export default function QuestionManagementModal({
   const [saving, setSaving] = useState(false);
   const [isAddingQuestion, setIsAddingQuestion] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<TemplateQuestion | null>(null);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [questionToDelete, setQuestionToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     question: "",
@@ -45,7 +50,8 @@ export default function QuestionManagementModal({
       setQuestions(response.data || []);
     } catch (error) {
       console.error("Failed to fetch questions:", error);
-      alert("Failed to load questions. Please try again.");
+      setErrorMessage("Failed to load questions. Please try again.");
+      setShowError(true);
     } finally {
       setLoading(false);
     }
@@ -62,12 +68,14 @@ export default function QuestionManagementModal({
   const handleSaveQuestion = async () => {
     // Validation
     if (!formData.question.trim()) {
-      alert("Please enter a question");
+      setErrorMessage("Please enter a question");
+      setShowError(true);
       return;
     }
 
     if (formData.options.some((opt) => !opt.trim())) {
-      alert("Please fill in all 4 options");
+      setErrorMessage("Please fill in all 4 options");
+      setShowError(true);
       return;
     }
 
@@ -92,21 +100,32 @@ export default function QuestionManagementModal({
       resetForm();
     } catch (error) {
       console.error("Failed to save question:", error);
-      alert("Failed to save question. Please try again.");
+      setErrorMessage("Failed to save question. Please try again.");
+      setShowError(true);
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDeleteQuestion = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this question?")) return;
+  const handleDeleteClick = (id: string) => {
+    setQuestionToDelete(id);
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!questionToDelete) return;
 
     try {
-      await templateQuestionService.deleteQuestion(templateId, id);
+      await templateQuestionService.deleteQuestion(templateId, questionToDelete);
       await fetchQuestions();
+      setShowConfirm(false);
+      setQuestionToDelete(null);
     } catch (error) {
       console.error("Failed to delete question:", error);
-      alert("Failed to delete question. Please try again.");
+      setErrorMessage("Failed to delete question. Please try again.");
+      setShowError(true);
+      setShowConfirm(false);
+      setQuestionToDelete(null);
     }
   };
 
@@ -219,7 +238,7 @@ export default function QuestionManagementModal({
                             <Edit2 className="w-4 h-4 text-blue-600" />
                           </button>
                           <button
-                            onClick={() => handleDeleteQuestion(q.id)}
+                            onClick={() => handleDeleteClick(q.id)}
                             className="p-2 hover:bg-gray-100 rounded transition-colors"
                             title="Delete question"
                           >
@@ -357,6 +376,29 @@ export default function QuestionManagementModal({
           )}
         </div>
       </div>
+
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={showError}
+        title="Error"
+        message={errorMessage}
+        onClose={() => setShowError(false)}
+      />
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Delete Question"
+        message="Are you sure you want to delete this question? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setShowConfirm(false);
+          setQuestionToDelete(null);
+        }}
+        type="danger"
+      />
     </div>
   );
 }

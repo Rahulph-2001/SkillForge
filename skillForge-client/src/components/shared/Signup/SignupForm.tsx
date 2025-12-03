@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowLeft, User, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ErrorModal } from '../Modal';
 
 interface SignupFormProps {
     onSubmit?: (data: SignupFormData) => void;
@@ -26,6 +27,8 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
     const [agreed, setAgreed] = useState(false);
     const [errors, setErrors] = useState<Partial<SignupFormData>>({});
     const [touched, setTouched] = useState<Partial<Record<keyof SignupFormData, boolean>>>({});
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     // Password strength calculation
     const getPasswordStrength = (password: string): { strength: number; label: string; color: string } => {
@@ -142,7 +145,8 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
         }
 
         if (!agreed) {
-            alert('Please agree to the Terms of Service and Privacy Policy');
+            setErrorMessage('Please agree to the Terms of Service and Privacy Policy');
+            setShowErrorModal(true);
             return;
         }
 
@@ -403,6 +407,14 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                     </Link>
                 </p>
             </div>
+
+            {/* Error Modal */}
+            <ErrorModal
+                isOpen={showErrorModal}
+                title="Validation Error"
+                message={errorMessage}
+                onClose={() => setShowErrorModal(false)}
+            />
         </div>
     );
 }

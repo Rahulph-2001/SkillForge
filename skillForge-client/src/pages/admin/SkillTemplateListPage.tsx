@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react"
 import { Search, Plus, Edit2, Trash2, TrendingUp, FileQuestion } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService"
-import { ErrorModal, SuccessModal } from "../../components/shared/Modal"
+import { ErrorModal, SuccessModal, ConfirmModal } from "../../components/shared/Modal"
 import QuestionManagementModal from "../../components/admin/QuestionManagementModal"
+import AdminNavbar from "../../components/admin/AdminNavbar/AdminNavbar"
 
 export default function SkillTemplateListPage() {
   const navigate = useNavigate()
@@ -17,6 +18,8 @@ export default function SkillTemplateListPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<SkillTemplate | null>(null)
   const [successMessage, setSuccessMessage] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [templateToDelete, setTemplateToDelete] = useState<string | null>(null)
 
   useEffect(() => {
     fetchTemplates()
@@ -63,15 +66,24 @@ export default function SkillTemplateListPage() {
     }
   }
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this template?")) return
+  const handleDeleteClick = (id: string) => {
+    setTemplateToDelete(id)
+    setShowConfirm(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (!templateToDelete) return
 
     try {
-      await skillTemplateService.delete(id)
+      await skillTemplateService.delete(templateToDelete)
       setSuccessMessage("Template deleted successfully")
       fetchTemplates()
+      setShowConfirm(false)
+      setTemplateToDelete(null)
     } catch (error: any) {
       setErrorMessage(error.response?.data?.error || "Failed to delete template")
+      setShowConfirm(false)
+      setTemplateToDelete(null)
     }
   }
 
@@ -87,8 +99,9 @@ export default function SkillTemplateListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar activeTab="Skill Templates" />
+      <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
@@ -196,7 +209,7 @@ export default function SkillTemplateListPage() {
               key={template.id}
               template={template}
               onToggleStatus={() => handleToggleStatus(template.id)}
-              onDelete={() => handleDelete(template.id)}
+              onDelete={() => handleDeleteClick(template.id)}
               onEdit={() => navigate(`/admin/skill-templates/edit/${template.id}`)}
               onManageQuestions={() => {
                 setSelectedTemplate(template)
@@ -242,6 +255,21 @@ export default function SkillTemplateListPage() {
           levels={selectedTemplate.levels}
         />
       )}
+
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={showConfirm}
+        title="Delete Template"
+        message="Are you sure you want to delete this template? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => {
+          setShowConfirm(false)
+          setTemplateToDelete(null)
+        }}
+        type="danger"
+      />
     </div>
   )
 }

@@ -23,4 +23,9 @@ export class ListSkillTemplatesUseCase {
 
     return await this.skillTemplateRepository.findAll();
   }
+
+  async executePublic(): Promise<SkillTemplate[]> {
+    // Public endpoint - only return active templates
+    return await this.skillTemplateRepository.findByStatus('Active');
+  }
 }

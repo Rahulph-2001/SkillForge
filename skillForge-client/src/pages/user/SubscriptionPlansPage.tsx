@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft, LogOut } from 'lucide-react';
+import { Check, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Navbar } from '../../components/shared/Navbar';
 import { Footer } from '../../components/shared/Footer';
 import subscriptionService, { SubscriptionPlan } from '../../services/subscriptionService';
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { logout } from '../../store/slices/authSlice';
-import { clearPersistedState } from '../../store/persistUtils';
+import { useAppSelector } from '../../store/hooks';
 
 interface FAQItem {
   question: string;
@@ -314,7 +312,6 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, userPlan }: Prici
 
 export default function SubscriptionPlansPage() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -324,23 +321,10 @@ export default function SubscriptionPlansPage() {
   // Create properly formatted user object for Navbar
   const displayUser = user ? {
     name: user.name,
-    avatar: '', // Add avatar to user model if available
+    avatar: user.avatar || undefined,
     credits: user.credits,
     subscriptionPlan: 'free', // Default to free to encourage upgrades
   } : undefined;
-
-  // Handle logout
-  const handleLogout = async () => {
-    try {
-      await dispatch(logout()).unwrap();
-      await clearPersistedState();
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-      await clearPersistedState();
-      navigate('/login');
-    }
-  };
 
   useEffect(() => {
     loadPlans();
@@ -413,21 +397,8 @@ export default function SubscriptionPlansPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Navbar with Logout Button */}
-      <div className="relative">
-        <Navbar isAuthenticated={!!user} user={displayUser} />
-        {user && (
-          <div className="absolute top-4 right-4 z-50">
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-md"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
-          </div>
-        )}
-      </div>
+      {/* Navbar */}
+      <Navbar isAuthenticated={!!user} user={displayUser} />
 
       {/* Header */}
       <div className="pt-12 pb-8 text-center px-4">

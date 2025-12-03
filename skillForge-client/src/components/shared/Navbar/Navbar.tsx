@@ -1,5 +1,9 @@
-import { Bell, MessageCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Bell, MessageCircle, ChevronDown, LogOut, User } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../../store/hooks';
+import { logout } from '../../../store/slices/authSlice';
+import { toast } from 'react-hot-toast';
 
 interface NavbarProps {
     isAuthenticated?: boolean;
@@ -12,6 +16,23 @@ interface NavbarProps {
 }
 
 export default function Navbar({ isAuthenticated = false, user }: NavbarProps) {
+    const location = useLocation();
+    const [showUserMenu, setShowUserMenu] = useState(false);
+
+    const isActive = (path: string) => location.pathname === path;
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await dispatch(logout()).unwrap();
+            toast.success('Logged out successfully');
+            navigate('/login');
+        } catch (error) {
+            toast.error('Logout failed');
+        }
+    };
+
     if (!isAuthenticated) {
         // Landing page navbar
         return (
@@ -56,23 +77,55 @@ export default function Navbar({ isAuthenticated = false, user }: NavbarProps) {
                     </Link>
 
                     <nav className="hidden md:flex items-center gap-6">
-                        <Link to="/home" className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium text-sm">
+                        <Link 
+                            to="/home" 
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                                isActive('/home') 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
                             Home
                         </Link>
-                        <Link to="/explore" className="text-gray-700 font-medium text-sm hover:text-gray-900">
+                        <Link 
+                            to="/explore" 
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                                isActive('/explore') 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
                             Browse Skills
                         </Link>
-                        <Link to="/projects" className="text-gray-700 font-medium text-sm hover:text-gray-900">
+                        <Link 
+                            to="/projects" 
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                                isActive('/projects') 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
                             Projects
                         </Link>
-                        <Link to="/communities" className="text-gray-700 font-medium text-sm hover:text-gray-900">
+                        <Link 
+                            to="/communities" 
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                                isActive('/communities') 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
                             Communities
                         </Link>
-                        <Link to="/my-skills" className="text-gray-700 font-medium text-sm hover:text-gray-900">
+                        <Link 
+                            to="/my-skills" 
+                            className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                                isActive('/my-skills') 
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'
+                            }`}
+                        >
                             My Skills
-                        </Link>
-                        <Link to="/dashboard" className="text-gray-700 font-medium text-sm hover:text-gray-900">
-                            Dashboard
                         </Link>
                     </nav>
                 </div>
@@ -113,21 +166,79 @@ export default function Navbar({ isAuthenticated = false, user }: NavbarProps) {
                         <span className="text-sm text-gray-600">credits</span>
                     </div>
 
-                    <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-gray-900" />
-                    <MessageCircle className="w-5 h-5 text-gray-600 cursor-pointer hover:text-gray-900" />
+                    <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
+                    <MessageCircle className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
 
-                    {/* User avatar */}
-                    <div className="flex items-center gap-2 pl-2 border-l border-gray-200">
-                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                            {user?.avatar ? (
-                                <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
-                            ) : (
-                                <span className="text-blue-600 font-semibold text-sm">
-                                    {user?.name?.charAt(0).toUpperCase() || 'U'}
-                                </span>
-                            )}
-                        </div>
-                        <span className="text-sm font-medium text-gray-900 hidden sm:inline">{user?.name || 'User'}</span>
+                    {/* User Menu Dropdown */}
+                    <div className="relative pl-2 border-l border-gray-200">
+                        <button
+                            onClick={() => setShowUserMenu(!showUserMenu)}
+                            className="flex items-center gap-2 hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
+                        >
+                            <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                {user?.avatar ? (
+                                    <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover" />
+                                ) : (
+                                    <span className="text-blue-600 font-semibold text-sm">
+                                        {user?.name?.charAt(0).toUpperCase() || 'U'}
+                                    </span>
+                                )}
+                            </div>
+                            <span className="text-sm font-medium text-gray-900 hidden sm:inline">{user?.name || 'User'}</span>
+                            <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showUserMenu ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        {showUserMenu && (
+                            <>
+                                {/* Backdrop */}
+                                <div 
+                                    className="fixed inset-0 z-10" 
+                                    onClick={() => setShowUserMenu(false)}
+                                />
+                                
+                                {/* Menu */}
+                                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-20">
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <p className="text-sm font-semibold text-gray-900">{user?.name}</p>
+                                        <p className="text-xs text-gray-500 mt-1">{user?.credits || 0} credits available</p>
+                                    </div>
+                                    
+                                    <Link
+                                        to="/profile"
+                                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                                        onClick={() => setShowUserMenu(false)}
+                                    >
+                                        <User className="w-4 h-4 text-gray-600" />
+                                        <span className="text-sm text-gray-700">My Profile</span>
+                                    </Link>
+                                    
+                                    <Link
+                                        to="/sessions"
+                                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                                        onClick={() => setShowUserMenu(false)}
+                                    >
+                                        <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span className="text-sm text-gray-700">Sessions</span>
+                                    </Link>
+                                    
+                                    <div className="border-t border-gray-100 mt-2 pt-2">
+                                        <button
+                                            onClick={() => {
+                                                setShowUserMenu(false);
+                                                handleLogout();
+                                            }}
+                                            className="flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition-colors w-full text-left"
+                                        >
+                                            <LogOut className="w-4 h-4 text-red-600" />
+                                            <span className="text-sm text-red-600 font-medium">Logout</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

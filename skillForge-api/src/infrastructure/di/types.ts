@@ -18,43 +18,52 @@ export const TYPES = {
   ForgotPasswordUseCase: Symbol.for('ForgotPasswordUseCase'),
   VerifyForgotPasswordOtpUseCase: Symbol.for('VerifyForgotPasswordOtpUseCase'),
   ResetPasswordUseCase: Symbol.for('ResetPasswordUseCase'),
-  // Admin Use Cases
+  
   ListUsersUseCase: Symbol.for('ListUsersUseCase'),
   SuspendUserUseCase: Symbol.for('SuspendUserUseCase'),
   UnsuspendUserUseCase: Symbol.for('UnsuspendUserUseCase'),
-  // Subscription Repository
+  GetUserProfileUseCase: Symbol.for('GetUserProfileUseCase'),
+  UpdateUserProfileUseCase: Symbol.for('UpdateUserProfileUseCase'),
+  
   ISubscriptionPlanRepository: Symbol.for('ISubscriptionPlanRepository'),
-  // Subscription Use Cases
+  
   ListSubscriptionPlansUseCase: Symbol.for('ListSubscriptionPlansUseCase'),
   ListPublicSubscriptionPlansUseCase: Symbol.for('ListPublicSubscriptionPlansUseCase'),
   GetSubscriptionStatsUseCase: Symbol.for('GetSubscriptionStatsUseCase'),
   CreateSubscriptionPlanUseCase: Symbol.for('CreateSubscriptionPlanUseCase'),
   UpdateSubscriptionPlanUseCase: Symbol.for('UpdateSubscriptionPlanUseCase'),
   DeleteSubscriptionPlanUseCase: Symbol.for('DeleteSubscriptionPlanUseCase'),
-  // Controllers
+  
   AuthController: Symbol.for('AuthController'),
   AdminController: Symbol.for('AdminController'),
   SubscriptionController: Symbol.for('SubscriptionController'),
   PublicSubscriptionController: Symbol.for('PublicSubscriptionController'),
-  // Routes
+  UserProfileController: Symbol.for('UserProfileController'),
+  
   AuthRoutes: Symbol.for('AuthRoutes'),
   AdminRoutes: Symbol.for('AdminRoutes'),
   SubscriptionRoutes: Symbol.for('SubscriptionRoutes'),
   PublicSubscriptionRoutes: Symbol.for('PublicSubscriptionRoutes'),
-  // App
+  UserProfileRoutes: Symbol.for('UserProfileRoutes'),
+  
   App: Symbol.for('App'),
-  // Response Builder
+  
   IResponseBuilder: Symbol.for('IResponseBuilder'),
 
-  //Skills
+  
   ISkillRepository:Symbol.for('ISkillRepository'),
   IS3Service: Symbol.for('IS3Service'),
   CreateSkillUseCase: Symbol.for('CreateSkillUseCase'),
   ListUserSkillsUseCase: Symbol.for('ListUserSkillsUseCase'),
+  BrowseSkillsUseCase: Symbol.for('BrowseSkillsUseCase'),
+  BrowseSkillsController: Symbol.for('BrowseSkillsController'),
+  BrowseSkillsRoutes: Symbol.for('BrowseSkillsRoutes'),
+  GetSkillDetailsUseCase: Symbol.for('GetSkillDetailsUseCase'),
+  SkillDetailsController: Symbol.for('SkillDetailsController'),
   SkillController: Symbol.for('SkillController'),
   SkillRoutes: Symbol.for('SkillRoutes'),
 
-  // Skill Templates
+  
   ISkillTemplateRepository: Symbol.for('ISkillTemplateRepository'),
   CreateSkillTemplateUseCase: Symbol.for('CreateSkillTemplateUseCase'),
   ListSkillTemplatesUseCase: Symbol.for('ListSkillTemplatesUseCase'),
@@ -63,14 +72,45 @@ export const TYPES = {
   ToggleSkillTemplateStatusUseCase: Symbol.for('ToggleSkillTemplateStatusUseCase'),
   SkillTemplateController: Symbol.for('SkillTemplateController'),
   SkillTemplateRoutes: Symbol.for('SkillTemplateRoutes'),
+  PublicSkillTemplateRoutes: Symbol.for('PublicSkillTemplateRoutes'),
 
-  // Template Questions
+  
   ITemplateQuestionRepository: Symbol.for('ITemplateQuestionRepository'),
   CreateTemplateQuestionUseCase: Symbol.for('CreateTemplateQuestionUseCase'),
   ListTemplateQuestionsUseCase: Symbol.for('ListTemplateQuestionsUseCase'),
   UpdateTemplateQuestionUseCase: Symbol.for('UpdateTemplateQuestionUseCase'),
   DeleteTemplateQuestionUseCase: Symbol.for('DeleteTemplateQuestionUseCase'),
   TemplateQuestionController: Symbol.for('TemplateQuestionController'),
-  TemplateQuestionRoutes: Symbol.for('TemplateQuestionRoutes')
+  TemplateQuestionRoutes: Symbol.for('TemplateQuestionRoutes'),
 
+  // MCQ Tests
+  IMCQRepository: Symbol.for('IMCQRepository'),
+  StartMCQTestUseCase: Symbol.for('StartMCQTestUseCase'),
+  SubmitMCQTestUseCase: Symbol.for('SubmitMCQTestUseCase'),
+  GetMCQResultUseCase: Symbol.for('GetMCQResultUseCase'),
+  MCQTestController: Symbol.for('MCQTestController'),
+  MCQTestRoutes: Symbol.for('MCQTestRoutes'),
+
+  // Admin Skill Management
+  ListPendingSkillsUseCase: Symbol.for('ListPendingSkillsUseCase'),
+  ApproveSkillUseCase: Symbol.for('ApproveSkillUseCase'),
+  RejectSkillUseCase: Symbol.for('RejectSkillUseCase'),
+  GetAllSkillsUseCase: Symbol.for('GetAllSkillsUseCase'),
+  BlockSkillUseCase: Symbol.for('BlockSkillUseCase'),
+  UnblockSkillUseCase: Symbol.for('UnblockSkillUseCase'),
+  AdminSkillController: Symbol.for('AdminSkillController'),
+  AdminSkillRoutes: Symbol.for('AdminSkillRoutes'),
+
+  // Session Management
+  BookingRepository: Symbol.for('BookingRepository'),
+  CreateBookingUseCase: Symbol.for('CreateBookingUseCase'),
+  AcceptBookingUseCase: Symbol.for('AcceptBookingUseCase'),
+  DeclineBookingUseCase: Symbol.for('DeclineBookingUseCase'),
+  CancelBookingUseCase: Symbol.for('CancelBookingUseCase'),
+  GetProviderBookingsUseCase: Symbol.for('GetProviderBookingsUseCase'),
+  RescheduleBookingUseCase: Symbol.for('RescheduleBookingUseCase'),
+  SessionManagementController: Symbol.for('SessionManagementController'),
+
+  // Prisma Client
+  PrismaClient: Symbol.for('PrismaClient')
 };

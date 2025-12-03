@@ -30,6 +30,8 @@ import { PassportService } from '../services/PassportService';
 import { ListUsersUseCase } from '../../application/useCases/admin/ListUsersUseCase';
 import { SuspendUserUseCase } from '../../application/useCases/admin/SuspendUserUseCase';
 import { UnsuspendUserUseCase } from '../../application/useCases/admin/UnsuspendUserUseCase';
+import { GetUserProfileUseCase } from '../../application/useCases/user/GetUserProfileUseCase';
+import { UpdateUserProfileUseCase } from '../../application/useCases/user/UpdateUserProfileUseCase';
 import { ISubscriptionPlanRepository } from '../../domain/repositories/ISubscriptionPlanRepository';
 import { PrismaSubscriptionPlanRepository } from '../database/repositories/PrismaSubscriptionPlanRepository';
 import { ListSubscriptionPlansUseCase } from '../../application/useCases/subscription/ListSubscriptionPlansUseCase';
@@ -42,10 +44,12 @@ import { AuthController } from '../../presentation/controllers/auth/AuthControll
 import { AdminController } from '../../presentation/controllers/admin/AdminController';
 import { SubscriptionController } from '../../presentation/controllers/subscription/SubscriptionController';
 import { PublicSubscriptionController } from '../../presentation/controllers/subscription/PublicSubscriptionController';
+import { UserProfileController } from '../../presentation/controllers/user/UserProfileController';
 import { AuthRoutes } from '../../presentation/routes/auth/authRoutes';
 import { AdminRoutes } from '../../presentation/routes/admin/adminRoutes';
 import { SubscriptionRoutes } from '../../presentation/routes/subscription/subscriptionRoutes';
 import { PublicSubscriptionRoutes } from '../../presentation/routes/subscription/publicSubscriptionRoutes';
+import { UserProfileRoutes } from '../../presentation/routes/user/userProfileRoutes';
 import { App } from '../../presentation/server';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { ResponseBuilder } from '../../shared/http/ResponseBuilder';
@@ -55,8 +59,13 @@ import { IS3Service } from '../../domain/services/IS3Service';
 import { S3Service } from '../services/S3Service';
 import { CreateSkillUseCase } from '../../application/useCases/skill/CreateSkillUseCase';
 import { ListUserSkillsUseCase } from '../../application/useCases/skill/ListUserSkillsUseCase';
+import { BrowseSkillsUseCase } from '../../application/useCases/skill/BrowseSkillsUseCase';
+import { GetSkillDetailsUseCase } from '../../application/useCases/skill/GetSkillDetailsUseCase';
 import { SkillController } from '../../presentation/controllers/skill/SkillController';
+import { BrowseSkillsController } from '../../presentation/controllers/BrowseSkillsController';
+import { SkillDetailsController } from '../../presentation/controllers/skill/SkillDetailsController';
 import { SkillRoutes } from '../../presentation/routes/skill/skillRoutes';
+import { BrowseSkillsRoutes } from '../../presentation/routes/skill/browseSkillsRoutes';
 import { ISkillTemplateRepository } from '../../domain/repositories/ISkillTemplateRepository';
 import { SkillTemplateRepository } from '../database/repositories/SkillTemplateRepository';
 import { CreateSkillTemplateUseCase } from '../../application/useCases/skillTemplate/CreateSkillTemplateUseCase';
@@ -66,6 +75,7 @@ import { DeleteSkillTemplateUseCase } from '../../application/useCases/skillTemp
 import { ToggleSkillTemplateStatusUseCase } from '../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase';
 import { SkillTemplateController } from '../../presentation/controllers/skillTemplate/SkillTemplateController';
 import { SkillTemplateRoutes } from '../../presentation/routes/skillTemplate/skillTemplateRoutes';
+import { PublicSkillTemplateRoutes } from '../../presentation/routes/skillTemplate/publicSkillTemplateRoutes';
 import { ITemplateQuestionRepository } from '../../domain/repositories/ITemplateQuestionRepository';
 import { TemplateQuestionRepository } from '../database/repositories/TemplateQuestionRepository';
 import { CreateTemplateQuestionUseCase } from '../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase';
@@ -74,8 +84,35 @@ import { UpdateTemplateQuestionUseCase } from '../../application/useCases/templa
 import { DeleteTemplateQuestionUseCase } from '../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
 import { TemplateQuestionController } from '../../presentation/controllers/templateQuestion/TemplateQuestionController';
 import { TemplateQuestionRoutes } from '../../presentation/routes/templateQuestion/templateQuestionRoutes';
+import { PrismaClient } from '@prisma/client';
+import { IMCQRepository } from '../../domain/repositories/IMCQRepository';
+import { MCQRepository } from '../database/repositories/MCQRepository';
+import { StartMCQTestUseCase } from '../../application/useCases/mcq/StartMCQTestUseCase';
+import { SubmitMCQTestUseCase } from '../../application/useCases/mcq/SubmitMCQTestUseCase';
+import { ListPendingSkillsUseCase } from '../../application/useCases/admin/ListPendingSkillsUseCase';
+import { ApproveSkillUseCase } from '../../application/useCases/admin/ApproveSkillUseCase';
+import { RejectSkillUseCase } from '../../application/useCases/admin/RejectSkillUseCase';
+import { GetAllSkillsUseCase } from '../../application/useCases/admin/GetAllSkillsUseCase';
+import { BlockSkillUseCase } from '../../application/useCases/admin/BlockSkillUseCase';
+import { UnblockSkillUseCase } from '../../application/useCases/admin/UnblockSkillUseCase';
+import { MCQTestController } from '../../presentation/controllers/mcq/MCQTestController';
+import { AdminSkillController } from '../../presentation/controllers/admin/AdminSkillController';
+import { MCQTestRoutes } from '../../presentation/routes/mcq/mcqTestRoutes';
+import { AdminSkillRoutes } from '../../presentation/routes/admin/adminSkillRoutes';
+import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
+import { BookingRepository } from '../repositories/BookingRepository';
+import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
+import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
+import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
+import { RescheduleBookingUseCase } from '../../application/useCases/booking/RescheduleBookingUseCase';
+import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
+import { SessionManagementController } from '../../presentation/controllers/SessionManagementController';
 
 export const container = new Container();
+
+// Prisma Client
+const prisma = new PrismaClient();
+container.bind<PrismaClient>(TYPES.PrismaClient).toConstantValue(prisma);
 
 container.bind<Database>(TYPES.Database).toConstantValue(Database.getInstance());
 container.bind<RedisService>(TYPES.RedisService).toConstantValue(RedisService.getInstance());
@@ -100,6 +137,8 @@ container.bind<PassportService>(TYPES.PassportService).to(PassportService);
 container.bind<ListUsersUseCase>(TYPES.ListUsersUseCase).to(ListUsersUseCase);
 container.bind<SuspendUserUseCase>(TYPES.SuspendUserUseCase).to(SuspendUserUseCase);
 container.bind<UnsuspendUserUseCase>(TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase);
+container.bind<GetUserProfileUseCase>(TYPES.GetUserProfileUseCase).to(GetUserProfileUseCase);
+container.bind<UpdateUserProfileUseCase>(TYPES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase);
 // Subscription Repository
 container.bind<ISubscriptionPlanRepository>(TYPES.ISubscriptionPlanRepository).to(PrismaSubscriptionPlanRepository);
 // Subscription Use Cases
@@ -115,6 +154,8 @@ container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
 // Skill Use Cases
 container.bind<CreateSkillUseCase>(TYPES.CreateSkillUseCase).to(CreateSkillUseCase);
 container.bind<ListUserSkillsUseCase>(TYPES.ListUserSkillsUseCase).to(ListUserSkillsUseCase);
+container.bind<BrowseSkillsUseCase>(TYPES.BrowseSkillsUseCase).to(BrowseSkillsUseCase);
+container.bind<GetSkillDetailsUseCase>(TYPES.GetSkillDetailsUseCase).to(GetSkillDetailsUseCase);
 // Skill Template Repository
 container.bind<ISkillTemplateRepository>(TYPES.ISkillTemplateRepository).to(SkillTemplateRepository);
 // Skill Template Use Cases
@@ -132,22 +173,55 @@ container.bind<ListTemplateQuestionsUseCase>(TYPES.ListTemplateQuestionsUseCase)
 container.bind<UpdateTemplateQuestionUseCase>(TYPES.UpdateTemplateQuestionUseCase).to(UpdateTemplateQuestionUseCase);
 container.bind<DeleteTemplateQuestionUseCase>(TYPES.DeleteTemplateQuestionUseCase).to(DeleteTemplateQuestionUseCase);
 
+// MCQ Repository
+container.bind<IMCQRepository>(TYPES.IMCQRepository).to(MCQRepository);
+// MCQ Use Cases
+container.bind<StartMCQTestUseCase>(TYPES.StartMCQTestUseCase).to(StartMCQTestUseCase);
+container.bind<SubmitMCQTestUseCase>(TYPES.SubmitMCQTestUseCase).to(SubmitMCQTestUseCase);
+
+// Admin Skill Management Use Cases
+container.bind<ListPendingSkillsUseCase>(TYPES.ListPendingSkillsUseCase).to(ListPendingSkillsUseCase);
+container.bind<ApproveSkillUseCase>(TYPES.ApproveSkillUseCase).to(ApproveSkillUseCase);
+container.bind<RejectSkillUseCase>(TYPES.RejectSkillUseCase).to(RejectSkillUseCase);
+container.bind<GetAllSkillsUseCase>(TYPES.GetAllSkillsUseCase).to(GetAllSkillsUseCase);
+container.bind<BlockSkillUseCase>(TYPES.BlockSkillUseCase).to(BlockSkillUseCase);
+container.bind<UnblockSkillUseCase>(TYPES.UnblockSkillUseCase).to(UnblockSkillUseCase);
+
+// Session Management
+container.bind<IBookingRepository>(TYPES.BookingRepository).to(BookingRepository);
+container.bind<AcceptBookingUseCase>(TYPES.AcceptBookingUseCase).to(AcceptBookingUseCase);
+container.bind<DeclineBookingUseCase>(TYPES.DeclineBookingUseCase).to(DeclineBookingUseCase);
+container.bind<CancelBookingUseCase>(TYPES.CancelBookingUseCase).to(CancelBookingUseCase);
+container.bind<RescheduleBookingUseCase>(TYPES.RescheduleBookingUseCase).to(RescheduleBookingUseCase);
+container.bind<GetProviderBookingsUseCase>(TYPES.GetProviderBookingsUseCase).to(GetProviderBookingsUseCase);
+
 // Controllers
 container.bind<AuthController>(TYPES.AuthController).to(AuthController);
 container.bind<AdminController>(TYPES.AdminController).to(AdminController);
 container.bind<SubscriptionController>(TYPES.SubscriptionController).to(SubscriptionController);
 container.bind<PublicSubscriptionController>(TYPES.PublicSubscriptionController).to(PublicSubscriptionController);
+container.bind<UserProfileController>(TYPES.UserProfileController).to(UserProfileController);
 container.bind<SkillController>(TYPES.SkillController).to(SkillController);
+container.bind<BrowseSkillsController>(TYPES.BrowseSkillsController).to(BrowseSkillsController);
+container.bind<SkillDetailsController>(TYPES.SkillDetailsController).to(SkillDetailsController);
 container.bind<SkillTemplateController>(TYPES.SkillTemplateController).to(SkillTemplateController);
 container.bind<TemplateQuestionController>(TYPES.TemplateQuestionController).to(TemplateQuestionController);
+container.bind<MCQTestController>(TYPES.MCQTestController).to(MCQTestController);
+container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);
+container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);
 // Routes
 container.bind<AuthRoutes>(TYPES.AuthRoutes).to(AuthRoutes);
 container.bind<AdminRoutes>(TYPES.AdminRoutes).to(AdminRoutes);
 container.bind<SubscriptionRoutes>(TYPES.SubscriptionRoutes).to(SubscriptionRoutes);
 container.bind<PublicSubscriptionRoutes>(TYPES.PublicSubscriptionRoutes).to(PublicSubscriptionRoutes);
+container.bind<UserProfileRoutes>(TYPES.UserProfileRoutes).to(UserProfileRoutes);
 container.bind<SkillRoutes>(TYPES.SkillRoutes).to(SkillRoutes);
+container.bind<BrowseSkillsRoutes>(TYPES.BrowseSkillsRoutes).to(BrowseSkillsRoutes);
 container.bind<SkillTemplateRoutes>(TYPES.SkillTemplateRoutes).to(SkillTemplateRoutes);
+container.bind<PublicSkillTemplateRoutes>(TYPES.PublicSkillTemplateRoutes).to(PublicSkillTemplateRoutes);
 container.bind<TemplateQuestionRoutes>(TYPES.TemplateQuestionRoutes).to(TemplateQuestionRoutes);
+container.bind<MCQTestRoutes>(TYPES.MCQTestRoutes).to(MCQTestRoutes);
+container.bind<AdminSkillRoutes>(TYPES.AdminSkillRoutes).to(AdminSkillRoutes);
 // Response Builder
 container.bind<IResponseBuilder>(TYPES.IResponseBuilder).to(ResponseBuilder);
 // App

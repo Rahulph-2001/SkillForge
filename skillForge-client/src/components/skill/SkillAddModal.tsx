@@ -1,16 +1,18 @@
-import React, { useState, useRef } from "react";
-import { X, Upload, Trash2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { X, Upload, Trash2, Search, Loader2 } from "lucide-react";
 import ImageCropper from "../shared/imageCropper";
+import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService";
 
 export interface NewSkill {
   title: string;
   description: string;
   category: string;
   level: string;
-  duration: string;
+  durationHours: number;
   creditsHour: number;
   tags: string[];
-  image?: string; 
+  image?: string;
+  templateId?: string;
 }
 
 interface SkillAddModalProps {
@@ -24,19 +26,27 @@ interface FormDataState {
   description: string;
   category: string;
   level: string;
-  duration: string;
+  durationHours: string;
   creditsHour: string;
   tags: string[];
   tagInput: string;
+  templateId: string;
 }
 
 const categories = ["Technology", "Languages", "Music", "Fitness", "Creative", "Professional", "Business"];
 const levels = ["Beginner", "Intermediate", "Advanced", "All Levels"];
+const durationOptions = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddModalProps) {
   const [formData, setFormData] = useState<FormDataState>({
-    title: "", description: "", category: "", level: "", duration: "", creditsHour: "", tags: [], tagInput: "",
+    title: "", description: "", category: "", level: "", durationHours: "", creditsHour: "", tags: [], tagInput: "", templateId: "",
   });
+
+  const [skillTemplates, setSkillTemplates] = useState<SkillTemplate[]>([]);
+  const [filteredTemplates, setFilteredTemplates] = useState<SkillTemplate[]>([]);
+  const [templateSearch, setTemplateSearch] = useState("");
+  const [loadingTemplates, setLoadingTemplates] = useState(false);
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<string | null>(null); 
   const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null); 
@@ -46,7 +56,40 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
 
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [showLevelDropdown, setShowLevelDropdown] = useState(false);
+  const [showDurationDropdown, setShowDurationDropdown] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+
+  // Fetch skill templates on mount
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoadingTemplates(true);
+        const response = await skillTemplateService.getAllActive();
+        setSkillTemplates(response.data.data || []);
+        setFilteredTemplates(response.data.data || []);
+      } catch (error) {
+        console.error('Failed to fetch skill templates:', error);
+      } finally {
+        setLoadingTemplates(false);
+      }
+    };
+    if (isOpen) {
+      fetchTemplates();
+    }
+  }, [isOpen]);
+
+  // Filter templates based on search
+  useEffect(() => {
+    if (templateSearch.trim() === "") {
+      setFilteredTemplates(skillTemplates);
+    } else {
+      const filtered = skillTemplates.filter(template =>
+        template.title.toLowerCase().includes(templateSearch.toLowerCase()) ||
+        template.category.toLowerCase().includes(templateSearch.toLowerCase())
+      );
+      setFilteredTemplates(filtered);
+    }
+  }, [templateSearch, skillTemplates]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -61,6 +104,27 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
   const handleLevelSelect = (lv: string) => {
     setFormData((prev) => ({ ...prev, level: lv }));
     setShowLevelDropdown(false);
+  };
+
+  const handleDurationSelect = (hours: number) => {
+    setFormData((prev) => ({ ...prev, durationHours: hours.toString() }));
+    setShowDurationDropdown(false);
+  };
+
+  const handleTemplateSelect = (template: SkillTemplate) => {
+    setFormData((prev) => ({
+      ...prev,
+      templateId: template.id,
+      category: template.category,
+      title: template.title,
+      description: template.description,
+    }));
+    setShowTemplateDropdown(false);
+    setTemplateSearch("");
+  };
+
+  const getSelectedTemplate = () => {
+    return skillTemplates.find(t => t.id === formData.templateId);
   };
 
   const handleAddTag = () => {
@@ -132,22 +196,25 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const credits = Number.parseInt(formData.creditsHour, 10) || 0;
+    const hours = Number.parseInt(formData.durationHours, 10) || 1;
     const payload: NewSkill = {
       title: formData.title.trim(),
       description: formData.description.trim(),
       category: formData.category,
       level: formData.level,
-      duration: formData.duration,
+      durationHours: hours,
       creditsHour: credits,
       tags: formData.tags,
       image: previewUrl || undefined,
+      templateId: formData.templateId || undefined,
     };
     onSubmit(payload, croppedImageBlob || undefined);
     
     setFormData({
         title: "", description: "", category: "", level: "", 
-        duration: "", creditsHour: "", tags: [], tagInput: ""
+        durationHours: "", creditsHour: "", tags: [], tagInput: "", templateId: ""
     });
+    setTemplateSearch("");
     handleRemoveImage();
   };
 
@@ -165,6 +232,69 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
+            {/* Skill Template Selection */}
+            <div>
+              <label className="mb-2 block text-sm font-bold text-gray-900">Select Skill Template (Optional)</label>
+              <div className="relative">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={templateSearch}
+                    onChange={(e) => setTemplateSearch(e.target.value)}
+                    onFocus={() => setShowTemplateDropdown(true)}
+                    placeholder="Search skill templates..."
+                    className="w-full rounded-lg border-2 border-gray-300 pl-10 pr-4 py-3 text-sm focus:border-blue-500 outline-none"
+                  />
+                </div>
+                {showTemplateDropdown && (
+                  <div className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-60 overflow-auto">
+                    {loadingTemplates ? (
+                      <div className="flex items-center justify-center py-4">
+                        <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+                        <span className="ml-2 text-sm text-gray-600">Loading templates...</span>
+                      </div>
+                    ) : filteredTemplates.length > 0 ? (
+                      filteredTemplates.map((template) => (
+                        <div
+                          key={template.id}
+                          onClick={() => handleTemplateSelect(template)}
+                          className={`px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 ${
+                            formData.templateId === template.id ? 'bg-blue-100' : ''
+                          }`}
+                        >
+                          <div className="font-medium text-sm text-gray-900">{template.title}</div>
+                          <div className="text-xs text-gray-500 mt-1">{template.category} • {template.levels.join(', ')}</div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                        No templates found
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              {getSelectedTemplate() && (
+                <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-blue-900">{getSelectedTemplate()?.title}</p>
+                    <p className="text-xs text-blue-700">Template selected - fields auto-filled</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData(prev => ({ ...prev, templateId: '', title: '', description: '', category: '' }));
+                      setTemplateSearch('');
+                    }}
+                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Clear
+                  </button>
+                </div>
+              )}
+            </div>
+
             <div>
               <label className="mb-2 block text-sm font-bold text-gray-900">Title <span className="text-red-500">*</span></label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-sm focus:border-blue-500 outline-none" />
@@ -210,11 +340,24 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
 
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Duration</label>
-                    <input type="text" name="duration" value={formData.duration} onChange={handleChange} required className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-500" />
+                    <label className="mb-2 block text-sm font-bold text-gray-900">Duration (Hours) <span className="text-red-500">*</span></label>
+                    <div className="relative">
+                        <button type="button" onClick={() => setShowDurationDropdown(!showDurationDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                            {formData.durationHours ? `${formData.durationHours} hour${formData.durationHours !== '1' ? 's' : ''}` : "Select hours"}
+                        </button>
+                        {showDurationDropdown && (
+                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
+                                {durationOptions.map(hours => (
+                                    <div key={hours} onClick={() => handleDurationSelect(hours)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                                        {hours} hour{hours !== 1 ? 's' : ''}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Credits/Hour</label>
+                    <label className="mb-2 block text-sm font-bold text-gray-900">Credits/Hour <span className="text-red-500">*</span></label>
                     <input type="number" name="creditsHour" value={formData.creditsHour} onChange={handleChange} required min="0" className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-500" />
                 </div>
             </div>

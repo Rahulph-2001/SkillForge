@@ -3,7 +3,8 @@ export interface CreateSkillDTO {
   description: string;
   category: string;
   level: string;
-  duration: string;
+  durationHours: number;
   creditsHour: number;
   tags: string[];
+  templateId?: string;
 }

@@ -20,9 +20,11 @@ export class CreateSkillUseCase {
     let imageUrl: string | null = null;
 
     if (imageFile) {
+      // Create S3 key with skills/ prefix
+      const key = `skills/${Date.now()}-${imageFile.originalname}`;
       imageUrl = await this.s3Service.uploadFile(
         imageFile.buffer, 
-        imageFile.originalname, 
+        key, 
         imageFile.mimetype
       );
     }
@@ -33,11 +35,12 @@ export class CreateSkillUseCase {
       description: data.description,
       category: data.category,
       level: data.level,
-      duration: data.duration,
+      durationHours: Number(data.durationHours),
       creditsPerHour: Number(data.creditsHour),
       // Handle potential stringified array from FormData
       tags: typeof data.tags === 'string' ? JSON.parse(data.tags) : data.tags,
-      imageUrl: imageUrl
+      imageUrl: imageUrl,
+      templateId: data.templateId || null
     });
 
     return await this.skillRepository.create(skill);

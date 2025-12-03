@@ -130,4 +130,23 @@ export class SkillTemplateController {
       next(error);
     }
   }
+
+  /**
+   * GET /api/v1/skill-templates/active
+   * List all active skill templates (public endpoint for users)
+   */
+  async listActive(_req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const templates = await this.listSkillTemplatesUseCase.executePublic();
+      
+      const response = this.responseBuilder.success(
+        templates.map((t: any) => t.toJSON()),
+        'Active skill templates retrieved successfully',
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

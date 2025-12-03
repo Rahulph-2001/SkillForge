@@ -3,6 +3,7 @@ import { X } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
 import { skillTemplateService, CreateSkillTemplatePayload } from "../../services/skillTemplateService"
 import { ErrorModal, SuccessModal } from "../../components/shared/Modal"
+import AdminNavbar from "../../components/admin/AdminNavbar/AdminNavbar"
 
 interface SkillTemplateForm {
   title: string
@@ -136,8 +137,10 @@ export default function SkillTemplateCreatePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-3xl mx-auto bg-white rounded-lg border border-gray-200 shadow-sm">
+    <div className="min-h-screen bg-gray-50">
+      <AdminNavbar activeTab="Skill Templates" />
+      <div className="p-6">
+        <div className="max-w-3xl mx-auto bg-white rounded-lg border border-gray-200 shadow-sm">
         {/* Header */}
         <div className="flex justify-between items-start p-6 border-b border-gray-200">
           <div>
@@ -327,6 +330,7 @@ export default function SkillTemplateCreatePage() {
           onClose={() => setErrorMessage("")}
         />
       )}
+      </div>
     </div>
   )
 }

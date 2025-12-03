@@ -18,8 +18,13 @@ export class SkillController {
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      console.log(' [SkillController] Create skill request received');
       const userId = (req as any).user.userId;
       const file = req.file;
+      
+      console.log(' [SkillController] User ID:', userId);
+      console.log(' [SkillController] File received:', file ? `${file.originalname} (${file.size} bytes)` : 'No file');
+      console.log(' [SkillController] Request body:', req.body);
       
       const skillDTO: CreateSkillDTO = req.body;
       
@@ -33,6 +38,8 @@ export class SkillController {
         } : undefined
       );
 
+      console.log(' [SkillController] Skill created with imageUrl:', skill.toJSON().imageUrl);
+      
       const response = this.responseBuilder.success(
         skill.toJSON(), 
         SUCCESS_MESSAGES.SKILL.CREATED,
@@ -40,6 +47,7 @@ export class SkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
+      console.error(' [SkillController] Error creating skill:', error);
       next(error);
     }
   };

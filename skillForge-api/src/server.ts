@@ -16,9 +16,45 @@ async function startServer() {
     const redis = RedisService.getInstance();
     await redis.ping();
     console.log('Redis healthy');
-    appInstance.listen(port, () => {
+    
+    const server = appInstance.listen(port, () => {
       console.log(`Server running on port ${port} in ${env.NODE_ENV} mode`);
     });
+
+    // Handle port already in use error
+    server.on('error', (error: NodeJS.ErrnoException) => {
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${port} is already in use!`);
+        console.error('💡 Solutions:');
+        console.error('   1. Run: npm run dev:clean (kills port automatically)');
+        console.error('   2. Or manually: netstat -ano | findstr :3000');
+        console.error('   3. Then: taskkill /PID <PID> /F');
+        process.exit(1);
+      } else {
+        console.error('Server error:', error);
+        process.exit(1);
+      }
+    });
+
+    // Graceful shutdown
+    const gracefulShutdown = (signal: string) => {
+      console.log(`\n${signal} received. Shutting down gracefully...`);
+      
+      server.close(() => {
+        console.log('✅ HTTP server closed');
+        process.exit(0);
+      });
+
+      // Force shutdown after 10 seconds
+      setTimeout(() => {
+        console.error('⚠️  Forced shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+    };
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    
     process.on('unhandledRejection', (err: Error) => {
       console.error('UNHANDLED REJECTION!');
       console.error(err.name, err.message, err.stack);

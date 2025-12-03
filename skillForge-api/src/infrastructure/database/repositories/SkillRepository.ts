@@ -18,11 +18,12 @@ export class SkillRepository implements ISkillRepository {
       data: {
         id: data.id as string,
         providerId: data.providerId as string,
+        templateId: data.templateId as string | null,
         title: data.title as string,
         description: data.description as string,
         category: data.category as string,
         level: data.level as string,
-        duration: data.duration as string,
+        durationHours: data.durationHours as number,
         creditsPerHour: data.creditsPerHour as number,
         tags: data.tags as string[],
         imageUrl: data.imageUrl as string | null,
@@ -34,7 +35,13 @@ export class SkillRepository implements ISkillRepository {
 
   async findByProviderId(providerId: string): Promise<Skill[]> {
     const skills = await this.prisma.skill.findMany({
-      where: { providerId, isDeleted: false },
+      where: { 
+        providerId, 
+        isDeleted: false,
+        verificationStatus: {
+          not: 'failed' // Exclude failed MCQ skills (blocked skills are shown)
+        }
+      },
       orderBy: { createdAt: 'desc' }
     });
     return skills.map((s: any) => this.toDomain(s));
@@ -58,17 +65,25 @@ export class SkillRepository implements ISkillRepository {
     return new Skill({
       id: ormEntity.id,
       providerId: ormEntity.providerId,
+      templateId: ormEntity.templateId,
       title: ormEntity.title,
       description: ormEntity.description,
       category: ormEntity.category,
       level: ormEntity.level,
-      duration: ormEntity.duration,
+      durationHours: ormEntity.durationHours,
       creditsPerHour: ormEntity.creditsPerHour,
       tags: ormEntity.tags,
       imageUrl: ormEntity.imageUrl,
       status: ormEntity.status as any,
+      verificationStatus: ormEntity.verificationStatus,
+      mcqScore: ormEntity.mcqScore,
+      mcqTotalQuestions: ormEntity.mcqTotalQuestions,
+      mcqPassingScore: ormEntity.mcqPassingScore,
       totalSessions: ormEntity.totalSessions,
       rating: Number(ormEntity.rating),
+      isBlocked: ormEntity.isBlocked || false,
+      blockedReason: ormEntity.blockedReason || null,
+      blockedAt: ormEntity.blockedAt || null,
       createdAt: ormEntity.createdAt,
       updatedAt: ormEntity.updatedAt
     });

@@ -11,15 +11,24 @@ import ResetPasswordPage from './pages/auth/ResetPasswordPage';
 import HomePage from './pages/user/HomePage';
 import SubscriptionPlansPage from './pages/user/SubscriptionPlansPage';
 import SkillsPage from './pages/user/SkillsPage';
+import BrowseSkillsPage from './pages/user/BrowseSkillsPage';
+import SkillDetailPage from './pages/user/SkillDetailPage';
+import ProviderProfilePage from './pages/user/ProviderProfilePage';
+import UserProfilePage from './pages/user/UserProfilePage';
+import SessionManagementPage from './pages/provider/SessionManagementPage';
+import EditProfilePage from './pages/user/EditProfilePage';
+import MCQTestPage from './pages/user/MCQTestPage';
 import AdminLoginPage from './pages/admin/AdminLoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import UserManagement from './pages/admin/UserManagement';
 import SubscriptionManagement from './pages/admin/SubscriptionManagement';
 import SkillTemplateListPage from './pages/admin/SkillTemplateListPage';
 import SkillTemplateCreatePage from './pages/admin/SkillTemplateCreatePage';
+import AdminSkillVerificationPage from './pages/admin/AdminSkillVerificationPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import GuestRoute from './components/auth/GuestRoute';
 import UserStatusMonitor from './components/auth/UserStatusMonitor';
+import AvatarSync from './components/auth/AvatarSync';
 import { useAppSelector } from './store/hooks';
 
 function App() {
@@ -31,6 +40,9 @@ function App() {
     <>
       {/* Global user status monitor - runs for all logged-in users */}
       <UserStatusMonitor />
+      
+      {/* Sync avatar from database on app load */}
+      <AvatarSync />
       
       <Routes>
       {/* Public Routes */}
@@ -128,6 +140,14 @@ function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin/skills"
+        element={
+          <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+            <AdminSkillVerificationPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* User Protected Routes */}
       <Route path="/welcome" element={<WelcomePage />} />
@@ -145,7 +165,23 @@ function App() {
         path="/explore" 
         element={
           <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
-            <div>Explore Page</div>
+            <BrowseSkillsPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/skills/:skillId" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <SkillDetailPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/provider/:providerId" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <ProviderProfilePage />
           </ProtectedRoute>
         } 
       />
@@ -154,6 +190,46 @@ function App() {
         element={
           <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
             <SkillsPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <UserProfilePage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/sessions" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <SessionManagementPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/session-management" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <SessionManagementPage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/profile/edit" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <EditProfilePage />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/mcq-test/:skillId" 
+        element={
+          <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+            <MCQTestPage />
           </ProtectedRoute>
         } 
       />

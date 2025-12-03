@@ -163,10 +163,11 @@ export class AuthController {
         data: {
           user: {
             id: user.id,
-            name: user.name, // Now from database
+            name: user.name,
             email: user.email.value,
             role: user.role,
-            credits: user.credits, // Now from database
+            credits: user.credits,
+            avatar: user.avatarUrl, // Include avatar URL
             verification: {
               email_verified: user.verification.email_verified,
             },

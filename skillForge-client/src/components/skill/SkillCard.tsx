@@ -1,4 +1,5 @@
-import { Clock, Users, Star } from 'lucide-react';
+import { Clock, Users, Star, FileText } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface SkillCardProps {
   skill: {
@@ -7,7 +8,7 @@ interface SkillCardProps {
     description: string;
     category: string;
     level: string;
-    duration: string;
+    durationHours: number;
     creditsHour: number;
     status: string;
     sessions?: number;
@@ -15,28 +16,55 @@ interface SkillCardProps {
     totalSessions?: number;
     creditsPerHour?: number;
     imageUrl?: string;
+    templateId?: string;
+    isBlocked?: boolean;
+    blockedReason?: string;
   };
 }
 
 export default function SkillCard({ skill }: SkillCardProps) {
+  const navigate = useNavigate();
+  
   const statusColors = {
     approved: 'bg-green-100 text-green-800',
     pending: 'bg-yellow-100 text-yellow-800',
     'in-review': 'bg-blue-100 text-blue-800',
     rejected: 'bg-red-100 text-red-800',
+    blocked: 'bg-black text-white',
   };
 
-  const statusColor = statusColors[skill.status as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
+  // Show blocked status if skill is blocked
+  const displayStatus = skill.isBlocked ? 'blocked' : skill.status;
+  const statusColor = statusColors[displayStatus as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
+  
+  const handleAttendMCQ = () => {
+    navigate(`/mcq-test/${skill.id}`);
+  };
 
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       {/* Skill Image */}
       <div className="relative h-48 w-full overflow-hidden bg-gray-100">
-        {skill.image || skill.imageUrl ? (
+        {skill.imageUrl ? (
           <img
-            src={skill.image || skill.imageUrl}
+            src={skill.imageUrl}
             alt={skill.title}
             className="h-full w-full object-cover"
+            crossOrigin="anonymous"
+            onLoad={() => console.log('✅ Image loaded successfully:', skill.imageUrl)}
+            onError={(e) => {
+              console.error('❌ Image failed to load:', skill.imageUrl);
+              const target = e.currentTarget as HTMLImageElement;
+              target.style.display = 'none';
+              const parent = target.parentElement;
+              if (parent) {
+                parent.innerHTML = `
+                  <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
+                    <span class="text-4xl font-bold text-blue-300">${skill.title.charAt(0).toUpperCase()}</span>
+                  </div>
+                `;
+              }
+            }}
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100">
@@ -48,7 +76,7 @@ export default function SkillCard({ skill }: SkillCardProps) {
         {/* Status Badge */}
         <div className="absolute right-2 top-2">
           <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColor}`}>
-            {skill.status.charAt(0).toUpperCase() + skill.status.slice(1)}
+            {skill.isBlocked ? '🚫 Blocked' : (skill.status.charAt(0).toUpperCase() + skill.status.slice(1))}
           </span>
         </div>
       </div>
@@ -75,11 +103,19 @@ export default function SkillCard({ skill }: SkillCardProps) {
           </span>
         </div>
 
+        {/* Blocked Warning */}
+        {skill.isBlocked && skill.blockedReason && (
+          <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm font-semibold text-red-900 mb-1">⚠️ Skill Blocked</p>
+            <p className="text-xs text-red-700">{skill.blockedReason}</p>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="flex items-center justify-between border-t border-gray-100 pt-3 text-sm text-gray-600">
           <div className="flex items-center gap-1">
             <Clock className="h-4 w-4" />
-            <span>{skill.duration}</span>
+            <span>{skill.durationHours} hour{skill.durationHours !== 1 ? 's' : ''}</span>
           </div>
           <div className="flex items-center gap-1">
             <Users className="h-4 w-4" />
@@ -92,6 +128,19 @@ export default function SkillCard({ skill }: SkillCardProps) {
             </span>
           </div>
         </div>
+        
+        {/* MCQ Attend Button - Show only for pending status and not blocked */}
+        {skill.status === 'pending' && skill.templateId && !skill.isBlocked && (
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <button
+              onClick={handleAttendMCQ}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              Attend MCQ Test
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

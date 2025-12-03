@@ -1,61 +1,24 @@
 import { Navbar } from '../../components/shared/Navbar';
 import { Footer } from '../../components/shared/Footer';
-import { Link, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from '../../store/hooks';
-import { logout } from '../../store/slices/authSlice';
-import { clearPersistedState } from '../../store/persistUtils';
+import { useAppSelector } from '../../store/hooks';
 
 export default function HomePage() {
     const { user } = useAppSelector((state) => state.auth);
-    const dispatch = useAppDispatch();
-    const navigate = useNavigate();
-
-    const handleLogout = async () => {
-        try {
-            // Logout from backend and clear Redux state
-            await dispatch(logout()).unwrap();
-            
-            // Clear persisted state from localStorage
-            await clearPersistedState();
-            
-            // Navigate to login page
-            navigate('/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-            
-            // Even if logout fails, clear local state and redirect
-            await clearPersistedState();
-            navigate('/login');
-        }
-    };
 
     // Fallback for display if some fields are missing in the auth user object
     const displayUser = user ? {
         name: user.name,
-        avatar: '', // Add avatar to user model if available
+        avatar: user.avatar || undefined,
         credits: user.credits,
         subscriptionPlan: 'free', // Show 'free' to encourage upgrades
     } : null;
 
     return (
         <main className="min-h-screen bg-white">
-            {/* Navbar with Logout Button */}
-            <div className="relative">
-                <Navbar isAuthenticated={!!user} user={displayUser || undefined} />
-                {user && (
-                    <div className="absolute top-4 right-4 z-50">
-                        <button
-                            onClick={handleLogout}
-                            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-md"
-                        >
-                            <LogOut size={18} />
-                            Logout
-                        </button>
-                    </div>
-                )}
-            </div>
+            {/* Navbar */}
+            <Navbar isAuthenticated={!!user} user={displayUser || undefined} />
 
             {/* Hero Section */}
             <section className="bg-gradient-to-b from-blue-50 to-white py-20 px-4 sm:px-6 lg:px-8">

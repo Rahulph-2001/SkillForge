@@ -16,6 +16,7 @@ export interface AuthState {
     email: string;
     role: string;
     credits: number;
+    avatar?: string | null;
     verification: {
       email_verified: boolean;
     };
@@ -207,6 +208,12 @@ const authSlice = createSlice({
       state.error = 'Session expired. Please login again.'
       state.loading = false
     },
+    // Update user avatar after profile update
+    updateUserAvatar: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.avatar = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -387,5 +394,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized } = authSlice.actions
+export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized, updateUserAvatar } = authSlice.actions
 export default authSlice.reducer

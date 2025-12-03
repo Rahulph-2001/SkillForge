@@ -39,6 +39,7 @@ export interface LoginResponse {
       email: string;
       role: string;
       credits: number;
+      avatar?: string | null;
       verification: {
         email_verified: boolean;
       };
@@ -62,6 +63,7 @@ export interface VerifyOtpResponse {
       email: string;
       role: string;
       credits: number;
+      avatar?: string | null;
       verification: {
         email_verified: boolean;
       };

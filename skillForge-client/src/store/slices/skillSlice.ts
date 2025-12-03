@@ -18,9 +18,12 @@ export const fetchMySkills = createAsyncThunk(
     'skills/fetchMySkills',
     async(_, {rejectWithValue})=> {
         try {
+            console.log(' [skillSlice] Fetching my skills...');
             const response = await skillService.getMySkills();
+            console.log(' [skillSlice] Skills fetched:', response.data.length, 'skills');
             return response.data;
         }catch(error: any) {
+            console.error(' [skillSlice] Failed to fetch skills:', error);
             return rejectWithValue(error.message || 'Failed to fetch skills')
         }
     }
@@ -30,10 +33,16 @@ export const createSkill = createAsyncThunk(
     'skills/createSkill',
     async({ data, file }: { data: CreateSkillPayload; file?: Blob }, { rejectWithValue }) => {
         try {
+            console.log(' [skillSlice] Creating skill with data:', data);
+            console.log(' [skillSlice] File present:', !!file);
             const response = await skillService.createSkill(data, file);
+            console.log(' [skillSlice] Skill created successfully:', response.data);
             return response.data;
         } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to create skill');
+            console.error(' [skillSlice] Failed to create skill:', error);
+            console.error(' [skillSlice] Error response:', error.response?.data);
+            console.error(' [skillSlice] Error status:', error.response?.status);
+            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create skill');
         }
     }
 );

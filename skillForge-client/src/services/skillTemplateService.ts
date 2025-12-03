@@ -78,4 +78,9 @@ export const skillTemplateService = {
   toggleStatus: async (id: string) => {
     return api.patch<ApiResponse<SkillTemplate>>(`/admin/skill-templates/${id}/toggle-status`);
   },
+
+  // Get all active skill templates (public endpoint for users)
+  getAllActive: async () => {
+    return api.get<ApiResponse<SkillTemplate[]>>('/skill-templates/active');
+  },
 };

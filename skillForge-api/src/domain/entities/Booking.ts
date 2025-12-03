@@ -1,0 +1,212 @@
+/**
+ * Booking Domain Entity
+ * Represents a session booking in the system
+ * Following Domain-Driven Design principles
+ */
+
+export enum BookingStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  REJECTED = 'rejected',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+  RESCHEDULE_REQUESTED = 'reschedule_requested',
+}
+
+export enum SessionType {
+  VIRTUAL = 'Virtual',
+  IN_PERSON = 'In-Person',
+  BOTH = 'Both',
+}
+
+export interface RescheduleInfo {
+  newDate: string;
+  newTime: string;
+  reason: string;
+  requestedBy: 'learner' | 'provider';
+  requestedAt: Date;
+}
+
+export interface BookingProps {
+  id: string;
+  skillId: string;
+  skillTitle?: string;
+  providerId: string;
+  providerName?: string;
+  providerAvatar?: string | null;
+  learnerId: string;
+  learnerName?: string;
+  learnerAvatar?: string | null;
+  preferredDate: string;
+  preferredTime: string;
+  duration?: number;
+  sessionType?: SessionType;
+  message: string | null;
+  notes?: string;
+  status: BookingStatus;
+  sessionCost: number;
+  rescheduleInfo?: RescheduleInfo | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export class Booking {
+  private constructor(private readonly props: BookingProps) {
+    this.validate();
+  }
+
+  static create(props: BookingProps): Booking {
+    return new Booking(props);
+  }
+
+  private validate(): void {
+    if (!this.props.id) {
+      throw new Error('Booking ID is required');
+    }
+    if (!this.props.skillId) {
+      throw new Error('Skill ID is required');
+    }
+    if (!this.props.providerId) {
+      throw new Error('Provider ID is required');
+    }
+    if (!this.props.learnerId) {
+      throw new Error('Learner ID is required');
+    }
+    if (this.props.sessionCost < 0) {
+      throw new Error('Session cost cannot be negative');
+    }
+  }
+
+  // Getters
+  get id(): string {
+    return this.props.id;
+  }
+
+  get skillId(): string {
+    return this.props.skillId;
+  }
+
+  get skillTitle(): string | undefined {
+    return this.props.skillTitle;
+  }
+
+  get providerId(): string {
+    return this.props.providerId;
+  }
+
+  get providerName(): string | undefined {
+    return this.props.providerName;
+  }
+
+  get providerAvatar(): string | null | undefined {
+    return this.props.providerAvatar;
+  }
+
+  get learnerId(): string {
+    return this.props.learnerId;
+  }
+
+  get learnerName(): string | undefined {
+    return this.props.learnerName;
+  }
+
+  get learnerAvatar(): string | null | undefined {
+    return this.props.learnerAvatar;
+  }
+
+  get preferredDate(): string {
+    return this.props.preferredDate;
+  }
+
+  get preferredTime(): string {
+    return this.props.preferredTime;
+  }
+
+  get duration(): number | undefined {
+    return this.props.duration;
+  }
+
+  get sessionType(): SessionType | undefined {
+    return this.props.sessionType;
+  }
+
+  get message(): string | null {
+    return this.props.message;
+  }
+
+  get notes(): string | undefined {
+    return this.props.notes;
+  }
+
+  get status(): BookingStatus {
+    return this.props.status;
+  }
+
+  get sessionCost(): number {
+    return this.props.sessionCost;
+  }
+
+  get rescheduleInfo(): RescheduleInfo | null | undefined {
+    return this.props.rescheduleInfo;
+  }
+
+  get createdAt(): Date {
+    return this.props.createdAt;
+  }
+
+  get updatedAt(): Date {
+    return this.props.updatedAt;
+  }
+
+  // Business Logic Methods
+  canBeAccepted(): boolean {
+    return this.props.status === BookingStatus.PENDING;
+  }
+
+  canBeRejected(): boolean {
+    return this.props.status === BookingStatus.PENDING;
+  }
+
+  canBeCancelled(): boolean {
+    return (
+      this.props.status === BookingStatus.PENDING ||
+      this.props.status === BookingStatus.CONFIRMED
+    );
+  }
+
+  canBeRescheduled(): boolean {
+    return (
+      this.props.status === BookingStatus.CONFIRMED ||
+      this.props.status === BookingStatus.PENDING
+    );
+  }
+
+  canBeCompleted(): boolean {
+    return this.props.status === BookingStatus.CONFIRMED;
+  }
+
+  isRescheduleRequest(): boolean {
+    return this.props.status === BookingStatus.RESCHEDULE_REQUESTED;
+  }
+
+  isPending(): boolean {
+    return this.props.status === BookingStatus.PENDING;
+  }
+
+  isConfirmed(): boolean {
+    return this.props.status === BookingStatus.CONFIRMED;
+  }
+
+  isCompleted(): boolean {
+    return this.props.status === BookingStatus.COMPLETED;
+  }
+
+  isCancelled(): boolean {
+    return this.props.status === BookingStatus.CANCELLED;
+  }
+
+  // Convert to plain object for persistence
+  toObject(): BookingProps {
+    return { ...this.props };
+  }
+}

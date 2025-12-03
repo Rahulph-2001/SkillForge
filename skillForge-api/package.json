@@ -6,7 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
+    "predev": "node scripts/kill-port.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "dev:clean": "node scripts/kill-port.js && ts-node-dev --respawn --transpile-only src/server.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "migrate": "prisma migrate dev",
