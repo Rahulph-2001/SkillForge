@@ -15,6 +15,7 @@ import Navbar from '../../components/shared/Navbar/Navbar';
 import { useAppSelector } from '../../store/hooks';
 import { sessionManagementService } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
+import RescheduleModal from '../../components/booking/RescheduleModal';
 
 interface UserSession {
   id: string;
@@ -54,6 +55,8 @@ export default function SessionManagementPage() {
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<UserSession | null>(null);
 
   useEffect(() => {
     fetchSessions();
@@ -63,15 +66,48 @@ export default function SessionManagementPage() {
     try {
       setLoading(true);
       const data = await sessionManagementService.getUserSessions();
+      console.log('📊 [SessionManagementPage] Raw data from API:', data);
+      console.log('📊 [SessionManagementPage] First session raw:', data.sessions[0]);
+      
       // Map the response to match UserSession interface
-      const mappedSessions = data.sessions.map((s: any) => ({
-        ...s,
-        providerName: s.provider?.name || 'Unknown Provider',
-        providerAvatar: s.provider?.avatarUrl || null,
-        duration: s.skill?.durationHours ? s.skill.durationHours * 60 : 60,
-        skillTitle: s.skill?.title || 'Unknown Skill',
-        sessionType: s.skill?.category || 'Video Call',
-      }));
+      const mappedSessions = data.sessions.map((s: any) => {
+        // Explicit extraction with detailed logging
+        const provider = s.provider || {};
+        const skill = s.skill || {};
+        
+        const providerName = provider.name || 'Unknown Provider';
+        const skillTitle = skill.title || 'Unknown Skill';
+        const duration = skill.durationHours ? skill.durationHours * 60 : 60;
+        
+        console.log('🔍 [SessionManagementPage] Mapping session:', {
+          id: s.id,
+          status: s.status,
+          providerObject: provider,
+          providerName: providerName,
+          skillObject: skill,
+          skillTitle: skillTitle,
+          duration,
+        });
+        
+        return {
+          id: s.id,
+          skillTitle,
+          providerName,
+          providerAvatar: s.provider?.avatarUrl || null,
+          preferredDate: s.preferredDate,
+          preferredTime: s.preferredTime,
+          duration,
+          sessionType: s.skill?.category || 'Video Call',
+          status: s.status,
+          notes: s.notes,
+          rescheduleInfo: s.rescheduleInfo,
+          sessionCost: s.sessionCost,
+          createdAt: s.createdAt,
+        };
+      });
+      
+      console.log('✅ [SessionManagementPage] Mapped sessions:', mappedSessions);
+      console.log('✅ [SessionManagementPage] First mapped session:', mappedSessions[0]);
       setSessions(mappedSessions);
       setStats({
         pending: data.stats.pending || 0,
@@ -80,7 +116,8 @@ export default function SessionManagementPage() {
         completed: data.stats.completed || 0,
       });
     } catch (error: any) {
-      console.error('Failed to fetch sessions:', error);
+      console.error('❌ [SessionManagementPage] Failed to fetch sessions:', error);
+      console.error('❌ [SessionManagementPage] Error response:', error.response);
       toast.error(error.response?.data?.message || 'Failed to load sessions');
     } finally {
       setLoading(false);
@@ -105,9 +142,26 @@ export default function SessionManagementPage() {
     }
   };
 
-  const handleRescheduleSession = async (_sessionId: string) => {
-    // This would open a modal for reschedule in a real implementation
-    toast('Reschedule functionality coming soon');
+  const handleRescheduleSession = (sessionId: string) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (session) {
+      setSelectedSession(session);
+      setRescheduleModalOpen(true);
+    }
+  };
+
+  const handleRescheduleSubmit = async (sessionId: string, newDate: string, newTime: string, reason: string) => {
+    try {
+      await sessionManagementService.rescheduleBooking(sessionId, newDate, newTime, reason);
+      toast.success('Reschedule request sent successfully');
+      setRescheduleModalOpen(false);
+      setSelectedSession(null);
+      fetchSessions();
+    } catch (error: any) {
+      console.error('Failed to reschedule session:', error);
+      toast.error(error.response?.data?.message || 'Failed to request reschedule');
+      throw error; // Re-throw to let modal handle the error state
+    }
   };
 
   const handleJoinSession = (_sessionId: string) => {
@@ -162,12 +216,14 @@ export default function SessionManagementPage() {
   };
 
   const getInitials = (name: string) => {
+    if (!name || name === 'Unknown Provider') return 'UP';
     return name
       .split(' ')
+      .filter(n => n.length > 0)
       .map((n) => n[0])
       .join('')
       .toUpperCase()
-      .slice(0, 2);
+      .slice(0, 2) || 'UP';
   };
 
   if (loading) {
@@ -373,6 +429,16 @@ export default function SessionManagementPage() {
 
                     {/* Action Buttons */}
                     <div className="flex flex-wrap gap-2 justify-end">
+                      {(() => {
+                        console.log(`🔍 [SessionManagementPage] Session ${session.id} status:`, {
+                          original: session.status,
+                          lowercase: session.status.toLowerCase(),
+                          isPending: session.status.toLowerCase() === 'pending',
+                          isConfirmed: session.status.toLowerCase() === 'confirmed',
+                        });
+                        return null;
+                      })()}
+                      
                       {session.status.toLowerCase() === 'pending' && (
                         <>
                           <button
@@ -428,6 +494,22 @@ export default function SessionManagementPage() {
           )}
         </div>
       </div>
+
+      {/* Reschedule Modal */}
+      {selectedSession && (
+        <RescheduleModal
+          isOpen={rescheduleModalOpen}
+          onClose={() => {
+            setRescheduleModalOpen(false);
+            setSelectedSession(null);
+          }}
+          sessionId={selectedSession.id}
+          currentDate={selectedSession.preferredDate}
+          currentTime={selectedSession.preferredTime}
+          skillTitle={selectedSession.skillTitle}
+          onReschedule={handleRescheduleSubmit}
+        />
+      )}
     </div>
   );
 }

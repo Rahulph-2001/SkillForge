@@ -10,13 +10,8 @@ export class BookingController {
    * POST /api/bookings
    */
   static async createBooking(req: Request, res: Response) {
-    console.log('🟡 [BookingController] createBooking called');
-    console.log('🟡 [BookingController] Request body:', JSON.stringify(req.body, null, 2));
-    console.log('🟡 [BookingController] Request headers:', req.headers);
-    
     try {
       const userId = (req as any).user?.id;
-      console.log('🟡 [BookingController] User ID from token:', userId);
       
       if (!userId) {
         console.error('❌ [BookingController] No user ID found - Unauthorized');
@@ -27,13 +22,6 @@ export class BookingController {
       }
 
       const { skillId, providerId, preferredDate, preferredTime, message } = req.body;
-      console.log('🟡 [BookingController] Extracted fields:', {
-        skillId,
-        providerId,
-        preferredDate,
-        preferredTime,
-        message,
-      });
 
       // Validation
       if (!skillId || !providerId || !preferredDate || !preferredTime) {
@@ -45,7 +33,6 @@ export class BookingController {
         });
       }
 
-      console.log('🟡 [BookingController] Creating use case...');
       const createBookingUseCase = new CreateBookingUseCase(prisma);
       
       const useCaseData = {
@@ -56,13 +43,9 @@ export class BookingController {
         preferredTime,
         message,
       };
-      console.log('🟡 [BookingController] Use case data:', JSON.stringify(useCaseData, null, 2));
       
-      console.log('🟡 [BookingController] Executing use case...');
       const booking = await createBookingUseCase.execute(useCaseData);
       
-      console.log('✅ [BookingController] Booking created successfully:', JSON.stringify(booking, null, 2));
-
       return res.status(201).json({
         success: true,
         message: 'Booking created successfully',
@@ -85,12 +68,8 @@ export class BookingController {
    * GET /api/bookings/my-bookings
    */
   static async getMyBookings(req: Request, res: Response) {
-    console.log('🟡 [BookingController] getMyBookings called');
-    console.log('🟡 [BookingController] User from request:', (req as any).user);
-    
     try {
       const userId = (req as any).user?.id;
-      console.log('🟡 [BookingController] User ID:', userId);
       
       if (!userId) {
         console.error('❌ [BookingController] No user ID - Unauthorized');
@@ -100,16 +79,17 @@ export class BookingController {
         });
       }
 
-      console.log('🔍 [BookingController] Querying bookings for learner:', userId);
       const bookings = await prisma.booking.findMany({
         where: {
           learnerId: userId,
+          isDeleted: false,
         },
         include: {
           skill: {
             select: {
               title: true,
               category: true,
+              durationHours: true,
             },
           },
           provider: {
@@ -124,9 +104,6 @@ export class BookingController {
           createdAt: 'desc',
         },
       });
-
-      console.log(`✅ [BookingController] Found ${bookings.length} bookings`);
-      console.log('📊 [BookingController] Bookings data:', JSON.stringify(bookings, null, 2));
 
       return res.status(200).json({
         success: true,

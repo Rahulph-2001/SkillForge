@@ -109,6 +109,8 @@ export const TYPES = {
   CancelBookingUseCase: Symbol.for('CancelBookingUseCase'),
   GetProviderBookingsUseCase: Symbol.for('GetProviderBookingsUseCase'),
   RescheduleBookingUseCase: Symbol.for('RescheduleBookingUseCase'),
+  AcceptRescheduleUseCase: Symbol.for('AcceptRescheduleUseCase'),
+  DeclineRescheduleUseCase: Symbol.for('DeclineRescheduleUseCase'),
   SessionManagementController: Symbol.for('SessionManagementController'),
 
   // Prisma Client

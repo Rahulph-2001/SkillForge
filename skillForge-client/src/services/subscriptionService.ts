@@ -70,24 +70,16 @@ class SubscriptionService {
     
     async listPlans(): Promise<ListPlansResponse> {
         try {
-            console.log('[SubscriptionService] Fetching subscription plans...');
             const response = await api.get(`${this.baseUrl}/plans`);
-            
-            console.log('[SubscriptionService] Raw response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Backend returns: { success: true, message: string, data: { plans: [], total: number } }
             if (response.data?.success && response.data?.data) {
                 const result = response.data.data;
-                console.log(`[SubscriptionService] Successfully loaded ${result.plans?.length || 0} plans`);
                 return result;
             }
             
             // Fallback for different response structure
             if (response.data?.plans) {
-                console.warn('[SubscriptionService] Using fallback response structure');
                 return response.data;
             }
             
@@ -115,23 +107,15 @@ class SubscriptionService {
     
     async getStats(): Promise<SubscriptionStats> {
         try {
-            console.log('[SubscriptionService] Fetching subscription stats...');
             const response = await api.get(`${this.baseUrl}/stats`);
-            
-            console.log('[SubscriptionService] Stats response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Backend returns: { success: true, message: string, data: SubscriptionStats }
             if (response.data?.success && response.data?.data) {
-                console.log('[SubscriptionService] Successfully loaded stats');
                 return response.data.data;
             }
             
             // Fallback
             if (response.data?.totalRevenue !== undefined) {
-                console.warn('[SubscriptionService] Using fallback stats structure');
                 return response.data;
             }
             
@@ -156,18 +140,10 @@ class SubscriptionService {
     
     async createPlan(plan: CreatePlanRequest): Promise<SubscriptionPlan> {
         try {
-            console.log('[SubscriptionService] Creating plan:', plan);
-            
             const response = await api.post(`${this.baseUrl}/plans`, plan);
-            
-            console.log('[SubscriptionService] Create response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Backend returns: { success: true, message: string, data: SubscriptionPlan }
             if (response.data?.success && response.data?.data) {
-                console.log('[SubscriptionService] Plan created successfully');
                 return response.data.data;
             }
             
@@ -192,18 +168,10 @@ class SubscriptionService {
     
     async updatePlan(planId: string, plan: CreatePlanRequest): Promise<SubscriptionPlan> {
         try {
-            console.log('[SubscriptionService] Updating plan:', { planId, plan });
-            
             const response = await api.put(`${this.baseUrl}/plans/${planId}`, plan);
-            
-            console.log('[SubscriptionService] Update response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Backend returns: { success: true, message: string, data: SubscriptionPlan }
             if (response.data?.success && response.data?.data) {
-                console.log('[SubscriptionService] Plan updated successfully');
                 return response.data.data;
             }
             
@@ -228,18 +196,10 @@ class SubscriptionService {
     
     async deletePlan(planId: string): Promise<void> {
         try {
-            console.log('[SubscriptionService] Deleting plan:', { planId });
-            
             const response = await api.delete(`${this.baseUrl}/plans/${planId}`);
-            
-            console.log('[SubscriptionService] Delete response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Backend returns: { success: true, message: string }
             if (response.data?.success) {
-                console.log('[SubscriptionService] Plan deleted successfully');
                 return;
             }
             
@@ -264,31 +224,22 @@ class SubscriptionService {
     
     async listPublicPlans(): Promise<ListPlansResponse> {
         try {
-            console.log('[SubscriptionService] Fetching public subscription plans...');
             const response = await api.get(`${this.publicBaseUrl}/plans`);
-            
-            console.log('[SubscriptionService] Public plans response:', {
-                status: response.status,
-                data: response.data
-            });
             
             // Handle ResponseBuilder format: { statusCode: 200, body: { success: true, data: {...} } }
             if (response.data?.body?.success && response.data?.body?.data) {
                 const result = response.data.body.data;
-                console.log(`[SubscriptionService] Successfully loaded ${result.plans?.length || 0} public plans`);
                 return result;
             }
             
             // Handle direct format: { success: true, data: { plans: [], total: number } }
             if (response.data?.success && response.data?.data) {
                 const result = response.data.data;
-                console.log(`[SubscriptionService] Successfully loaded ${result.plans?.length || 0} public plans`);
                 return result;
             }
             
             // Fallback for different response structure: { plans: [], total: number }
             if (response.data?.plans) {
-                console.warn('[SubscriptionService] Using fallback response structure');
                 return response.data;
             }
             

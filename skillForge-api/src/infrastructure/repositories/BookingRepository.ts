@@ -4,7 +4,7 @@
  * Following Repository Pattern
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
 import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
 import { Booking, BookingStatus, RescheduleInfo } from '../../domain/entities/Booking';
@@ -18,6 +18,17 @@ export class BookingRepository implements IBookingRepository {
   }
 
   private mapToDomain(data: any): Booking {
+    // Deserialize rescheduleInfo if present
+    let rescheduleInfo: RescheduleInfo | null = null;
+    if (data.rescheduleInfo) {
+      rescheduleInfo = {
+        ...data.rescheduleInfo,
+        requestedAt: typeof data.rescheduleInfo.requestedAt === 'string'
+          ? new Date(data.rescheduleInfo.requestedAt)
+          : data.rescheduleInfo.requestedAt,
+      };
+    }
+
     return Booking.create({
       id: data.id,
       skillId: data.skillId,
@@ -36,7 +47,7 @@ export class BookingRepository implements IBookingRepository {
       notes: data.notes,
       status: data.status as BookingStatus,
       sessionCost: data.sessionCost,
-      rescheduleInfo: data.rescheduleInfo as RescheduleInfo | null,
+      rescheduleInfo,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     });
@@ -282,11 +293,19 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking> {
+    // Convert Date objects to ISO strings for JSON storage
+    const serializedInfo = {
+      ...rescheduleInfo,
+      requestedAt: rescheduleInfo.requestedAt instanceof Date 
+        ? rescheduleInfo.requestedAt.toISOString() 
+        : rescheduleInfo.requestedAt,
+    };
+
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {
         status: BookingStatus.RESCHEDULE_REQUESTED,
-        rescheduleInfo: rescheduleInfo as any,
+        rescheduleInfo: serializedInfo as any,
         updatedAt: new Date(),
       },
       include: {
@@ -384,5 +403,75 @@ export class BookingRepository implements IBookingRepository {
     ]);
 
     return { pending, confirmed, reschedule, completed, cancelled };
+  }
+
+  async acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking> {
+    const updated = await this.prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        preferredDate: new Date(newDate),
+        preferredTime: newTime,
+        status: BookingStatus.CONFIRMED,
+        rescheduleInfo: Prisma.JsonNull,
+        updatedAt: new Date(),
+      },
+      include: {
+        skill: {
+          select: {
+            title: true,
+            durationHours: true,
+          },
+        },
+        provider: {
+          select: {
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        learner: {
+          select: {
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    });
+
+    return this.mapToDomain(updated);
+  }
+
+  async declineReschedule(bookingId: string, reason: string): Promise<Booking> {
+    // Note: reason is logged but not stored in DB as there's no declineReason field
+    console.log('📝 [BookingRepository] Decline reason:', reason);
+    const updated = await this.prisma.booking.update({
+      where: { id: bookingId },
+      data: {
+        status: BookingStatus.CONFIRMED,
+        rescheduleInfo: Prisma.JsonNull,
+        updatedAt: new Date(),
+      },
+      include: {
+        skill: {
+          select: {
+            title: true,
+            durationHours: true,
+          },
+        },
+        provider: {
+          select: {
+            name: true,
+            avatarUrl: true,
+          },
+        },
+        learner: {
+          select: {
+            name: true,
+            avatarUrl: true,
+          },
+        },
+      },
+    });
+
+    return this.mapToDomain(updated);
   }
 }

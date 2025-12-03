@@ -52,4 +52,18 @@ router.post('/:bookingId/cancel', (req, res) => getController().cancelBooking(re
  */
 router.post('/:bookingId/reschedule', (req, res) => getController().rescheduleBooking(req, res));
 
+/**
+ * @route   POST /api/sessions/:bookingId/reschedule/accept
+ * @desc    Accept a reschedule request
+ * @access  Private (Provider only)
+ */
+router.post('/:bookingId/reschedule/accept', (req, res) => getController().acceptReschedule(req, res));
+
+/**
+ * @route   POST /api/sessions/:bookingId/reschedule/decline
+ * @desc    Decline a reschedule request
+ * @access  Private (Provider only)
+ */
+router.post('/:bookingId/reschedule/decline', (req, res) => getController().declineReschedule(req, res));
+
 export default router;

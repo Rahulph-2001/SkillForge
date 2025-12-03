@@ -12,11 +12,16 @@ import {
   Video,
   Users,
   BookOpen,
+  CalendarClock,
 } from 'lucide-react';
 import Navbar from '../../components/shared/Navbar/Navbar';
 import { useAppSelector } from '../../store/hooks';
-import { sessionManagementService, ProviderSession, SessionStats } from '../../services/sessionManagementService';
+import { sessionManagementService, SessionStats } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
+import RescheduleModal from '../../components/booking/RescheduleModal';
+
+import ConfirmModal from '../../components/shared/Modal/ConfirmModal';
+import PromptModal from '../../components/shared/Modal/PromptModal';
 
 type FilterType = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 type ViewMode = 'learner' | 'provider';
@@ -24,11 +29,28 @@ type ViewMode = 'learner' | 'provider';
 export default function SessionManagementPage() {
   const { user } = useAppSelector((state) => state.auth);
   const [viewMode, setViewMode] = useState<ViewMode>('learner');
-  const [sessions, setSessions] = useState<ProviderSession[]>([]);
+  const [sessions, setSessions] = useState<any[]>([]); // Changed to any to support both provider/learner session types
   const [stats, setStats] = useState<SessionStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
+  const [selectedSession, setSelectedSession] = useState<any | null>(null);
+
+  // Modal States
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const [promptModal, setPromptModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: (value: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+  });
 
   useEffect(() => {
     fetchSessions();
@@ -42,7 +64,21 @@ export default function SessionManagementPage() {
         : await sessionManagementService.getUserSessions();
       
       // Handle empty or undefined data gracefully
-      setSessions(data?.sessions || []);
+      let mappedSessions = data?.sessions || [];
+      
+      // If in learner mode, map provider details to be accessible
+      if (viewMode === 'learner') {
+        mappedSessions = mappedSessions.map((s: any) => ({
+          ...s,
+          providerName: s.provider?.name || 'Unknown Provider',
+          providerAvatar: s.provider?.avatarUrl || null,
+          skillTitle: s.skill?.title || s.skillTitle,
+          duration: s.skill?.durationHours ? s.skill.durationHours * 60 : 60,
+          sessionType: s.skill?.category || 'Video Call',
+        }));
+      }
+
+      setSessions(mappedSessions);
       setStats(data?.stats || { pending: 0, confirmed: 0, rescheduleRequested: 0, completed: 0 });
     } catch (error: any) {
       console.error('Failed to fetch sessions:', error);
@@ -129,21 +165,114 @@ export default function SessionManagementPage() {
     }
   };
 
-  const handleDeclineBooking = async (bookingId: string) => {
+  const handleDeclineBooking = (bookingId: string) => {
+    setPromptModal({
+      isOpen: true,
+      title: 'Decline Booking',
+      message: 'Please provide a reason for declining this booking:',
+      onConfirm: async (reason) => {
+        try {
+          setActionLoading(bookingId);
+          await sessionManagementService.declineBooking(bookingId, reason);
+          toast.success('Booking declined successfully');
+          await fetchSessions();
+        } catch (error: any) {
+          console.error('Failed to decline booking:', error);
+          toast.error(error.response?.data?.message || 'Failed to decline booking');
+        } finally {
+          setActionLoading(null);
+          setPromptModal((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleCancelSession = (bookingId: string) => {
+    setPromptModal({
+      isOpen: true,
+      title: 'Cancel Session',
+      message: 'Please provide a reason for cancellation:',
+      onConfirm: async (reason) => {
+        try {
+          setActionLoading(bookingId);
+          await sessionManagementService.cancelSession(bookingId, reason);
+          toast.success('Session cancelled successfully');
+          await fetchSessions();
+        } catch (error: any) {
+          console.error('Failed to cancel session:', error);
+          toast.error(error.response?.data?.message || 'Failed to cancel session');
+        } finally {
+          setActionLoading(null);
+          setPromptModal((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleAcceptReschedule = (bookingId: string) => {
+    setConfirmModal({
+      isOpen: true,
+      title: 'Accept Reschedule',
+      message: 'Are you sure you want to accept this reschedule request?',
+      onConfirm: async () => {
+        try {
+          setActionLoading(bookingId);
+          await sessionManagementService.acceptReschedule(bookingId);
+          toast.success('Reschedule request accepted successfully');
+          await fetchSessions();
+        } catch (error: any) {
+          console.error('Failed to accept reschedule:', error);
+          toast.error(error.response?.data?.message || 'Failed to accept reschedule');
+        } finally {
+          setActionLoading(null);
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleDeclineReschedule = (bookingId: string) => {
+    setPromptModal({
+      isOpen: true,
+      title: 'Decline Reschedule',
+      message: 'Please provide a reason for declining the reschedule:',
+      onConfirm: async (reason) => {
+        try {
+          setActionLoading(bookingId);
+          await sessionManagementService.declineReschedule(bookingId, reason);
+          toast.success('Reschedule request declined');
+          await fetchSessions();
+        } catch (error: any) {
+          console.error('Failed to decline reschedule:', error);
+          toast.error(error.response?.data?.message || 'Failed to decline reschedule');
+        } finally {
+          setActionLoading(null);
+          setPromptModal((prev) => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
+  };
+
+  const handleRescheduleSession = (session: any) => {
+    setSelectedSession(session);
+    setRescheduleModalOpen(true);
+  };
+
+  const handleRescheduleSubmit = async (sessionId: string, newDate: string, newTime: string, reason: string) => {
     try {
-      setActionLoading(bookingId);
-      await sessionManagementService.declineBooking(bookingId);
-      toast.success('Booking declined successfully');
+      await sessionManagementService.rescheduleBooking(sessionId, newDate, newTime, reason);
+      toast.success('Reschedule request sent successfully');
+      setRescheduleModalOpen(false);
+      setSelectedSession(null);
       await fetchSessions();
     } catch (error: any) {
-      console.error('Failed to decline booking:', error);
-      toast.error(error.response?.data?.message || 'Failed to decline booking');
-    } finally {
-      setActionLoading(null);
+      console.error('Failed to reschedule session:', error);
+      toast.error(error.response?.data?.message || 'Failed to request reschedule');
+      throw error;
     }
   };
 
-  const renderSessionActions = (session: ProviderSession) => {
+  const renderSessionActions = (session: any) => {
     const isLoading = actionLoading === session.id;
 
     // In learner mode, show different actions
@@ -151,8 +280,12 @@ export default function SessionManagementPage() {
       if (session.status === 'pending') {
         return (
           <div className="flex flex-col gap-2">
-            <button className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition">
-              <X className="w-4 h-4" />
+            <button
+              onClick={() => handleCancelSession(session.id)}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50 border border-red-200 hover:bg-red-50"
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
               Cancel Request
             </button>
           </div>
@@ -164,6 +297,21 @@ export default function SessionManagementPage() {
             <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
               <Video className="w-4 h-4" />
               Join Session
+            </button>
+            <button
+              onClick={() => handleRescheduleSession(session)}
+              className="flex items-center justify-center gap-2 text-orange-600 hover:text-orange-700 px-4 py-2 rounded-lg text-sm font-medium transition border border-orange-200 hover:bg-orange-50"
+            >
+              <CalendarClock className="w-4 h-4" />
+              Reschedule
+            </button>
+            <button
+              onClick={() => handleCancelSession(session.id)}
+              disabled={isLoading}
+              className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50 border border-red-200 hover:bg-red-50"
+            >
+              {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
+              Cancel
             </button>
           </div>
         );
@@ -202,12 +350,12 @@ export default function SessionManagementPage() {
             <Video className="w-4 h-4" />
             Join
           </button>
-          <button className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition">
-            <ArrowRight className="w-4 h-4" />
-            Reschedule
-          </button>
-          <button className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition">
-            <X className="w-4 h-4" />
+          <button
+            onClick={() => handleCancelSession(session.id)}
+            disabled={isLoading}
+            className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
             Cancel
           </button>
         </div>
@@ -217,12 +365,20 @@ export default function SessionManagementPage() {
     if (session.status === 'reschedule_requested') {
       return (
         <div className="flex flex-col gap-2">
-          <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
-            <Check className="w-4 h-4" />
+          <button
+            onClick={() => handleAcceptReschedule(session.id)}
+            disabled={isLoading}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
             Accept
           </button>
-          <button className="flex items-center justify-center gap-2 text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg text-sm font-medium transition">
-            <X className="w-4 h-4" />
+          <button
+            onClick={() => handleDeclineReschedule(session.id)}
+            disabled={isLoading}
+            className="flex items-center justify-center gap-2 text-red-600 hover:text-red-700 px-4 py-2 rounded-lg text-sm font-medium transition disabled:opacity-50"
+          >
+            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
             Decline
           </button>
         </div>
@@ -450,17 +606,29 @@ export default function SessionManagementPage() {
                 className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition"
               >
                 <div className="flex gap-6">
-                  {/* Learner Avatar */}
+                  {/* Avatar */}
                   <div className="flex-shrink-0">
                     <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center overflow-hidden">
-                      {session.learnerAvatar ? (
-                        <img
-                          src={session.learnerAvatar}
-                          alt={session.learnerName}
-                          className="w-full h-full object-cover"
-                        />
+                      {viewMode === 'learner' ? (
+                        session.providerAvatar ? (
+                          <img
+                            src={session.providerAvatar}
+                            alt={session.providerName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-2xl font-bold text-white">{getInitials(session.providerName)}</span>
+                        )
                       ) : (
-                        <span className="text-2xl font-bold text-white">{getInitials(session.learnerName)}</span>
+                        session.learnerAvatar ? (
+                          <img
+                            src={session.learnerAvatar}
+                            alt={session.learnerName}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-2xl font-bold text-white">{getInitials(session.learnerName)}</span>
+                        )
                       )}
                     </div>
                   </div>
@@ -472,7 +640,11 @@ export default function SessionManagementPage() {
                         <h3 className="text-lg font-semibold text-gray-900">{session.skillTitle}</h3>
                         <div className="flex items-center gap-1 mt-1 text-gray-600">
                           <User className="w-4 h-4" />
-                          <span className="text-sm">with {session.learnerName}</span>
+                          <span className="text-sm">
+                            {viewMode === 'learner' 
+                              ? `with ${session.providerName}` 
+                              : `with ${session.learnerName}`}
+                          </span>
                         </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyles(session.status)}`}>
@@ -537,6 +709,40 @@ export default function SessionManagementPage() {
           </div>
         )}
       </div>
+
+      {/* Reschedule Modal */}
+      {selectedSession && (
+        <RescheduleModal
+          isOpen={rescheduleModalOpen}
+          onClose={() => {
+            setRescheduleModalOpen(false);
+            setSelectedSession(null);
+          }}
+          sessionId={selectedSession.id}
+          currentDate={selectedSession.preferredDate}
+          currentTime={selectedSession.preferredTime}
+          skillTitle={selectedSession.skillTitle}
+          onReschedule={handleRescheduleSubmit}
+        />
+      )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
+
+      {/* Prompt Modal */}
+      <PromptModal
+        isOpen={promptModal.isOpen}
+        title={promptModal.title}
+        message={promptModal.message}
+        onConfirm={promptModal.onConfirm}
+        onCancel={() => setPromptModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

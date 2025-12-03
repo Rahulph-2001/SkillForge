@@ -1,8 +1,4 @@
-/**
- * Reschedule Booking Use Case
- * Handles logic for requesting a booking reschedule
- * Following Single Responsibility Principle
- */
+
 
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';

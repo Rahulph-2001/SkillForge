@@ -105,6 +105,8 @@ import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptB
 import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
 import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
 import { RescheduleBookingUseCase } from '../../application/useCases/booking/RescheduleBookingUseCase';
+import { AcceptRescheduleUseCase } from '../../application/useCases/booking/AcceptRescheduleUseCase';
+import { DeclineRescheduleUseCase } from '../../application/useCases/booking/DeclineRescheduleUseCase';
 import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
 import { SessionManagementController } from '../../presentation/controllers/SessionManagementController';
 
@@ -193,6 +195,8 @@ container.bind<AcceptBookingUseCase>(TYPES.AcceptBookingUseCase).to(AcceptBookin
 container.bind<DeclineBookingUseCase>(TYPES.DeclineBookingUseCase).to(DeclineBookingUseCase);
 container.bind<CancelBookingUseCase>(TYPES.CancelBookingUseCase).to(CancelBookingUseCase);
 container.bind<RescheduleBookingUseCase>(TYPES.RescheduleBookingUseCase).to(RescheduleBookingUseCase);
+container.bind<AcceptRescheduleUseCase>(TYPES.AcceptRescheduleUseCase).to(AcceptRescheduleUseCase);
+container.bind<DeclineRescheduleUseCase>(TYPES.DeclineRescheduleUseCase).to(DeclineRescheduleUseCase);
 container.bind<GetProviderBookingsUseCase>(TYPES.GetProviderBookingsUseCase).to(GetProviderBookingsUseCase);
 
 // Controllers

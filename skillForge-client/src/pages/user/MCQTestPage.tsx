@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
 import { mcqTestService, MCQTestSession, MCQResult } from "../../services/mcqTestService";
-import { ErrorModal } from "../../components/shared/Modal";
+import { ErrorModal, ConfirmModal } from "../../components/shared/Modal";
 
 export default function MCQTestPage() {
   const { skillId } = useParams<{ skillId: string }>();
@@ -17,6 +17,13 @@ export default function MCQTestPage() {
   const [testResult, setTestResult] = useState<MCQResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [showResults, setShowResults] = useState(false);
+  
+  const [confirmModal, setConfirmModal] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
 
   useEffect(() => {
     if (skillId) {
@@ -47,23 +54,13 @@ export default function MCQTestPage() {
     setSelectedAnswers(newAnswers);
   };
 
-  const handleSubmit = async () => {
-    if (!testSession || !skillId) return;
-
-    // Check if all questions are answered
-    const unanswered = selectedAnswers.filter((ans) => ans === -1).length;
-    if (unanswered > 0) {
-      if (!window.confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) {
-        return;
-      }
-    }
-
+  const submitTest = async () => {
     try {
       setSubmitting(true);
       const timeTaken = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
       
       // Extract question IDs from the test session
-      const questionIds = testSession.questions.map(q => q.id);
+      const questionIds = testSession!.questions.map(q => q.id);
       
       console.log('🔵 [MCQTestPage] Submitting test:', { 
         skillId, 
@@ -73,7 +70,7 @@ export default function MCQTestPage() {
       });
       
       const response = await mcqTestService.submitTest({
-        skillId,
+        skillId: skillId!,
         questionIds,
         answers: selectedAnswers,
         timeTaken,
@@ -88,6 +85,27 @@ export default function MCQTestPage() {
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const handleSubmit = async () => {
+    if (!testSession || !skillId) return;
+
+    // Check if all questions are answered
+    const unanswered = selectedAnswers.filter((ans) => ans === -1).length;
+    if (unanswered > 0) {
+      setConfirmModal({
+        isOpen: true,
+        title: 'Unanswered Questions',
+        message: `You have ${unanswered} unanswered questions. Submit anyway?`,
+        onConfirm: () => {
+          setConfirmModal((prev) => ({ ...prev, isOpen: false }));
+          submitTest();
+        },
+      });
+      return;
+    }
+
+    await submitTest();
   };
 
   if (loading) {
@@ -381,6 +399,15 @@ export default function MCQTestPage() {
           onClose={() => setErrorMessage("")}
         />
       )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

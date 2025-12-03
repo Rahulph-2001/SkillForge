@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 export interface CreateBookingDTO {
   learnerId: string;
@@ -97,7 +97,7 @@ export class CreateBookingUseCase {
         sessionCost,
         isDeleted: false, // Explicitly set isDeleted to false
         notes: null,
-        rescheduleInfo: null,
+        rescheduleInfo: Prisma.JsonNull,
       },
       include: {
         skill: {

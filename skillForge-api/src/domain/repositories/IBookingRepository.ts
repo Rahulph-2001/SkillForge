@@ -67,4 +67,14 @@ export interface IBookingRepository {
     completed: number;
     cancelled: number;
   }>;
+
+  /**
+   * Accept reschedule request and update booking with new date/time
+   */
+  acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking>;
+
+  /**
+   * Decline reschedule request and revert to confirmed status
+   */
+  declineReschedule(bookingId: string, reason: string): Promise<Booking>;
 }
