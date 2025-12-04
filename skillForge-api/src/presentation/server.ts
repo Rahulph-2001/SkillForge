@@ -17,8 +17,9 @@ import { PublicSkillTemplateRoutes } from './routes/skillTemplate/publicSkillTem
 import { TemplateQuestionRoutes } from './routes/templateQuestion/templateQuestionRoutes';
 import { MCQTestRoutes } from './routes/mcq/mcqTestRoutes';
 import { AdminSkillRoutes } from './routes/admin/adminSkillRoutes';
-import bookingRoutes from './routes/bookingRoutes';
-import userProfileRoutes from './routes/userProfileRoutes';
+import { BookingRoutes } from './routes/bookingRoutes';
+import { UserProfileRoutes } from './routes/user/userProfileRoutes';
+import userProfileRoutesLegacy from './routes/userProfileRoutes';
 import sessionManagementRoutes from './routes/sessionManagementRoutes';
 import { generalLimiter } from './middlewares/rateLimitMiddileWare';
 import { PassportService } from '../infrastructure/services/PassportService';
@@ -38,6 +39,7 @@ export class App {
     @inject(TYPES.TemplateQuestionRoutes) private readonly templateQuestionRoutes: TemplateQuestionRoutes,
     @inject(TYPES.MCQTestRoutes) private readonly mcqTestRoutes: MCQTestRoutes,
     @inject(TYPES.AdminSkillRoutes) private readonly adminSkillRoutes: AdminSkillRoutes,
+    @inject(TYPES.BookingRoutes) private readonly bookingRoutes: BookingRoutes,
     @inject(TYPES.UserProfileRoutes) private readonly userProfileRoutes: UserProfileRoutes,
     @inject(TYPES.PassportService) private readonly passportService: PassportService
   ) {
@@ -91,14 +93,14 @@ export class App {
     this.app.use('/api/v1/auth', this.authRoutes.router);
     this.app.use('/api/v1/subscriptions', this.publicSubscriptionRoutes.router);
     this.app.use('/api/v1/profile', this.userProfileRoutes.getRouter());
-    this.app.use('/api/v1/users', userProfileRoutes);
+    this.app.use('/api/v1/users', userProfileRoutesLegacy);
     // IMPORTANT: Specific routes MUST come before parameterized routes
     // /skills/me must be registered before /skills/:skillId
     this.app.use('/api/v1/skills', this.skillRoutes.router);
     this.app.use('/api/v1/skills', this.browseSkillsRoutes.getRouter());
     this.app.use('/api/v1/skill-templates', this.publicSkillTemplateRoutes.router);
     this.app.use('/api/v1/mcq', this.mcqTestRoutes.getRouter());
-    this.app.use('/api/v1/bookings', bookingRoutes);
+    this.app.use('/api/v1/bookings', this.bookingRoutes.router);
     this.app.use('/api/v1/sessions', sessionManagementRoutes);
     this.app.use('/api/v1/admin', this.adminRoutes.router);
     this.app.use('/api/v1/admin/skills', this.adminSkillRoutes.getRouter());

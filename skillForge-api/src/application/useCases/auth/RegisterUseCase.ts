@@ -13,15 +13,11 @@ import { ConflictError, ValidationError } from '../../../domain/errors/AppError'
 import { RegisterDTO } from '../../dto/auth/RegisterDTO';
 import { env } from '../../../config/env';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
-
-export interface RegisterResponse {
-  email: string;
-  expiresAt: string;
-  message: string;
-}
+import { IRegisterUseCase } from './interfaces/IRegisterUseCase';
+import { RegisterResponseDTO } from '../../dto/auth/RegisterResponseDTO';
 
 @injectable()
-export class RegisterUseCase {
+export class RegisterUseCase implements IRegisterUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository,
@@ -31,7 +27,7 @@ export class RegisterUseCase {
     @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService
   ) {}
 
-  async execute(request: RegisterDTO, registrationIp?: string): Promise<RegisterResponse> {
+  async execute(request: RegisterDTO, registrationIp?: string): Promise<RegisterResponseDTO> {
     const { fullName, email: rawEmail, password } = request;
     try {
       new Email(rawEmail);
@@ -62,7 +58,6 @@ export class RegisterUseCase {
     // Generate and save OTP with temporary userId
     const tempUserId = `temp_${Date.now()}_${rawEmail}`;
     const otpCode = this.otpService.generateOTP();
-    console.log(`User's OTP is ${otpCode}`);
     
     const otp = new OTPToken({
       userId: tempUserId,

@@ -1,8 +1,4 @@
-/**
- * Booking Domain Entity
- * Represents a session booking in the system
- * Following Domain-Driven Design principles
- */
+
 
 export enum BookingStatus {
   PENDING = 'pending',

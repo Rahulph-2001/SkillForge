@@ -1,7 +1,4 @@
-/**
- * Accept Reschedule Use Case
- * Handles logic for accepting a reschedule request
- */
+
 
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
@@ -20,14 +17,12 @@ export interface AcceptRescheduleResponse {
 @injectable()
 export class AcceptRescheduleUseCase {
   constructor(
-    @inject(TYPES.BookingRepository)
+    @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) {}
 
   async execute(request: AcceptRescheduleRequest): Promise<AcceptRescheduleResponse> {
     try {
-      console.log('🟡 [AcceptRescheduleUseCase] Executing accept reschedule:', request);
-
       // 1. Get the booking
       const booking = await this.bookingRepository.findById(request.bookingId);
 
@@ -71,8 +66,6 @@ export class AcceptRescheduleUseCase {
         rescheduleInfo.newTime
       );
 
-      console.log('✅ [AcceptRescheduleUseCase] Reschedule accepted successfully');
-
       // TODO: Send notification to learner about accepted reschedule
 
       return {
@@ -80,7 +73,6 @@ export class AcceptRescheduleUseCase {
         message: 'Reschedule request accepted successfully',
       };
     } catch (error: any) {
-      console.error('❌ [AcceptRescheduleUseCase] Error:', error);
       return {
         success: false,
         message: error.message || 'Failed to accept reschedule request',

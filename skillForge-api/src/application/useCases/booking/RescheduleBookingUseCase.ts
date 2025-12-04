@@ -21,14 +21,12 @@ export interface RescheduleBookingResponse {
 @injectable()
 export class RescheduleBookingUseCase {
   constructor(
-    @inject(TYPES.BookingRepository)
+    @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) {}
 
   async execute(request: RescheduleBookingRequest): Promise<RescheduleBookingResponse> {
     try {
-      console.log('🟡 [RescheduleBookingUseCase] Executing reschedule request:', request);
-
       // 1. Get the booking
       const booking = await this.bookingRepository.findById(request.bookingId);
 
@@ -79,14 +77,11 @@ export class RescheduleBookingUseCase {
       // 6. Update booking with reschedule request
       await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
 
-      console.log('✅ [RescheduleBookingUseCase] Reschedule requested successfully');
-
       return {
         success: true,
         message: 'Reschedule request submitted successfully. Waiting for approval.',
       };
     } catch (error: any) {
-      console.error('❌ [RescheduleBookingUseCase] Error:', error);
       return {
         success: false,
         message: error.message || 'Failed to request reschedule',

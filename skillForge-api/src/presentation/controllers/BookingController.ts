@@ -1,41 +1,44 @@
-import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { CreateBookingUseCase } from '../../application/useCases/booking/CreateBookingUseCase';
+import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../infrastructure/di/types';
+import { ICreateBookingUseCase } from '../../application/useCases/booking/interfaces/ICreateBookingUseCase';
+import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
+import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
+import { IBookingMapper } from '../../application/mappers/interfaces/IBookingMapper';
+import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
+import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
+import { CreateBookingRequestDTO } from '../../application/dto/booking/CreateBookingRequestDTO';
 
-const prisma = new PrismaClient();
-
+@injectable()
 export class BookingController {
-  /**
-   * Create a new booking
-   * POST /api/bookings
-   */
-  static async createBooking(req: Request, res: Response) {
+  constructor(
+    @inject(TYPES.CreateBookingUseCase) private createBookingUseCase: ICreateBookingUseCase,
+    @inject(TYPES.CancelBookingUseCase) private cancelBookingUseCase: CancelBookingUseCase,
+    @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
+    @inject(TYPES.IBookingMapper) private bookingMapper: IBookingMapper,
+    @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
+  ) {}
+  
+  public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
       
       if (!userId) {
-        console.error('❌ [BookingController] No user ID found - Unauthorized');
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
+        const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
       const { skillId, providerId, preferredDate, preferredTime, message } = req.body;
 
       // Validation
       if (!skillId || !providerId || !preferredDate || !preferredTime) {
-        console.error('❌ [BookingController] Missing required fields');
-        return res.status(400).json({
-          success: false,
-          message: 'Missing required fields',
-          received: { skillId, providerId, preferredDate, preferredTime },
-        });
+        const error = this.responseBuilder.error('VALIDATION_ERROR', 'Missing required fields', HttpStatusCode.BAD_REQUEST);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
-
-      const createBookingUseCase = new CreateBookingUseCase(prisma);
       
-      const useCaseData = {
+      const request: CreateBookingRequestDTO = {
         learnerId: userId,
         skillId,
         providerId,
@@ -44,275 +47,123 @@ export class BookingController {
         message,
       };
       
-      const booking = await createBookingUseCase.execute(useCaseData);
+      const booking = await this.createBookingUseCase.execute(request);
       
-      return res.status(201).json({
-        success: true,
-        message: 'Booking created successfully',
-        data: booking,
-      });
+      const response = this.responseBuilder.success(booking, 'Booking created successfully', HttpStatusCode.CREATED);
+      res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [BookingController] Create booking error:', error);
-      console.error('❌ [BookingController] Error message:', error.message);
-      console.error('❌ [BookingController] Error stack:', error.stack);
-      return res.status(400).json({
-        success: false,
-        message: error.message || 'Failed to create booking',
-        error: process.env.NODE_ENV === 'development' ? error.stack : undefined,
-      });
+      next(error);
     }
   }
 
-  /**
-   * Get all bookings for the current user (as learner)
-   * GET /api/bookings/my-bookings
-   */
-  static async getMyBookings(req: Request, res: Response) {
+  public getMyBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
       
       if (!userId) {
-        console.error('❌ [BookingController] No user ID - Unauthorized');
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
+        const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
-      const bookings = await prisma.booking.findMany({
-        where: {
-          learnerId: userId,
-          isDeleted: false,
-        },
-        include: {
-          skill: {
-            select: {
-              title: true,
-              category: true,
-              durationHours: true,
-            },
-          },
-          provider: {
-            select: {
-              name: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-        },
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      const bookings = await this.bookingRepository.findByLearnerId(userId);
+      const bookingDTOs = this.bookingMapper.toDTOs(bookings);
 
-      return res.status(200).json({
-        success: true,
-        data: bookings,
-      });
+      const response = this.responseBuilder.success(bookingDTOs, 'Bookings fetched successfully', HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [BookingController] Get my bookings error:', error);
-      console.error('❌ [BookingController] Error message:', error.message);
-      console.error('❌ [BookingController] Error stack:', error.stack);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to fetch bookings',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-      });
+      next(error);
     }
   }
 
-  /**
-   * Get upcoming sessions for the current user
-   * GET /api/bookings/upcoming
-   */
-  static async getUpcomingSessions(req: Request, res: Response) {
+  public getUpcomingSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
       
       if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
+        const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
+      // NOTE: Repository doesn't have findUpcoming yet. Fetching all and filtering.
+      // In production, add findUpcoming to Repository for efficiency.
+      const bookings = await this.bookingRepository.findByLearnerId(userId);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const bookings = await prisma.booking.findMany({
-        where: {
-          learnerId: userId,
-          status: {
-            in: ['pending', 'confirmed'],
-          },
-          preferredDate: {
-            gte: today,
-          },
-        },
-        include: {
-          skill: {
-            select: {
-              title: true,
-              category: true,
-            },
-          },
-          provider: {
-            select: {
-              name: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-        },
-        orderBy: {
-          preferredDate: 'asc',
-        },
+      const upcoming = bookings.filter(b => {
+          const date = new Date(b.preferredDate);
+          return date >= today && (b.status === 'pending' || b.status === 'confirmed');
       });
+      
+      // Sort by date asc
+      upcoming.sort((a, b) => new Date(a.preferredDate).getTime() - new Date(b.preferredDate).getTime());
 
-      return res.status(200).json({
-        success: true,
-        data: bookings,
-      });
+      const bookingDTOs = this.bookingMapper.toDTOs(upcoming);
+
+      const response = this.responseBuilder.success(bookingDTOs, 'Upcoming sessions fetched successfully', HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [BookingController] Get upcoming sessions error:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to fetch upcoming sessions',
-      });
+      next(error);
     }
   }
 
-  /**
-   * Get a specific booking by ID
-   * GET /api/bookings/:id
-   */
-  static async getBookingById(req: Request, res: Response) {
+  public getBookingById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
       const { id } = req.params;
       
       if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
+        const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
-      const booking = await prisma.booking.findFirst({
-        where: {
-          id,
-          OR: [
-            { learnerId: userId },
-            { providerId: userId },
-          ],
-        },
-        include: {
-          skill: {
-            select: {
-              title: true,
-              category: true,
-              description: true,
-            },
-          },
-          provider: {
-            select: {
-              name: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-          learner: {
-            select: {
-              name: true,
-              email: true,
-              avatarUrl: true,
-            },
-          },
-        },
-      });
+      const booking = await this.bookingRepository.findById(id);
 
       if (!booking) {
-        return res.status(404).json({
-          success: false,
-          message: 'Booking not found',
-        });
+        const error = this.responseBuilder.error('NOT_FOUND', 'Booking not found', HttpStatusCode.NOT_FOUND);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
-      return res.status(200).json({
-        success: true,
-        data: booking,
-      });
+      // Check ownership
+      if (booking.learnerId !== userId && booking.providerId !== userId) {
+         const error = this.responseBuilder.error('FORBIDDEN', 'Unauthorized to view this booking', HttpStatusCode.FORBIDDEN);
+         res.status(error.statusCode).json(error.body);
+         return;
+      }
+
+      const response = this.responseBuilder.success(this.bookingMapper.toDTO(booking), 'Booking fetched successfully', HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [BookingController] Get booking by ID error:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to fetch booking',
-      });
+      next(error);
     }
   }
 
-  /**
-   * Cancel a booking
-   * PATCH /api/bookings/:id/cancel
-   */
-  static async cancelBooking(req: Request, res: Response) {
+  public cancelBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
       const { id } = req.params;
       const { reason } = req.body;
       
       if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: 'Unauthorized',
-        });
+        const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
-      const booking = await prisma.booking.findFirst({
-        where: {
-          id,
-          OR: [
-            { learnerId: userId },
-            { providerId: userId },
-          ],
-        },
+      await this.cancelBookingUseCase.execute({
+          bookingId: id,
+          userId,
+          reason
       });
 
-      if (!booking) {
-        return res.status(404).json({
-          success: false,
-          message: 'Booking not found',
-        });
-      }
-
-      if (booking.status === 'cancelled' || booking.status === 'completed') {
-        return res.status(400).json({
-          success: false,
-          message: `Cannot cancel a ${booking.status} booking`,
-        });
-      }
-
-      const updatedBooking = await prisma.booking.update({
-        where: { id },
-        data: {
-          status: 'cancelled',
-          cancelledReason: reason || null,
-          cancelledBy: userId,
-          updatedAt: new Date(),
-        },
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: 'Booking cancelled successfully',
-        data: updatedBooking,
-      });
+      const response = this.responseBuilder.success(null, 'Booking cancelled successfully', HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [BookingController] Cancel booking error:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to cancel booking',
-      });
+      next(error);
     }
   }
 }

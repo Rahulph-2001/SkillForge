@@ -4,19 +4,23 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { IS3Service } from '../../../domain/services/IS3Service';
 import { Skill } from '../../../domain/entities/Skill';
 import { CreateSkillDTO } from '../../dto/skill/CreateSkillDTO';
+import { ICreateSkillUseCase } from './interfaces/ICreateSkillUseCase';
+import { SkillResponseDTO } from '../../dto/skill/SkillResponseDTO';
+import { ISkillMapper } from '../../mappers/interfaces/ISkillMapper';
 
 @injectable()
-export class CreateSkillUseCase {
+export class CreateSkillUseCase implements ICreateSkillUseCase {
   constructor(
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
-    @inject(TYPES.IS3Service) private s3Service: IS3Service
+    @inject(TYPES.IS3Service) private s3Service: IS3Service,
+    @inject(TYPES.ISkillMapper) private skillMapper: ISkillMapper
   ) {}
 
   async execute(
     userId: string, 
     data: CreateSkillDTO, 
     imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
-  ): Promise<Skill> {
+  ): Promise<SkillResponseDTO> {
     let imageUrl: string | null = null;
 
     if (imageFile) {
@@ -43,6 +47,7 @@ export class CreateSkillUseCase {
       templateId: data.templateId || null
     });
 
-    return await this.skillRepository.create(skill);
+    const createdSkill = await this.skillRepository.create(skill);
+    return this.skillMapper.toResponseDTO(createdSkill);
   }
 }

@@ -37,7 +37,7 @@ const initialState: AuthState = {
   otpResending: false,
 };
 
-// Async thunk for signup
+
 export const signup = createAsyncThunk<
   SignupResponse,
   SignupRequest,
@@ -62,7 +62,7 @@ export const signup = createAsyncThunk<
   }
 );
 
-// Async thunk for login
+
 export const login = createAsyncThunk<
   LoginResponse,
   LoginRequest,

@@ -20,13 +20,6 @@ export class S3Service implements IS3Service {
   }
 
   async uploadFile(file: Buffer, key: string, mimeType: string): Promise<string> {
-    console.log(' [S3Service] Uploading file to S3...');
-    console.log(' [S3Service] S3 Key:', key);
-    console.log(' [S3Service] File size:', file.length, 'bytes');
-    console.log(' [S3Service] MIME type:', mimeType);
-    console.log(' [S3Service] Bucket:', this.bucketName);
-    console.log(' [S3Service] Region:', env.AWS_REGION);
-    
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: key,
@@ -40,10 +33,8 @@ export class S3Service implements IS3Service {
       
       // Construct public URL
       const url = `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${key}`;
-      console.log(' [S3Service] File uploaded successfully:', url);
       return url;
     } catch (error) {
-      console.error(' [S3Service] Failed to upload file:', error);
       throw error;
     }
   }

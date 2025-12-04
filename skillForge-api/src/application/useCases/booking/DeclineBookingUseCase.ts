@@ -23,7 +23,7 @@ export interface DeclineBookingResponse {
 @injectable()
 export class DeclineBookingUseCase {
   constructor(
-    @inject(TYPES.BookingRepository)
+    @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) {}
 

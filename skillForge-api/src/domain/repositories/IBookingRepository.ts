@@ -1,8 +1,4 @@
-/**
- * Booking Repository Interface
- * Defines contract for booking data access
- * Following Repository Pattern and Dependency Inversion Principle
- */
+
 
 import { Booking, BookingStatus } from '../entities/Booking';
 

@@ -6,15 +6,19 @@ import { SubscriptionPlan } from '../../../domain/entities/SubscriptionPlan';
 import { CreateSubscriptionPlanDTO } from '../../dto/subscription/CreateSubscriptionPlanDTO';
 import { ForbiddenError, ConflictError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
+import { ICreateSubscriptionPlanUseCase } from './interfaces/ICreateSubscriptionPlanUseCase';
+import { SubscriptionPlanDTO } from '../../dto/subscription/SubscriptionPlanDTO';
+import { ISubscriptionPlanMapper } from '../../mappers/interfaces/ISubscriptionPlanMapper';
 
 @injectable()
-export class CreateSubscriptionPlanUseCase {
+export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
-    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository
+    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository,
+    @inject(TYPES.ISubscriptionPlanMapper) private subscriptionPlanMapper: ISubscriptionPlanMapper
   ) {}
 
-  async execute(adminUserId: string, dto: CreateSubscriptionPlanDTO): Promise<SubscriptionPlan> {
+  async execute(adminUserId: string, dto: CreateSubscriptionPlanDTO): Promise<SubscriptionPlanDTO> {
     // Verify admin privileges
     const adminUser = await this.userRepository.findById(adminUserId);
     if (!adminUser || adminUser.role !== 'admin') {
@@ -51,6 +55,6 @@ export class CreateSubscriptionPlanUseCase {
     // Save to repository
     const createdPlan = await this.subscriptionPlanRepository.create(plan);
 
-    return createdPlan;
+    return this.subscriptionPlanMapper.toDTO(createdPlan);
   }
 }

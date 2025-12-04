@@ -51,3 +51,10 @@ export class ForbiddenError extends AppError {
     this.name = 'ForbiddenError';
   }
 }
+
+export class InternalServerError extends AppError {
+  constructor(message: string = ERROR_MESSAGES.GENERAL.INTERNAL_SERVER_ERROR || 'Internal server error') {
+    super(message, HttpStatusCode.INTERNAL_SERVER_ERROR);
+    this.name = 'InternalServerError';
+  }
+}

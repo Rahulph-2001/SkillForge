@@ -5,9 +5,9 @@ export const clearPersistedState = async (): Promise<void> => {
   try {
     console.log('[PersistUtils] Clearing persisted state...');
     await persistor.purge();
-    console.log('[PersistUtils] ✅ Persisted state cleared successfully');
+    console.log('[PersistUtils]  Persisted state cleared successfully');
   } catch (error) {
-    console.error('[PersistUtils] ❌ Error clearing persisted state:', error);
+    console.error('[PersistUtils]  Error clearing persisted state:', error);
     throw error;
   }
 };
@@ -29,9 +29,9 @@ export const flushPersistence = async (): Promise<void> => {
   try {
     console.log('[PersistUtils] Flushing persistence to storage...');
     await persistor.flush();
-    console.log('[PersistUtils] ✅ Persistence flushed successfully');
+    console.log('[PersistUtils]  Persistence flushed successfully');
   } catch (error) {
-    console.error('[PersistUtils] ❌ Error flushing persistence:', error);
+    console.error('[PersistUtils]  Error flushing persistence:', error);
     throw error;
   }
 };

@@ -1,45 +1,26 @@
 import { Router } from 'express';
+import { injectable, inject } from 'inversify';
+import { TYPES } from '../../infrastructure/di/types';
 import { BookingController } from '../controllers/BookingController';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
-const router = Router();
+@injectable()
+export class BookingRoutes {
+  public router = Router();
 
-// All booking routes require authentication
-router.use(authMiddleware);
+  constructor(
+    @inject(TYPES.BookingController) private bookingController: BookingController
+  ) {
+    this.initializeRoutes();
+  }
 
-/**
- * @route   POST /api/bookings
- * @desc    Create a new booking
- * @access  Private
- */
-router.post('/', BookingController.createBooking);
+  private initializeRoutes(): void {
+    this.router.use(authMiddleware);
 
-/**
- * @route   GET /api/bookings/my-bookings
- * @desc    Get all bookings for the current user
- * @access  Private
- */
-router.get('/my-bookings', BookingController.getMyBookings);
-
-/**
- * @route   GET /api/bookings/upcoming
- * @desc    Get upcoming sessions for the current user
- * @access  Private
- */
-router.get('/upcoming', BookingController.getUpcomingSessions);
-
-/**
- * @route   GET /api/bookings/:id
- * @desc    Get a specific booking by ID
- * @access  Private
- */
-router.get('/:id', BookingController.getBookingById);
-
-/**
- * @route   PATCH /api/bookings/:id/cancel
- * @desc    Cancel a booking
- * @access  Private
- */
-router.patch('/:id/cancel', BookingController.cancelBooking);
-
-export default router;
+    this.router.post('/', this.bookingController.createBooking);
+    this.router.get('/my-bookings', this.bookingController.getMyBookings);
+    this.router.get('/upcoming', this.bookingController.getUpcomingSessions);
+    this.router.get('/:id', this.bookingController.getBookingById);
+    this.router.patch('/:id/cancel', this.bookingController.cancelBooking);
+  }
+}

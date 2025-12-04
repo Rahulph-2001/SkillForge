@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { ListPublicSubscriptionPlansUseCase } from '../../../application/useCases/subscription/ListPublicSubscriptionPlansUseCase';
+import { IListPublicSubscriptionPlansUseCase } from '../../../application/useCases/subscription/interfaces/IListPublicSubscriptionPlansUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 
 
@@ -9,7 +9,7 @@ import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export class PublicSubscriptionController {
   constructor(
     @inject(TYPES.ListPublicSubscriptionPlansUseCase)
-    private readonly listPublicPlansUseCase: ListPublicSubscriptionPlansUseCase,
+    private readonly listPublicPlansUseCase: IListPublicSubscriptionPlansUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) {}
 

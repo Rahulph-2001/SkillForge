@@ -51,9 +51,7 @@ export default function SkillCard({ skill }: SkillCardProps) {
             alt={skill.title}
             className="h-full w-full object-cover"
             crossOrigin="anonymous"
-            onLoad={() => console.log('✅ Image loaded successfully:', skill.imageUrl)}
             onError={(e) => {
-              console.error('❌ Image failed to load:', skill.imageUrl);
               const target = e.currentTarget as HTMLImageElement;
               target.style.display = 'none';
               const parent = target.parentElement;

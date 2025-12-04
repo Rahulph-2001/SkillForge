@@ -44,6 +44,5 @@ export class BlockSkillUseCase {
       },
     });
 
-    console.log(`🚫 [BlockSkillUseCase] Skill ${data.skillId} blocked by admin ${data.adminId}`);
   }
 }

@@ -82,7 +82,7 @@ const useRedis = Boolean(env.REDIS_URL || env.REDIS_HOST);
 const generalWindowMs = env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000;
 
 // Increase default max requests for development
-const defaultMax = process.env.NODE_ENV === 'development' ? 1000 : 100;
+const defaultMax = process.env.NODE_ENV === 'development' ? 5000 : 100;
 
 export const generalLimiter = rateLimit({
   windowMs: generalWindowMs,

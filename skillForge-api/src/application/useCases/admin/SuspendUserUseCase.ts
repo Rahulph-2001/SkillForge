@@ -3,21 +3,18 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
-import { SuspendUserDTO } from '../../dto/user/SuspendUserDTO';
-
-export interface SuspendUserResponse {
-  success: boolean;
-  message: string;
-}
+import { ISuspendUserUseCase } from './interfaces/ISuspendUserUseCase';
+import { SuspendUserRequestDTO } from '../../dto/admin/SuspendUserRequestDTO';
+import { SuspendUserResponseDTO } from '../../dto/admin/SuspendUserResponseDTO';
 
 @injectable()
-export class SuspendUserUseCase {
+export class SuspendUserUseCase implements ISuspendUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository
   ) {}
 
-  async execute(adminUserId: string, request: SuspendUserDTO): Promise<SuspendUserResponse> {
-    const adminUser = await this.userRepository.findById(adminUserId);
+  async execute(request: SuspendUserRequestDTO): Promise<SuspendUserResponseDTO> {
+    const adminUser = await this.userRepository.findById(request.adminUserId);
     if (!adminUser || adminUser.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }

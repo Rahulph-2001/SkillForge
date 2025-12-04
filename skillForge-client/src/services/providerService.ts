@@ -34,9 +34,7 @@ export const providerService = {
    * Get provider profile by ID
    */
   async getProviderProfile(providerId: string): Promise<ProviderProfile> {
-    console.log('📋 [providerService] Fetching provider profile:', providerId);
     const response = await api.get(`/users/${providerId}/profile`);
-    console.log('✅ [providerService] Provider profile fetched:', response.data);
     return response.data.data;
   },
 
@@ -44,9 +42,7 @@ export const providerService = {
    * Get provider reviews
    */
   async getProviderReviews(providerId: string): Promise<ProviderReview[]> {
-    console.log('📋 [providerService] Fetching provider reviews:', providerId);
     const response = await api.get(`/users/${providerId}/reviews`);
-    console.log('✅ [providerService] Provider reviews fetched:', response.data);
     return response.data.data;
   },
 };

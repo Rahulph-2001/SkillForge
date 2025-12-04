@@ -12,23 +12,16 @@ export const authMiddleware = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    console.log(' [authMiddleware] Checking authentication for:', req.method, req.path);
-    console.log(' [authMiddleware] Cookies received:', req.cookies);
-    console.log(' [authMiddleware] Authorization header:', req.headers.authorization);
-
     let token = req.cookies?.accessToken;
-    console.log(' [authMiddleware] Token from cookie:', token ? 'Present' : 'Missing');
 
     if (!token) {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         token = authHeader.substring(7);
-        console.log(' [authMiddleware] Token from Authorization header:', token ? 'Present' : 'Missing');
       }
     }
 
     if (!token) {
-      console.error(' [authMiddleware] No token found in cookies or headers');
       const response = errorResponse(
         'UNAUTHORIZED',
         'No token provided',
@@ -37,8 +30,6 @@ export const authMiddleware = async (
       res.status(response.statusCode).json(response.body);
       return;
     }
-
-    console.log(' [authMiddleware] Token found, verifying...');
 
     // Verify token
     const jwtService = container.get<IJWTService>(TYPES.IJWTService);
@@ -101,7 +92,6 @@ export const authMiddleware = async (
       email: decoded.email,
       role: decoded.role,
     };
-    console.log(' [authMiddleware] User attached to request:', (req as any).user);
     next();
   } catch (error) {
     const response = errorResponse(

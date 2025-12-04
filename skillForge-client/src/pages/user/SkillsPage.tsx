@@ -24,9 +24,6 @@ export default function SkillsPage() {
 
   const handleAddSkill = async (newSkill: NewSkill, file?: Blob) => {
     try {
-      console.log(' [SkillsPage] handleAddSkill called with:', newSkill);
-      console.log(' [SkillsPage] File present:', !!file);
-      
       await dispatch(createSkill({ 
         data: {
           ...newSkill,
@@ -35,11 +32,9 @@ export default function SkillsPage() {
         file 
       })).unwrap();
       
-      console.log(' [SkillsPage] Skill added successfully');
       setIsModalOpen(false);
       setShowSuccess(true);
     } catch (err: any) {
-      console.error(" [SkillsPage] Failed to add skill:", err);
       setErrorMessage(err?.message || `Failed to add skill: ${err}`);
       setShowError(true);
     }
@@ -181,20 +176,17 @@ export default function SkillsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSkills.map((skill) => {
-              console.log('🔍 [SkillsPage] Rendering skill:', skill.title, 'imageUrl:', skill.imageUrl);
-              return (
-                <SkillCard 
-                  key={skill.id} 
-                  skill={{
-                    ...skill,
-                    creditsHour: skill.creditsPerHour,
-                    sessions: skill.totalSessions,
-                    imageUrl: skill.imageUrl
-                  }} 
-                />
-              );
-            })}
+            {filteredSkills.map((skill) => (
+              <SkillCard 
+                key={skill.id} 
+                skill={{
+                  ...skill,
+                  creditsHour: skill.creditsPerHour,
+                  sessions: skill.totalSessions,
+                  imageUrl: skill.imageUrl
+                }} 
+              />
+            ))}
           </div>
         )}
       </div>

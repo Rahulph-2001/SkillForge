@@ -39,8 +39,6 @@ export class GetAllSkillsUseCase {
   ) {}
 
   async execute(): Promise<SkillDTO[]> {
-    console.log('🔵 [GetAllSkillsUseCase] Fetching all skills for admin');
-
     const skills = await this.prisma.skill.findMany({
       where: {
         isDeleted: false,
@@ -61,8 +59,6 @@ export class GetAllSkillsUseCase {
         createdAt: 'desc',
       },
     });
-
-    console.log(`✅ [GetAllSkillsUseCase] Found ${skills.length} skills`);
 
     return skills.map(skill => ({
       id: skill.id,

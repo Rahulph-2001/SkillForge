@@ -2,9 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { Profile } from 'passport-google-oauth20';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { RegisterUseCase } from '../../../application/useCases/auth/RegisterUseCase';
-import { LoginUseCase } from '../../../application/useCases/auth/LoginUseCase';
-import { VerifyOtpUseCase } from '../../../application/useCases/auth/VerifyOtpUseCase';
+import { IRegisterUseCase } from '../../../application/useCases/auth/interfaces/IRegisterUseCase';
+import { ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
+import { IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
 import { GoogleAuthUseCase } from '../../../application/useCases/auth/GoogleAuthUseCase';
 import { PassportService } from '../../../infrastructure/services/PassportService';
 import { ResendOtpUseCase } from '../../../application/useCases/auth/ResendOtpUseCase';
@@ -15,7 +15,8 @@ import { ResetPasswordUseCase } from '../../../application/useCases/auth/ResetPa
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { env } from '../../../config/env';
-import { AuthResponseMapper } from './AuthResponseMapper';
+import { IAuthResponseMapper } from './interfaces/IAuthResponseMapper';
+import { ERROR_MESSAGES } from '../../../config/messages';
 
 const getClientIp = (req: Request): string | undefined => {
   return (
@@ -29,16 +30,17 @@ const getClientIp = (req: Request): string | undefined => {
 export class AuthController {
   constructor(
     @inject(TYPES.PassportService) public readonly passportService: PassportService,
-    @inject(TYPES.RegisterUseCase) private readonly registerUseCase: RegisterUseCase,
-    @inject(TYPES.LoginUseCase) private readonly loginUseCase: LoginUseCase,
-    @inject(TYPES.VerifyOtpUseCase) private readonly verifyOtpUseCase: VerifyOtpUseCase,
+    @inject(TYPES.RegisterUseCase) private readonly registerUseCase: IRegisterUseCase,
+    @inject(TYPES.LoginUseCase) private readonly loginUseCase: ILoginUseCase,
+    @inject(TYPES.VerifyOtpUseCase) private readonly verifyOtpUseCase: IVerifyOtpUseCase,
     @inject(TYPES.ResendOtpUseCase) private readonly resendOtpUseCase: ResendOtpUseCase,
     @inject(TYPES.AdminLoginUseCase) private readonly adminLoginUseCase: AdminLoginUseCase,
     @inject(TYPES.GoogleAuthUseCase) private readonly googleAuthUseCase: GoogleAuthUseCase,
     @inject(TYPES.ForgotPasswordUseCase) private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
     @inject(TYPES.VerifyForgotPasswordOtpUseCase) private readonly verifyForgotPasswordOtpUseCase: VerifyForgotPasswordOtpUseCase,
     @inject(TYPES.ResetPasswordUseCase) private readonly resetPasswordUseCase: ResetPasswordUseCase,
-    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
+    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.IAuthResponseMapper) private readonly authResponseMapper: IAuthResponseMapper
   ) {
     this.googleLogin = this.passportService.authenticateGoogle();
   }
@@ -51,7 +53,7 @@ export class AuthController {
       const { email, expiresAt, message } = await this.registerUseCase.execute(req.body, registrationIp);
       res
         .status(HttpStatusCode.CREATED)
-        .json(AuthResponseMapper.mapRegisterResponse(email, expiresAt, message));
+        .json(this.authResponseMapper.mapRegisterResponse(email, expiresAt, message));
     } catch (error) {
       next(error);
     }
@@ -82,7 +84,7 @@ export class AuthController {
       
       res
         .status(HttpStatusCode.OK)
-        .json(AuthResponseMapper.mapLoginResponse(user, token, refreshToken));
+        .json(this.authResponseMapper.mapLoginResponse(user, token, refreshToken));
     } catch (error) {
       next(error);
     }
@@ -113,7 +115,7 @@ export class AuthController {
       res
         .status(HttpStatusCode.OK)
         .json(
-          AuthResponseMapper.mapVerifyOtpResponse(user, message, token, refreshToken)
+          this.authResponseMapper.mapVerifyOtpResponse(user, message, token, refreshToken)
         );
     } catch (error) {
       next(error);
@@ -196,10 +198,7 @@ export class AuthController {
         path: '/',
       });
       
-      res.status(HttpStatusCode.OK).json({
-        success: true,
-        message: 'Logged out successfully',
-      });
+      res.status(HttpStatusCode.OK).json(this.authResponseMapper.mapLogoutResponse());
     } catch (error) {
       next(error);
     }
@@ -231,7 +230,7 @@ export class AuthController {
       
       res
         .status(HttpStatusCode.OK)
-        .json(AuthResponseMapper.mapLoginResponse(user, token, refreshToken));
+        .json(this.authResponseMapper.mapLoginResponse(user, token, refreshToken));
     } catch (error) {
       next(error);
     }
@@ -343,7 +342,7 @@ export class AuthController {
       if (!user.isActive || user.isDeleted) {
         res.status(HttpStatusCode.FORBIDDEN).json({
           success: false,
-          error: 'Your account has been suspended. Please contact support.',
+          error: ERROR_MESSAGES.AUTH.ACCOUNT_SUSPENDED,
           data: {
             isActive: false,
           },

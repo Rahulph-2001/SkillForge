@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/di/types';
-import { BrowseSkillsUseCase } from '../../application/useCases/skill/BrowseSkillsUseCase';
+import { IBrowseSkillsUseCase } from '../../application/useCases/skill/interfaces/IBrowseSkillsUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
+import { BrowseSkillsRequestDTO } from '../../application/dto/skill/BrowseSkillsRequestDTO';
 
 @injectable()
 export class BrowseSkillsController {
   constructor(
-    @inject(TYPES.BrowseSkillsUseCase) private browseSkillsUseCase: BrowseSkillsUseCase,
+    @inject(TYPES.BrowseSkillsUseCase) private browseSkillsUseCase: IBrowseSkillsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) {}
 
@@ -25,7 +26,7 @@ export class BrowseSkillsController {
         excludeProviderId
       } = req.query;
 
-      const filters = {
+      const filters: BrowseSkillsRequestDTO = {
         search: search as string | undefined,
         category: category as string | undefined,
         level: level as string | undefined,

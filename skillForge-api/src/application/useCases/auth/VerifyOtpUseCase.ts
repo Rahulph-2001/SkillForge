@@ -9,28 +9,23 @@ import { User } from '../../../domain/entities/User';
 import { Email } from '../../../shared/value-objects/Email';
 import { NotFoundError, UnauthorizedError, ConflictError, ForbiddenError } from '../../../domain/errors/AppError';
 import { VerifyOtpDTO } from '../../dto/auth/VerifyOtpDTO';
-import { UserDTOMapper } from '../../mappers/UserDTOMapper';
-import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
+import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
+import { VerifyOtpResponseDTO } from '../../dto/auth/VerifyOtpResponseDTO';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../config/messages';
-
-export interface VerifyOtpResponse {
-  user: UserResponseDTO;
-  token: string;
-  refreshToken: string;
-  message: string;
-}
+import { IVerifyOtpUseCase } from './interfaces/IVerifyOtpUseCase';
 
 @injectable()
-export class VerifyOtpUseCase {
+export class VerifyOtpUseCase implements IVerifyOtpUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository,
     @inject(TYPES.IEmailService) private emailService: IEmailService,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
-    @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService
+    @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService,
+    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) {}
 
-  async execute(request: VerifyOtpDTO): Promise<VerifyOtpResponse> {
+  async execute(request: VerifyOtpDTO): Promise<VerifyOtpResponseDTO> {
     const { email: rawEmail, otpCode } = request;
     
     // Check if this is a new registration (pending) or existing unverified user
@@ -113,7 +108,7 @@ export class VerifyOtpUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: UserDTOMapper.toUserResponseDTO(user),
+      user: this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
       message: SUCCESS_MESSAGES.AUTH.VERIFY_OTP_SUCCESS

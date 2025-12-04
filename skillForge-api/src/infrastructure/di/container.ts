@@ -101,6 +101,7 @@ import { MCQTestRoutes } from '../../presentation/routes/mcq/mcqTestRoutes';
 import { AdminSkillRoutes } from '../../presentation/routes/admin/adminSkillRoutes';
 import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
 import { BookingRepository } from '../repositories/BookingRepository';
+import { CreateBookingUseCase } from '../../application/useCases/booking/CreateBookingUseCase';
 import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
 import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
 import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
@@ -109,8 +110,39 @@ import { AcceptRescheduleUseCase } from '../../application/useCases/booking/Acce
 import { DeclineRescheduleUseCase } from '../../application/useCases/booking/DeclineRescheduleUseCase';
 import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
 import { SessionManagementController } from '../../presentation/controllers/SessionManagementController';
+import { BookingController } from '../../presentation/controllers/BookingController';
+
+import { IAdminUserDTOMapper } from '../../application/mappers/interfaces/IAdminUserDTOMapper';
+import { AdminUserDTOMapper } from '../../application/mappers/AdminUserDTOMapper';
+import { IUserDTOMapper } from '../../application/mappers/interfaces/IUserDTOMapper';
+import { UserDTOMapper } from '../../application/mappers/UserDTOMapper';
+import { IPendingSkillMapper } from '../../application/mappers/interfaces/IPendingSkillMapper';
+import { PendingSkillMapper } from '../../application/mappers/PendingSkillMapper';
+import { ISubscriptionPlanMapper } from '../../application/mappers/interfaces/ISubscriptionPlanMapper';
+import { SubscriptionPlanMapper } from '../../application/mappers/SubscriptionPlanMapper';
+import { IAuthResponseMapper } from '../../presentation/controllers/auth/interfaces/IAuthResponseMapper';
+import { AuthResponseMapper } from '../../presentation/controllers/auth/AuthResponseMapper';
+import { ISkillMapper } from '../../application/mappers/interfaces/ISkillMapper';
+import { SkillMapper } from '../../application/mappers/SkillMapper';
+import { IBrowseSkillMapper } from '../../application/mappers/interfaces/IBrowseSkillMapper';
+import { BrowseSkillMapper } from '../../application/mappers/BrowseSkillMapper';
+import { ISkillDetailsMapper } from '../../application/mappers/interfaces/ISkillDetailsMapper';
+import { SkillDetailsMapper } from '../../application/mappers/SkillDetailsMapper';
+import { IBookingMapper } from '../../application/mappers/interfaces/IBookingMapper';
+import { BookingMapper } from '../../application/mappers/BookingMapper';
 
 export const container = new Container();
+
+// Mappers
+container.bind<IAdminUserDTOMapper>(TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper);
+container.bind<IUserDTOMapper>(TYPES.IUserDTOMapper).to(UserDTOMapper);
+container.bind<IPendingSkillMapper>(TYPES.IPendingSkillMapper).to(PendingSkillMapper);
+container.bind<ISubscriptionPlanMapper>(TYPES.ISubscriptionPlanMapper).to(SubscriptionPlanMapper);
+container.bind<IAuthResponseMapper>(TYPES.IAuthResponseMapper).to(AuthResponseMapper);
+container.bind<ISkillMapper>(TYPES.ISkillMapper).to(SkillMapper);
+container.bind<IBrowseSkillMapper>(TYPES.IBrowseSkillMapper).to(BrowseSkillMapper);
+container.bind<ISkillDetailsMapper>(TYPES.ISkillDetailsMapper).to(SkillDetailsMapper);
+container.bind<IBookingMapper>(TYPES.IBookingMapper).to(BookingMapper);
 
 // Prisma Client
 const prisma = new PrismaClient();
@@ -190,7 +222,8 @@ container.bind<BlockSkillUseCase>(TYPES.BlockSkillUseCase).to(BlockSkillUseCase)
 container.bind<UnblockSkillUseCase>(TYPES.UnblockSkillUseCase).to(UnblockSkillUseCase);
 
 // Session Management
-container.bind<IBookingRepository>(TYPES.BookingRepository).to(BookingRepository);
+container.bind<IBookingRepository>(TYPES.IBookingRepository).to(BookingRepository);
+container.bind<CreateBookingUseCase>(TYPES.CreateBookingUseCase).to(CreateBookingUseCase);
 container.bind<AcceptBookingUseCase>(TYPES.AcceptBookingUseCase).to(AcceptBookingUseCase);
 container.bind<DeclineBookingUseCase>(TYPES.DeclineBookingUseCase).to(DeclineBookingUseCase);
 container.bind<CancelBookingUseCase>(TYPES.CancelBookingUseCase).to(CancelBookingUseCase);
@@ -213,6 +246,9 @@ container.bind<TemplateQuestionController>(TYPES.TemplateQuestionController).to(
 container.bind<MCQTestController>(TYPES.MCQTestController).to(MCQTestController);
 container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);
 container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);
+container.bind<BookingController>(TYPES.BookingController).to(BookingController);
+import { BookingRoutes } from '../../presentation/routes/bookingRoutes';
+container.bind<BookingRoutes>(TYPES.BookingRoutes).to(BookingRoutes);
 // Routes
 container.bind<AuthRoutes>(TYPES.AuthRoutes).to(AuthRoutes);
 container.bind<AdminRoutes>(TYPES.AdminRoutes).to(AdminRoutes);

@@ -14,10 +14,7 @@ export class MCQTestController {
     private readonly skillTemplateRepository: ISkillTemplateRepository
   ) {}
 
-  /**
-   * Get MCQ test for a specific template and level
-   * GET /api/v1/mcq-tests/:templateId/:level
-   */
+  
   async getTest(req: Request, res: Response): Promise<void> {
     try {
       const { templateId, level } = req.params;
@@ -100,14 +97,11 @@ export class MCQTestController {
     }
   }
 
-  /**
-   * Submit MCQ test answers and get results
-   * POST /api/v1/mcq-tests/submit
-   */
+  
   async submitTest(req: Request, res: Response): Promise<void> {
     try {
       const { templateId, level, answers } = req.body;
-      const userId = (req as any).user?.userId;
+      // const userId = (req as any).user?.userId;
 
       // Validate input
       if (!templateId || !level || !Array.isArray(answers)) {
@@ -177,15 +171,12 @@ export class MCQTestController {
     }
   }
 
-  /**
-   * Get user's test history
-   * GET /api/v1/mcq-tests/history
-   */
-  async getHistory(req: Request, res: Response): Promise<void> {
+  
+  async getHistory(_req: Request, res: Response): Promise<void> {
     try {
-      const userId = (req as any).user?.userId;
+      // const userId = (req as any).user?.userId;
 
-      // TODO: Implement test history retrieval from database
+      
       res.status(200).json({
         success: true,
         message: 'Test history retrieved successfully',

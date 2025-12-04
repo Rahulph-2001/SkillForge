@@ -1,7 +1,4 @@
-/**
- * Decline Reschedule Use Case
- * Handles logic for declining a reschedule request
- */
+
 
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
@@ -21,14 +18,12 @@ export interface DeclineRescheduleResponse {
 @injectable()
 export class DeclineRescheduleUseCase {
   constructor(
-    @inject(TYPES.BookingRepository)
+    @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) {}
 
   async execute(request: DeclineRescheduleRequest): Promise<DeclineRescheduleResponse> {
     try {
-      console.log('🟡 [DeclineRescheduleUseCase] Executing decline reschedule:', request);
-
       // 1. Get the booking
       const booking = await this.bookingRepository.findById(request.bookingId);
 
@@ -58,8 +53,6 @@ export class DeclineRescheduleUseCase {
       // 4. Decline the reschedule request (revert to confirmed status and clear reschedule info)
       await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
 
-      console.log('✅ [DeclineRescheduleUseCase] Reschedule declined successfully');
-
       // TODO: Send notification to learner about declined reschedule
 
       return {
@@ -67,7 +60,6 @@ export class DeclineRescheduleUseCase {
         message: 'Reschedule request declined',
       };
     } catch (error: any) {
-      console.error('❌ [DeclineRescheduleUseCase] Error:', error);
       return {
         success: false,
         message: error.message || 'Failed to decline reschedule request',

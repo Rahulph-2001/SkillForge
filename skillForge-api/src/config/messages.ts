@@ -37,6 +37,7 @@ export const ERROR_MESSAGES = {
     EMAIL_ALREADY_VERIFIED: 'Email is already verified. Please login.',
     INVALID_CREDENTIALS: 'Invalid credentials',
     ACCOUNT_INACTIVE: 'Account is inactive or deleted',
+    ACCOUNT_SUSPENDED: 'Your account has been suspended. Please contact support.',
     ACCESS_DENIED: 'Access denied. Admin privileges required.',
     GOOGLE_PROFILE_MISSING_EMAIL: 'Google profile is missing an email address.',
     EMAIL_ALREADY_EXISTS:'User with this email already exists',

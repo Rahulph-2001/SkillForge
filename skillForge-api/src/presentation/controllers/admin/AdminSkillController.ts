@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../../infrastructure/di/types';
-import { ListPendingSkillsUseCase } from '../../../application/useCases/admin/ListPendingSkillsUseCase';
+import { IListPendingSkillsUseCase } from '../../../application/useCases/admin/interfaces/IListPendingSkillsUseCase';
 import { ApproveSkillUseCase } from '../../../application/useCases/admin/ApproveSkillUseCase';
 import { RejectSkillUseCase } from '../../../application/useCases/admin/RejectSkillUseCase';
 import { GetAllSkillsUseCase } from '../../../application/useCases/admin/GetAllSkillsUseCase';
@@ -13,7 +13,7 @@ import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 @injectable()
 export class AdminSkillController {
   constructor(
-    @inject(TYPES.ListPendingSkillsUseCase) private listPendingSkillsUseCase: ListPendingSkillsUseCase,
+    @inject(TYPES.ListPendingSkillsUseCase) private listPendingSkillsUseCase: IListPendingSkillsUseCase,
     @inject(TYPES.ApproveSkillUseCase) private approveSkillUseCase: ApproveSkillUseCase,
     @inject(TYPES.RejectSkillUseCase) private rejectSkillUseCase: RejectSkillUseCase,
     @inject(TYPES.GetAllSkillsUseCase) private getAllSkillsUseCase: GetAllSkillsUseCase,
@@ -28,8 +28,6 @@ export class AdminSkillController {
    */
   public listPending = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('🔵 [AdminSkillController] Fetching pending skills for admin review');
-
       const skills = await this.listPendingSkillsUseCase.execute();
 
       const response = this.responseBuilder.success(
@@ -39,7 +37,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error fetching pending skills:', error);
       next(error);
     }
   };
@@ -53,8 +50,6 @@ export class AdminSkillController {
       const { skillId } = req.params;
       const adminId = (req as any).user.userId;
 
-      console.log(`🔵 [AdminSkillController] Admin ${adminId} approving skill ${skillId}`);
-
       await this.approveSkillUseCase.execute(skillId, adminId);
 
       const response = this.responseBuilder.success(
@@ -64,7 +59,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error approving skill:', error);
       next(error);
     }
   };
@@ -78,8 +72,6 @@ export class AdminSkillController {
       const { skillId } = req.params;
       const { reason } = req.body;
       const adminId = (req as any).user.userId;
-
-      console.log(`🔵 [AdminSkillController] Admin ${adminId} rejecting skill ${skillId}`);
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -105,7 +97,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error rejecting skill:', error);
       next(error);
     }
   };
@@ -116,8 +107,6 @@ export class AdminSkillController {
    */
   public getAllSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('🔵 [AdminSkillController] Fetching all skills');
-
       const skills = await this.getAllSkillsUseCase.execute();
 
       const response = this.responseBuilder.success(
@@ -127,7 +116,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error fetching all skills:', error);
       next(error);
     }
   };
@@ -141,8 +129,6 @@ export class AdminSkillController {
       const { skillId } = req.params;
       const { reason } = req.body;
       const adminId = (req as any).user.userId;
-
-      console.log(`🔵 [AdminSkillController] Admin ${adminId} blocking skill ${skillId}`);
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -168,7 +154,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error blocking skill:', error);
       next(error);
     }
   };
@@ -182,8 +167,6 @@ export class AdminSkillController {
       const { skillId } = req.params;
       const adminId = (req as any).user.userId;
 
-      console.log(`🔵 [AdminSkillController] Admin ${adminId} unblocking skill ${skillId}`);
-
       await this.unblockSkillUseCase.execute(skillId, adminId);
 
       const response = this.responseBuilder.success(
@@ -193,7 +176,6 @@ export class AdminSkillController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [AdminSkillController] Error unblocking skill:', error);
       next(error);
     }
   };

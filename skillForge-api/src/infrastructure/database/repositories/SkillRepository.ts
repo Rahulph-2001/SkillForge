@@ -3,6 +3,7 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { Database } from '../Database';
 import { TYPES } from '../../di/types';
+import { BrowseSkillsRequestDTO } from '../../../application/dto/skill/BrowseSkillsRequestDTO';
 
 @injectable()
 export class SkillRepository implements ISkillRepository {
@@ -10,6 +11,120 @@ export class SkillRepository implements ISkillRepository {
 
   constructor(@inject(TYPES.Database) db: Database) {
     this.prisma = db.getClient();
+  }
+
+  async browse(filters: BrowseSkillsRequestDTO): Promise<{ skills: Skill[]; total: number }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 12;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      status: 'approved',
+      isBlocked: false,
+      isDeleted: false,
+      verificationStatus: 'passed',
+    };
+
+    // Search filter
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+        { tags: { hasSome: [filters.search] } },
+      ];
+    }
+
+    // Category filter
+    if (filters.category && filters.category !== 'All') {
+      where.category = { contains: filters.category, mode: 'insensitive' };
+    }
+
+    // Level filter
+    if (filters.level && filters.level !== 'All Levels') {
+      where.level = filters.level;
+    }
+
+    // Price filter
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      where.creditsPerHour = {};
+      if (filters.minPrice !== undefined) {
+        where.creditsPerHour.gte = filters.minPrice;
+      }
+      if (filters.maxPrice !== undefined) {
+        where.creditsPerHour.lte = filters.maxPrice;
+      }
+    }
+
+    // Exclude user's own skills
+    if (filters.excludeProviderId) {
+      where.providerId = {
+        not: filters.excludeProviderId
+      };
+    }
+
+    // Get total count
+    const total = await this.prisma.skill.count({ where });
+
+    // Get skills
+    const skills = await this.prisma.skill.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: [
+        { rating: 'desc' },
+        { createdAt: 'desc' }
+      ],
+    });
+
+    return {
+      skills: skills.map((s: any) => this.toDomain(s)),
+      total
+    };
+  }
+
+  async findPending(): Promise<Skill[]> {
+    const skills = await this.prisma.skill.findMany({
+      where: {
+        status: 'in-review',
+        verificationStatus: 'passed',
+        isDeleted: false,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return skills.map((s: any) => this.toDomain(s));
+  }
+
+  async update(skill: Skill): Promise<Skill> {
+    const data = skill.toJSON();
+    const updated = await this.prisma.skill.update({
+      where: { id: skill.id },
+      data: {
+        title: data.title as string,
+        description: data.description as string,
+        category: data.category as string,
+        level: data.level as string,
+        durationHours: data.durationHours as number,
+        creditsPerHour: data.creditsPerHour as number,
+        tags: data.tags as string[],
+        imageUrl: data.imageUrl as string | null,
+        status: data.status as string,
+        verificationStatus: data.verificationStatus as string | null,
+        mcqScore: data.mcqScore as number | null,
+        mcqTotalQuestions: data.mcqTotalQuestions as number | null,
+        mcqPassingScore: data.mcqPassingScore as number | null,
+        verifiedAt: data.verifiedAt as Date | null,
+        totalSessions: data.totalSessions as number,
+        rating: data.rating as number,
+        isBlocked: data.isBlocked as boolean,
+        blockedReason: data.blockedReason as string | null,
+        blockedAt: data.blockedAt as Date | null,
+        updatedAt: new Date()
+      }
+    });
+    return this.toDomain(updated);
   }
 
   async create(skill: Skill): Promise<Skill> {

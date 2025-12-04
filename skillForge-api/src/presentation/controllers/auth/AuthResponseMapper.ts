@@ -1,4 +1,7 @@
+import { injectable } from 'inversify';
 import { UserResponseDTO } from '../../../application/dto/auth/UserResponseDTO';
+import { IAuthResponseMapper } from './interfaces/IAuthResponseMapper';
+import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 export interface AuthSuccessResponse<T> {
   success: true;
@@ -11,8 +14,9 @@ export interface AuthErrorResponse {
   details?: unknown;
 }
 
-export class AuthResponseMapper {
-  public static mapRegisterResponse(email: string, expiresAt: string, message: string): AuthSuccessResponse<{ email: string; expiresAt: string; message: string }> {
+@injectable()
+export class AuthResponseMapper implements IAuthResponseMapper {
+  public mapRegisterResponse(email: string, expiresAt: string, message: string): AuthSuccessResponse<{ email: string; expiresAt: string; message: string }> {
     return {
       success: true,
       data: {
@@ -23,7 +27,7 @@ export class AuthResponseMapper {
     };
   }
 
-  public static mapLoginResponse(userResponse: UserResponseDTO, token: string, refreshToken: string): AuthSuccessResponse<{ user: UserResponseDTO; token: string; refreshToken: string }> {
+  public mapLoginResponse(userResponse: UserResponseDTO, token: string, refreshToken: string): AuthSuccessResponse<{ user: UserResponseDTO; token: string; refreshToken: string }> {
     return {
       success: true,
       data: {
@@ -34,7 +38,7 @@ export class AuthResponseMapper {
     };
   }
 
-  public static mapVerifyOtpResponse(userResponse: UserResponseDTO, message: string, token: string, refreshToken: string): AuthSuccessResponse<{ user: UserResponseDTO; message: string; token: string; refreshToken: string }> {
+  public mapVerifyOtpResponse(userResponse: UserResponseDTO, message: string, token: string, refreshToken: string): AuthSuccessResponse<{ user: UserResponseDTO; message: string; token: string; refreshToken: string }> {
     return {
       success: true,
       data: {
@@ -42,6 +46,15 @@ export class AuthResponseMapper {
         message: message,
         token: token,
         refreshToken: refreshToken,
+      },
+    };
+  }
+
+  public mapLogoutResponse(): AuthSuccessResponse<{ message: string }> {
+    return {
+      success: true,
+      data: {
+        message: SUCCESS_MESSAGES.AUTH.LOGOUT_SUCCESS,
       },
     };
   }

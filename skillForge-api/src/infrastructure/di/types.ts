@@ -102,7 +102,7 @@ export const TYPES = {
   AdminSkillRoutes: Symbol.for('AdminSkillRoutes'),
 
   // Session Management
-  BookingRepository: Symbol.for('BookingRepository'),
+  IBookingRepository: Symbol.for('BookingRepository'),
   CreateBookingUseCase: Symbol.for('CreateBookingUseCase'),
   AcceptBookingUseCase: Symbol.for('AcceptBookingUseCase'),
   DeclineBookingUseCase: Symbol.for('DeclineBookingUseCase'),
@@ -112,7 +112,18 @@ export const TYPES = {
   AcceptRescheduleUseCase: Symbol.for('AcceptRescheduleUseCase'),
   DeclineRescheduleUseCase: Symbol.for('DeclineRescheduleUseCase'),
   SessionManagementController: Symbol.for('SessionManagementController'),
+  BookingController: Symbol.for('BookingController'),
+  BookingRoutes: Symbol.for('BookingRoutes'),
 
   // Prisma Client
-  PrismaClient: Symbol.for('PrismaClient')
+  PrismaClient: Symbol.for('PrismaClient'),
+  IAdminUserDTOMapper: Symbol.for('IAdminUserDTOMapper'),
+  IUserDTOMapper: Symbol.for('IUserDTOMapper'),
+  IPendingSkillMapper: Symbol.for('IPendingSkillMapper'),
+  ISubscriptionPlanMapper: Symbol.for('ISubscriptionPlanMapper'),
+  IAuthResponseMapper: Symbol.for('IAuthResponseMapper'),
+  ISkillMapper: Symbol.for('ISkillMapper'),
+  IBrowseSkillMapper: Symbol.for('IBrowseSkillMapper'),
+  ISkillDetailsMapper: Symbol.for('ISkillDetailsMapper'),
+  IBookingMapper: Symbol.for('IBookingMapper')
 };

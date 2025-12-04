@@ -43,10 +43,8 @@ export const sessionManagementService = {
    * Get all sessions for provider with statistics
    */
   async getProviderSessions(status?: string): Promise<GetSessionsResponse> {
-    console.log('📅 [sessionManagementService] Fetching provider sessions');
     const params = status ? { status } : {};
     const response = await api.get('/sessions/provider', { params });
-    console.log('✅ [sessionManagementService] Sessions fetched:', response.data);
     return response.data.data;
   },
 
@@ -54,27 +52,21 @@ export const sessionManagementService = {
    * Accept a booking request
    */
   async acceptBooking(bookingId: string): Promise<void> {
-    console.log('📅 [sessionManagementService] Accepting booking:', bookingId);
     await api.post(`/sessions/${bookingId}/accept`);
-    console.log('✅ [sessionManagementService] Booking accepted');
   },
 
   /**
    * Decline a booking request
    */
   async declineBooking(bookingId: string, reason?: string): Promise<void> {
-    console.log(' [sessionManagementService] Declining booking:', bookingId);
     await api.post(`/sessions/${bookingId}/decline`, { reason });
-    console.log(' [sessionManagementService] Booking declined');
   },
 
   /**
    * Cancel a booking
    */
   async cancelBooking(bookingId: string, reason?: string): Promise<void> {
-    console.log(' [sessionManagementService] Cancelling booking:', bookingId);
     await api.post(`/sessions/${bookingId}/cancel`, { reason });
-    console.log(' [sessionManagementService] Booking cancelled');
   },
 
   /**
@@ -86,9 +78,7 @@ export const sessionManagementService = {
     newTime: string,
     reason: string
   ): Promise<void> {
-    console.log(' [sessionManagementService] Requesting reschedule:', bookingId);
     await api.post(`/sessions/${bookingId}/reschedule`, { newDate, newTime, reason });
-    console.log(' [sessionManagementService] Reschedule requested');
   },
 
   /**
@@ -120,17 +110,13 @@ export const sessionManagementService = {
    * Accept a reschedule request
    */
   async acceptReschedule(bookingId: string): Promise<void> {
-    console.log('📅 [sessionManagementService] Accepting reschedule:', bookingId);
     await api.post(`/sessions/${bookingId}/reschedule/accept`);
-    console.log('✅ [sessionManagementService] Reschedule accepted');
   },
 
   /**
    * Decline a reschedule request
    */
   async declineReschedule(bookingId: string, reason: string): Promise<void> {
-    console.log('📅 [sessionManagementService] Declining reschedule:', bookingId);
     await api.post(`/sessions/${bookingId}/reschedule/decline`, { reason });
-    console.log('✅ [sessionManagementService] Reschedule declined');
   },
 };

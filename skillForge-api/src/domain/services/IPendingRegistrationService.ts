@@ -1,7 +1,4 @@
-/**
- * Service for managing pending user registrations
- * Following Clean Architecture - Domain Layer Interface
- */
+
 export interface PendingRegistrationData {
   fullName: string;
   email: string;

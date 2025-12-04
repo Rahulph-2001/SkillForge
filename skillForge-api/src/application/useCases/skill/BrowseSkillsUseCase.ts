@@ -1,142 +1,40 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { PrismaClient } from '@prisma/client';
-
-export interface BrowseSkillsFilters {
-  search?: string;
-  category?: string;
-  level?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  page?: number;
-  limit?: number;
-  excludeProviderId?: string;
-}
-
-export interface BrowseSkillDTO {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  level: string;
-  durationHours: number;
-  creditsPerHour: number;
-  imageUrl: string | null;
-  tags: string[];
-  rating: number;
-  totalSessions: number;
-  provider: {
-    id: string;
-    name: string;
-    email: string;
-  };
-}
-
-export interface BrowseSkillsResponse {
-  skills: BrowseSkillDTO[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IBrowseSkillsUseCase } from './interfaces/IBrowseSkillsUseCase';
+import { BrowseSkillsRequestDTO } from '../../dto/skill/BrowseSkillsRequestDTO';
+import { BrowseSkillsResponseDTO } from '../../dto/skill/BrowseSkillsResponseDTO';
+import { IBrowseSkillMapper } from '../../mappers/interfaces/IBrowseSkillMapper';
 
 @injectable()
-export class BrowseSkillsUseCase {
+export class BrowseSkillsUseCase implements IBrowseSkillsUseCase {
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
+    @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
+    @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+    @inject(TYPES.IBrowseSkillMapper) private browseSkillMapper: IBrowseSkillMapper
   ) {}
 
-  async execute(filters: BrowseSkillsFilters): Promise<BrowseSkillsResponse> {
-    const page = filters.page || 1;
-    const limit = filters.limit || 12;
-    const skip = (page - 1) * limit;
+  async execute(filters: BrowseSkillsRequestDTO): Promise<BrowseSkillsResponseDTO> {
+    const { skills, total } = await this.skillRepository.browse(filters);
 
-    // Build where clause
-    const where: any = {
-      status: 'approved',
-      isBlocked: false,
-      isDeleted: false,
-      verificationStatus: 'passed',
-    };
+    // Collect provider IDs
+    const providerIds = [...new Set(skills.map(s => s.providerId))];
+    
+    // Fetch providers
+    const providers = await this.userRepository.findByIds(providerIds);
+    const providersMap = new Map(providers.map(p => [p.id, p]));
 
-    // Search filter
-    if (filters.search) {
-      where.OR = [
-        { title: { contains: filters.search, mode: 'insensitive' } },
-        { description: { contains: filters.search, mode: 'insensitive' } },
-        { tags: { hasSome: [filters.search] } },
-      ];
-    }
-
-    // Category filter
-    if (filters.category && filters.category !== 'All') {
-      where.category = { contains: filters.category, mode: 'insensitive' };
-    }
-
-    // Level filter
-    if (filters.level && filters.level !== 'All Levels') {
-      where.level = filters.level;
-    }
-
-    // Price filter
-    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
-      where.creditsPerHour = {};
-      if (filters.minPrice !== undefined) {
-        where.creditsPerHour.gte = filters.minPrice;
+    const skillDTOs = skills.map(skill => {
+      const provider = providersMap.get(skill.providerId);
+      if (!provider) {
+         throw new Error(`Provider not found for skill ${skill.id}`);
       }
-      if (filters.maxPrice !== undefined) {
-        where.creditsPerHour.lte = filters.maxPrice;
-      }
-    }
-
-    // Exclude user's own skills
-    if (filters.excludeProviderId) {
-      where.providerId = {
-        not: filters.excludeProviderId
-      };
-    }
-
-    // Get total count
-    const total = await this.prisma.skill.count({ where });
-
-    // Get skills with provider info
-    const skills = await this.prisma.skill.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: [
-        { rating: 'desc' },
-        { createdAt: 'desc' }
-      ],
-      include: {
-        provider: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          }
-        }
-      }
+      return this.browseSkillMapper.toDTO(skill, provider);
     });
 
-    const skillDTOs: BrowseSkillDTO[] = skills.map(skill => ({
-      id: skill.id,
-      title: skill.title,
-      description: skill.description,
-      category: skill.category,
-      level: skill.level,
-      durationHours: skill.durationHours,
-      creditsPerHour: skill.creditsPerHour,
-      imageUrl: skill.imageUrl,
-      tags: skill.tags,
-      rating: Number(skill.rating),
-      totalSessions: skill.totalSessions,
-      provider: {
-        id: skill.provider.id,
-        name: skill.provider.name,
-        email: skill.provider.email,
-      }
-    }));
+    const page = filters.page || 1;
+    const limit = filters.limit || 12;
 
     return {
       skills: skillDTOs,

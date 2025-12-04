@@ -12,16 +12,19 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.getOne({
+    const user = await this.prisma.user.findUnique({
+      where: { id }
+    });
+    return user ? User.fromDatabaseRow(user as unknown as Record<string, unknown>) : null;
+  }
+
+  async findByIds(ids: string[]): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
       where: {
-        id,
-        isDeleted: false
+        id: { in: ids }
       }
-    } as any);
-    if (!user) {
-      return null;
-    }
-    return User.fromDatabaseRow(user as unknown as Record<string, unknown>);
+    });
+    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
   }
 
   async findByEmail(email: string): Promise<User | null> {

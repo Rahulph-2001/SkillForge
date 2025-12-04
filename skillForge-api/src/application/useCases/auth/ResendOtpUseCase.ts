@@ -33,19 +33,14 @@ export class ResendOtpUseCase {
     // Normalize email to lowercase for consistent lookup
     const normalizedEmail = rawEmail.toLowerCase().trim();
     
-    console.log(`[ResendOTP] Attempting to resend OTP for email: ${normalizedEmail}`);
-    
     // INDUSTRIAL LEVEL: Check BOTH pending registrations (Redis) AND database
     // 1. First check if this is a pending registration (user hasn't verified OTP yet)
     const pendingRegistration = await this.pendingRegistrationService.getPendingRegistration(normalizedEmail);
     
     if (pendingRegistration) {
-      console.log(`[ResendOTP] Found pending registration for: ${normalizedEmail}`);
-      
       // Generate new OTP for pending registration
       const tempUserId = `temp_${Date.now()}_${normalizedEmail}`;
       const otpCode = this.otpService.generateOTP();
-      console.log(`User's OTP is ${otpCode}`);
       
       const otp = new OTPToken({
         userId: tempUserId,
@@ -82,15 +77,11 @@ export class ResendOtpUseCase {
     const user = await this.userRepository.findByEmail(normalizedEmail);
     
     if (!user) {
-      console.error(`[ResendOTP] User not found in pending registrations or database: ${normalizedEmail}`);
       throw new NotFoundError(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
     }
     
-    console.log(`[ResendOTP] User found in database: ${user.id}, verified: ${user.verification.email_verified}`);
-    
     // Check if user is already verified
     if (user.verification.email_verified) {
-      console.log(`[ResendOTP] User ${user.id} is already verified`);
       throw new ConflictError(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_VERIFIED);
     }
     
@@ -102,7 +93,6 @@ export class ResendOtpUseCase {
     
     // Generate new OTP code
     const otpCode = this.otpService.generateOTP();
-    console.log(`User's OTP is ${otpCode}`);
     
     const otp = new OTPToken({
       userId: user.id,

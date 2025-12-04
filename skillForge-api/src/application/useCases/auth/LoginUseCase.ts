@@ -5,25 +5,21 @@ import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { IJWTService } from '../../../domain/services/IJWTService';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
 import { LoginDTO } from '../../dto/auth/LoginDTO';
-import { UserDTOMapper } from '../../mappers/UserDTOMapper';
-import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
+import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
+import { LoginResponseDTO } from '../../dto/auth/LoginResponseDTO';
 import { ERROR_MESSAGES } from '../../../config/messages';
-
-export interface LoginResponse {
-  user: UserResponseDTO;
-  token: string;
-  refreshToken: string;
-}
+import { ILoginUseCase } from './interfaces/ILoginUseCase';
 
 @injectable()
-export class LoginUseCase {
+export class LoginUseCase implements ILoginUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService,
-    @inject(TYPES.IJWTService) private jwtService: IJWTService
+    @inject(TYPES.IJWTService) private jwtService: IJWTService,
+    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) {}
 
-  async execute(request: LoginDTO, ipAddress?: string): Promise<LoginResponse> {
+  async execute(request: LoginDTO, ipAddress?: string): Promise<LoginResponseDTO> {
     const { email: rawEmail, password } = request;
     const user = await this.userRepository.findByEmail(rawEmail);
     if (!user) {
@@ -50,7 +46,7 @@ export class LoginUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: UserDTOMapper.toUserResponseDTO(user),
+      user: this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
     };

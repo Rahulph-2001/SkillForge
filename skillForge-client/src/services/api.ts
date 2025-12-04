@@ -3,9 +3,7 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1',
-    // Don't set default Content-Type - let axios handle it based on request data
-    // For JSON: axios sets 'application/json'
-    // For FormData: axios sets 'multipart/form-data' with boundary
+    
     withCredentials: true,
     timeout: 30000, // 30 seconds timeout
 });
@@ -13,20 +11,9 @@ const api = axios.create({
 
 api.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        // Cookies are automatically sent with withCredentials: true
-        // Access token is in HTTP-only cookie, so we don't need to add it manually
-        console.log('🔵 [API] Request:', config.method?.toUpperCase(), config.url);
-        console.log('🔵 [API] withCredentials:', config.withCredentials);
-        console.log('🔵 [API] Headers:', config.headers);
-        
-        // Check if cookies exist (for debugging)
-        const cookies = document.cookie;
-        console.log('🔵 [API] Browser cookies:', cookies || 'No cookies found');
-        
         return config;
     },
     (error: AxiosError) => {
-        console.error('❌ [API] Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -85,8 +72,6 @@ api.interceptors.response.use(
             const isExcluded = excludedEndpoints.some(endpoint => requestUrl.includes(endpoint));
             
             if (!isExcluded) {
-                console.log('🔴 [API] 401 Unauthorized - Auto logout triggered for:', requestUrl);
-                
                 // Lazy import to avoid circular dependency
                 const { store } = await import('../store/store');
                 const { resetAuth } = await import('../store/slices/authSlice');
@@ -103,8 +88,6 @@ api.interceptors.response.use(
                     const loginPath = isAdminRoute ? '/admin/login' : '/login';
                     window.location.href = loginPath;
                 }
-            } else {
-                console.log('🟡 [API] 401 on excluded endpoint, not logging out:', requestUrl);
             }
         }
         

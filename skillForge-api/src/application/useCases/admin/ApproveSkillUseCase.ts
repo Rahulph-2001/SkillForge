@@ -35,6 +35,5 @@ export class ApproveSkillUseCase {
       },
     });
 
-    console.log(`✅ [ApproveSkillUseCase] Skill ${skillId} approved by admin ${adminId}`);
   }
 }

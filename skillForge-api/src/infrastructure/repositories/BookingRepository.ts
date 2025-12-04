@@ -1,8 +1,4 @@
-/**
- * Booking Repository Implementation
- * Implements IBookingRepository using Prisma
- * Following Repository Pattern
- */
+
 
 import { PrismaClient, Prisma } from '@prisma/client';
 import { injectable } from 'inversify';
@@ -82,8 +78,6 @@ export class BookingRepository implements IBookingRepository {
   }
 
   async findByProviderId(providerId: string): Promise<Booking[]> {
-    console.log('🔍 [BookingRepository] Finding bookings for provider:', providerId);
-    
     const bookings = await this.prisma.booking.findMany({
       where: {
         providerId,
@@ -114,7 +108,6 @@ export class BookingRepository implements IBookingRepository {
       },
     });
 
-    console.log(`✅ [BookingRepository] Found ${bookings.length} bookings for provider`);
     return bookings.map((b) => this.mapToDomain(b));
   }
 
@@ -440,9 +433,8 @@ export class BookingRepository implements IBookingRepository {
     return this.mapToDomain(updated);
   }
 
-  async declineReschedule(bookingId: string, reason: string): Promise<Booking> {
-    // Note: reason is logged but not stored in DB as there's no declineReason field
-    console.log('📝 [BookingRepository] Decline reason:', reason);
+  async declineReschedule(bookingId: string, _reason: string): Promise<Booking> {
+    // Note: reason is not stored in DB as there's no declineReason field
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {

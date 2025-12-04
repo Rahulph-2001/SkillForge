@@ -2,31 +2,22 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError } from '../../../domain/errors/AppError';
-import { ERROR_MESSAGES } from '../../../config/messages'
-
-export interface ListUsersResponse {
-  users: Array<{
-    id: string;
-    name: string;
-    email: string;
-    role: string;
-    credits: number;
-    isActive: boolean;
-    isDeleted: boolean;
-    emailVerified: boolean;
-  }>;
-  total: number;
-}
+import { ERROR_MESSAGES } from '../../../config/messages';
+import { IListUsersUseCase } from './interfaces/IListUsersUseCase';
+import { ListUsersRequestDTO } from '../../dto/admin/ListUsersRequestDTO';
+import { ListUsersResponseDTO } from '../../dto/admin/ListUsersResponseDTO';
+import { IAdminUserDTOMapper } from '../../mappers/interfaces/IAdminUserDTOMapper';
 
 @injectable()
-export class ListUsersUseCase {
+export class ListUsersUseCase implements IListUsersUseCase {
   constructor(
-    @inject(TYPES.IUserRepository) private userRepository: IUserRepository
+    @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+    @inject(TYPES.IAdminUserDTOMapper) private userMapper: IAdminUserDTOMapper
   ) {}
 
-  async execute(adminUserId: string): Promise<ListUsersResponse> {
+  async execute(request: ListUsersRequestDTO): Promise<ListUsersResponseDTO> {
     // Verify admin user
-    const adminUser = await this.userRepository.findById(adminUserId);
+    const adminUser = await this.userRepository.findById(request.adminUserId);
     if (!adminUser || adminUser.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
@@ -34,16 +25,7 @@ export class ListUsersUseCase {
     // Get all users
     const users = await this.userRepository.findAll();
     return {
-      users: users.map(user => ({
-        id: user.id,
-        name: user.name,
-        email: user.email.value,
-        role: user.role,
-        credits: user.credits,
-        isActive: user.isActive,
-        isDeleted: user.isDeleted,
-        emailVerified: user.verification.email_verified
-      })),
+      users: users.map(user => this.userMapper.toDTO(user)),
       total: users.length
     };
   }

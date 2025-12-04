@@ -1,8 +1,11 @@
+import { injectable } from 'inversify';
 import { User } from '../../domain/entities/User';
 import { UserResponseDTO } from '../dto/auth/UserResponseDTO';
+import { IUserDTOMapper } from './interfaces/IUserDTOMapper';
 
-export class UserDTOMapper {
-  public static toUserResponseDTO(user: User): UserResponseDTO {
+@injectable()
+export class UserDTOMapper implements IUserDTOMapper {
+  public toUserResponseDTO(user: User): UserResponseDTO {
     return {
       id: user.id,
       name: user.name,

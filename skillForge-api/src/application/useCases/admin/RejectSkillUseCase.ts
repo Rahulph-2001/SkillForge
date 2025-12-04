@@ -38,6 +38,5 @@ export class RejectSkillUseCase {
       },
     });
 
-    console.log(`❌ [RejectSkillUseCase] Skill ${data.skillId} rejected by admin ${data.adminId}`);
   }
 }

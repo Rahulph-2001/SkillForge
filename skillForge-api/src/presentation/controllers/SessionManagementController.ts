@@ -40,7 +40,7 @@ export class SessionManagementController {
       const { status } = req.query;
 
       if (!providerId) {
-        console.error('❌ [SessionManagementController] No provider ID found');
+        console.error(' [SessionManagementController] No provider ID found');
         return res.status(401).json({
           success: false,
           message: 'Unauthorized',
@@ -53,7 +53,7 @@ export class SessionManagementController {
       });
 
       if (!result.success) {
-        console.error('❌ [SessionManagementController] Use case failed:', result.message);
+        console.error(' [SessionManagementController] Use case failed:', result.message);
         return res.status(400).json(result);
       }
       
@@ -65,8 +65,8 @@ export class SessionManagementController {
         },
       });
     } catch (error: any) {
-      console.error('❌ [SessionManagementController] Error:', error);
-      console.error('❌ [SessionManagementController] Error stack:', error.stack);
+      console.error(' [SessionManagementController] Error:', error);
+      console.error(' [SessionManagementController] Error stack:', error.stack);
       return res.status(500).json({
         success: false,
         message: 'Failed to retrieve sessions',
@@ -90,33 +90,27 @@ export class SessionManagementController {
         });
       }
 
-      const result = await this.acceptBookingUseCase.execute({
+      const booking = await this.acceptBookingUseCase.execute({
         bookingId,
         providerId,
       });
 
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
       return res.status(200).json({
         success: true,
-        message: result.message,
-        data: result.booking,
+        message: 'Booking accepted successfully',
+        data: booking,
       });
     } catch (error: any) {
-      console.error('❌ [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      console.error(' [SessionManagementController] Error:', error);
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to accept booking',
+        message: error.message || 'Failed to accept booking',
       });
     }
   }
 
-  /**
-   * Decline a booking request
-   * POST /api/sessions/:bookingId/decline
-   */
+  
   async declineBooking(req: Request, res: Response): Promise<Response> {
     try {
       const providerId = req.user?.id;
@@ -145,7 +139,7 @@ export class SessionManagementController {
         message: result.message,
       });
     } catch (error: any) {
-      console.error('❌ [SessionManagementController] Error:', error);
+      console.error(' [SessionManagementController] Error:', error);
       return res.status(500).json({
         success: false,
         message: 'Failed to decline booking',
@@ -153,10 +147,7 @@ export class SessionManagementController {
     }
   }
 
-  /**
-   * Cancel a booking
-   * POST /api/sessions/:bookingId/cancel
-   */
+ 
   async cancelBooking(req: Request, res: Response): Promise<Response> {
     try {
       const userId = req.user?.id;
@@ -170,25 +161,22 @@ export class SessionManagementController {
         });
       }
 
-      const result = await this.cancelBookingUseCase.execute({
+      await this.cancelBookingUseCase.execute({
         bookingId,
         userId,
         reason,
       });
 
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
       return res.status(200).json({
         success: true,
-        message: result.message,
+        message: 'Booking cancelled successfully',
       });
     } catch (error: any) {
       console.error('❌ [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to cancel booking',
+        message: error.message || 'Failed to cancel booking',
       });
     }
   }

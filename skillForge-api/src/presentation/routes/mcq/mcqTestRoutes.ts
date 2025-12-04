@@ -16,18 +16,10 @@ export class MCQTestRoutes {
   }
 
   private setupRoutes(): void {
-    /**
-     * @route   GET /api/v1/mcq/start/:skillId
-     * @desc    Start MCQ test for a skill
-     * @access  Private (User must own the skill)
-     */
+    
     this.router.get('/start/:skillId', authMiddleware, this.mcqTestController.startTest);
 
-    /**
-     * @route   POST /api/v1/mcq/submit
-     * @desc    Submit MCQ test answers
-     * @access  Private
-     */
+    
     this.router.post('/submit', authMiddleware, this.mcqTestController.submitTest);
   }
 

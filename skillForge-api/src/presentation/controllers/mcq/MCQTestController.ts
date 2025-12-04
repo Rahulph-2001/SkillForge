@@ -14,16 +14,11 @@ export class MCQTestController {
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) {}
 
-  /**
-   * Start MCQ test for a skill
-   * GET /api/v1/mcq/start/:skillId
-   */
+  
   public startTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
       const userId = (req as any).user.userId;
-
-      console.log(`🔵 [MCQTestController] Starting MCQ test for skill: ${skillId}, user: ${userId}`);
 
       const testSession = await this.startMCQTestUseCase.execute(skillId, userId);
 
@@ -34,7 +29,6 @@ export class MCQTestController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [MCQTestController] Error starting MCQ test:', error);
       next(error);
     }
   };
@@ -47,8 +41,6 @@ export class MCQTestController {
     try {
       const userId = (req as any).user.userId;
       const { skillId, questionIds, answers, timeTaken } = req.body;
-
-      console.log(`🔵 [MCQTestController] Submitting MCQ test for skill: ${skillId}, user: ${userId}`);
 
       // Validate input
       if (!skillId || !Array.isArray(questionIds) || !Array.isArray(answers)) {
@@ -79,8 +71,6 @@ export class MCQTestController {
         timeTaken,
       });
 
-      console.log(`✅ [MCQTestController] MCQ test submitted. Score: ${result.score}%, Passed: ${result.passed}`);
-
       const response = this.responseBuilder.success(
         result,
         'MCQ test submitted successfully',
@@ -88,7 +78,6 @@ export class MCQTestController {
       );
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
-      console.error('❌ [MCQTestController] Error submitting MCQ test:', error);
       next(error);
     }
   };

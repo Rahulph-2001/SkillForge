@@ -19,6 +19,7 @@ export interface CreateSkillProps {
   mcqScore?: number | null;
   mcqTotalQuestions?: number | null;
   mcqPassingScore?: number | null;
+  verifiedAt?: Date | null;
   totalSessions?: number;
   rating?: number;
   isBlocked?: boolean;
@@ -35,23 +36,24 @@ export class Skill {
   private readonly _description: string;
   private readonly _category: string;
   private readonly _level: string;
-  private readonly _durationHours: number;
-  private readonly _creditsPerHour: number;
-  private readonly _tags: string[];
-  private readonly _imageUrl: string | null;
-  private readonly _templateId: string | null;
-  private readonly _status: SkillStatus;
-  private readonly _verificationStatus: string | null;
-  private readonly _mcqScore: number | null;
+  private _durationHours: number;
+  private _creditsPerHour: number;
+  private _tags: string[];
+  private _imageUrl: string | null;
+  private _templateId: string | null;
+  private _status: SkillStatus;
+  private _verificationStatus: string | null;
+  private _mcqScore: number | null;
   private readonly _mcqTotalQuestions: number | null;
   private readonly _mcqPassingScore: number | null;
+  private _verifiedAt: Date | null;
   private readonly _totalSessions: number;
   private readonly _rating: number;
   private readonly _isBlocked: boolean;
   private readonly _blockedReason: string | null;
   private readonly _blockedAt: Date | null;
   private readonly _createdAt: Date;
-  private readonly _updatedAt: Date;
+  private _updatedAt: Date;
 
   constructor(props: CreateSkillProps) {
     this._id = props.id || uuidv4();
@@ -75,6 +77,7 @@ export class Skill {
     this._isBlocked = props.isBlocked || false;
     this._blockedReason = props.blockedReason || null;
     this._blockedAt = props.blockedAt || null;
+    this._verifiedAt = props.verifiedAt || null;
     this._createdAt = props.createdAt || new Date();
     this._updatedAt = props.updatedAt || new Date();
     
@@ -115,6 +118,9 @@ export class Skill {
   public get isBlocked(): boolean { return this._isBlocked; }
   public get blockedReason(): string | null { return this._blockedReason; }
   public get blockedAt(): Date | null { return this._blockedAt; }
+  public get verifiedAt(): Date | null { return this._verifiedAt; }
+  public get createdAt(): Date { return this._createdAt; }
+  public get updatedAt(): Date { return this._updatedAt; }
 
   public toJSON(): Record<string, unknown> {
     return {
@@ -134,6 +140,7 @@ export class Skill {
       mcqScore: this._mcqScore,
       mcqTotalQuestions: this._mcqTotalQuestions,
       mcqPassingScore: this._mcqPassingScore,
+      verifiedAt: this._verifiedAt,
       totalSessions: this._totalSessions,
       rating: this._rating,
       isBlocked: this._isBlocked,
@@ -142,5 +149,13 @@ export class Skill {
       createdAt: this._createdAt,
       updatedAt: this._updatedAt
     };
+  }
+
+  public passMCQ(score: number): void {
+    this._verificationStatus = 'passed';
+    this._mcqScore = score;
+    this._status = 'in-review';
+    this._verifiedAt = new Date();
+    this._updatedAt = new Date();
   }
 }

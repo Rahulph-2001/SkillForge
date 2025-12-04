@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { CreateSkillUseCase } from '../../../application/useCases/skill/CreateSkillUseCase';
-import { ListUserSkillsUseCase } from '../../../application/useCases/skill/ListUserSkillsUseCase';
+import { ICreateSkillUseCase } from '../../../application/useCases/skill/interfaces/ICreateSkillUseCase';
+import { IListUserSkillsUseCase } from '../../../application/useCases/skill/interfaces/IListUserSkillsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillDTO } from '../../../application/dto/skill/CreateSkillDTO';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
@@ -11,21 +11,15 @@ import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 @injectable()
 export class SkillController {
   constructor(
-    @inject(TYPES.CreateSkillUseCase) private readonly createSkillUseCase: CreateSkillUseCase,
-    @inject(TYPES.ListUserSkillsUseCase) private readonly listUserSkillsUseCase: ListUserSkillsUseCase,
+    @inject(TYPES.CreateSkillUseCase) private readonly createSkillUseCase: ICreateSkillUseCase,
+    @inject(TYPES.ListUserSkillsUseCase) private readonly listUserSkillsUseCase: IListUserSkillsUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) {}
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log(' [SkillController] Create skill request received');
       const userId = (req as any).user.userId;
       const file = req.file;
-      
-      console.log(' [SkillController] User ID:', userId);
-      console.log(' [SkillController] File received:', file ? `${file.originalname} (${file.size} bytes)` : 'No file');
-      console.log(' [SkillController] Request body:', req.body);
-      
       const skillDTO: CreateSkillDTO = req.body;
       
       const skill = await this.createSkillUseCase.execute(
@@ -38,16 +32,13 @@ export class SkillController {
         } : undefined
       );
 
-      console.log(' [SkillController] Skill created with imageUrl:', skill.toJSON().imageUrl);
-      
       const response = this.responseBuilder.success(
-        skill.toJSON(), 
+        skill, 
         SUCCESS_MESSAGES.SKILL.CREATED,
         HttpStatusCode.CREATED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
-      console.error(' [SkillController] Error creating skill:', error);
       next(error);
     }
   };
@@ -58,7 +49,7 @@ export class SkillController {
       const skills = await this.listUserSkillsUseCase.execute(userId);
       
       const response = this.responseBuilder.success(
-        skills.map(s => s.toJSON()), 
+        skills, 
         SUCCESS_MESSAGES.SKILL.FETCHED,
         HttpStatusCode.OK
       );

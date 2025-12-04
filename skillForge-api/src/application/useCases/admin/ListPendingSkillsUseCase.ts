@@ -1,81 +1,32 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { PrismaClient } from '@prisma/client';
-
-export interface PendingSkillDTO {
-  id: string;
-  providerId: string;
-  providerName: string;
-  providerEmail: string;
-  title: string;
-  description: string;
-  category: string;
-  level: string;
-  durationHours: number;
-  creditsPerHour: number;
-  tags: string[];
-  imageUrl: string | null;
-  templateId: string | null;
-  status: string;
-  verificationStatus: string | null;
-  mcqScore: number | null;
-  mcqTotalQuestions: number | null;
-  mcqPassingScore: number | null;
-  verifiedAt: Date | null;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IListPendingSkillsUseCase } from './interfaces/IListPendingSkillsUseCase';
+import { ListPendingSkillsResponseDTO } from '../../dto/admin/ListPendingSkillsResponseDTO';
+import { IPendingSkillMapper } from '../../mappers/interfaces/IPendingSkillMapper';
 
 @injectable()
-export class ListPendingSkillsUseCase {
+export class ListPendingSkillsUseCase implements IListPendingSkillsUseCase {
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
+    @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
+    @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+    @inject(TYPES.IPendingSkillMapper) private pendingSkillMapper: IPendingSkillMapper
   ) {}
 
-  async execute(): Promise<PendingSkillDTO[]> {
+  async execute(): Promise<ListPendingSkillsResponseDTO> {
     // Get all skills that passed MCQ and are waiting for admin approval
-    const skills = await this.prisma.skill.findMany({
-      where: {
-        status: 'in-review',
-        verificationStatus: 'passed',
-        isDeleted: false,
-      },
-      include: {
-        provider: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
-      orderBy: {
-        verifiedAt: 'desc',
-      },
-    });
+    const skills = await this.skillRepository.findPending();
 
-    return skills.map(skill => ({
-      id: skill.id,
-      providerId: skill.providerId,
-      providerName: skill.provider.name,
-      providerEmail: skill.provider.email,
-      title: skill.title,
-      description: skill.description,
-      category: skill.category,
-      level: skill.level,
-      durationHours: skill.durationHours,
-      creditsPerHour: skill.creditsPerHour,
-      tags: skill.tags,
-      imageUrl: skill.imageUrl,
-      templateId: skill.templateId,
-      status: skill.status,
-      verificationStatus: skill.verificationStatus,
-      mcqScore: skill.mcqScore,
-      mcqTotalQuestions: skill.mcqTotalQuestions,
-      mcqPassingScore: skill.mcqPassingScore,
-      verifiedAt: skill.verifiedAt,
-      createdAt: skill.createdAt,
-      updatedAt: skill.updatedAt,
+    const dtos = await Promise.all(skills.map(async (skill) => {
+      const provider = await this.userRepository.findById(skill.providerId);
+      if (!provider) {
+        // Log error or handle gracefully. For strictness, we assume provider exists.
+        throw new Error(`Provider ${skill.providerId} not found for skill ${skill.id}`);
+      }
+      return this.pendingSkillMapper.toDTO(skill, provider);
     }));
+
+    return dtos;
   }
 }

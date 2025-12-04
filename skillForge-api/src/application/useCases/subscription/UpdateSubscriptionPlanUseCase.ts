@@ -6,16 +6,19 @@ import { SubscriptionPlan } from '../../../domain/entities/SubscriptionPlan';
 import { UpdateSubscriptionPlanDTO } from '../../dto/subscription/UpdateSubscriptionPlanDTO';
 import { ForbiddenError, NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
-
+import { IUpdateSubscriptionPlanUseCase } from './interfaces/IUpdateSubscriptionPlanUseCase';
+import { SubscriptionPlanDTO } from '../../dto/subscription/SubscriptionPlanDTO';
+import { ISubscriptionPlanMapper } from '../../mappers/interfaces/ISubscriptionPlanMapper';
 
 @injectable()
-export class UpdateSubscriptionPlanUseCase {
+export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
-    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository
+    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository,
+    @inject(TYPES.ISubscriptionPlanMapper) private subscriptionPlanMapper: ISubscriptionPlanMapper
   ) {}
 
-  async execute(adminUserId: string, dto: UpdateSubscriptionPlanDTO): Promise<SubscriptionPlan> {
+  async execute(adminUserId: string, dto: UpdateSubscriptionPlanDTO): Promise<SubscriptionPlanDTO> {
     // Verify admin privileges
     const adminUser = await this.userRepository.findById(adminUserId);
     if (!adminUser || adminUser.role !== 'admin') {
@@ -58,6 +61,6 @@ export class UpdateSubscriptionPlanUseCase {
     // Save to repository
     const updatedPlan = await this.subscriptionPlanRepository.update(existingPlan);
 
-    return updatedPlan;
+    return this.subscriptionPlanMapper.toDTO(updatedPlan);
   }
 }

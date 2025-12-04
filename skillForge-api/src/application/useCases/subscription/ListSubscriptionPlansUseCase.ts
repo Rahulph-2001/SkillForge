@@ -4,24 +4,22 @@ import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubsc
 import { ForbiddenError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-
-
-
-export interface ListSubscriptionPlansResponse {
-  plans: any[];
-  total: number;
-}
+import { IListSubscriptionPlansUseCase } from './interfaces/IListSubscriptionPlansUseCase';
+import { ListSubscriptionPlansRequestDTO } from '../../dto/subscription/ListSubscriptionPlansRequestDTO';
+import { ListSubscriptionPlansResponseDTO } from '../../dto/subscription/ListSubscriptionPlansResponseDTO';
+import { ISubscriptionPlanMapper } from '../../mappers/interfaces/ISubscriptionPlanMapper';
 
 @injectable()
-export class ListSubscriptionPlansUseCase {
+export class ListSubscriptionPlansUseCase implements IListSubscriptionPlansUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
-    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository
+    @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository,
+    @inject(TYPES.ISubscriptionPlanMapper) private subscriptionPlanMapper: ISubscriptionPlanMapper
   ) {}
 
-  async execute(adminUserId: string): Promise<ListSubscriptionPlansResponse> {
+  async execute(request: ListSubscriptionPlansRequestDTO): Promise<ListSubscriptionPlansResponseDTO> {
     // Verify admin privileges
-    const adminUser = await this.userRepository.findById(adminUserId);
+    const adminUser = await this.userRepository.findById(request.adminUserId);
     if (!adminUser || adminUser.role !== 'admin') {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
@@ -30,7 +28,7 @@ export class ListSubscriptionPlansUseCase {
     const plans = await this.subscriptionPlanRepository.findAll();
 
     return {
-      plans: plans.map(plan => plan.toJSON()),
+      plans: plans.map(plan => this.subscriptionPlanMapper.toDTO(plan)),
       total: plans.length,
     };
   }

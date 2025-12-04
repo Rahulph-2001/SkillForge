@@ -33,6 +33,5 @@ export class UnblockSkillUseCase {
       },
     });
 
-    console.log(`✅ [UnblockSkillUseCase] Skill ${skillId} unblocked by admin ${adminId}`);
   }
 }

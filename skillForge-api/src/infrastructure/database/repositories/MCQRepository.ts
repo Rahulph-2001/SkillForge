@@ -24,19 +24,14 @@ export class MCQRepository implements IMCQRepository {
       },
     });
 
-    console.log(`🎲 [MCQRepository] Found ${allQuestions.length} total questions for template ${templateId}, level ${level}`);
-
     // If we have fewer questions than requested, return all
     if (allQuestions.length <= limit) {
-      console.log(`📋 [MCQRepository] Returning all ${allQuestions.length} questions (less than requested ${limit})`);
       return allQuestions.map(this.toDomainQuestion);
     }
 
     // Randomly shuffle and select 'limit' number of questions
     const shuffled = this.shuffleArray([...allQuestions]);
     const selectedQuestions = shuffled.slice(0, limit);
-
-    console.log(`🎯 [MCQRepository] Randomly selected ${selectedQuestions.length} questions from pool of ${allQuestions.length}`);
 
     return selectedQuestions.map(this.toDomainQuestion);
   }
@@ -71,8 +66,6 @@ export class MCQRepository implements IMCQRepository {
     const orderedQuestions = ids
       .map(id => questions.find(q => q.id === id))
       .filter((q): q is any => q !== undefined);
-
-    console.log(`📋 [MCQRepository] Fetched ${orderedQuestions.length} questions by IDs (requested: ${ids.length})`);
 
     return orderedQuestions.map(this.toDomainQuestion);
   }

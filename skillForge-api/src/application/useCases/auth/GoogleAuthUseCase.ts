@@ -7,7 +7,7 @@ import { Email } from '../../../shared/value-objects/Email';
 import { env } from '../../../config/env';
 import { Profile } from 'passport-google-oauth20';
 import crypto from 'crypto';
-import { UserDTOMapper } from '../../mappers/UserDTOMapper';
+import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
 
 export interface GoogleAuthResponse {
@@ -21,7 +21,8 @@ export interface GoogleAuthResponse {
 export class GoogleAuthUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
-    @inject(TYPES.IJWTService) private jwtService: IJWTService
+    @inject(TYPES.IJWTService) private jwtService: IJWTService,
+    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) {}
 
   async execute(googleProfile: Profile): Promise<GoogleAuthResponse> {
@@ -55,8 +56,6 @@ export class GoogleAuthUseCase {
 
       // Save new user
       user = await this.userRepository.save(newUser);
-      
-      console.log(`New user created via Google OAuth: ${googleEmail} with ${env.DEFAULT_BONUS_CREDITS} credits`);
     } else {
       // Existing user - update avatar if changed and update login time
       if (avatarUrl && user.avatarUrl !== avatarUrl) {
@@ -85,7 +84,7 @@ export class GoogleAuthUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: UserDTOMapper.toUserResponseDTO(user),
+      user: this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
       isNewUser,

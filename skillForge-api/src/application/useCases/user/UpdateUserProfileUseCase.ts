@@ -2,8 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { PrismaClient } from '@prisma/client';
 import { IS3Service } from '../../../domain/services/IS3Service';
-import { AppError } from '../../../domain/errors/AppError';
-import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 
 export interface UpdateUserProfileDTO {
   userId: string;
@@ -38,8 +37,7 @@ export class UpdateUserProfileUseCase {
     });
 
     if (!user) {
-      console.error('❌ [UpdateUserProfileUseCase] User not found:', userId);
-      throw new AppError('User not found', HttpStatusCode.NOT_FOUND);
+      throw new NotFoundError('User not found');
     }
 
     let avatarUrl = user.avatarUrl;
@@ -59,8 +57,7 @@ export class UpdateUserProfileUseCase {
         const key = `avatars/${userId}/${Date.now()}-${avatarFile.originalname}`;
         avatarUrl = await this.s3Service.uploadFile(avatarFile.buffer, key, avatarFile.mimetype);
       } catch (error) {
-        console.error('❌ [UpdateUserProfileUseCase] Failed to upload avatar:', error);
-        throw new AppError('Failed to upload avatar image', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        throw new InternalServerError('Failed to upload avatar image');
       }
     }
 

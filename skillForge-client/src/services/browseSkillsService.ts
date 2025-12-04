@@ -47,9 +47,7 @@ export const browseSkillsService = {
     if (filters.limit) params.append('limit', filters.limit.toString());
     if (filters.excludeProviderId) params.append('excludeProviderId', filters.excludeProviderId);
 
-    console.log('🔵 [browseSkillsService] Fetching skills with filters:', filters);
     const response = await api.get(`/skills/browse?${params.toString()}`);
-    console.log('✅ [browseSkillsService] Skills fetched:', response.data.data);
     return response.data.data;
   }
 };
