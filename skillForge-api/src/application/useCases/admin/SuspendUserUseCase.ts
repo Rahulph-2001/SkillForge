@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { ISuspendUserUseCase } from './interfaces/ISuspendUserUseCase';
 import { SuspendUserRequestDTO } from '../../dto/admin/SuspendUserRequestDTO';
@@ -15,7 +16,7 @@ export class SuspendUserUseCase implements ISuspendUserUseCase {
 
   async execute(request: SuspendUserRequestDTO): Promise<SuspendUserResponseDTO> {
     const adminUser = await this.userRepository.findById(request.adminUserId);
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || adminUser.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 
@@ -24,7 +25,7 @@ export class SuspendUserUseCase implements ISuspendUserUseCase {
       throw new NotFoundError(ERROR_MESSAGES.ADMIN.USER_NOT_FOUND);
     }
 
-    if (user.role === 'admin') {
+    if (user.role === UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.CANNOT_SUSPEND_ADMIN);
     }
 

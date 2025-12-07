@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { Users, Plus, Loader2, CheckCircle } from "lucide-react";
-import Navbar from "../../components/shared/Navbar/Navbar";
+
 import StatCard from "../../components/admin/StatCard";
 import SkillCard from "../../components/skill/SkillCard";
 import SkillAddModal, { NewSkill } from "../../components/skill/SkillAddModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchMySkills, createSkill } from "../../store/slices/skillSlice";
-import { SuccessModal, ErrorModal } from "../../components/shared/Modal";
+import { SuccessModal, ErrorModal } from "../../components/common/Modal";
 
 export default function SkillsPage() {
   const dispatch = useAppDispatch();
   const { mySkills, loading, error } = useAppSelector((state) => state.skills);
-  const { user } = useAppSelector((state) => state.auth);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -24,14 +23,14 @@ export default function SkillsPage() {
 
   const handleAddSkill = async (newSkill: NewSkill, file?: Blob) => {
     try {
-      await dispatch(createSkill({ 
+      await dispatch(createSkill({
         data: {
           ...newSkill,
-          creditsHour: newSkill.creditsHour 
-        }, 
-        file 
+          creditsHour: newSkill.creditsHour
+        },
+        file
       })).unwrap();
-      
+
       setIsModalOpen(false);
       setShowSuccess(true);
     } catch (err: any) {
@@ -60,15 +59,6 @@ export default function SkillsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar 
-        isAuthenticated={!!user}
-        user={user ? {
-          name: user.name,
-          avatar: user.avatar || undefined,
-          credits: user.credits,
-          subscriptionPlan: 'free' // You can add this to user state later
-        } : undefined}
-      />
       <div className="bg-white border-b border-gray-200">
         <div className="mx-auto max-w-7xl px-6 py-8">
           <div className="flex items-start justify-between gap-4">
@@ -109,22 +99,20 @@ export default function SkillsPage() {
         <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveFilter("all")}
-            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
-              activeFilter === "all"
-                ? "bg-blue-600 text-white"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "all"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
           >
             All Skills
             <span className="ml-2 font-bold">{stats.total}</span>
           </button>
           <button
             onClick={() => setActiveFilter("approved")}
-            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
-              activeFilter === "approved"
-                ? "bg-blue-600 text-white"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "approved"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
           >
             Approved
             <span className={`ml-2 font-bold ${activeFilter === "approved" ? "text-white" : "text-green-600"}`}>
@@ -133,11 +121,10 @@ export default function SkillsPage() {
           </button>
           <button
             onClick={() => setActiveFilter("pending")}
-            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
-              activeFilter === "pending"
-                ? "bg-blue-600 text-white"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "pending"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
           >
             MCQ Pending
             <span className={`ml-2 font-bold ${activeFilter === "pending" ? "text-white" : "text-blue-600"}`}>
@@ -146,11 +133,10 @@ export default function SkillsPage() {
           </button>
           <button
             onClick={() => setActiveFilter("in-review")}
-            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
-              activeFilter === "in-review"
-                ? "bg-blue-600 text-white"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "in-review"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
           >
             In Review
             <span className={`ml-2 font-bold ${activeFilter === "in-review" ? "text-white" : "text-amber-600"}`}>
@@ -159,11 +145,10 @@ export default function SkillsPage() {
           </button>
           <button
             onClick={() => setActiveFilter("rejected")}
-            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${
-              activeFilter === "rejected"
-                ? "bg-blue-600 text-white"
-                : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "rejected"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              }`}
           >
             Rejected
             <span className="ml-2 font-bold">{stats.rejected}</span>
@@ -177,32 +162,32 @@ export default function SkillsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredSkills.map((skill) => (
-              <SkillCard 
-                key={skill.id} 
+              <SkillCard
+                key={skill.id}
                 skill={{
                   ...skill,
                   creditsHour: skill.creditsPerHour,
                   sessions: skill.totalSessions,
                   imageUrl: skill.imageUrl
-                }} 
+                }}
               />
             ))}
           </div>
         )}
       </div>
 
-      <SkillAddModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <SkillAddModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddSkill}
       />
-      
-      <SuccessModal 
-        isOpen={showSuccess} 
-        message="Skill created successfully!" 
-        onClose={() => setShowSuccess(false)} 
+
+      <SuccessModal
+        isOpen={showSuccess}
+        message="Skill created successfully!"
+        onClose={() => setShowSuccess(false)}
       />
-      
+
       <ErrorModal
         isOpen={showError || !!error}
         message={errorMessage || error || ''}

@@ -1,9 +1,9 @@
-import { LoginForm, LoginFormData } from '../../components/shared/Login';
+import { LoginForm, LoginFormData } from '../../components/common/Login';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login, clearError } from '../../store/slices/authSlice';
 import { useEffect, useState } from 'react';
-import { ErrorModal } from '../../components/shared/Modal';
+import { ErrorModal } from '../../components/common/Modal';
 
 export default function LoginPage() {
     const navigate = useNavigate();

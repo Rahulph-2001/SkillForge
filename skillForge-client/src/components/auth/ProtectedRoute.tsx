@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAppSelector } from '../../store/hooks'
+import { isAdmin } from '../../config/userRole'
 
 interface ProtectedRouteProps {
     children: React.ReactNode
@@ -29,12 +30,12 @@ export default function ProtectedRoute({
     }
 
     // Prevent admin from accessing user routes
-    if (preventAdminAccess && user.role === 'admin') {
+    if (preventAdminAccess && isAdmin(user.role)) {
         return <Navigate to="/admin/dashboard" replace />
     }
 
     // Prevent regular users from accessing admin routes
-    if (preventUserAccess && user.role !== 'admin') {
+    if (preventUserAccess && !isAdmin(user.role)) {
         return <Navigate to="/home" replace />
     }
 
@@ -42,7 +43,7 @@ export default function ProtectedRoute({
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
         // User doesn't have required role
         // Redirect admin to admin dashboard, regular users to home
-        const fallbackRoute = user.role === 'admin' ? '/admin/dashboard' : '/home'
+        const fallbackRoute = isAdmin(user.role) ? '/admin/dashboard' : '/home'
         return <Navigate to={fallbackRoute} replace />
     }
 

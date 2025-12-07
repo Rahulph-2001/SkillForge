@@ -1,9 +1,9 @@
-import { SignupForm, SignupFormData } from '../../components/shared/Signup';
+import { SignupForm, SignupFormData } from '../../components/common/Signup';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { signup, clearError } from '../../store/slices/authSlice';
 import { useEffect, useState } from 'react';
-import { SuccessModal, ErrorModal } from '../../components/shared/Modal';
+import { SuccessModal, ErrorModal } from '../../components/common/Modal';
 
 export default function SignupPage() {
     const navigate = useNavigate();

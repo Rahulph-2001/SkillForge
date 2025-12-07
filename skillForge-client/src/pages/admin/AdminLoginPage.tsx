@@ -4,7 +4,8 @@ import { ArrowLeft, Mail, Lock, Shield } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { adminLogin, clearError } from "../../store/slices/authSlice"
-import { ErrorModal } from "../../components/shared/Modal"
+import { ErrorModal } from "../../components/common/Modal"
+import { isAdmin } from "../../config/userRole"
 
 export default function AdminLoginPage() {
     const navigate = useNavigate()
@@ -26,7 +27,7 @@ export default function AdminLoginPage() {
 
     // Redirect to admin dashboard if already logged in as admin
     useEffect(() => {
-        if (user && user.role === 'admin') {
+        if (user && isAdmin(user.role)) {
             navigate('/admin/dashboard')
         }
     }, [user, navigate])

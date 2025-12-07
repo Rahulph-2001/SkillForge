@@ -17,6 +17,7 @@ export interface AuthState {
     role: string;
     credits: number;
     avatar?: string | null;
+    subscriptionPlan?: string;
     verification: {
       email_verified: boolean;
     };
@@ -52,9 +53,9 @@ export const signup = createAsyncThunk<
       console.error('Signup error:', error);
       // Handle network errors
       if (error.code === 'ERR_NETWORK') {
-        return rejectWithValue({ 
-          success: false, 
-          error: 'Cannot connect to server. Please check if the backend is running.' 
+        return rejectWithValue({
+          success: false,
+          error: 'Cannot connect to server. Please check if the backend is running.'
         });
       }
       return rejectWithValue(error as ApiError);
@@ -77,16 +78,16 @@ export const login = createAsyncThunk<
       console.error('Login error:', error);
       // Handle network errors
       if (error.code === 'ERR_NETWORK') {
-        return rejectWithValue({ 
-          success: false, 
-          error: 'Cannot connect to server. Please check if the backend is running.' 
+        return rejectWithValue({
+          success: false,
+          error: 'Cannot connect to server. Please check if the backend is running.'
         });
       }
       // Handle timeout errors
       if (error.code === 'ECONNABORTED') {
-        return rejectWithValue({ 
-          success: false, 
-          error: 'Request timeout. Please try again.' 
+        return rejectWithValue({
+          success: false,
+          error: 'Request timeout. Please try again.'
         });
       }
       return rejectWithValue(error as ApiError);

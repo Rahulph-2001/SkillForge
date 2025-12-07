@@ -16,7 +16,13 @@ async function startServer() {
     const redis = RedisService.getInstance();
     await redis.ping();
     console.log('Redis healthy');
-    
+
+    // Start Job Queue Worker
+    const jobQueueService = container.get<any>(TYPES.IJobQueueService);
+    await jobQueueService.startWorker();
+    console.log('Job Queue Worker started');
+
+
     const server = appInstance.listen(port, () => {
       console.log(`Server running on port ${port} in ${env.NODE_ENV} mode`);
     });
@@ -24,8 +30,8 @@ async function startServer() {
     // Handle port already in use error
     server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {
-        console.error(`❌ Port ${port} is already in use!`);
-        console.error('💡 Solutions:');
+        console.error(` Port ${port} is already in use!`);
+        console.error(' Solutions:');
         console.error('   1. Run: npm run dev:clean (kills port automatically)');
         console.error('   2. Or manually: netstat -ano | findstr :3000');
         console.error('   3. Then: taskkill /PID <PID> /F');
@@ -39,7 +45,7 @@ async function startServer() {
     // Graceful shutdown
     const gracefulShutdown = (signal: string) => {
       console.log(`\n${signal} received. Shutting down gracefully...`);
-      
+
       server.close(() => {
         console.log('✅ HTTP server closed');
         process.exit(0);
@@ -54,7 +60,7 @@ async function startServer() {
 
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
-    
+
     process.on('unhandledRejection', (err: Error) => {
       console.error('UNHANDLED REJECTION!');
       console.error(err.name, err.message, err.stack);

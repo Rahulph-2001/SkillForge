@@ -23,6 +23,7 @@ import userProfileRoutesLegacy from './routes/userProfileRoutes';
 import sessionManagementRoutes from './routes/sessionManagementRoutes';
 import { generalLimiter } from './middlewares/rateLimitMiddileWare';
 import { PassportService } from '../infrastructure/services/PassportService';
+import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
 
 @injectable()
 export class App {
@@ -41,6 +42,7 @@ export class App {
     @inject(TYPES.AdminSkillRoutes) private readonly adminSkillRoutes: AdminSkillRoutes,
     @inject(TYPES.BookingRoutes) private readonly bookingRoutes: BookingRoutes,
     @inject(TYPES.UserProfileRoutes) private readonly userProfileRoutes: UserProfileRoutes,
+    @inject(TYPES.MCQImportRoutes) private readonly mcqImportRoutes: MCQImportRoutes,
     @inject(TYPES.PassportService) private readonly passportService: PassportService
   ) {
     this.app = express();
@@ -106,6 +108,7 @@ export class App {
     this.app.use('/api/v1/admin/skills', this.adminSkillRoutes.getRouter());
     this.app.use('/api/v1/admin/skill-templates', this.skillTemplateRoutes.router);
     this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
+    this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter())
     this.app.all('*', notFoundHandler);
   }
 

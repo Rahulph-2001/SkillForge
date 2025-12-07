@@ -3,6 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()
 export class DeleteTemplateQuestionUseCase {
@@ -16,7 +17,7 @@ export class DeleteTemplateQuestionUseCase {
   async execute(adminUserId: string, questionId: string): Promise<void> {
     // Verify admin authorization
     const admin = await this.userRepository.findById(adminUserId);
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can delete template questions');
     }
 

@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, Loader2, Save } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
+
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { updateUserAvatar } from '../../store/slices/authSlice';
-import { userProfileService, UserProfile } from '../../services/userProfileService';
+import { userProfileService } from '../../services/userProfileService';
 import { toast } from 'react-hot-toast';
-import ImageCropper from '../../components/shared/imageCropper';
+import ImageCropper from '../../components/common/imageCropper';
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
@@ -14,16 +14,16 @@ export default function EditProfilePage() {
   const { user } = useAppSelector((state) => state.auth);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  // const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     bio: '',
     location: '',
   });
-  
+
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
@@ -39,7 +39,7 @@ export default function EditProfilePage() {
     try {
       setLoading(true);
       const data = await userProfileService.getProfile();
-      setProfile(data);
+      // setProfile(data);
       setFormData({
         name: data.name,
         bio: data.bio || '',
@@ -93,14 +93,14 @@ export default function EditProfilePage() {
     // Convert blob to file
     const croppedFile = new File([croppedBlob], 'avatar.jpg', { type: 'image/jpeg' });
     setAvatarFile(croppedFile);
-    
+
     // Create preview from blob
     const reader = new FileReader();
     reader.onloadend = () => {
       setAvatarPreview(reader.result as string);
     };
     reader.readAsDataURL(croppedBlob);
-    
+
     setShowCropper(false);
     setTempImageSrc(null);
   };
@@ -171,15 +171,7 @@ export default function EditProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar
-          isAuthenticated={!!user}
-          user={user ? {
-            name: user.name,
-            credits: user.credits,
-            subscriptionPlan: 'free',
-            avatar: profile?.avatarUrl || undefined
-          } : undefined}
-        />
+
         <div className="flex flex-col justify-center items-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
           <p className="text-gray-600">Loading profile...</p>
@@ -190,15 +182,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar
-        isAuthenticated={!!user}
-        user={user ? {
-          name: user.name,
-          credits: user.credits,
-          subscriptionPlan: 'free',
-          avatar: avatarPreview || undefined
-        } : undefined}
-      />
+
 
       {/* Header */}
       <div className="bg-white px-6 py-4 border-b border-gray-200">

@@ -14,20 +14,20 @@ import {
   BookOpen,
   CalendarClock,
 } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
-import { useAppSelector } from '../../store/hooks';
+
+// import { useAppSelector } from '../../store/hooks';
 import { sessionManagementService, SessionStats } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
 
-import ConfirmModal from '../../components/shared/Modal/ConfirmModal';
-import PromptModal from '../../components/shared/Modal/PromptModal';
+import ConfirmModal from '../../components/common/Modal/ConfirmModal';
+import PromptModal from '../../components/common/Modal/PromptModal';
 
 type FilterType = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 type ViewMode = 'learner' | 'provider';
 
 export default function SessionManagementPage() {
-  const { user } = useAppSelector((state) => state.auth);
+  // const { user } = useAppSelector((state) => state.auth);
   const [viewMode, setViewMode] = useState<ViewMode>('learner');
   const [sessions, setSessions] = useState<any[]>([]); // Changed to any to support both provider/learner session types
   const [stats, setStats] = useState<SessionStats | null>(null);
@@ -42,14 +42,14 @@ export default function SessionManagementPage() {
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const [promptModal, setPromptModal] = useState({
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: (value: string) => {}, // eslint-disable-line @typescript-eslint/no-unused-vars
+    onConfirm: (_value: string) => { }, // eslint-disable-line @typescript-eslint/no-unused-vars
   });
 
   useEffect(() => {
@@ -59,13 +59,13 @@ export default function SessionManagementPage() {
   const fetchSessions = async () => {
     try {
       setLoading(true);
-      const data = viewMode === 'provider' 
+      const data = viewMode === 'provider'
         ? await sessionManagementService.getProviderSessions()
         : await sessionManagementService.getUserSessions();
-      
+
       // Handle empty or undefined data gracefully
       let mappedSessions = data?.sessions || [];
-      
+
       // If in learner mode, map provider details to be accessible
       if (viewMode === 'learner') {
         mappedSessions = mappedSessions.map((s: any) => ({
@@ -85,7 +85,7 @@ export default function SessionManagementPage() {
       // Set empty data on error
       setSessions([]);
       setStats({ pending: 0, confirmed: 0, rescheduleRequested: 0, completed: 0 });
-      
+
       // Only show error toast if it's not a "no skills" scenario
       if (error.response?.status !== 404) {
         toast.error(error.response?.data?.message || 'Failed to load sessions');
@@ -391,19 +391,7 @@ export default function SessionManagementPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar
-          isAuthenticated={!!user}
-          user={
-            user
-              ? {
-                  name: user.name,
-                  credits: user.credits,
-                  subscriptionPlan: 'free',
-                  avatar: user.avatar || undefined,
-                }
-              : undefined
-          }
-        />
+
         <div className="flex flex-col justify-center items-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
           <p className="text-gray-600">Loading sessions...</p>
@@ -414,19 +402,7 @@ export default function SessionManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar
-        isAuthenticated={!!user}
-        user={
-          user
-            ? {
-                name: user.name,
-                credits: user.credits,
-                subscriptionPlan: 'free',
-                avatar: user.avatar || undefined,
-              }
-            : undefined
-        }
-      />
+
 
       {/* Header */}
       <div className="bg-white border-b border-gray-200">
@@ -445,11 +421,10 @@ export default function SessionManagementPage() {
           <div className="flex gap-2 mt-6">
             <button
               onClick={() => setViewMode('learner')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
-                viewMode === 'learner'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${viewMode === 'learner'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
             >
               <BookOpen className="w-5 h-5" />
               My Bookings
@@ -457,11 +432,10 @@ export default function SessionManagementPage() {
             </button>
             <button
               onClick={() => setViewMode('provider')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
-                viewMode === 'provider'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${viewMode === 'provider'
+                ? 'bg-blue-600 text-white shadow-md'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
             >
               <Users className="w-5 h-5" />
               Provider Sessions
@@ -532,9 +506,8 @@ export default function SessionManagementPage() {
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  activeFilter === filter ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-100'
-                } relative`}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeFilter === filter ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-100'
+                  } relative`}
               >
                 {filter}
                 {filter === 'Pending' && activeFilter === filter && stats && stats.pending > 0 && (
@@ -558,25 +531,25 @@ export default function SessionManagementPage() {
             </h3>
             <p className="text-gray-600 mb-4">
               {viewMode === 'provider' ? (
-                activeFilter === 'All' 
+                activeFilter === 'All'
                   ? "You haven't received any booking requests yet. Add skills to start receiving requests!"
                   : activeFilter === 'Pending'
-                  ? "You don't have any pending booking requests."
-                  : activeFilter === 'Confirmed'
-                  ? "You don't have any confirmed sessions."
-                  : activeFilter === 'Completed'
-                  ? "You haven't completed any sessions yet."
-                  : "You don't have any cancelled sessions."
+                    ? "You don't have any pending booking requests."
+                    : activeFilter === 'Confirmed'
+                      ? "You don't have any confirmed sessions."
+                      : activeFilter === 'Completed'
+                        ? "You haven't completed any sessions yet."
+                        : "You don't have any cancelled sessions."
               ) : (
                 activeFilter === 'All'
                   ? "You haven't booked any sessions yet. Browse skills to get started!"
                   : activeFilter === 'Pending'
-                  ? "You don't have any pending bookings."
-                  : activeFilter === 'Confirmed'
-                  ? "You don't have any confirmed sessions."
-                  : activeFilter === 'Completed'
-                  ? "You haven't completed any sessions yet."
-                  : "You don't have any cancelled bookings."
+                    ? "You don't have any pending bookings."
+                    : activeFilter === 'Confirmed'
+                      ? "You don't have any confirmed sessions."
+                      : activeFilter === 'Completed'
+                        ? "You haven't completed any sessions yet."
+                        : "You don't have any cancelled bookings."
               )}
             </p>
             {viewMode === 'provider' && activeFilter === 'All' && (
@@ -641,8 +614,8 @@ export default function SessionManagementPage() {
                         <div className="flex items-center gap-1 mt-1 text-gray-600">
                           <User className="w-4 h-4" />
                           <span className="text-sm">
-                            {viewMode === 'learner' 
-                              ? `with ${session.providerName}` 
+                            {viewMode === 'learner'
+                              ? `with ${session.providerName}`
                               : `with ${session.learnerName}`}
                           </span>
                         </div>

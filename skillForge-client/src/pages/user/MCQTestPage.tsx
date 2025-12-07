@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
 import { mcqTestService, MCQTestSession, MCQResult } from "../../services/mcqTestService";
-import { ErrorModal, ConfirmModal } from "../../components/shared/Modal";
+import { ErrorModal, ConfirmModal } from "../../components/common/Modal";
 
 export default function MCQTestPage() {
   const { skillId } = useParams<{ skillId: string }>();
@@ -17,12 +17,12 @@ export default function MCQTestPage() {
   const [testResult, setTestResult] = useState<MCQResult | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [showResults, setShowResults] = useState(false);
-  
+
   const [confirmModal, setConfirmModal] = useState({
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   useEffect(() => {
@@ -58,24 +58,24 @@ export default function MCQTestPage() {
     try {
       setSubmitting(true);
       const timeTaken = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
-      
+
       // Extract question IDs from the test session
       const questionIds = testSession!.questions.map(q => q.id);
-      
-      console.log('🔵 [MCQTestPage] Submitting test:', { 
-        skillId, 
-        questionIds, 
-        answers: selectedAnswers, 
-        timeTaken 
+
+      console.log('🔵 [MCQTestPage] Submitting test:', {
+        skillId,
+        questionIds,
+        answers: selectedAnswers,
+        timeTaken
       });
-      
+
       const response = await mcqTestService.submitTest({
         skillId: skillId!,
         questionIds,
         answers: selectedAnswers,
         timeTaken,
       });
-      
+
       console.log('✅ [MCQTestPage] Test submitted. Result:', response.data);
       setTestResult(response.data.data);
       setShowResults(true);
@@ -185,9 +185,8 @@ export default function MCQTestPage() {
                 return (
                   <div
                     key={question.id}
-                    className={`border rounded-lg p-4 ${
-                      isCorrect ? "border-green-300 bg-green-50" : "border-red-300 bg-red-50"
-                    }`}
+                    className={`border rounded-lg p-4 ${isCorrect ? "border-green-300 bg-green-50" : "border-red-300 bg-red-50"
+                      }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
                       {isCorrect ? (
@@ -208,13 +207,12 @@ export default function MCQTestPage() {
                         return (
                           <div
                             key={optIdx}
-                            className={`p-2 rounded text-sm ${
-                              isCorrectAnswer
+                            className={`p-2 rounded text-sm ${isCorrectAnswer
                                 ? "bg-green-200 text-green-900 font-medium"
                                 : isUserAnswer
-                                ? "bg-red-200 text-red-900"
-                                : "bg-white text-gray-700"
-                            }`}
+                                  ? "bg-red-200 text-red-900"
+                                  : "bg-white text-gray-700"
+                              }`}
                           >
                             {String.fromCharCode(65 + optIdx)}. {option}
                             {isCorrectAnswer && " ✓"}
@@ -315,19 +313,17 @@ export default function MCQTestPage() {
               <button
                 key={idx}
                 onClick={() => handleAnswerSelect(currentQuestion, idx)}
-                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                  selectedAnswers[currentQuestion] === idx
+                className={`w-full text-left p-4 rounded-lg border-2 transition-all ${selectedAnswers[currentQuestion] === idx
                     ? "border-blue-600 bg-blue-50"
                     : "border-gray-300 hover:border-gray-400 bg-white"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                      selectedAnswers[currentQuestion] === idx
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedAnswers[currentQuestion] === idx
                         ? "border-blue-600 bg-blue-600"
                         : "border-gray-300"
-                    }`}
+                      }`}
                   >
                     {selectedAnswers[currentQuestion] === idx && (
                       <div className="w-2 h-2 bg-white rounded-full" />
@@ -357,13 +353,12 @@ export default function MCQTestPage() {
                 <button
                   key={idx}
                   onClick={() => setCurrentQuestion(idx)}
-                  className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                    idx === currentQuestion
+                  className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${idx === currentQuestion
                       ? "bg-blue-600 text-white"
                       : selectedAnswers[idx] !== -1
-                      ? "bg-green-100 text-green-700"
-                      : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                  }`}
+                        ? "bg-green-100 text-green-700"
+                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    }`}
                 >
                   {idx + 1}
                 </button>

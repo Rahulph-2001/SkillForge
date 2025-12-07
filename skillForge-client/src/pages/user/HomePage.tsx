@@ -1,24 +1,13 @@
-import { Navbar } from '../../components/shared/Navbar';
-import { Footer } from '../../components/shared/Footer';
+
+import { Footer } from '../../components/common/Footer';
 import { Link } from 'react-router-dom';
 
-import { useAppSelector } from '../../store/hooks';
+
 
 export default function HomePage() {
-    const { user } = useAppSelector((state) => state.auth);
-
-    // Fallback for display if some fields are missing in the auth user object
-    const displayUser = user ? {
-        name: user.name,
-        avatar: user.avatar || undefined,
-        credits: user.credits,
-        subscriptionPlan: 'free', // Show 'free' to encourage upgrades
-    } : null;
-
     return (
         <main className="min-h-screen bg-white">
-            {/* Navbar */}
-            <Navbar isAuthenticated={!!user} user={displayUser || undefined} />
+
 
             {/* Hero Section */}
             <section className="bg-gradient-to-b from-blue-50 to-white py-20 px-4 sm:px-6 lg:px-8">

@@ -106,4 +106,26 @@ export class RedisService {
       return false;
     }
   }
+
+  public getRedisOptions(): any {
+    const redisUrl = env.REDIS_URL;
+    const redisPassword = env.REDIS_PASSWORD;
+
+    if (redisUrl) {
+      return {
+        connection: {
+          url: redisUrl,
+          password: redisPassword
+        }
+      };
+    } else {
+      return {
+        connection: {
+          host: 'localhost',
+          port: 6379,
+          password: redisPassword
+        }
+      };
+    }
+  }
 }

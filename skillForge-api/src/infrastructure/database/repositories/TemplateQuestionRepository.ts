@@ -6,7 +6,7 @@ import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 
 @injectable()
 export class TemplateQuestionRepository implements ITemplateQuestionRepository {
-  constructor(@inject(TYPES.Database) private readonly database: Database) {}
+  constructor(@inject(TYPES.Database) private readonly database: Database) { }
 
   async create(question: TemplateQuestion): Promise<TemplateQuestion> {
     const created = await this.database.getClient().templateQuestion.create({
@@ -128,6 +128,17 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
     });
   }
 
+  async bulkDelete(ids: string[]): Promise<number> {
+    const result = await this.database.getClient().templateQuestion.updateMany({
+      where: {
+        id: { in: ids },
+        isActive: true
+      },
+      data: { isActive: false },
+    });
+    return result.count;
+  }
+
   async countByTemplateId(templateId: string): Promise<number> {
     return this.database.getClient().templateQuestion.count({
       where: { templateId, isActive: true },
@@ -163,5 +174,23 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
         q.updatedAt
       )
     );
+  }
+
+  async createMany(questions: TemplateQuestion[]): Promise<number> {
+    const result = await this.database.getClient().templateQuestion.createMany({
+      data: questions.map(q => ({
+        id: q.id,
+        templateId: q.templateId,
+        level: q.level,
+        question: q.question,
+        options: q.options,
+        correctAnswer: q.correctAnswer,
+        explanation: q.explanation,
+        isActive: q.isActive,
+        createdAt: q.createdAt,
+        updatedAt: q.updatedAt
+      }))
+    });
+    return result.count;
   }
 }

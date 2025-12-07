@@ -5,6 +5,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { SubscriptionPlan } from '../../../domain/entities/SubscriptionPlan';
 import { CreateSubscriptionPlanDTO } from '../../dto/subscription/CreateSubscriptionPlanDTO';
 import { ForbiddenError, ConflictError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { ICreateSubscriptionPlanUseCase } from './interfaces/ICreateSubscriptionPlanUseCase';
 import { SubscriptionPlanDTO } from '../../dto/subscription/SubscriptionPlanDTO';
@@ -21,7 +22,7 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
   async execute(adminUserId: string, dto: CreateSubscriptionPlanDTO): Promise<SubscriptionPlanDTO> {
     // Verify admin privileges
     const adminUser = await this.userRepository.findById(adminUserId);
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || adminUser.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 

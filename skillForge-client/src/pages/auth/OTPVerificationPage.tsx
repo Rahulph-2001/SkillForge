@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { OTPInput } from '../../components/shared/OTP';
-import { SuccessModal, ErrorModal } from '../../components/shared/Modal';
+import { OTPInput } from '../../components/common/OTP';
+import { SuccessModal, ErrorModal } from '../../components/common/Modal';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { verifyOtp, resendOtp } from '../../store/slices/authSlice';
 import { useOTPTimer } from '../../hooks/useOTPTimer';
@@ -86,11 +86,11 @@ export default function OTPVerificationPage() {
 
         try {
             const result = await dispatch(resendOtp(email)).unwrap();
-            
+
             // Get new expiry time from response
             const response = result as { data?: { expiresAt?: string } };
             const newExpiresAt = response?.data?.expiresAt;
-            
+
             if (newExpiresAt) {
                 // Reset timer with server-provided expiry time
                 resetTimer(newExpiresAt);
@@ -130,13 +130,12 @@ export default function OTPVerificationPage() {
                     {/* OTP Expiry Countdown */}
                     <div className="mt-4">
                         <p
-                            className={`text-sm font-medium ${
-                                countdown <= 30
+                            className={`text-sm font-medium ${countdown <= 30
                                     ? 'text-red-600'
                                     : countdown <= 60
-                                    ? 'text-orange-600'
-                                    : 'text-gray-600'
-                            }`}
+                                        ? 'text-orange-600'
+                                        : 'text-gray-600'
+                                }`}
                         >
                             {!isExpired ? (
                                 <>

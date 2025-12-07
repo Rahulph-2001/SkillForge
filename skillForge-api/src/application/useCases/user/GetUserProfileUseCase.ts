@@ -1,8 +1,9 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { PrismaClient } from '@prisma/client';
-import { AppError } from '../../../domain/errors/AppError';
+import { AppError, NotFoundError } from '../../../domain/errors/AppError';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { Database } from '../../../infrastructure/database/Database';
 
 export interface UserProfileDTO {
   id: string;
@@ -25,8 +26,12 @@ export interface UserProfileDTO {
 @injectable()
 export class GetUserProfileUseCase {
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
-  ) {}
+    @inject(TYPES.Database) database: Database
+  ) {
+    this.prisma = database.getClient();
+  }
+
+  private prisma: PrismaClient;
 
   async execute(userId: string): Promise<UserProfileDTO> {
     const user = await this.prisma.user.findUnique({
@@ -50,7 +55,7 @@ export class GetUserProfileUseCase {
     });
 
     if (!user) {
-      throw new AppError('User not found', HttpStatusCode.NOT_FOUND);
+      throw new NotFoundError('User not found');
     }
 
     // Count skills offered by this user
@@ -61,7 +66,7 @@ export class GetUserProfileUseCase {
         verificationStatus: 'passed',
         isBlocked: false,
         isDeleted: false,
-      },
+      } as any,
     });
 
     return {

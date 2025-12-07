@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Eye, Check, X, Search, Loader2, Ban, Unlock } from 'lucide-react';
-import AdminNavbar from '../../components/admin/AdminNavbar/AdminNavbar';
+
 import { adminSkillService, PendingSkill } from '../../services/adminSkillService';
-import { ErrorModal, SuccessModal } from '../../components/shared/Modal';
-import Pagination from '../../components/shared/Pagination';
+import { ErrorModal, SuccessModal } from '../../components/common/Modal';
+import Pagination from '../../components/common/Pagination';
 
 type FilterType = 'all' | 'in-review' | 'approved' | 'rejected' | 'blocked';
 
@@ -63,7 +63,7 @@ export default function AdminSkillVerificationPage() {
       setSuccessMessage('Skill approved successfully!');
       setConfirmApproveOpen(false);
       setSelectedSkillId(null);
-      
+
       // Refresh the list
       await fetchAllSkills();
     } catch (error: any) {
@@ -97,7 +97,7 @@ export default function AdminSkillVerificationPage() {
       setRejectModalOpen(false);
       setSelectedSkillId(null);
       setRejectionReason('');
-      
+
       // Refresh the list
       await fetchAllSkills();
     } catch (error: any) {
@@ -131,7 +131,7 @@ export default function AdminSkillVerificationPage() {
       setBlockModalOpen(false);
       setSelectedSkillId(null);
       setBlockReason('');
-      
+
       // Refresh the list
       await fetchAllSkills();
     } catch (error: any) {
@@ -158,7 +158,7 @@ export default function AdminSkillVerificationPage() {
       setSuccessMessage('Skill unblocked successfully!');
       setConfirmUnblockOpen(false);
       setSelectedSkillId(null);
-      
+
       // Refresh the list
       await fetchAllSkills();
     } catch (error: any) {
@@ -177,7 +177,7 @@ export default function AdminSkillVerificationPage() {
   // Filter and search logic
   const filteredSkills = skills.filter((skill) => {
     let matchesFilter = false;
-    
+
     if (filter === 'all') {
       matchesFilter = true;
     } else if (filter === 'blocked') {
@@ -185,7 +185,7 @@ export default function AdminSkillVerificationPage() {
     } else {
       matchesFilter = skill.status === filter && !skill.isBlocked;
     }
-    
+
     const matchesSearch =
       skill.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       skill.providerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -229,7 +229,7 @@ export default function AdminSkillVerificationPage() {
         </span>
       );
     }
-    
+
     switch (status) {
       case 'approved':
         return (
@@ -260,7 +260,7 @@ export default function AdminSkillVerificationPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminNavbar activeTab="Skills" />
+
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
@@ -394,11 +394,10 @@ export default function AdminSkillVerificationPage() {
                           {skill.mcqScore !== null && skill.mcqPassingScore !== null ? (
                             <div className="text-sm">
                               <span
-                                className={`font-semibold ${
-                                  skill.mcqScore >= skill.mcqPassingScore
-                                    ? 'text-green-600'
-                                    : 'text-red-600'
-                                }`}
+                                className={`font-semibold ${skill.mcqScore >= skill.mcqPassingScore
+                                  ? 'text-green-600'
+                                  : 'text-red-600'
+                                  }`}
                               >
                                 {skill.mcqScore}%
                               </span>
@@ -420,7 +419,7 @@ export default function AdminSkillVerificationPage() {
                             >
                               <Eye className="w-5 h-5" />
                             </button>
-                            
+
                             {skill.isBlocked ? (
                               // Blocked skill - show unblock button
                               <button
@@ -453,7 +452,7 @@ export default function AdminSkillVerificationPage() {
                                     </button>
                                   </>
                                 )}
-                                
+
                                 {skill.status === 'approved' && !skill.isBlocked && (
                                   <button
                                     onClick={() => handleBlockClick(skill.id)}
@@ -561,154 +560,153 @@ export default function AdminSkillVerificationPage() {
               {/* Content - Scrollable */}
               <div className="px-6 py-6 max-h-[calc(100vh-200px)] overflow-y-auto">
                 <div className="space-y-6">
-              {/* Skill Image */}
-              {selectedSkill.imageUrl && (
-                <div className="w-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
-                  <img
-                    src={selectedSkill.imageUrl}
-                    alt={selectedSkill.title}
-                    className="w-full h-64 object-contain p-4"
-                  />
-                </div>
-              )}
+                  {/* Skill Image */}
+                  {selectedSkill.imageUrl && (
+                    <div className="w-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+                      <img
+                        src={selectedSkill.imageUrl}
+                        alt={selectedSkill.title}
+                        className="w-full h-64 object-contain p-4"
+                      />
+                    </div>
+                  )}
 
-              {/* Basic Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Skill Title</label>
-                  <p className="text-lg font-medium text-gray-900">{selectedSkill.title}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Category</label>
-                  <p className="text-lg text-gray-900">{selectedSkill.category}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Level</label>
-                  <p className="text-lg text-gray-900">
-                    <span className="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded">
-                      {selectedSkill.level}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Status</label>
-                  <p className="text-lg">{getStatusBadge(selectedSkill.status, selectedSkill.isBlocked)}</p>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="text-sm font-semibold text-gray-600">Description</label>
-                <p className="text-gray-700 mt-1 whitespace-pre-wrap">{selectedSkill.description}</p>
-              </div>
-
-              {/* Provider Info */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-900 mb-3">Provider Information</h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">Name</label>
-                    <p className="text-gray-900">{selectedSkill.providerName}</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600">Email</label>
-                    <p className="text-gray-900">{selectedSkill.providerEmail}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Skill Details */}
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Duration</label>
-                  <p className="text-lg font-medium text-gray-900">{selectedSkill.durationHours} hours</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Credits/Hour</label>
-                  <p className="text-lg font-medium text-gray-900">{selectedSkill.creditsPerHour}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-gray-600">Total Sessions</label>
-                  <p className="text-lg font-medium text-gray-900">{selectedSkill.totalSessions}</p>
-                </div>
-              </div>
-
-              {/* MCQ Info */}
-              {selectedSkill.mcqScore !== null && (
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <h4 className="font-semibold text-gray-900 mb-3">MCQ Verification</h4>
-                  <div className="grid grid-cols-3 gap-4">
+                  {/* Basic Info */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Score</label>
-                      <p className={`text-2xl font-bold ${
-                        selectedSkill.mcqScore >= (selectedSkill.mcqPassingScore || 70)
-                          ? 'text-green-600'
-                          : 'text-red-600'
-                      }`}>
-                        {selectedSkill.mcqScore}%
+                      <label className="text-sm font-semibold text-gray-600">Skill Title</label>
+                      <p className="text-lg font-medium text-gray-900">{selectedSkill.title}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">Category</label>
+                      <p className="text-lg text-gray-900">{selectedSkill.category}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">Level</label>
+                      <p className="text-lg text-gray-900">
+                        <span className="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded">
+                          {selectedSkill.level}
+                        </span>
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Passing Score</label>
-                      <p className="text-lg text-gray-900">{selectedSkill.mcqPassingScore}%</p>
+                      <label className="text-sm font-semibold text-gray-600">Status</label>
+                      <p className="text-lg">{getStatusBadge(selectedSkill.status, selectedSkill.isBlocked)}</p>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="text-sm font-semibold text-gray-600">Description</label>
+                    <p className="text-gray-700 mt-1 whitespace-pre-wrap">{selectedSkill.description}</p>
+                  </div>
+
+                  {/* Provider Info */}
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold text-gray-900 mb-3">Provider Information</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">Name</label>
+                        <p className="text-gray-900">{selectedSkill.providerName}</p>
+                      </div>
+                      <div>
+                        <label className="text-sm font-semibold text-gray-600">Email</label>
+                        <p className="text-gray-900">{selectedSkill.providerEmail}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Skill Details */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">Duration</label>
+                      <p className="text-lg font-medium text-gray-900">{selectedSkill.durationHours} hours</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Total Questions</label>
-                      <p className="text-lg text-gray-900">{selectedSkill.mcqTotalQuestions}</p>
+                      <label className="text-sm font-semibold text-gray-600">Credits/Hour</label>
+                      <p className="text-lg font-medium text-gray-900">{selectedSkill.creditsPerHour}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600">Total Sessions</label>
+                      <p className="text-lg font-medium text-gray-900">{selectedSkill.totalSessions}</p>
                     </div>
                   </div>
-                </div>
-              )}
 
-              {/* Blocked Info */}
-              {selectedSkill.isBlocked && selectedSkill.blockedReason && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-900 mb-2">Blocked</h4>
-                  <p className="text-red-700">{selectedSkill.blockedReason}</p>
-                  {selectedSkill.blockedAt && (
-                    <p className="text-sm text-red-600 mt-2">
-                      Blocked on: {new Date(selectedSkill.blockedAt).toLocaleDateString()}
-                    </p>
+                  {/* MCQ Info */}
+                  {selectedSkill.mcqScore !== null && (
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-3">MCQ Verification</h4>
+                      <div className="grid grid-cols-3 gap-4">
+                        <div>
+                          <label className="text-sm font-semibold text-gray-600">Score</label>
+                          <p className={`text-2xl font-bold ${selectedSkill.mcqScore >= (selectedSkill.mcqPassingScore || 70)
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                            }`}>
+                            {selectedSkill.mcqScore}%
+                          </p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-semibold text-gray-600">Passing Score</label>
+                          <p className="text-lg text-gray-900">{selectedSkill.mcqPassingScore}%</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-semibold text-gray-600">Total Questions</label>
+                          <p className="text-lg text-gray-900">{selectedSkill.mcqTotalQuestions}</p>
+                        </div>
+                      </div>
+                    </div>
                   )}
-                </div>
-              )}
 
-              {/* Rejection Info */}
-              {selectedSkill.rejectionReason && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-red-900 mb-2">Rejection Reason</h4>
-                  <p className="text-red-700">{selectedSkill.rejectionReason}</p>
-                </div>
-              )}
+                  {/* Blocked Info */}
+                  {selectedSkill.isBlocked && selectedSkill.blockedReason && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-red-900 mb-2">Blocked</h4>
+                      <p className="text-red-700">{selectedSkill.blockedReason}</p>
+                      {selectedSkill.blockedAt && (
+                        <p className="text-sm text-red-600 mt-2">
+                          Blocked on: {new Date(selectedSkill.blockedAt).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
-              {/* Tags */}
-              {selectedSkill.tags && selectedSkill.tags.length > 0 && (
-                <div>
-                  <label className="text-sm font-semibold text-gray-600 mb-2 block">Tags</label>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedSkill.tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                  {/* Rejection Info */}
+                  {selectedSkill.rejectionReason && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-red-900 mb-2">Rejection Reason</h4>
+                      <p className="text-red-700">{selectedSkill.rejectionReason}</p>
+                    </div>
+                  )}
+
+                  {/* Tags */}
+                  {selectedSkill.tags && selectedSkill.tags.length > 0 && (
+                    <div>
+                      <label className="text-sm font-semibold text-gray-600 mb-2 block">Tags</label>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedSkill.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Timestamps */}
+                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                    <div>
+                      <label className="font-semibold">Created At</label>
+                      <p>{new Date(selectedSkill.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <label className="font-semibold">Updated At</label>
+                      <p>{new Date(selectedSkill.updatedAt).toLocaleString()}</p>
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {/* Timestamps */}
-              <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                <div>
-                  <label className="font-semibold">Created At</label>
-                  <p>{new Date(selectedSkill.createdAt).toLocaleString()}</p>
-                </div>
-                <div>
-                  <label className="font-semibold">Updated At</label>
-                  <p>{new Date(selectedSkill.updatedAt).toLocaleString()}</p>
-                </div>
-              </div>
                 </div>
               </div>
 

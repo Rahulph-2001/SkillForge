@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Star, Clock, Award, Loader2, Filter, X } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
-import Pagination from '../../components/shared/Pagination';
+
+import Pagination from '../../components/common/Pagination';
 import { useAppSelector } from '../../store/hooks';
 import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
 import { toast } from 'react-hot-toast';
@@ -50,7 +50,7 @@ export default function BrowseSkillsPage() {
         limit: 12,
         excludeProviderId: user?.id, // Exclude user's own skills
       });
-      
+
       setSkills(response.skills);
       setTotal(response.total);
       setTotalPages(response.totalPages);
@@ -77,15 +77,7 @@ export default function BrowseSkillsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-50">
-      <Navbar 
-        isAuthenticated={!!user}
-        user={user ? {
-          name: user.name,
-          avatar: user.avatar || undefined,
-          credits: user.credits,
-          subscriptionPlan: 'free'
-        } : undefined}
-      />
+
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
@@ -142,7 +134,7 @@ export default function BrowseSkillsPage() {
           <div className={`${showFilters ? 'block' : 'hidden'} lg:block`}>
             <div className="flex flex-col lg:flex-row lg:items-center gap-4">
               <span className="text-sm text-gray-600 font-semibold">Filters:</span>
-              
+
               {/* Level Filter */}
               <select
                 value={selectedLevel}
@@ -181,11 +173,10 @@ export default function BrowseSkillsPage() {
                       setSelectedCategory(category);
                       setCurrentPage(1);
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      selectedCategory === category
-                        ? 'bg-blue-600 text-white shadow-md scale-105'
-                        : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
-                    }`}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category
+                      ? 'bg-blue-600 text-white shadow-md scale-105'
+                      : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                      }`}
                   >
                     {category}
                   </button>
@@ -248,11 +239,10 @@ export default function BrowseSkillsPage() {
                       </div>
                       {/* Level Badge */}
                       <div className="absolute top-3 right-3">
-                        <span className={`px-3 py-1 backdrop-blur-sm text-xs font-bold rounded-full shadow-md ${
-                          skill.level === 'Beginner' ? 'bg-green-500/90 text-white' :
+                        <span className={`px-3 py-1 backdrop-blur-sm text-xs font-bold rounded-full shadow-md ${skill.level === 'Beginner' ? 'bg-green-500/90 text-white' :
                           skill.level === 'Intermediate' ? 'bg-yellow-500/90 text-white' :
-                          'bg-red-500/90 text-white'
-                        }`}>
+                            'bg-red-500/90 text-white'
+                          }`}>
                           {skill.level}
                         </span>
                       </div>

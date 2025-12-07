@@ -5,6 +5,7 @@ import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { CreateSkillTemplateDTO } from '../../dto/skillTemplate/CreateSkillTemplateDTO';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()
 export class CreateSkillTemplateUseCase {
@@ -19,7 +20,7 @@ export class CreateSkillTemplateUseCase {
     // Verify admin
     const admin = await this.userRepository.findById(adminUserId);
     
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can create skill templates');
     }
     const template = new SkillTemplate({

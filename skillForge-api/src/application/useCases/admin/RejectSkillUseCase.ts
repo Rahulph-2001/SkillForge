@@ -8,11 +8,17 @@ export interface RejectSkillDTO {
   reason: string;
 }
 
+import { Database } from '../../../infrastructure/database/Database';
+
 @injectable()
 export class RejectSkillUseCase {
+  private prisma: PrismaClient;
+
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
-  ) {}
+    @inject(TYPES.Database) database: Database
+  ) {
+    this.prisma = database.getClient();
+  }
 
   async execute(data: RejectSkillDTO): Promise<void> {
     // Verify skill exists and is in review

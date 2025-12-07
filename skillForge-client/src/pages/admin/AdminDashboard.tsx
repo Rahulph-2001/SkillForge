@@ -1,4 +1,4 @@
-import { AdminNavbar } from '../../components/admin/AdminNavbar'
+
 
 const Icons = {
     Users: () => (
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Reusable Admin Navbar */}
-            <AdminNavbar activeTab="Dashboard" />
+
 
             {/* Main Content */}
             <main className="flex-1 p-6 max-w-7xl mx-auto w-full">

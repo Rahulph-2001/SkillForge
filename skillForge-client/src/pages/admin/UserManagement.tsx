@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Search, Ban, CheckCircle, Eye, RotateCcw } from 'lucide-react'
-import { AdminNavbar } from '../../components/admin/AdminNavbar'
+
 import adminService, { User } from '../../services/adminService'
-import { ConfirmModal, SuccessModal, ErrorModal } from '../../components/shared/Modal'
+import { ConfirmModal, SuccessModal, ErrorModal } from '../../components/common/Modal'
 
 export default function UserManagement() {
     const [users, setUsers] = useState<User[]>([])
@@ -10,7 +10,7 @@ export default function UserManagement() {
     const [searchQuery, setSearchQuery] = useState('')
     const [selectedFilter, setSelectedFilter] = useState('All Users')
     const [actioningUserId, setActioningUserId] = useState<string | null>(null)
-    
+
     // Modal states
     const [confirmModal, setConfirmModal] = useState<{
         isOpen: boolean
@@ -18,14 +18,14 @@ export default function UserManagement() {
         message: string
         onConfirm: () => void
         type: 'danger' | 'warning' | 'info'
-    }>({ isOpen: false, title: '', message: '', onConfirm: () => {}, type: 'warning' })
-    
+    }>({ isOpen: false, title: '', message: '', onConfirm: () => { }, type: 'warning' })
+
     const [successModal, setSuccessModal] = useState<{
         isOpen: boolean
         title: string
         message: string
     }>({ isOpen: false, title: '', message: '' })
-    
+
     const [errorModal, setErrorModal] = useState<{
         isOpen: boolean
         title: string
@@ -40,16 +40,16 @@ export default function UserManagement() {
         try {
             setLoading(true)
             console.log('[UserManagement] Loading users...')
-            
+
             const response = await adminService.listUsers()
             console.log('[UserManagement] Users response:', response)
-            
+
             if (response && Array.isArray(response.users)) {
                 // Filter out admin users from the list
-                const nonAdminUsers = response.users.filter(user => user.role !== 'admin')
+                const nonAdminUsers = response.users.filter(user => user.role !== 'admin') // Using string literal for API response comparison
                 setUsers(nonAdminUsers)
                 console.log(`[UserManagement] Successfully loaded ${nonAdminUsers.length} non-admin users`)
-                
+
                 if (nonAdminUsers.length === 0) {
                     setErrorModal({
                         isOpen: true,
@@ -73,7 +73,7 @@ export default function UserManagement() {
                 status: error?.response?.status,
                 stack: error?.stack
             })
-            
+
             // Handle specific error cases
             if (error?.response?.status === 401) {
                 setErrorModal({
@@ -96,7 +96,7 @@ export default function UserManagement() {
                     message: errorMessage
                 });
             }
-            
+
             setUsers([])
         } finally {
             setLoading(false)
@@ -125,12 +125,12 @@ export default function UserManagement() {
     }
 
     const handleToggleSuspend = (userId: string, userName: string, isCurrentlyActive: boolean) => {
-        const action = isCurrentlyActive ? 'suspend' : 'unsuspend'
+
         const title = isCurrentlyActive ? 'Suspend User' : 'Reactivate User'
-        const message = isCurrentlyActive 
+        const message = isCurrentlyActive
             ? `Are you sure you want to suspend ${userName}? They will not be able to access their account.`
             : `Are you sure you want to reactivate ${userName}? They will regain access to their account.`
-        
+
         setConfirmModal({
             isOpen: true,
             title,
@@ -142,27 +142,27 @@ export default function UserManagement() {
 
     const executeToggleSuspend = async (userId: string, userName: string, isCurrentlyActive: boolean) => {
         const action = isCurrentlyActive ? 'suspend' : 'unsuspend'
-        
+
         // Close confirm modal
         setConfirmModal({ ...confirmModal, isOpen: false })
 
         try {
             setActioningUserId(userId)
             console.log(`[UserManagement] ${action} user:`, { userId, userName })
-            
+
             const response = isCurrentlyActive
                 ? await adminService.suspendUser(userId)
                 : await adminService.unsuspendUser(userId)
-            
+
             console.log(`[UserManagement] ${action} response:`, response)
 
             // Update local state immediately for better UX
             setUsers(prevUsers => prevUsers.map(u =>
                 u.id === userId ? { ...u, isActive: !isCurrentlyActive } : u
             ))
-            
+
             console.log(`[UserManagement] User ${action}ed successfully`)
-            
+
             // Show success modal
             const successTitle = isCurrentlyActive ? 'User Suspended' : 'User Reactivated'
             const successMessage = response?.message || `${userName} has been ${action}ed successfully`
@@ -177,7 +177,7 @@ export default function UserManagement() {
                 response: error?.response?.data,
                 status: error?.response?.status
             })
-            
+
             // Handle specific error cases
             if (error?.response?.status === 401) {
                 setErrorModal({
@@ -199,7 +199,7 @@ export default function UserManagement() {
                     message: errorMessage
                 });
             }
-            
+
             // Reload users to ensure consistency on error
             await loadUsers()
         } finally {
@@ -253,8 +253,8 @@ export default function UserManagement() {
             header: 'Email Status',
             render: (user: User) => (
                 <span className={`px-3 py-1 rounded text-xs font-semibold ${user.emailVerified
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-yellow-100 text-yellow-700'
                     }`}>
                     {user.emailVerified ? 'Verified' : 'Unverified'}
                 </span>
@@ -265,8 +265,8 @@ export default function UserManagement() {
             header: 'Status',
             render: (user: User) => (
                 <span className={`px-3 py-1 rounded text-xs font-semibold ${user.isActive
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-red-100 text-red-700'
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'bg-red-100 text-red-700'
                     }`}>
                     {user.isActive ? 'Active' : 'Suspended'}
                 </span>
@@ -326,7 +326,7 @@ export default function UserManagement() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <AdminNavbar activeTab="Users" />
+
 
             <main className="max-w-7xl mx-auto px-6 py-8">
                 {/* Page Title */}

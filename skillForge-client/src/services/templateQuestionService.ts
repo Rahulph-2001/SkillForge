@@ -55,6 +55,14 @@ const templateQuestionService = {
     const response = await api.delete(`/admin/skill-templates/${templateId}/questions/${questionId}`);
     return response.data;
   },
+
+  // Bulk delete questions
+  async bulkDeleteQuestions(templateId: string, questionIds: string[]) {
+    const response = await api.delete(`/admin/skill-templates/${templateId}/questions/bulk`, {
+      data: { questionIds }
+    });
+    return response.data;
+  },
 };
 
 export default templateQuestionService;

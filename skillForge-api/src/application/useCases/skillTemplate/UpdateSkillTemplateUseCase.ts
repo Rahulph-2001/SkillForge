@@ -5,6 +5,7 @@ import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { UpdateSkillTemplateDTO } from '../../dto/skillTemplate/UpdateSkillTemplateDTO';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()
 export class UpdateSkillTemplateUseCase {
@@ -18,7 +19,7 @@ export class UpdateSkillTemplateUseCase {
   async execute(adminUserId: string, dto: UpdateSkillTemplateDTO): Promise<SkillTemplate> {
     // Verify admin
     const admin = await this.userRepository.findById(adminUserId);
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can update skill templates');
     }
 

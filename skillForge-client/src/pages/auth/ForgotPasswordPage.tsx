@@ -2,7 +2,7 @@ import type React from "react"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { authService } from "../../services/authService"
-import { ErrorModal } from "../../components/shared/Modal"
+import { ErrorModal } from "../../components/common/Modal"
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate()
@@ -28,13 +28,13 @@ export default function ForgotPasswordPage() {
         setLoading(true)
         try {
             const response = await authService.forgotPassword(email)
-            
+
             // Store OTP expiry time for countdown persistence
             if (response.data?.expiresAt) {
                 localStorage.setItem('otpExpiresAt', response.data.expiresAt)
                 localStorage.setItem('otpEmail', email)
             }
-            
+
             navigate('/verify-forgot-password-otp', { state: { email, expiresAt: response.data?.expiresAt } })
         } catch (err: any) {
             const errorMessage = err?.error || err?.message || 'Failed to send OTP'

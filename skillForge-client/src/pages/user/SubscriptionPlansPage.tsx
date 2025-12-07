@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Check, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
-import { Navbar } from '../../components/shared/Navbar';
-import { Footer } from '../../components/shared/Footer';
+
+import { Footer } from '../../components/common/Footer';
 import subscriptionService, { SubscriptionPlan } from '../../services/subscriptionService';
-import { useAppSelector } from '../../store/hooks';
+
 
 interface FAQItem {
   question: string;
@@ -101,9 +101,8 @@ function FAQSection() {
               >
                 <span className="text-left font-semibold text-gray-900">{faq.question}</span>
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-600 flex-shrink-0 transition-transform ${
-                    openIndex === index ? 'rotate-180' : ''
-                  }`}
+                  className={`w-5 h-5 text-gray-600 flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -133,11 +132,10 @@ function PricingCard({ plan, isCenter, userPlan }: PricingCardProps) {
 
   return (
     <div
-      className={`relative rounded-2xl p-8 transition-all duration-300 border-2 ${
-        isCenter
-          ? `${getBorderColor(plan.color)} shadow-2xl`
-          : 'border-gray-200'
-      } ${getPlanGradient(plan.color)}`}
+      className={`relative rounded-2xl p-8 transition-all duration-300 border-2 ${isCenter
+        ? `${getBorderColor(plan.color)} shadow-2xl`
+        : 'border-gray-200'
+        } ${getPlanGradient(plan.color)}`}
     >
       {/* Most Popular Badge */}
       {isCenter && !isCurrentPlan && (
@@ -169,13 +167,12 @@ function PricingCard({ plan, isCenter, userPlan }: PricingCardProps) {
 
       {/* CTA Button */}
       <button
-        className={`w-full py-3 px-4 rounded-lg font-medium mb-8 transition-colors ${
-          isCurrentPlan
-            ? 'bg-green-500 text-white cursor-default'
-            : isCenter
+        className={`w-full py-3 px-4 rounded-lg font-medium mb-8 transition-colors ${isCurrentPlan
+          ? 'bg-green-500 text-white cursor-default'
+          : isCenter
             ? 'bg-blue-500 text-white hover:bg-blue-600'
             : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-300'
-        }`}
+          }`}
         disabled={isCurrentPlan}
       >
         {isCurrentPlan ? '✓ Current Plan' : 'Subscribe Now'}
@@ -257,9 +254,8 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, userPlan }: Prici
           {visibleCards.map((plan, index) => (
             <div
               key={plan.id}
-              className={`transform transition-all duration-300 ${
-                index === 1 ? 'md:scale-105' : 'md:scale-95'
-              }`}
+              className={`transform transition-all duration-300 ${index === 1 ? 'md:scale-105' : 'md:scale-95'
+                }`}
             >
               <PricingCard plan={plan} isCenter={index === 1} userPlan={userPlan} />
             </div>
@@ -294,9 +290,8 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, userPlan }: Prici
                 <button
                   key={index}
                   onClick={() => onSlideChange(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    currentSlide === index ? 'bg-blue-500 w-8' : 'bg-gray-300 w-2'
-                  }`}
+                  className={`h-2 rounded-full transition-all ${currentSlide === index ? 'bg-blue-500 w-8' : 'bg-gray-300 w-2'
+                    }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
@@ -312,19 +307,10 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, userPlan }: Prici
 
 export default function SubscriptionPlansPage() {
   const navigate = useNavigate();
-  const { user } = useAppSelector((state) => state.auth);
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentSlide, setCurrentSlide] = useState(1);
-
-  // Create properly formatted user object for Navbar
-  const displayUser = user ? {
-    name: user.name,
-    avatar: user.avatar || undefined,
-    credits: user.credits,
-    subscriptionPlan: 'free', // Default to free to encourage upgrades
-  } : undefined;
 
   useEffect(() => {
     loadPlans();
@@ -358,7 +344,6 @@ export default function SubscriptionPlansPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Navbar isAuthenticated={!!user} user={displayUser} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -374,7 +359,6 @@ export default function SubscriptionPlansPage() {
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <Navbar isAuthenticated={!!user} user={displayUser} />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-4">
             <div className="text-red-500 text-center mb-4">
@@ -397,8 +381,6 @@ export default function SubscriptionPlansPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Navbar */}
-      <Navbar isAuthenticated={!!user} user={displayUser} />
 
       {/* Header */}
       <div className="pt-12 pb-8 text-center px-4">

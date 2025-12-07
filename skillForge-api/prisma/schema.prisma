@@ -91,6 +91,29 @@ model Skill {
   @@map("skills")
 }
 
+model McqImportJob {
+  id              String         @id @default(uuid()) @db.Uuid
+  templateId      String         @map("template_id") @db.Uuid
+  adminId         String         @map("admin_id") @db.Uuid
+  fileName        String         @map("file_name") @db.VarChar(255)
+  filePath        String         @map("file_path") @db.Text // S3 path to the uploaded file
+  status          String         @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, COMPLETED_WITH_ERRORS, FAILED
+  totalRows       Int            @map("total_rows") @default(0)
+  processedRows   Int            @map("processed_rows") @default(0)
+  successfulRows  Int            @map("successful_rows") @default(0)
+  failedRows      Int            @map("failed_rows") @default(0)
+  errorFilePath   String?        @map("error_file_path") @db.Text // S3 path to the error log file
+  
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  startedAt       DateTime?      @map("started_at") @db.Timestamptz(6)
+  completedAt     DateTime?      @map("completed_at") @db.Timestamptz(6)
+
+  @@index([templateId])
+  @@index([adminId])
+  @@map("mcq_import_jobs")
+}
+
 // Skill Template (Admin-managed)
 model SkillTemplate {
   id              String    @id @default(uuid()) @db.Uuid

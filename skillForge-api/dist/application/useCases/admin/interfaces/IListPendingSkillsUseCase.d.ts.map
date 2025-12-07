@@ -1,0 +1,1 @@
+{"version":3,"file":"IListPendingSkillsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IListPendingSkillsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,4BAA4B,EAAE,MAAM,iDAAiD,CAAC;AAE/F,MAAM,WAAW,yBAAyB;IACxC,OAAO,IAAI,OAAO,CAAC,4BAA4B,CAAC,CAAC;CAClD"}

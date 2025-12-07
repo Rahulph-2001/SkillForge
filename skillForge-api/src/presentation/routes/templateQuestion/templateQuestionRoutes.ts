@@ -38,6 +38,12 @@ export class TemplateQuestionRoutes {
       this.templateQuestionController.update.bind(this.templateQuestionController)
     );
 
+    // DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk - Bulk delete questions
+    this.router.delete(
+      '/bulk',
+      this.templateQuestionController.bulkDelete.bind(this.templateQuestionController)
+    );
+
     // DELETE /api/v1/admin/skill-templates/:templateId/questions/:id - Delete question
     this.router.delete(
       '/:id',

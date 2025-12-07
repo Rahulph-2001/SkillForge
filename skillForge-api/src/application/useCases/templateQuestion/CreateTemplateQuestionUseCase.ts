@@ -5,6 +5,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { CreateTemplateQuestionDTO } from '../../dto/templateQuestion/CreateTemplateQuestionDTO';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { v4 as uuidv4 } from 'uuid';
 
 @injectable()
@@ -19,7 +20,7 @@ export class CreateTemplateQuestionUseCase {
   async execute(adminUserId: string, dto: CreateTemplateQuestionDTO): Promise<TemplateQuestion> {
     // Verify admin authorization
     const admin = await this.userRepository.findById(adminUserId);
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can create template questions');
     }
 

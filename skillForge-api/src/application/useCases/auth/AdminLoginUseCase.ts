@@ -4,8 +4,9 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { IJWTService } from '../../../domain/services/IJWTService';
 import { UnauthorizedError, NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { AdminLoginDTO } from '../../dto/auth/AdminLoginDTO';
-import { UserDTOMapper } from '../../mappers/UserDTOMapper';
+import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
 import { ERROR_MESSAGES } from '../../../config/messages';
 
@@ -20,7 +21,8 @@ export class AdminLoginUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService,
-    @inject(TYPES.IJWTService) private jwtService: IJWTService
+    @inject(TYPES.IJWTService) private jwtService: IJWTService,
+    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) {}
 
   async execute(request: AdminLoginDTO, ipAddress?: string): Promise<AdminLoginResponse> {
@@ -39,7 +41,7 @@ export class AdminLoginUseCase {
     if (!user.isActive || user.isDeleted) {
       throw new UnauthorizedError(ERROR_MESSAGES.AUTH.ACCOUNT_INACTIVE);
     }
-    if (user.role !== 'admin') {
+    if (user.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.AUTH.ACCESS_DENIED);
     }
 
@@ -58,7 +60,7 @@ export class AdminLoginUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: UserDTOMapper.toUserResponseDTO(user),
+      user: this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
     };

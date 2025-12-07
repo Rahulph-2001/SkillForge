@@ -63,7 +63,7 @@ export class AuthController {
     try {
       const ipAddress = getClientIp(req);
       const { user, token, refreshToken } = await this.loginUseCase.execute(req.body, ipAddress);
-      
+
       // Set accessToken cookie (HTTP-only for security)
       res.cookie('accessToken', token, {
         httpOnly: true,
@@ -72,7 +72,7 @@ export class AuthController {
         path: '/',
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
-      
+
       // Set refreshToken cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -81,7 +81,7 @@ export class AuthController {
         path: '/',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-      
+
       res
         .status(HttpStatusCode.OK)
         .json(this.authResponseMapper.mapLoginResponse(user, token, refreshToken));
@@ -93,7 +93,7 @@ export class AuthController {
   async verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { user, message, token, refreshToken } = await this.verifyOtpUseCase.execute(req.body);
-      
+
       // Set accessToken cookie (HTTP-only for security)
       res.cookie('accessToken', token, {
         httpOnly: true,
@@ -102,7 +102,7 @@ export class AuthController {
         path: '/',
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
-      
+
       // Set refreshToken cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -111,7 +111,7 @@ export class AuthController {
         path: '/',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-      
+
       res
         .status(HttpStatusCode.OK)
         .json(
@@ -181,7 +181,7 @@ export class AuthController {
     }
   }
 
-  async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // Clear both accessToken and refreshToken cookies
       res.clearCookie('accessToken', {
@@ -190,14 +190,14 @@ export class AuthController {
         sameSite: 'lax' as const,
         path: '/',
       });
-      
+
       res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
       });
-      
+
       res.status(HttpStatusCode.OK).json(this.authResponseMapper.mapLogoutResponse());
     } catch (error) {
       next(error);
@@ -209,7 +209,7 @@ export class AuthController {
       const ipAddress = getClientIp(req);
       const { user, token, refreshToken } =
         await this.adminLoginUseCase.execute(req.body, ipAddress);
-      
+
       // Set accessToken cookie (HTTP-only for security)
       res.cookie('accessToken', token, {
         httpOnly: true,
@@ -218,7 +218,7 @@ export class AuthController {
         path: '/',
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
-      
+
       // Set refreshToken cookie
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -227,7 +227,7 @@ export class AuthController {
         path: '/',
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
-      
+
       res
         .status(HttpStatusCode.OK)
         .json(this.authResponseMapper.mapLoginResponse(user, token, refreshToken));
@@ -244,7 +244,7 @@ export class AuthController {
         return;
       }
       const result = await this.googleAuthUseCase.execute(googleProfile);
-      
+
       // Set accessToken cookie (HTTP-only for security)
       res.cookie('accessToken', result.token, {
         httpOnly: true,
@@ -253,7 +253,7 @@ export class AuthController {
         path: '/',
         maxAge: 15 * 60 * 1000, // 15 minutes
       });
-      
+
       // Set refreshToken cookie
       res.cookie('refreshToken', result.refreshToken, {
         httpOnly: true,
@@ -262,9 +262,9 @@ export class AuthController {
         path: '/',
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       });
-      
+
       // Redirect to frontend callback page with isNewUser flag
-      const redirectUrl = result.isNewUser 
+      const redirectUrl = result.isNewUser
         ? `${env.FRONTEND_URL}/auth/google/callback?isNewUser=true`
         : `${env.FRONTEND_URL}/auth/google/callback`;
       res.redirect(redirectUrl);
@@ -319,7 +319,7 @@ export class AuthController {
   async validateUserStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = (req as any).user?.userId;
-      
+
       if (!userId) {
         res.status(HttpStatusCode.UNAUTHORIZED).json({
           success: false,
@@ -329,7 +329,7 @@ export class AuthController {
       }
 
       const user = await this.userRepository.findById(userId);
-      
+
       if (!user) {
         res.status(HttpStatusCode.NOT_FOUND).json({
           success: false,

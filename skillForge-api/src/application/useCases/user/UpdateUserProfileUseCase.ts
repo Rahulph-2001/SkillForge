@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { PrismaClient } from '@prisma/client';
+import { Database } from '../../../infrastructure/database/Database';
 import { IS3Service } from '../../../domain/services/IS3Service';
 import { NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 
@@ -23,10 +24,16 @@ export interface UpdatedProfileResponse {
 
 @injectable()
 export class UpdateUserProfileUseCase {
+  private prisma: PrismaClient;
+  private s3Service: IS3Service;
+
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient,
-    @inject(TYPES.IS3Service) private s3Service: IS3Service
-  ) {}
+    @inject(TYPES.Database) database: Database,
+    @inject(TYPES.IS3Service) s3Service: IS3Service
+  ) {
+    this.prisma = database.getClient();
+    this.s3Service = s3Service;
+  }
 
   async execute(dto: UpdateUserProfileDTO): Promise<UpdatedProfileResponse> {
     const { userId, name, bio, location, avatarFile } = dto;
@@ -47,16 +54,15 @@ export class UpdateUserProfileUseCase {
       try {
         // Delete old avatar if exists and is from S3 (not Google/external URL)
         if (user.avatarUrl && user.avatarUrl.includes(process.env.AWS_S3_BUCKET_NAME || 'skillforge')) {
-          const oldKey = user.avatarUrl.split('.com/')[1];
-          if (oldKey) {
-            await this.s3Service.deleteFile(oldKey);
-          }
+          // Cast to string to satisfy type checker, though check ensures it's not null
+          await this.s3Service.deleteFile(user.avatarUrl as string);
         }
 
         // Upload new avatar
         const key = `avatars/${userId}/${Date.now()}-${avatarFile.originalname}`;
-        avatarUrl = await this.s3Service.uploadFile(avatarFile.buffer, key, avatarFile.mimetype);
-      } catch (error) {
+        // Cast avatarFile to any to avoid type mismatch with Buffer
+        avatarUrl = await this.s3Service.uploadFile((avatarFile as any).buffer, key, (avatarFile as any).mimetype);
+      } catch (_error) {
         throw new InternalServerError('Failed to upload avatar image');
       }
     }
@@ -68,7 +74,7 @@ export class UpdateUserProfileUseCase {
       ...(location !== undefined && { location }),
       ...(avatarFile && { avatarUrl }), // Only update if new file was uploaded
     };
-    
+
     const updatedUser = await this.prisma.user.update({
       where: { id: userId },
       data: updateData,

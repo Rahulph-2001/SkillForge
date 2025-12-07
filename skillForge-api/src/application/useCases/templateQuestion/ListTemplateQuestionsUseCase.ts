@@ -4,6 +4,7 @@ import { ITemplateQuestionRepository } from '../../../domain/repositories/ITempl
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()
 export class ListTemplateQuestionsUseCase {
@@ -17,7 +18,7 @@ export class ListTemplateQuestionsUseCase {
   async execute(adminUserId: string, templateId: string, level?: string): Promise<TemplateQuestion[]> {
     // Verify admin authorization
     const admin = await this.userRepository.findById(adminUserId);
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can view template questions');
     }
 

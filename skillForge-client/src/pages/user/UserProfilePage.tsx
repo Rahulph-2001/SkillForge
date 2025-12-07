@@ -13,7 +13,7 @@ import {
   User as UserIcon,
   Loader2,
 } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
+
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { updateUserAvatar } from '../../store/slices/authSlice';
 import { userProfileService, UserProfile } from '../../services/userProfileService';
@@ -37,7 +37,7 @@ export default function UserProfilePage() {
   const { user } = useAppSelector((state) => state.auth);
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [sessions, setSessions] = useState<Session[]>([]);
+  const [sessions, _setSessions] = useState<Session[]>([]);
   // TODO: Fetch sessions from backend when endpoint is ready
   // const [sessionsLoading, setSessionsLoading] = useState(false);
 
@@ -52,7 +52,7 @@ export default function UserProfilePage() {
       setLoading(true);
       const data = await userProfileService.getProfile();
       setProfile(data);
-      
+
       // Update Redux state if avatar changed
       if (data.avatarUrl && data.avatarUrl !== user?.avatar) {
         console.log('🔵 [UserProfilePage] Updating Redux avatar:', data.avatarUrl);
@@ -89,15 +89,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar
-          isAuthenticated={!!user}
-          user={user ? {
-            name: user.name,
-            credits: user.credits,
-            subscriptionPlan: 'free',
-            avatar: user.avatar || undefined
-          } : undefined}
-        />
+
         <div className="flex flex-col justify-center items-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
           <p className="text-gray-600">Loading profile...</p>
@@ -109,15 +101,7 @@ export default function UserProfilePage() {
   if (!profile) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar
-          isAuthenticated={!!user}
-          user={user ? {
-            name: user.name,
-            credits: user.credits,
-            subscriptionPlan: 'free',
-            avatar: user.avatar || undefined
-          } : undefined}
-        />
+
         <div className="flex flex-col justify-center items-center py-20">
           <p className="text-gray-600">Profile not found</p>
         </div>
@@ -130,15 +114,7 @@ export default function UserProfilePage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar
-        isAuthenticated={!!user}
-        user={user ? {
-          name: user.name,
-          credits: user.credits,
-          subscriptionPlan: 'free',
-          avatar: user.avatar || undefined
-        } : undefined}
-      />
+
 
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Profile Header */}
@@ -302,13 +278,13 @@ export default function UserProfilePage() {
               <p className="text-xs text-gray-500">Your scheduled learning sessions</p>
             </div>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={handleManageAllSessions}
                 className="text-gray-700 text-sm font-medium hover:text-gray-900 hover:underline transition-all"
               >
                 Manage All Sessions
               </button>
-              <button 
+              <button
                 onClick={() => navigate('/explore')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md border border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md transition-all text-sm font-medium flex items-center gap-1.5"
               >

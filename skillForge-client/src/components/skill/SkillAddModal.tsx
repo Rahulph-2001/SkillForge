@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Upload, Trash2, Search, Loader2 } from "lucide-react";
-import ImageCropper from "../shared/imageCropper";
+import ImageCropper from "../common/imageCropper";
 import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService";
 
 export interface NewSkill {
@@ -48,9 +48,9 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
   const [loadingTemplates, setLoadingTemplates] = useState(false);
   const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
 
-  const [selectedImage, setSelectedImage] = useState<string | null>(null); 
-  const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null); 
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); 
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [croppedImageBlob, setCroppedImageBlob] = useState<Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [showCropper, setShowCropper] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -209,10 +209,10 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
       templateId: formData.templateId || undefined,
     };
     onSubmit(payload, croppedImageBlob || undefined);
-    
+
     setFormData({
-        title: "", description: "", category: "", level: "", 
-        durationHours: "", creditsHour: "", tags: [], tagInput: "", templateId: ""
+      title: "", description: "", category: "", level: "",
+      durationHours: "", creditsHour: "", tags: [], tagInput: "", templateId: ""
     });
     setTemplateSearch("");
     handleRemoveImage();
@@ -259,9 +259,8 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
                         <div
                           key={template.id}
                           onClick={() => handleTemplateSelect(template)}
-                          className={`px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 ${
-                            formData.templateId === template.id ? 'bg-blue-100' : ''
-                          }`}
+                          className={`px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 ${formData.templateId === template.id ? 'bg-blue-100' : ''
+                            }`}
                         >
                           <div className="font-medium text-sm text-gray-900">{template.title}</div>
                           <div className="text-xs text-gray-500 mt-1">{template.category} • {template.levels.join(', ')}</div>
@@ -306,75 +305,75 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Category</label>
-                    <div className="relative">
-                        <button type="button" onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
-                            {formData.category || "Select"}
-                        </button>
-                        {showCategoryDropdown && (
-                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
-                                {categories.map(c => (
-                                    <div key={c} onClick={() => handleCategorySelect(c)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{c}</div>
-                                ))}
-                            </div>
-                        )}
+              <div>
+                <label className="mb-2 block text-sm font-bold text-gray-900">Category</label>
+                <div className="relative">
+                  <button type="button" onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                    {formData.category || "Select"}
+                  </button>
+                  {showCategoryDropdown && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
+                      {categories.map(c => (
+                        <div key={c} onClick={() => handleCategorySelect(c)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{c}</div>
+                      ))}
                     </div>
+                  )}
                 </div>
-                <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Level</label>
-                    <div className="relative">
-                        <button type="button" onClick={() => setShowLevelDropdown(!showLevelDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
-                            {formData.level || "Select"}
-                        </button>
-                        {showLevelDropdown && (
-                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
-                                {levels.map(l => (
-                                    <div key={l} onClick={() => handleLevelSelect(l)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{l}</div>
-                                ))}
-                            </div>
-                        )}
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-bold text-gray-900">Level</label>
+                <div className="relative">
+                  <button type="button" onClick={() => setShowLevelDropdown(!showLevelDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                    {formData.level || "Select"}
+                  </button>
+                  {showLevelDropdown && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
+                      {levels.map(l => (
+                        <div key={l} onClick={() => handleLevelSelect(l)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{l}</div>
+                      ))}
                     </div>
+                  )}
                 </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Duration (Hours) <span className="text-red-500">*</span></label>
-                    <div className="relative">
-                        <button type="button" onClick={() => setShowDurationDropdown(!showDurationDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
-                            {formData.durationHours ? `${formData.durationHours} hour${formData.durationHours !== '1' ? 's' : ''}` : "Select hours"}
-                        </button>
-                        {showDurationDropdown && (
-                            <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
-                                {durationOptions.map(hours => (
-                                    <div key={hours} onClick={() => handleDurationSelect(hours)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">
-                                        {hours} hour{hours !== 1 ? 's' : ''}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+              <div>
+                <label className="mb-2 block text-sm font-bold text-gray-900">Duration (Hours) <span className="text-red-500">*</span></label>
+                <div className="relative">
+                  <button type="button" onClick={() => setShowDurationDropdown(!showDurationDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                    {formData.durationHours ? `${formData.durationHours} hour${formData.durationHours !== '1' ? 's' : ''}` : "Select hours"}
+                  </button>
+                  {showDurationDropdown && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
+                      {durationOptions.map(hours => (
+                        <div key={hours} onClick={() => handleDurationSelect(hours)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                          {hours} hour{hours !== 1 ? 's' : ''}
+                        </div>
+                      ))}
                     </div>
+                  )}
                 </div>
-                <div>
-                    <label className="mb-2 block text-sm font-bold text-gray-900">Credits/Hour <span className="text-red-500">*</span></label>
-                    <input type="number" name="creditsHour" value={formData.creditsHour} onChange={handleChange} required min="0" className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </div>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-bold text-gray-900">Credits/Hour <span className="text-red-500">*</span></label>
+                <input type="number" name="creditsHour" value={formData.creditsHour} onChange={handleChange} required min="0" className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-500" />
+              </div>
             </div>
 
             <div>
-               <label className="mb-2 block text-sm font-bold text-gray-900">Tags</label>
-               <div className="flex gap-2">
-                   <input type="text" name="tagInput" value={formData.tagInput} onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())} className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Add tag" />
-                   <button type="button" onClick={handleAddTag} className="bg-gray-900 text-white px-4 rounded-lg text-sm">Add</button>
-               </div>
-               <div className="flex flex-wrap gap-2 mt-2">
-                   {formData.tags.map((t, i) => (
-                       <span key={i} className="bg-gray-200 px-2 py-1 rounded-full text-xs flex items-center gap-1">
-                           {t} <button type="button" onClick={() => handleRemoveTag(i)}>&times;</button>
-                       </span>
-                   ))}
-               </div>
+              <label className="mb-2 block text-sm font-bold text-gray-900">Tags</label>
+              <div className="flex gap-2">
+                <input type="text" name="tagInput" value={formData.tagInput} onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())} className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Add tag" />
+                <button type="button" onClick={handleAddTag} className="bg-gray-900 text-white px-4 rounded-lg text-sm">Add</button>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.tags.map((t, i) => (
+                  <span key={i} className="bg-gray-200 px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                    {t} <button type="button" onClick={() => handleRemoveTag(i)}>&times;</button>
+                  </span>
+                ))}
+              </div>
             </div>
 
             <div>
@@ -389,10 +388,10 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
                 </div>
               ) : (
                 <div className="relative mt-2 w-full h-48 rounded-lg overflow-hidden border border-gray-200 group">
-                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                    <button type="button" onClick={handleRemoveImage} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Trash2 className="w-4 h-4" />
-                    </button>
+                  <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  <button type="button" onClick={handleRemoveImage} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>

@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../../infrastructure/di/types';
+import { Database } from '../../../infrastructure/database/Database';
 
 export interface BlockSkillDTO {
   skillId: string;
@@ -10,9 +11,13 @@ export interface BlockSkillDTO {
 
 @injectable()
 export class BlockSkillUseCase {
+  private prisma: PrismaClient;
+
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
-  ) {}
+    @inject(TYPES.Database) database: Database
+  ) {
+    this.prisma = database.getClient();
+  }
 
   async execute(data: BlockSkillDTO): Promise<void> {
     // Verify skill exists

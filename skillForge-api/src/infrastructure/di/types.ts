@@ -18,40 +18,40 @@ export const TYPES = {
   ForgotPasswordUseCase: Symbol.for('ForgotPasswordUseCase'),
   VerifyForgotPasswordOtpUseCase: Symbol.for('VerifyForgotPasswordOtpUseCase'),
   ResetPasswordUseCase: Symbol.for('ResetPasswordUseCase'),
-  
+
   ListUsersUseCase: Symbol.for('ListUsersUseCase'),
   SuspendUserUseCase: Symbol.for('SuspendUserUseCase'),
   UnsuspendUserUseCase: Symbol.for('UnsuspendUserUseCase'),
   GetUserProfileUseCase: Symbol.for('GetUserProfileUseCase'),
   UpdateUserProfileUseCase: Symbol.for('UpdateUserProfileUseCase'),
-  
+
   ISubscriptionPlanRepository: Symbol.for('ISubscriptionPlanRepository'),
-  
+
   ListSubscriptionPlansUseCase: Symbol.for('ListSubscriptionPlansUseCase'),
   ListPublicSubscriptionPlansUseCase: Symbol.for('ListPublicSubscriptionPlansUseCase'),
   GetSubscriptionStatsUseCase: Symbol.for('GetSubscriptionStatsUseCase'),
   CreateSubscriptionPlanUseCase: Symbol.for('CreateSubscriptionPlanUseCase'),
   UpdateSubscriptionPlanUseCase: Symbol.for('UpdateSubscriptionPlanUseCase'),
   DeleteSubscriptionPlanUseCase: Symbol.for('DeleteSubscriptionPlanUseCase'),
-  
+
   AuthController: Symbol.for('AuthController'),
   AdminController: Symbol.for('AdminController'),
   SubscriptionController: Symbol.for('SubscriptionController'),
   PublicSubscriptionController: Symbol.for('PublicSubscriptionController'),
   UserProfileController: Symbol.for('UserProfileController'),
-  
+
   AuthRoutes: Symbol.for('AuthRoutes'),
   AdminRoutes: Symbol.for('AdminRoutes'),
   SubscriptionRoutes: Symbol.for('SubscriptionRoutes'),
   PublicSubscriptionRoutes: Symbol.for('PublicSubscriptionRoutes'),
   UserProfileRoutes: Symbol.for('UserProfileRoutes'),
-  
+
   App: Symbol.for('App'),
-  
+
   IResponseBuilder: Symbol.for('IResponseBuilder'),
 
-  
-  ISkillRepository:Symbol.for('ISkillRepository'),
+
+  ISkillRepository: Symbol.for('ISkillRepository'),
   IS3Service: Symbol.for('IS3Service'),
   CreateSkillUseCase: Symbol.for('CreateSkillUseCase'),
   ListUserSkillsUseCase: Symbol.for('ListUserSkillsUseCase'),
@@ -63,7 +63,7 @@ export const TYPES = {
   SkillController: Symbol.for('SkillController'),
   SkillRoutes: Symbol.for('SkillRoutes'),
 
-  
+
   ISkillTemplateRepository: Symbol.for('ISkillTemplateRepository'),
   CreateSkillTemplateUseCase: Symbol.for('CreateSkillTemplateUseCase'),
   ListSkillTemplatesUseCase: Symbol.for('ListSkillTemplatesUseCase'),
@@ -74,12 +74,13 @@ export const TYPES = {
   SkillTemplateRoutes: Symbol.for('SkillTemplateRoutes'),
   PublicSkillTemplateRoutes: Symbol.for('PublicSkillTemplateRoutes'),
 
-  
+
   ITemplateQuestionRepository: Symbol.for('ITemplateQuestionRepository'),
   CreateTemplateQuestionUseCase: Symbol.for('CreateTemplateQuestionUseCase'),
   ListTemplateQuestionsUseCase: Symbol.for('ListTemplateQuestionsUseCase'),
   UpdateTemplateQuestionUseCase: Symbol.for('UpdateTemplateQuestionUseCase'),
   DeleteTemplateQuestionUseCase: Symbol.for('DeleteTemplateQuestionUseCase'),
+  BulkDeleteTemplateQuestionsUseCase: Symbol.for('BulkDeleteTemplateQuestionsUseCase'),
   TemplateQuestionController: Symbol.for('TemplateQuestionController'),
   TemplateQuestionRoutes: Symbol.for('TemplateQuestionRoutes'),
 
@@ -117,6 +118,8 @@ export const TYPES = {
 
   // Prisma Client
   PrismaClient: Symbol.for('PrismaClient'),
+
+
   IAdminUserDTOMapper: Symbol.for('IAdminUserDTOMapper'),
   IUserDTOMapper: Symbol.for('IUserDTOMapper'),
   IPendingSkillMapper: Symbol.for('IPendingSkillMapper'),
@@ -125,5 +128,18 @@ export const TYPES = {
   ISkillMapper: Symbol.for('ISkillMapper'),
   IBrowseSkillMapper: Symbol.for('IBrowseSkillMapper'),
   ISkillDetailsMapper: Symbol.for('ISkillDetailsMapper'),
-  IBookingMapper: Symbol.for('IBookingMapper')
+  IBookingMapper: Symbol.for('IBookingMapper'),
+
+
+  // MCQ Bulk Import
+  IMCQImportJobRepository: Symbol.for('IMCQImportJobRepository'),
+  IJobQueueService: Symbol.for('IJobQueueService'),
+  MCQImportJobProcessor: Symbol.for('MCQImportJobProcessor'),
+  StartMCQImportUseCase: Symbol.for('StartMCQImportUseCase'),
+  ListMCQImportJobsUseCase: Symbol.for('ListMCQImportJobsUseCase'),
+  DownloadMCQImportErrorsUseCase: Symbol.for('DownloadMCQImportErrorsUseCase'),
+  MCQImportController: Symbol.for('MCQImportController'),
+  MCQImportRoutes: Symbol.for('MCQImportRoutes'),
+
+
 };

@@ -2,10 +2,10 @@
 export const clearAllPersistedState = (): void => {
   try {
     console.log('[StorageUtils] Clearing all persisted state...');
-    
+
     // Remove redux-persist data
     localStorage.removeItem('persist:root');
-    
+
     // Remove any other auth-related data
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
@@ -14,9 +14,9 @@ export const clearAllPersistedState = (): void => {
         keysToRemove.push(key);
       }
     }
-    
+
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    
+
     console.log('[StorageUtils] ✅ Cleared persisted state successfully');
   } catch (error) {
     console.error('[StorageUtils] ❌ Error clearing persisted state:', error);
@@ -30,7 +30,7 @@ export const checkStorageHealth = (): boolean => {
     if (!persistedData) {
       return true; // No data is fine
     }
-    
+
     // Try to parse the data
     JSON.parse(persistedData);
     return true;
@@ -53,13 +53,13 @@ export const hasValidUserData = (): boolean => {
   try {
     const persistedData = localStorage.getItem('persist:root');
     if (!persistedData) return false;
-    
+
     const parsed = JSON.parse(persistedData);
     if (!parsed.auth) return false;
-    
+
     const authData = JSON.parse(parsed.auth);
     return !!authData.user;
-  } catch (error) {
+  } catch {
     return false;
   }
 };

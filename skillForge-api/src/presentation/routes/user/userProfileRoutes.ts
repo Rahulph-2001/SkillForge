@@ -3,7 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { UserProfileController } from '../../controllers/user/UserProfileController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 
 // Configure multer for memory storage
 const upload = multer({
@@ -11,7 +11,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req: any, file: Express.Multer.File, cb: FileFilterCallback) => {
     // Accept only image files
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);

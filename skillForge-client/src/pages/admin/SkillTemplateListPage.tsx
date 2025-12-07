@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react"
 import { Search, Plus, Edit2, Trash2, TrendingUp, FileQuestion } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService"
-import { ErrorModal, SuccessModal, ConfirmModal } from "../../components/shared/Modal"
+import { ErrorModal, SuccessModal, ConfirmModal } from "../../components/common/Modal"
 import QuestionManagementModal from "../../components/admin/QuestionManagementModal"
-import AdminNavbar from "../../components/admin/AdminNavbar/AdminNavbar"
+
 
 export default function SkillTemplateListPage() {
   const navigate = useNavigate()
@@ -100,7 +100,7 @@ export default function SkillTemplateListPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <AdminNavbar activeTab="Skill Templates" />
+
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
@@ -309,8 +309,8 @@ function TemplateCard({
           </div>
         </div>
         <div className="flex gap-2">
-          <button 
-            className="p-2 hover:bg-purple-50 rounded-lg transition-colors" 
+          <button
+            className="p-2 hover:bg-purple-50 rounded-lg transition-colors"
             onClick={onManageQuestions}
             title="Manage Questions"
           >

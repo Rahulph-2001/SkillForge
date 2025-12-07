@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { ForbiddenError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IListSubscriptionPlansUseCase } from './interfaces/IListSubscriptionPlansUseCase';
@@ -20,7 +21,7 @@ export class ListSubscriptionPlansUseCase implements IListSubscriptionPlansUseCa
   async execute(request: ListSubscriptionPlansRequestDTO): Promise<ListSubscriptionPlansResponseDTO> {
     // Verify admin privileges
     const adminUser = await this.userRepository.findById(request.adminUserId);
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || adminUser.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 

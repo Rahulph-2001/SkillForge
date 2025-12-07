@@ -5,6 +5,7 @@ import { CreateTemplateQuestionUseCase } from '../../../application/useCases/tem
 import { ListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase';
 import { UpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase';
 import { DeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
+import { BulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 
@@ -19,9 +20,11 @@ export class TemplateQuestionController {
     private readonly updateTemplateQuestionUseCase: UpdateTemplateQuestionUseCase,
     @inject(TYPES.DeleteTemplateQuestionUseCase)
     private readonly deleteTemplateQuestionUseCase: DeleteTemplateQuestionUseCase,
+    @inject(TYPES.BulkDeleteTemplateQuestionsUseCase)
+    private readonly bulkDeleteTemplateQuestionsUseCase: BulkDeleteTemplateQuestionsUseCase,
     @inject(TYPES.IResponseBuilder)
     private readonly responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   /**
    * POST /api/v1/admin/skill-templates/:templateId/questions
@@ -110,6 +113,37 @@ export class TemplateQuestionController {
       const response = this.responseBuilder.success(
         { message: 'Question deleted successfully' },
         'Question deleted successfully',
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk
+   * Bulk delete multiple questions
+   */
+  async bulkDelete(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { templateId } = req.params;
+      const { questionIds } = req.body;
+
+      if (!Array.isArray(questionIds)) {
+        const response = this.responseBuilder.error(
+          'questionIds must be an array',
+          HttpStatusCode.BAD_REQUEST
+        );
+        res.status(response.statusCode).json(response.body);
+        return;
+      }
+
+      const result = await this.bulkDeleteTemplateQuestionsUseCase.execute(templateId, questionIds);
+
+      const response = this.responseBuilder.success(
+        result,
+        `Successfully deleted ${result.deletedCount} question(s)`,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

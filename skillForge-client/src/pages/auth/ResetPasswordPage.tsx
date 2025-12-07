@@ -2,7 +2,7 @@ import type React from "react"
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { authService } from "../../services/authService"
-import { ErrorModal, SuccessModal } from "../../components/shared/Modal"
+import { ErrorModal, SuccessModal } from "../../components/common/Modal"
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate()
@@ -20,7 +20,7 @@ export default function ResetPasswordPage() {
         const emailFromState = location.state?.email
         const otpCodeFromState = location.state?.otpCode
         const emailFromStorage = localStorage.getItem('otpEmail')
-        
+
         const emailToUse = emailFromState || emailFromStorage || ""
         const otpCodeToUse = otpCodeFromState || ""
 
@@ -54,12 +54,12 @@ export default function ResetPasswordPage() {
 
         setLoading(true)
         try {
-            const response = await authService.resetPassword(email, otpCode, password, confirmPassword)
-            
+            await authService.resetPassword(email, otpCode, password, confirmPassword)
+
             // Clear OTP data from localStorage
             localStorage.removeItem('otpExpiresAt')
             localStorage.removeItem('otpEmail')
-            
+
             setShowSuccessModal(true);
             setTimeout(() => {
                 navigate('/login');
@@ -142,4 +142,3 @@ export default function ResetPasswordPage() {
         </div>
     )
 }
-

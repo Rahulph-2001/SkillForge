@@ -4,6 +4,7 @@ import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTem
 import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()
 export class ToggleSkillTemplateStatusUseCase {
@@ -17,7 +18,7 @@ export class ToggleSkillTemplateStatusUseCase {
   async execute(adminUserId: string, templateId: string): Promise<SkillTemplate> {
     // Verify admin
     const admin = await this.userRepository.findById(adminUserId);
-    if (!admin || admin.role !== 'admin') {
+    if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can toggle skill template status');
     }
 

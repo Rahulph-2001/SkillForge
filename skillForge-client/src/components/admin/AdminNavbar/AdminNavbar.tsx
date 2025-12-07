@@ -3,11 +3,30 @@ import { useAppDispatch } from '../../../store/hooks'
 import { logout } from '../../../store/slices/authSlice'
 import { clearPersistedState } from '../../../store/persistUtils'
 
-interface AdminNavbarProps {
-    activeTab?: string
-}
+import { useLocation } from 'react-router-dom';
 
-export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProps) {
+export default function AdminNavbar() {
+    const location = useLocation();
+    const currentPath = location.pathname;
+
+    // Helper to determine active tab based on path
+    const getActiveTab = (path: string) => {
+        if (path === '/admin/dashboard') return 'Dashboard';
+        if (path.startsWith('/admin/users')) return 'Users';
+        if (path.startsWith('/admin/skills')) return 'Skills';
+        if (path.startsWith('/admin/skill-templates')) return 'Skill Templates';
+        if (path.startsWith('/admin/projects')) return 'Projects';
+        if (path.startsWith('/admin/subscriptions')) return 'Subscriptions';
+        if (path.startsWith('/admin/sessions')) return 'Sessions';
+        if (path.startsWith('/admin/transactions')) return 'Transactions';
+        if (path.startsWith('/admin/wallet')) return 'Wallet';
+        if (path.startsWith('/admin/credits')) return 'Credits';
+        if (path.startsWith('/admin/communities')) return 'Communities';
+        if (path.startsWith('/admin/reports')) return 'Reports';
+        return '';
+    };
+
+    const activeTab = getActiveTab(currentPath);
     const navigate = useNavigate()
     const dispatch = useAppDispatch()
 
@@ -15,15 +34,15 @@ export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProp
         try {
             // Logout from backend and clear Redux state
             await dispatch(logout()).unwrap()
-            
+
             // Clear persisted state from localStorage
             await clearPersistedState()
-            
+
             // Navigate to admin login page
             navigate('/admin/login')
         } catch (error) {
             console.error('Logout error:', error)
-            
+
             // Even if logout fails, clear local state and redirect
             await clearPersistedState()
             navigate('/admin/login')
@@ -58,7 +77,7 @@ export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProp
                         <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">ADMIN</span>
                     </div>
                     <div className="flex items-center gap-6">
-                        <button 
+                        <button
                             className="text-gray-600 hover:text-gray-900 transition-colors"
                             aria-label="Notifications"
                         >
@@ -87,11 +106,10 @@ export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProp
                             <button
                                 key={item.label}
                                 onClick={() => navigate(item.path)}
-                                className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${
-                                    activeTab === item.label
+                                className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === item.label
                                         ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50'
                                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-b-2 border-transparent'
-                                }`}
+                                    }`}
                             >
                                 {item.label}
                             </button>
@@ -99,7 +117,7 @@ export default function AdminNavbar({ activeTab = 'Dashboard' }: AdminNavbarProp
                     </div>
                 </nav>
             </div>
-            
+
             <style>{`
                 .scrollbar-hide {
                     -ms-overflow-style: none;

@@ -82,6 +82,7 @@ import { CreateTemplateQuestionUseCase } from '../../application/useCases/templa
 import { ListTemplateQuestionsUseCase } from '../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase';
 import { UpdateTemplateQuestionUseCase } from '../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase';
 import { DeleteTemplateQuestionUseCase } from '../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
+import { BulkDeleteTemplateQuestionsUseCase } from '../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
 import { TemplateQuestionController } from '../../presentation/controllers/templateQuestion/TemplateQuestionController';
 import { TemplateQuestionRoutes } from '../../presentation/routes/templateQuestion/templateQuestionRoutes';
 import { PrismaClient } from '@prisma/client';
@@ -111,6 +112,7 @@ import { DeclineRescheduleUseCase } from '../../application/useCases/booking/Dec
 import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
 import { SessionManagementController } from '../../presentation/controllers/SessionManagementController';
 import { BookingController } from '../../presentation/controllers/BookingController';
+import { BookingRoutes } from '../../presentation/routes/bookingRoutes';
 
 import { IAdminUserDTOMapper } from '../../application/mappers/interfaces/IAdminUserDTOMapper';
 import { AdminUserDTOMapper } from '../../application/mappers/AdminUserDTOMapper';
@@ -130,6 +132,17 @@ import { ISkillDetailsMapper } from '../../application/mappers/interfaces/ISkill
 import { SkillDetailsMapper } from '../../application/mappers/SkillDetailsMapper';
 import { IBookingMapper } from '../../application/mappers/interfaces/IBookingMapper';
 import { BookingMapper } from '../../application/mappers/BookingMapper';
+
+import { IMCQImportJobRepository } from '../../domain/repositories/IMCQImportJobRepository';
+import { MCQImportJobRepository } from '../database/repositories/MCQImportJobRepository';
+import { IJobQueueService } from '../../domain/services/IJobQueueService';
+import { JobQueueService } from '../services/JobQueueService';
+import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
+import { StartMCQImportUseCase } from '../../application/useCases/mcq/StartMCQImportUseCase';
+import { ListMCQImportJobsUseCase } from '../../application/useCases/mcq/ListMCQImportJobsUseCase';
+import { DownloadMCQImportErrorsUseCase } from '../../application/useCases/mcq/DownloadMCQImportErrorsUseCase';
+import { MCQImportController } from '../../presentation/controllers/mcq/MCQImportController';
+import { MCQImportRoutes } from '../../presentation/routes/mcq/MCQImportRoutes';
 
 export const container = new Container();
 
@@ -206,6 +219,7 @@ container.bind<CreateTemplateQuestionUseCase>(TYPES.CreateTemplateQuestionUseCas
 container.bind<ListTemplateQuestionsUseCase>(TYPES.ListTemplateQuestionsUseCase).to(ListTemplateQuestionsUseCase);
 container.bind<UpdateTemplateQuestionUseCase>(TYPES.UpdateTemplateQuestionUseCase).to(UpdateTemplateQuestionUseCase);
 container.bind<DeleteTemplateQuestionUseCase>(TYPES.DeleteTemplateQuestionUseCase).to(DeleteTemplateQuestionUseCase);
+container.bind<BulkDeleteTemplateQuestionsUseCase>(TYPES.BulkDeleteTemplateQuestionsUseCase).to(BulkDeleteTemplateQuestionsUseCase);
 
 // MCQ Repository
 container.bind<IMCQRepository>(TYPES.IMCQRepository).to(MCQRepository);
@@ -247,7 +261,7 @@ container.bind<MCQTestController>(TYPES.MCQTestController).to(MCQTestController)
 container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);
 container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);
 container.bind<BookingController>(TYPES.BookingController).to(BookingController);
-import { BookingRoutes } from '../../presentation/routes/bookingRoutes';
+
 container.bind<BookingRoutes>(TYPES.BookingRoutes).to(BookingRoutes);
 // Routes
 container.bind<AuthRoutes>(TYPES.AuthRoutes).to(AuthRoutes);
@@ -266,3 +280,28 @@ container.bind<AdminSkillRoutes>(TYPES.AdminSkillRoutes).to(AdminSkillRoutes);
 container.bind<IResponseBuilder>(TYPES.IResponseBuilder).to(ResponseBuilder);
 // App
 container.bind<App>(TYPES.App).to(App);
+
+
+
+container.bind<IMCQImportJobRepository>(TYPES.IMCQImportJobRepository).to(MCQImportJobRepository); // Add new repo binding
+// ...
+
+// Services
+
+container.bind<IJobQueueService>(TYPES.IJobQueueService).to(JobQueueService); // Add new service binding
+// ...
+
+// MCQ Import Use Cases & Processor
+container.bind<MCQImportJobProcessor>(TYPES.MCQImportJobProcessor).to(MCQImportJobProcessor);
+container.bind<StartMCQImportUseCase>(TYPES.StartMCQImportUseCase).to(StartMCQImportUseCase);
+container.bind<ListMCQImportJobsUseCase>(TYPES.ListMCQImportJobsUseCase).to(ListMCQImportJobsUseCase);
+container.bind<DownloadMCQImportErrorsUseCase>(TYPES.DownloadMCQImportErrorsUseCase).to(DownloadMCQImportErrorsUseCase);
+
+// Controllers
+
+container.bind<MCQImportController>(TYPES.MCQImportController).to(MCQImportController); // Add new controller binding
+// ...
+
+// Routes
+
+container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes); // Add new route binding

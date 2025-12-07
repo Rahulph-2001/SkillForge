@@ -20,13 +20,13 @@ export class AdminSkillController {
     @inject(TYPES.BlockSkillUseCase) private blockSkillUseCase: BlockSkillUseCase,
     @inject(TYPES.UnblockSkillUseCase) private unblockSkillUseCase: UnblockSkillUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   /**
    * List all pending skills (passed MCQ, waiting for admin approval)
    * GET /api/v1/admin/skills/pending
    */
-  public listPending = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public listPending = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const skills = await this.listPendingSkillsUseCase.execute();
 
@@ -105,7 +105,7 @@ export class AdminSkillController {
    * Get all skills (for admin management)
    * GET /api/v1/admin/skills
    */
-  public getAllSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  public getAllSkills = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const skills = await this.getAllSkillsUseCase.execute();
 

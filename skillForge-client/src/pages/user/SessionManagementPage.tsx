@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Calendar, 
-  Clock, 
-  Video, 
-  User, 
-  Loader2, 
+import {
+  Calendar,
+  Clock,
+  Video,
+  User,
+  Loader2,
   ArrowLeft,
   X,
   CheckCircle,
   CalendarClock
 } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
-import { useAppSelector } from '../../store/hooks';
+
+// import { useAppSelector } from '../../store/hooks';
 import { sessionManagementService } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
@@ -44,7 +44,7 @@ type FilterType = 'all' | 'pending' | 'confirmed' | 'completed' | 'cancelled';
 
 export default function SessionManagementPage() {
   const navigate = useNavigate();
-  const { user } = useAppSelector((state) => state.auth);
+  // const { user } = useAppSelector((state) => state.auth);
   const [sessions, setSessions] = useState<UserSession[]>([]);
   const [stats, setStats] = useState<SessionStats>({
     pending: 0,
@@ -68,17 +68,17 @@ export default function SessionManagementPage() {
       const data = await sessionManagementService.getUserSessions();
       console.log('📊 [SessionManagementPage] Raw data from API:', data);
       console.log('📊 [SessionManagementPage] First session raw:', data.sessions[0]);
-      
+
       // Map the response to match UserSession interface
       const mappedSessions = data.sessions.map((s: any) => {
         // Explicit extraction with detailed logging
         const provider = s.provider || {};
         const skill = s.skill || {};
-        
+
         const providerName = provider.name || 'Unknown Provider';
         const skillTitle = skill.title || 'Unknown Skill';
         const duration = skill.durationHours ? skill.durationHours * 60 : 60;
-        
+
         console.log('🔍 [SessionManagementPage] Mapping session:', {
           id: s.id,
           status: s.status,
@@ -88,7 +88,7 @@ export default function SessionManagementPage() {
           skillTitle: skillTitle,
           duration,
         });
-        
+
         return {
           id: s.id,
           skillTitle,
@@ -105,7 +105,7 @@ export default function SessionManagementPage() {
           createdAt: s.createdAt,
         };
       });
-      
+
       console.log('✅ [SessionManagementPage] Mapped sessions:', mappedSessions);
       console.log('✅ [SessionManagementPage] First mapped session:', mappedSessions[0]);
       setSessions(mappedSessions);
@@ -206,9 +206,8 @@ export default function SessionManagementPage() {
 
     return (
       <span
-        className={`px-3 py-1 rounded-full text-xs font-semibold border ${
-          styles[statusLower as keyof typeof styles] || styles.pending
-        }`}
+        className={`px-3 py-1 rounded-full text-xs font-semibold border ${styles[statusLower as keyof typeof styles] || styles.pending
+          }`}
       >
         {status.charAt(0).toUpperCase() + status.slice(1)}
       </span>
@@ -229,15 +228,7 @@ export default function SessionManagementPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar 
-          isAuthenticated={true}
-          user={{
-            name: user?.name || 'User',
-            avatar: user?.avatar || undefined,
-            credits: user?.credits || 0,
-            subscriptionPlan: 'free'
-          }}
-        />
+
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
         </div>
@@ -247,16 +238,8 @@ export default function SessionManagementPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar 
-        isAuthenticated={true}
-        user={{
-          name: user?.name || 'User',
-          avatar: user?.avatar || undefined,
-          credits: user?.credits || 0,
-          subscriptionPlan: 'free'
-        }}
-      />
-      
+
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -329,11 +312,10 @@ export default function SessionManagementPage() {
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
-                  activeFilter === filter
-                    ? 'bg-blue-600 text-white shadow-md'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeFilter === filter
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
                 {filter === 'pending' && stats.pending > 0 && (
@@ -438,7 +420,7 @@ export default function SessionManagementPage() {
                         });
                         return null;
                       })()}
-                      
+
                       {session.status.toLowerCase() === 'pending' && (
                         <>
                           <button

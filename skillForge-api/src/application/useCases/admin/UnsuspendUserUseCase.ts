@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUnsuspendUserUseCase } from './interfaces/IUnsuspendUserUseCase';
 import { SuspendUserRequestDTO } from '../../dto/admin/SuspendUserRequestDTO';
@@ -16,7 +17,7 @@ export class UnsuspendUserUseCase implements IUnsuspendUserUseCase {
   async execute(request: SuspendUserRequestDTO): Promise<SuspendUserResponseDTO> {
     // Verify admin privileges
     const adminUser = await this.userRepository.findById(request.adminUserId);
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || adminUser.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 

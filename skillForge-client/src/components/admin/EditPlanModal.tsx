@@ -136,7 +136,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
       features: formData.features,
     };
 
-    onSave(planToSave);
+    onSave(planToSave as any);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -199,9 +199,8 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`w-full px-3 py-2 border ${errors.name ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="e.g., Starter"
             />
             {errors.name && (
@@ -245,9 +244,8 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
               name="price"
               value={formData.price}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border ${
-                errors.price ? 'border-red-500' : 'border-gray-300'
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
+              className={`w-full px-3 py-2 border ${errors.price ? 'border-red-500' : 'border-gray-300'
+                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
               placeholder="299"
               min="0"
             />

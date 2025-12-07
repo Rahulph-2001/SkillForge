@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError } from '../../../domain/errors/AppError';
+import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IListUsersUseCase } from './interfaces/IListUsersUseCase';
 import { ListUsersRequestDTO } from '../../dto/admin/ListUsersRequestDTO';
@@ -18,7 +19,7 @@ export class ListUsersUseCase implements IListUsersUseCase {
   async execute(request: ListUsersRequestDTO): Promise<ListUsersResponseDTO> {
     // Verify admin user
     const adminUser = await this.userRepository.findById(request.adminUserId);
-    if (!adminUser || adminUser.role !== 'admin') {
+    if (!adminUser || adminUser.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 

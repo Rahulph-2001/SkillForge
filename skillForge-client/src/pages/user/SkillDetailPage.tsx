@@ -9,7 +9,7 @@ import {
   Loader2,
   DollarSign,
 } from 'lucide-react';
-import Navbar from '../../components/shared/Navbar/Navbar';
+
 import { useAppSelector } from '../../store/hooks';
 import { skillDetailsService, SkillDetail } from '../../services/skillDetailsService';
 import { bookingService } from '../../services/bookingService';
@@ -20,7 +20,7 @@ export default function SkillDetailPage() {
   const { skillId } = useParams<{ skillId: string }>();
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
-  
+
   const [skill, setSkill] = useState<SkillDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
@@ -53,7 +53,7 @@ export default function SkillDetailPage() {
   const handleBookingSubmit = async (bookingData: BookingData) => {
     console.log('🟢 [SkillDetailPage] handleBookingSubmit called');
     console.log('🟢 [SkillDetailPage] Booking data received:', bookingData);
-    
+
     if (!skill) {
       console.error('❌ [SkillDetailPage] No skill data available');
       return;
@@ -80,11 +80,11 @@ export default function SkillDetailPage() {
 
     try {
       console.log('🟢 [SkillDetailPage] Calling bookingService.createBooking...');
-      
+
       const response = await bookingService.createBooking(requestPayload);
-      
+
       console.log('✅ [SkillDetailPage] Booking created successfully:', response);
-      
+
       toast.success('Booking request sent successfully!');
       setIsBookingModalOpen(false);
     } catch (error: any) {
@@ -92,10 +92,10 @@ export default function SkillDetailPage() {
       console.error('❌ [SkillDetailPage] Error response:', error.response);
       console.error('❌ [SkillDetailPage] Error data:', error.response?.data);
       console.error('❌ [SkillDetailPage] Error status:', error.response?.status);
-      
+
       const errorMessage = error.response?.data?.message || 'Failed to create booking';
       console.error('❌ [SkillDetailPage] Error message:', errorMessage);
-      
+
       toast.error(errorMessage);
       throw error; // Re-throw to let modal handle it
     }
@@ -127,15 +127,7 @@ export default function SkillDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Navbar
-          isAuthenticated={!!user}
-          user={user ? {
-            name: user.name,
-            avatar: user.avatar || undefined,
-            credits: user.credits,
-            subscriptionPlan: 'free'
-          } : undefined}
-        />
+
         <div className="flex flex-col justify-center items-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
           <p className="text-gray-600">Loading skill details...</p>
@@ -150,15 +142,7 @@ export default function SkillDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar
-        isAuthenticated={!!user}
-        user={user ? {
-          name: user.name,
-          avatar: user.avatar || undefined,
-          credits: user.credits,
-          subscriptionPlan: 'free'
-        } : undefined}
-      />
+
 
       {/* Back Button Header */}
       <div className="bg-white px-6 py-4 border-b border-gray-200">

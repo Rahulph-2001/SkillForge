@@ -6,7 +6,7 @@ import { BrowserRouter } from 'react-router-dom'
 import App from './App.tsx'
 import { store, persistor } from './store/store.ts'
 import { repairStorage, checkStorageHealth } from './utils/storageUtils'
-import { ErrorBoundary } from './components/shared/ErrorBoundary'
+import { ErrorBoundary } from './components/common/ErrorBoundary'
 import './index.css'
 
 // Check and repair storage before app loads
@@ -23,12 +23,12 @@ function AppWrapper() {
     const timeout = setTimeout(() => {
       console.error('[PersistGate] Rehydration timeout - clearing persisted state');
       setPersistError(true);
-      
+
       // Clear corrupted localStorage
       if (!checkStorageHealth()) {
         repairStorage();
       }
-      
+
       // Force show app anyway
       setShowApp(true);
     }, 3000);
@@ -49,6 +49,13 @@ function AppWrapper() {
     };
   }, []);
 
+  // Use showApp to avoid unused variable warning if needed, or just suppress it
+  useEffect(() => {
+    if (showApp) {
+      console.log('App is ready to show');
+    }
+  }, [showApp]);
+
   if (persistError) {
     // If there was an error, render app without PersistGate
     return (
@@ -58,8 +65,10 @@ function AppWrapper() {
     );
   }
 
+
+
   return (
-    <PersistGate 
+    <PersistGate
       loading={
         <div className="flex items-center justify-center min-h-screen bg-white">
           <div className="text-center">
@@ -67,7 +76,7 @@ function AppWrapper() {
             <p className="text-gray-600 text-sm">Loading SkillForge...</p>
           </div>
         </div>
-      } 
+      }
       persistor={persistor}
       onBeforeLift={() => {
         console.log('[PersistGate] Rehydration complete');
@@ -89,4 +98,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </ErrorBoundary>
   </React.StrictMode>,
 )
-

@@ -12,15 +12,15 @@ export class MCQTestController {
     @inject(TYPES.StartMCQTestUseCase) private startMCQTestUseCase: StartMCQTestUseCase,
     @inject(TYPES.SubmitMCQTestUseCase) private submitMCQTestUseCase: SubmitMCQTestUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
-  
+
   public startTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
       const userId = (req as any).user.userId;
 
-      const testSession = await this.startMCQTestUseCase.execute(skillId, userId);
+      const testSession = await this.startMCQTestUseCase.execute({ skillId, userId });
 
       const response = this.responseBuilder.success(
         testSession,

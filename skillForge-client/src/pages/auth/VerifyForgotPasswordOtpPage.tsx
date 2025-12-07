@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { OTPInput } from "../../components/shared/OTP"
+import { OTPInput } from "../../components/common/OTP"
 import { authService } from "../../services/authService"
 import { useOTPTimer } from "../../hooks/useOTPTimer"
-import { ErrorModal, SuccessModal } from "../../components/shared/Modal"
+import { ErrorModal, SuccessModal } from "../../components/common/Modal"
 
 export default function VerifyForgotPasswordOtpPage() {
     const navigate = useNavigate()
@@ -56,7 +56,7 @@ export default function VerifyForgotPasswordOtpPage() {
         setLoading(true)
         try {
             const response = await authService.verifyForgotPasswordOtp(email, code)
-            
+
             if (response.data?.verified) {
                 setShowSuccessModal(true);
                 setTimeout(() => {
@@ -82,10 +82,10 @@ export default function VerifyForgotPasswordOtpPage() {
 
         setResending(true)
         setError("")
-        
+
         try {
             const response = await authService.forgotPassword(email)
-            
+
             // Update expiry time with server response
             if (response.data?.expiresAt) {
                 resetTimer(response.data.expiresAt);

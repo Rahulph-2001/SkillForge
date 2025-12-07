@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
+import { UserRole } from '../../domain/enums/UserRole';
 
 export const adminMiddleware = (
   req: Request,
@@ -16,7 +17,7 @@ export const adminMiddleware = (
       return;
     }
     
-    if (user.role !== 'admin') {
+    if (user.role !== UserRole.ADMIN) {
       res.status(HttpStatusCode.FORBIDDEN).json({
         success: false,
         error: 'Access denied. Admin privileges required.',
