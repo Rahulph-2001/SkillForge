@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
+import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
@@ -17,14 +18,15 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
+    @inject(TYPES.IAvailabilityRepository) private availabilityRepository: IAvailabilityRepository,
     @inject(TYPES.IBookingMapper) private bookingMapper: IBookingMapper
-  ) {}
+  ) { }
 
   async execute(request: CreateBookingRequestDTO): Promise<BookingResponseDTO> {
     const { learnerId, skillId, providerId, preferredDate, preferredTime, message } = request;
-    
+
     const skill = await this.skillRepository.findById(skillId);
-    
+
     if (!skill) {
       throw new NotFoundError('Skill not found');
     }
@@ -36,7 +38,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     if (skill.isBlocked) {
       throw new ValidationError('This skill is currently blocked');
     }
-    
+
     if (skill.providerId !== providerId) {
       throw new ValidationError('Invalid provider for this skill');
     }
@@ -51,7 +53,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
     // Validate learner has sufficient credits
     const learner = await this.userRepository.findById(learnerId);
-    
+
     if (!learner) {
       throw new NotFoundError('Learner not found');
     }
@@ -64,6 +66,43 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
     const preferredDateTime = new Date(`${preferredDate}T${preferredTime}`);
     if (preferredDateTime <= new Date()) {
       throw new ValidationError('Preferred date and time must be in the future');
+    }
+
+    // --- Availability Validation ---
+    const availability = await this.availabilityRepository.findByProviderId(providerId);
+    if (!availability) {
+      throw new ValidationError('Provider availability not set');
+    }
+
+    // 1. Check Blocked Dates
+    const isBlocked = availability.blockedDates.some(d => d.date === preferredDate);
+    if (isBlocked) {
+      throw new ValidationError('Provider is not available on this date');
+    }
+
+    // 2. Check Weekly Schedule
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = days[preferredDateTime.getDay()];
+    const daySchedule = availability.weeklySchedule[dayName];
+
+    if (!daySchedule || !daySchedule.enabled) {
+      throw new ValidationError(`Provider is not available on ${dayName}s`);
+    }
+
+    // 3. Check Time Slots
+    const isTimeValid = daySchedule.slots.some(slot => {
+      const slotStart = new Date(`${preferredDate}T${slot.start}`);
+      const slotEnd = new Date(`${preferredDate}T${slot.end}`);
+
+      // Simple check: preferred time must be >= slot start AND (preferred time + duration) <= slot end
+      // Assuming duration is in hours
+      const sessionEnd = new Date(preferredDateTime.getTime() + skill.durationHours * 60 * 60 * 1000);
+
+      return preferredDateTime >= slotStart && sessionEnd <= slotEnd;
+    });
+
+    if (!isTimeValid) {
+      throw new ValidationError('Selected time is outside provider\'s available slots');
     }
 
     // Create booking entity

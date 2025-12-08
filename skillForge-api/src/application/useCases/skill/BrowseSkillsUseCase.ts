@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
 import { IBrowseSkillsUseCase } from './interfaces/IBrowseSkillsUseCase';
 import { BrowseSkillsRequestDTO } from '../../dto/skill/BrowseSkillsRequestDTO';
 import { BrowseSkillsResponseDTO } from '../../dto/skill/BrowseSkillsResponseDTO';
@@ -12,25 +13,31 @@ export class BrowseSkillsUseCase implements IBrowseSkillsUseCase {
   constructor(
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+    @inject(TYPES.IAvailabilityRepository) private availabilityRepository: IAvailabilityRepository,
     @inject(TYPES.IBrowseSkillMapper) private browseSkillMapper: IBrowseSkillMapper
-  ) {}
+  ) { }
 
   async execute(filters: BrowseSkillsRequestDTO): Promise<BrowseSkillsResponseDTO> {
     const { skills, total } = await this.skillRepository.browse(filters);
 
     // Collect provider IDs
     const providerIds = [...new Set(skills.map(s => s.providerId))];
-    
+
     // Fetch providers
     const providers = await this.userRepository.findByIds(providerIds);
     const providersMap = new Map(providers.map(p => [p.id, p]));
 
+    // Fetch availability
+    const availabilities = await this.availabilityRepository.findByProviderIds(providerIds);
+    const availabilityMap = new Map(availabilities.map(a => [a.providerId, a]));
+
     const skillDTOs = skills.map(skill => {
       const provider = providersMap.get(skill.providerId);
       if (!provider) {
-         throw new Error(`Provider not found for skill ${skill.id}`);
+        throw new Error(`Provider not found for skill ${skill.id}`);
       }
-      return this.browseSkillMapper.toDTO(skill, provider);
+      const availability = availabilityMap.get(skill.providerId);
+      return this.browseSkillMapper.toDTO(skill, provider, availability);
     });
 
     const page = filters.page || 1;

@@ -132,6 +132,7 @@ export class TemplateQuestionController {
 
       if (!Array.isArray(questionIds)) {
         const response = this.responseBuilder.error(
+          'BAD_REQUEST',
           'questionIds must be an array',
           HttpStatusCode.BAD_REQUEST
         );

@@ -304,4 +304,18 @@ container.bind<MCQImportController>(TYPES.MCQImportController).to(MCQImportContr
 
 // Routes
 
-container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes); // Add new route binding
+container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes);
+
+// Availability
+import { IAvailabilityRepository } from '../../domain/repositories/IAvailabilityRepository';
+import { PrismaAvailabilityRepository } from '../database/repositories/PrismaAvailabilityRepository';
+import { GetProviderAvailabilityUseCase } from '../../application/useCases/availability/GetProviderAvailabilityUseCase';
+import { UpdateProviderAvailabilityUseCase } from '../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
+import { AvailabilityController } from '../../presentation/controllers/availability/AvailabilityController';
+import { AvailabilityRoutes } from '../../presentation/routes/availability/availabilityRoutes';
+
+container.bind<IAvailabilityRepository>(TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository);
+container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);
+container.bind<UpdateProviderAvailabilityUseCase>(TYPES.UpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase);
+container.bind<AvailabilityController>(TYPES.AvailabilityController).to(AvailabilityController);
+container.bind<AvailabilityRoutes>(TYPES.AvailabilityRoutes).to(AvailabilityRoutes);

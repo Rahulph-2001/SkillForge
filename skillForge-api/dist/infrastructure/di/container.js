@@ -72,6 +72,7 @@ const CreateTemplateQuestionUseCase_1 = require("../../application/useCases/temp
 const ListTemplateQuestionsUseCase_1 = require("../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase");
 const UpdateTemplateQuestionUseCase_1 = require("../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase");
 const DeleteTemplateQuestionUseCase_1 = require("../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase");
+const BulkDeleteTemplateQuestionsUseCase_1 = require("../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase");
 const TemplateQuestionController_1 = require("../../presentation/controllers/templateQuestion/TemplateQuestionController");
 const templateQuestionRoutes_1 = require("../../presentation/routes/templateQuestion/templateQuestionRoutes");
 const client_1 = require("@prisma/client");
@@ -188,6 +189,7 @@ exports.container.bind(types_1.TYPES.CreateTemplateQuestionUseCase).to(CreateTem
 exports.container.bind(types_1.TYPES.ListTemplateQuestionsUseCase).to(ListTemplateQuestionsUseCase_1.ListTemplateQuestionsUseCase);
 exports.container.bind(types_1.TYPES.UpdateTemplateQuestionUseCase).to(UpdateTemplateQuestionUseCase_1.UpdateTemplateQuestionUseCase);
 exports.container.bind(types_1.TYPES.DeleteTemplateQuestionUseCase).to(DeleteTemplateQuestionUseCase_1.DeleteTemplateQuestionUseCase);
+exports.container.bind(types_1.TYPES.BulkDeleteTemplateQuestionsUseCase).to(BulkDeleteTemplateQuestionsUseCase_1.BulkDeleteTemplateQuestionsUseCase);
 // MCQ Repository
 exports.container.bind(types_1.TYPES.IMCQRepository).to(MCQRepository_1.MCQRepository);
 // MCQ Use Cases
@@ -257,5 +259,15 @@ exports.container.bind(types_1.TYPES.DownloadMCQImportErrorsUseCase).to(Download
 exports.container.bind(types_1.TYPES.MCQImportController).to(MCQImportController_1.MCQImportController); // Add new controller binding
 // ...
 // Routes
-exports.container.bind(types_1.TYPES.MCQImportRoutes).to(MCQImportRoutes_1.MCQImportRoutes); // Add new route binding
+exports.container.bind(types_1.TYPES.MCQImportRoutes).to(MCQImportRoutes_1.MCQImportRoutes);
+const PrismaAvailabilityRepository_1 = require("../database/repositories/PrismaAvailabilityRepository");
+const GetProviderAvailabilityUseCase_1 = require("../../application/useCases/availability/GetProviderAvailabilityUseCase");
+const UpdateProviderAvailabilityUseCase_1 = require("../../application/useCases/availability/UpdateProviderAvailabilityUseCase");
+const AvailabilityController_1 = require("../../presentation/controllers/availability/AvailabilityController");
+const availabilityRoutes_1 = require("../../presentation/routes/availability/availabilityRoutes");
+exports.container.bind(types_1.TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository_1.PrismaAvailabilityRepository);
+exports.container.bind(types_1.TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase_1.GetProviderAvailabilityUseCase);
+exports.container.bind(types_1.TYPES.UpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase_1.UpdateProviderAvailabilityUseCase);
+exports.container.bind(types_1.TYPES.AvailabilityController).to(AvailabilityController_1.AvailabilityController);
+exports.container.bind(types_1.TYPES.AvailabilityRoutes).to(availabilityRoutes_1.AvailabilityRoutes);
 //# sourceMappingURL=container.js.map

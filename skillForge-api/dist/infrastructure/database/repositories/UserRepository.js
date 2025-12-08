@@ -83,8 +83,7 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
             lastLogin: userData.last_login,
             lastActive: userData.last_active,
             isActive: userData.is_active,
-            isDeleted: userData.is_deleted,
-            deletedAt: userData.deleted_at
+            isDeleted: userData.is_deleted
         };
     }
     async save(user) {

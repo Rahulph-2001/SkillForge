@@ -10,6 +10,7 @@ export declare class TemplateQuestionRepository implements ITemplateQuestionRepo
     findByTemplateIdAndLevel(templateId: string, level: string): Promise<TemplateQuestion[]>;
     update(id: string, data: any): Promise<TemplateQuestion>;
     delete(id: string): Promise<void>;
+    bulkDelete(ids: string[]): Promise<number>;
     countByTemplateId(templateId: string): Promise<number>;
     countByTemplateIdAndLevel(templateId: string, level: string): Promise<number>;
     getRandomQuestions(templateId: string, level: string, count: number): Promise<TemplateQuestion[]>;

@@ -1,0 +1,4 @@
+src/pages/provider/AvailabilitySettingsPage.tsx(83,11): error TS6133: 'formatTime12Hour' is declared but its value is never read.
+src/pages/provider/AvailabilitySettingsPage.tsx(170,35): error TS2339: Property 'supportedValuesOf' does not exist on type 'typeof Intl'.
+src/pages/provider/AvailabilitySettingsPage.tsx(170,69): error TS7006: Parameter 'tz' implicitly has an 'any' type.
+src/pages/user/BrowseSkillsPage.tsx(3,24): error TS6133: 'Clock' is declared but its value is never read.

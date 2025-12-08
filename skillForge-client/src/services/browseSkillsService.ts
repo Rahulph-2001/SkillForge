@@ -26,6 +26,7 @@ export interface BrowseSkill {
     name: string;
     email: string;
   };
+  availableDays: string[];
 }
 
 export interface BrowseSkillsResponse {
@@ -39,7 +40,7 @@ export interface BrowseSkillsResponse {
 export const browseSkillsService = {
   async browseSkills(filters: BrowseSkillsFilters): Promise<BrowseSkillsResponse> {
     const params = new URLSearchParams();
-    
+
     if (filters.search) params.append('search', filters.search);
     if (filters.category) params.append('category', filters.category);
     if (filters.level) params.append('level', filters.level);

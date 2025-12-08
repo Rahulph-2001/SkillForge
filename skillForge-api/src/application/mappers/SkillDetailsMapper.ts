@@ -6,7 +6,7 @@ import { ISkillDetailsMapper } from './interfaces/ISkillDetailsMapper';
 
 @injectable()
 export class SkillDetailsMapper implements ISkillDetailsMapper {
-  public toDTO(skill: Skill, provider: User, providerStats: { rating: number; reviewCount: number }): SkillDetailsDTO {
+  public toDTO(skill: Skill, provider: User, providerStats: { rating: number; reviewCount: number }, availability?: any): SkillDetailsDTO {
     return {
       id: skill.id,
       title: skill.title,
@@ -26,6 +26,11 @@ export class SkillDetailsMapper implements ISkillDetailsMapper {
         rating: providerStats.rating,
         reviewCount: providerStats.reviewCount,
       },
+      availability: availability ? {
+        weeklySchedule: availability.weeklySchedule,
+        blockedDates: availability.blockedDates,
+        timezone: availability.timezone
+      } : null
     };
   }
 }

@@ -42,8 +42,9 @@ const sessionManagementRoutes_1 = __importDefault(require("./routes/sessionManag
 const rateLimitMiddileWare_1 = require("./middlewares/rateLimitMiddileWare");
 const PassportService_1 = require("../infrastructure/services/PassportService");
 const MCQImportRoutes_1 = require("./routes/mcq/MCQImportRoutes");
+const availabilityRoutes_1 = require("./routes/availability/availabilityRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, passportService) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, passportService) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -57,6 +58,7 @@ let App = class App {
         this.bookingRoutes = bookingRoutes;
         this.userProfileRoutes = userProfileRoutes;
         this.mcqImportRoutes = mcqImportRoutes;
+        this.availabilityRoutes = availabilityRoutes;
         this.passportService = passportService;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
@@ -113,6 +115,7 @@ let App = class App {
         this.app.use('/api/v1/admin/skill-templates', this.skillTemplateRoutes.router);
         this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
         this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter());
+        this.app.use('/api/v1/availability', this.availabilityRoutes.router);
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
     setupErrorHandlers() {
@@ -138,7 +141,8 @@ exports.App = App = __decorate([
     __param(10, (0, inversify_1.inject)(types_1.TYPES.BookingRoutes)),
     __param(11, (0, inversify_1.inject)(types_1.TYPES.UserProfileRoutes)),
     __param(12, (0, inversify_1.inject)(types_1.TYPES.MCQImportRoutes)),
-    __param(13, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
+    __param(13, (0, inversify_1.inject)(types_1.TYPES.AvailabilityRoutes)),
+    __param(14, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -152,6 +156,7 @@ exports.App = App = __decorate([
         bookingRoutes_1.BookingRoutes,
         userProfileRoutes_1.UserProfileRoutes,
         MCQImportRoutes_1.MCQImportRoutes,
+        availabilityRoutes_1.AvailabilityRoutes,
         PassportService_1.PassportService])
 ], App);
 //# sourceMappingURL=server.js.map

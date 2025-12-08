@@ -27,6 +27,7 @@ export interface CreateSkillProps {
   blockedAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
+  
 }
 
 export class Skill {

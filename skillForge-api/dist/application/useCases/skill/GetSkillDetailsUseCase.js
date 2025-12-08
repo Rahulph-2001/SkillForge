@@ -17,9 +17,10 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 let GetSkillDetailsUseCase = class GetSkillDetailsUseCase {
-    constructor(skillRepository, userRepository, skillDetailsMapper) {
+    constructor(skillRepository, userRepository, availabilityRepository, skillDetailsMapper) {
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
+        this.availabilityRepository = availabilityRepository;
         this.skillDetailsMapper = skillDetailsMapper;
     }
     async execute(skillId) {
@@ -48,10 +49,12 @@ let GetSkillDetailsUseCase = class GetSkillDetailsUseCase {
         const providerTotalRating = validSkills.reduce((sum, s) => sum + (s.rating || 0), 0);
         const providerAverageRating = validSkills.length > 0 ? providerTotalRating / validSkills.length : 0;
         const providerTotalSessions = validSkills.reduce((sum, s) => sum + (s.totalSessions || 0), 0);
+        // Fetch availability
+        const availability = await this.availabilityRepository.findByProviderId(skill.providerId);
         return this.skillDetailsMapper.toDTO(skill, provider, {
             rating: Number(providerAverageRating.toFixed(1)),
             reviewCount: providerTotalSessions
-        });
+        }, availability);
     }
 };
 exports.GetSkillDetailsUseCase = GetSkillDetailsUseCase;
@@ -59,7 +62,8 @@ exports.GetSkillDetailsUseCase = GetSkillDetailsUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.ISkillDetailsMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ISkillDetailsMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], GetSkillDetailsUseCase);
 //# sourceMappingURL=GetSkillDetailsUseCase.js.map

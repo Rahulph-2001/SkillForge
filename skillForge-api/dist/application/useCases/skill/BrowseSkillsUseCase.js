@@ -16,9 +16,10 @@ exports.BrowseSkillsUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 let BrowseSkillsUseCase = class BrowseSkillsUseCase {
-    constructor(skillRepository, userRepository, browseSkillMapper) {
+    constructor(skillRepository, userRepository, availabilityRepository, browseSkillMapper) {
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
+        this.availabilityRepository = availabilityRepository;
         this.browseSkillMapper = browseSkillMapper;
     }
     async execute(filters) {
@@ -28,12 +29,16 @@ let BrowseSkillsUseCase = class BrowseSkillsUseCase {
         // Fetch providers
         const providers = await this.userRepository.findByIds(providerIds);
         const providersMap = new Map(providers.map(p => [p.id, p]));
+        // Fetch availability
+        const availabilities = await this.availabilityRepository.findByProviderIds(providerIds);
+        const availabilityMap = new Map(availabilities.map(a => [a.providerId, a]));
         const skillDTOs = skills.map(skill => {
             const provider = providersMap.get(skill.providerId);
             if (!provider) {
                 throw new Error(`Provider not found for skill ${skill.id}`);
             }
-            return this.browseSkillMapper.toDTO(skill, provider);
+            const availability = availabilityMap.get(skill.providerId);
+            return this.browseSkillMapper.toDTO(skill, provider, availability);
         });
         const page = filters.page || 1;
         const limit = filters.limit || 12;
@@ -51,7 +56,8 @@ exports.BrowseSkillsUseCase = BrowseSkillsUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IBrowseSkillMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IBrowseSkillMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], BrowseSkillsUseCase);
 //# sourceMappingURL=BrowseSkillsUseCase.js.map

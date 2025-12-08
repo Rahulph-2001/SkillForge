@@ -21,6 +21,11 @@ export interface SkillDetail {
   rating: number;
   totalSessions: number;
   provider: SkillProvider;
+  availability: {
+    weeklySchedule: Record<string, { enabled: boolean; slots: { start: string; end: string }[] }>;
+    blockedDates: { date: Date; reason?: string }[];
+    timezone: string;
+  } | null;
 }
 
 export const skillDetailsService = {

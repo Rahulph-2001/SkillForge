@@ -5,6 +5,6 @@ export interface ISkillDetailsMapper {
     toDTO(skill: Skill, provider: User, providerStats: {
         rating: number;
         reviewCount: number;
-    }): SkillDetailsDTO;
+    }, availability?: any): SkillDetailsDTO;
 }
 //# sourceMappingURL=ISkillDetailsMapper.d.ts.map

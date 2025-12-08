@@ -19,10 +19,11 @@ const types_1 = require("../../../infrastructure/di/types");
 const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
 let CreateBookingUseCase = class CreateBookingUseCase {
-    constructor(skillRepository, userRepository, bookingRepository, bookingMapper) {
+    constructor(skillRepository, userRepository, bookingRepository, availabilityRepository, bookingMapper) {
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
         this.bookingRepository = bookingRepository;
+        this.availabilityRepository = availabilityRepository;
         this.bookingMapper = bookingMapper;
     }
     async execute(request) {
@@ -59,6 +60,35 @@ let CreateBookingUseCase = class CreateBookingUseCase {
         if (preferredDateTime <= new Date()) {
             throw new AppError_1.ValidationError('Preferred date and time must be in the future');
         }
+        // --- Availability Validation ---
+        const availability = await this.availabilityRepository.findByProviderId(providerId);
+        if (!availability) {
+            throw new AppError_1.ValidationError('Provider availability not set');
+        }
+        // 1. Check Blocked Dates
+        const isBlocked = availability.blockedDates.some(d => d.date === preferredDate);
+        if (isBlocked) {
+            throw new AppError_1.ValidationError('Provider is not available on this date');
+        }
+        // 2. Check Weekly Schedule
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[preferredDateTime.getDay()];
+        const daySchedule = availability.weeklySchedule[dayName];
+        if (!daySchedule || !daySchedule.enabled) {
+            throw new AppError_1.ValidationError(`Provider is not available on ${dayName}s`);
+        }
+        // 3. Check Time Slots
+        const isTimeValid = daySchedule.slots.some(slot => {
+            const slotStart = new Date(`${preferredDate}T${slot.start}`);
+            const slotEnd = new Date(`${preferredDate}T${slot.end}`);
+            // Simple check: preferred time must be >= slot start AND (preferred time + duration) <= slot end
+            // Assuming duration is in hours
+            const sessionEnd = new Date(preferredDateTime.getTime() + skill.durationHours * 60 * 60 * 1000);
+            return preferredDateTime >= slotStart && sessionEnd <= slotEnd;
+        });
+        if (!isTimeValid) {
+            throw new AppError_1.ValidationError('Selected time is outside provider\'s available slots');
+        }
         // Create booking entity
         const booking = Booking_1.Booking.create({
             id: (0, uuid_1.v4)(),
@@ -85,7 +115,8 @@ exports.CreateBookingUseCase = CreateBookingUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], CreateBookingUseCase);
 //# sourceMappingURL=CreateBookingUseCase.js.map

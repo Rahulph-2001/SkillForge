@@ -4,11 +4,11 @@ exports.MCQImportJob = exports.ImportStatus = void 0;
 const uuid_1 = require("uuid");
 var ImportStatus;
 (function (ImportStatus) {
-    ImportStatus["PENDING"] = "PENDING";
-    ImportStatus["IN_PROGRESS"] = "IN_PROGRESS";
-    ImportStatus["COMPLETED"] = "COMPLETED";
-    ImportStatus["COMPLETED_WITH_ERRORS"] = "COMPLETED_WITH_ERRORS";
-    ImportStatus["FAILED"] = "FAILED";
+    ImportStatus["PENDING"] = "pending";
+    ImportStatus["IN_PROGRESS"] = "in_progress";
+    ImportStatus["COMPLETED"] = "completed";
+    ImportStatus["COMPLETED_WITH_ERRORS"] = "completed_with_errors";
+    ImportStatus["FAILED"] = "failed";
 })(ImportStatus || (exports.ImportStatus = ImportStatus = {}));
 class MCQImportJob {
     constructor(props) {

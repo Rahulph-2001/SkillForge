@@ -15,6 +15,7 @@ export interface BrowseSkillDTO {
     name: string;
     email: string;
   };
+  availableDays: string[];
 }
 
 export interface BrowseSkillsResponseDTO {

@@ -9,6 +9,11 @@ interface BookSessionModalProps {
   sessionCost: number;
   userBalance: number;
   onBookSession: (bookingData: BookingData) => Promise<void>;
+  availability?: {
+    weeklySchedule: any;
+    blockedDates: any[];
+    timezone: string;
+  };
 }
 
 export interface BookingData {
@@ -30,6 +35,7 @@ export default function BookSessionModal({
   sessionCost,
   userBalance,
   onBookSession,
+  availability,
 }: BookSessionModalProps) {
   const [preferredDate, setPreferredDate] = useState('');
   const [time, setTime] = useState<TimePickerState>({
@@ -52,9 +58,23 @@ export default function BookSessionModal({
       const selectedDate = new Date(preferredDate);
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      
+
       if (selectedDate < today) {
         newErrors.date = 'Date cannot be in the past';
+      } else if (availability) {
+        // Check blocked dates
+        const isBlocked = availability.blockedDates.some(d => d.date === preferredDate);
+        if (isBlocked) {
+          newErrors.date = 'Provider is unavailable on this date';
+        } else {
+          // Check weekly schedule
+          const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const dayName = days[selectedDate.getDay()];
+          const daySchedule = availability.weeklySchedule[dayName];
+          if (!daySchedule || !daySchedule.enabled) {
+            newErrors.date = `Provider is not available on ${dayName}s`;
+          }
+        }
       }
     }
 
@@ -65,6 +85,29 @@ export default function BookSessionModal({
       const minute = parseInt(time.minute);
       if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
         newErrors.time = 'Invalid time format';
+      } else if (availability && preferredDate) {
+        // Check time slots
+        const formattedTime = formatTime24Hour();
+        const selectedDateTime = new Date(`${preferredDate}T${formattedTime}`);
+
+        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const dayName = days[selectedDateTime.getDay()];
+        const daySchedule = availability.weeklySchedule[dayName];
+
+        if (daySchedule && daySchedule.enabled && daySchedule.slots) {
+          const isTimeValid = daySchedule.slots.some((slot: any) => {
+            const slotStart = new Date(`${preferredDate}T${slot.start}`);
+            const slotEnd = new Date(`${preferredDate}T${slot.end}`);
+            // Assuming 1 hour duration for validation simplicity on frontend
+            // Ideally pass duration from props
+            const sessionEnd = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
+            return selectedDateTime >= slotStart && sessionEnd <= slotEnd;
+          });
+
+          if (!isTimeValid) {
+            newErrors.time = 'Selected time is outside available slots';
+          }
+        }
       }
     }
 
@@ -75,13 +118,13 @@ export default function BookSessionModal({
   const formatTime24Hour = (): string => {
     let hour = parseInt(time.hour);
     const minute = time.minute.padStart(2, '0');
-    
+
     if (time.period === 'PM' && hour !== 12) {
       hour += 12;
     } else if (time.period === 'AM' && hour === 12) {
       hour = 0;
     }
-    
+
     return `${hour.toString().padStart(2, '0')}:${minute}`;
   };
 
@@ -106,19 +149,19 @@ export default function BookSessionModal({
     try {
       const formattedTime = formatTime24Hour();
       console.log('🔵 [BookSessionModal] Formatted time (24h):', formattedTime);
-      
+
       const bookingData = {
         preferredDate,
         preferredTime: formattedTime,
         message,
       };
-      
+
       console.log('🔵 [BookSessionModal] Sending booking data:', bookingData);
-      
+
       await onBookSession(bookingData);
-      
+
       console.log('✅ [BookSessionModal] Booking successful');
-      
+
       // Reset form
       setPreferredDate('');
       setTime({ hour: '', minute: '', period: 'AM' });
@@ -132,6 +175,10 @@ export default function BookSessionModal({
         response: error.response?.data,
         status: error.response?.status,
       });
+      // If backend returns validation error, show it
+      if (error.response?.status === 400) {
+        setErrors(prev => ({ ...prev, form: error.response.data.message }));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -185,6 +232,13 @@ export default function BookSessionModal({
 
         {/* Body */}
         <div className="p-5 space-y-4">
+          {/* Global Error */}
+          {(errors as any).form && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{(errors as any).form}</span>
+            </div>
+          )}
+
           {/* Preferred Date */}
           <div>
             <label htmlFor="preferred-date" className="block text-sm font-medium text-gray-700 mb-2">
@@ -200,9 +254,8 @@ export default function BookSessionModal({
                 setErrors({ ...errors, date: undefined });
               }}
               min={new Date().toISOString().split('T')[0]}
-              className={`w-full px-3 py-2 border ${
-                errors.date ? 'border-red-500' : 'border-gray-300'
-              } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm`}
+              className={`w-full px-3 py-2 border ${errors.date ? 'border-red-500' : 'border-gray-300'
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm`}
               placeholder="dd-mm-yyyy"
             />
             {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
@@ -222,9 +275,8 @@ export default function BookSessionModal({
                 onChange={(e) => handleHourChange(e.target.value)}
                 maxLength={2}
                 placeholder="HH"
-                className={`w-16 px-3 py-2 border ${
-                  errors.time ? 'border-red-500' : 'border-gray-300'
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
+                className={`w-16 px-3 py-2 border ${errors.time ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
               />
               <span className="text-gray-500 font-bold">:</span>
               {/* Minute */}
@@ -234,31 +286,28 @@ export default function BookSessionModal({
                 onChange={(e) => handleMinuteChange(e.target.value)}
                 maxLength={2}
                 placeholder="MM"
-                className={`w-16 px-3 py-2 border ${
-                  errors.time ? 'border-red-500' : 'border-gray-300'
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
+                className={`w-16 px-3 py-2 border ${errors.time ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
               />
               {/* AM/PM Toggle */}
               <div className="flex border border-gray-300 rounded-md overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setTime({ ...time, period: 'AM' })}
-                  className={`px-3 py-2 text-sm font-medium transition-colors ${
-                    time.period === 'AM'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors ${time.period === 'AM'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   AM
                 </button>
                 <button
                   type="button"
                   onClick={() => setTime({ ...time, period: 'PM' })}
-                  className={`px-3 py-2 text-sm font-medium transition-colors border-l border-gray-300 ${
-                    time.period === 'PM'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-gray-50'
-                  }`}
+                  className={`px-3 py-2 text-sm font-medium transition-colors border-l border-gray-300 ${time.period === 'PM'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    }`}
                 >
                   PM
                 </button>

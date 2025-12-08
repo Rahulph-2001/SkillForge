@@ -3,5 +3,5 @@ import { User } from '../../../domain/entities/User';
 import { SkillDetailsDTO } from '../../dto/skill/SkillDetailsResponseDTO';
 
 export interface ISkillDetailsMapper {
-  toDTO(skill: Skill, provider: User, providerStats: { rating: number; reviewCount: number }): SkillDetailsDTO;
+  toDTO(skill: Skill, provider: User, providerStats: { rating: number; reviewCount: number }, availability?: any): SkillDetailsDTO;
 }

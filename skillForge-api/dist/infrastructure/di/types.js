@@ -70,6 +70,7 @@ exports.TYPES = {
     ListTemplateQuestionsUseCase: Symbol.for('ListTemplateQuestionsUseCase'),
     UpdateTemplateQuestionUseCase: Symbol.for('UpdateTemplateQuestionUseCase'),
     DeleteTemplateQuestionUseCase: Symbol.for('DeleteTemplateQuestionUseCase'),
+    BulkDeleteTemplateQuestionsUseCase: Symbol.for('BulkDeleteTemplateQuestionsUseCase'),
     TemplateQuestionController: Symbol.for('TemplateQuestionController'),
     TemplateQuestionRoutes: Symbol.for('TemplateQuestionRoutes'),
     // MCQ Tests
@@ -121,5 +122,11 @@ exports.TYPES = {
     DownloadMCQImportErrorsUseCase: Symbol.for('DownloadMCQImportErrorsUseCase'),
     MCQImportController: Symbol.for('MCQImportController'),
     MCQImportRoutes: Symbol.for('MCQImportRoutes'),
+    // Availability
+    IAvailabilityRepository: Symbol.for('IAvailabilityRepository'),
+    GetProviderAvailabilityUseCase: Symbol.for('GetProviderAvailabilityUseCase'),
+    UpdateProviderAvailabilityUseCase: Symbol.for('UpdateProviderAvailabilityUseCase'),
+    AvailabilityController: Symbol.for('AvailabilityController'),
+    AvailabilityRoutes: Symbol.for('AvailabilityRoutes'),
 };
 //# sourceMappingURL=types.js.map

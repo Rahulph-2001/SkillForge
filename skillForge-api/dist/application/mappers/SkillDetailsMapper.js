@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SkillDetailsMapper = void 0;
 const inversify_1 = require("inversify");
 let SkillDetailsMapper = class SkillDetailsMapper {
-    toDTO(skill, provider, providerStats) {
+    toDTO(skill, provider, providerStats, availability) {
         return {
             id: skill.id,
             title: skill.title,
@@ -29,6 +29,11 @@ let SkillDetailsMapper = class SkillDetailsMapper {
                 rating: providerStats.rating,
                 reviewCount: providerStats.reviewCount,
             },
+            availability: availability ? {
+                weeklySchedule: availability.weeklySchedule,
+                blockedDates: availability.blockedDates,
+                timezone: availability.timezone
+            } : null
         };
     }
 };

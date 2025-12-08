@@ -1,9 +1,9 @@
 export declare enum ImportStatus {
-    PENDING = "PENDING",
-    IN_PROGRESS = "IN_PROGRESS",
-    COMPLETED = "COMPLETED",
-    COMPLETED_WITH_ERRORS = "COMPLETED_WITH_ERRORS",
-    FAILED = "FAILED"
+    PENDING = "pending",
+    IN_PROGRESS = "in_progress",
+    COMPLETED = "completed",
+    COMPLETED_WITH_ERRORS = "completed_with_errors",
+    FAILED = "failed"
 }
 export interface ImportJobProps {
     id?: string;

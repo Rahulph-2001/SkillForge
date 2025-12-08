@@ -19,13 +19,15 @@ const CreateTemplateQuestionUseCase_1 = require("../../../application/useCases/t
 const ListTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase");
 const UpdateTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase");
 const DeleteTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase");
+const BulkDeleteTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 let TemplateQuestionController = class TemplateQuestionController {
-    constructor(createTemplateQuestionUseCase, listTemplateQuestionsUseCase, updateTemplateQuestionUseCase, deleteTemplateQuestionUseCase, responseBuilder) {
+    constructor(createTemplateQuestionUseCase, listTemplateQuestionsUseCase, updateTemplateQuestionUseCase, deleteTemplateQuestionUseCase, bulkDeleteTemplateQuestionsUseCase, responseBuilder) {
         this.createTemplateQuestionUseCase = createTemplateQuestionUseCase;
         this.listTemplateQuestionsUseCase = listTemplateQuestionsUseCase;
         this.updateTemplateQuestionUseCase = updateTemplateQuestionUseCase;
         this.deleteTemplateQuestionUseCase = deleteTemplateQuestionUseCase;
+        this.bulkDeleteTemplateQuestionsUseCase = bulkDeleteTemplateQuestionsUseCase;
         this.responseBuilder = responseBuilder;
     }
     /**
@@ -95,6 +97,27 @@ let TemplateQuestionController = class TemplateQuestionController {
             next(error);
         }
     }
+    /**
+     * DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk
+     * Bulk delete multiple questions
+     */
+    async bulkDelete(req, res, next) {
+        try {
+            const { templateId } = req.params;
+            const { questionIds } = req.body;
+            if (!Array.isArray(questionIds)) {
+                const response = this.responseBuilder.error('BAD_REQUEST', 'questionIds must be an array', HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                res.status(response.statusCode).json(response.body);
+                return;
+            }
+            const result = await this.bulkDeleteTemplateQuestionsUseCase.execute(templateId, questionIds);
+            const response = this.responseBuilder.success(result, `Successfully deleted ${result.deletedCount} question(s)`, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 };
 exports.TemplateQuestionController = TemplateQuestionController;
 exports.TemplateQuestionController = TemplateQuestionController = __decorate([
@@ -103,10 +126,12 @@ exports.TemplateQuestionController = TemplateQuestionController = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ListTemplateQuestionsUseCase)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.UpdateTemplateQuestionUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.DeleteTemplateQuestionUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.BulkDeleteTemplateQuestionsUseCase)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [CreateTemplateQuestionUseCase_1.CreateTemplateQuestionUseCase,
         ListTemplateQuestionsUseCase_1.ListTemplateQuestionsUseCase,
         UpdateTemplateQuestionUseCase_1.UpdateTemplateQuestionUseCase,
-        DeleteTemplateQuestionUseCase_1.DeleteTemplateQuestionUseCase, Object])
+        DeleteTemplateQuestionUseCase_1.DeleteTemplateQuestionUseCase,
+        BulkDeleteTemplateQuestionsUseCase_1.BulkDeleteTemplateQuestionsUseCase, Object])
 ], TemplateQuestionController);
 //# sourceMappingURL=TemplateQuestionController.js.map

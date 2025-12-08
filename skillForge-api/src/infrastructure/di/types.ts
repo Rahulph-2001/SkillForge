@@ -141,5 +141,12 @@ export const TYPES = {
   MCQImportController: Symbol.for('MCQImportController'),
   MCQImportRoutes: Symbol.for('MCQImportRoutes'),
 
+  // Availability
+  IAvailabilityRepository: Symbol.for('IAvailabilityRepository'),
+  GetProviderAvailabilityUseCase: Symbol.for('GetProviderAvailabilityUseCase'),
+  UpdateProviderAvailabilityUseCase: Symbol.for('UpdateProviderAvailabilityUseCase'),
+  AvailabilityController: Symbol.for('AvailabilityController'),
+  AvailabilityRoutes: Symbol.for('AvailabilityRoutes'),
+
 
 };

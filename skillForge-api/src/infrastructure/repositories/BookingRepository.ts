@@ -222,7 +222,7 @@ export class BookingRepository implements IBookingRepository {
         skillId: booking.skillId,
         providerId: booking.providerId,
         learnerId: booking.learnerId,
-        preferredDate: booking.preferredDate,
+        preferredDate: new Date(booking.preferredDate),
         preferredTime: booking.preferredTime,
         message: booking.message,
         status: booking.status,
@@ -289,8 +289,8 @@ export class BookingRepository implements IBookingRepository {
     // Convert Date objects to ISO strings for JSON storage
     const serializedInfo = {
       ...rescheduleInfo,
-      requestedAt: rescheduleInfo.requestedAt instanceof Date 
-        ? rescheduleInfo.requestedAt.toISOString() 
+      requestedAt: rescheduleInfo.requestedAt instanceof Date
+        ? rescheduleInfo.requestedAt.toISOString()
         : rescheduleInfo.requestedAt,
     };
 

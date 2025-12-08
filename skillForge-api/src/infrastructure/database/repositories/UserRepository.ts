@@ -75,8 +75,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       lastLogin: userData.last_login,
       lastActive: userData.last_active,
       isActive: userData.is_active,
-      isDeleted: userData.is_deleted,
-      deletedAt: userData.deleted_at
+      isDeleted: userData.is_deleted
     };
   }
 
@@ -93,9 +92,9 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     );
     // Directly use Prisma client to avoid signature conflict with base class
     const modelClient = (this.prisma as any)[this.model];
-    const updatedUser = await modelClient.update({ 
-      where: { id: user.id }, 
-      data: updateData 
+    const updatedUser = await modelClient.update({
+      where: { id: user.id },
+      data: updateData
     });
     return User.fromDatabaseRow(updatedUser as unknown as Record<string, unknown>);
   }

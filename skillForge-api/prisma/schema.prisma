@@ -262,19 +262,13 @@ model User {
   lastActive              DateTime?        @map("last_active") @db.Timestamptz(6)
   isActive                Boolean          @default(true) @map("is_active")
   isDeleted               Boolean          @default(false) @map("is_deleted")
-  deletedAt               DateTime?        @map("deleted_at") @db.Timestamptz(6)
-
   // Relations
   passwordResetTokens     PasswordResetToken[]
   skills                  Skill[]
   bookingsAsLearner       Booking[] @relation("LearnerBookings")
   bookingsAsProvider      Booking[] @relation("ProviderBookings")
-  
-  // NOTE: OTPToken relation removed as OTP is stored in Redis.
+  availability            ProviderAvailability?
 
-  @@index([email])
-  @@index([subscriptionPlan])
-  @@index([createdAt])
   @@index([role])
   @@index([isActive])
   @@index([isDeleted])
@@ -362,4 +356,37 @@ model Booking {
   @@index([preferredDate])
   @@index([isDeleted])
   @@map("bookings")
+}
+
+// --- Availability Model ---
+
+model ProviderAvailability {
+  id                String    @id @default(uuid()) @db.Uuid
+  providerId        String    @unique @map("provider_id") @db.Uuid
+  
+  // Weekly Schedule (JSONB)
+  // Format: { "Monday": { "enabled": true, "slots": [{ "start": "09:00", "end": "17:00" }] }, ... }
+  weeklySchedule    Json      @map("weekly_schedule")
+
+  // General Settings
+  timezone          String    @default("UTC") @db.VarChar(50)
+  bufferTime        Int       @default(15) @map("buffer_time") // Minutes
+  maxSessionsPerDay Int?      @map("max_sessions_per_day") // null = unlimited
+  minAdvanceBooking Int       @default(24) @map("min_advance_booking") // Hours
+  maxAdvanceBooking Int       @default(30) @map("max_advance_booking") // Days
+  autoAccept        Boolean   @default(false) @map("auto_accept")
+
+  // Blocked Dates (JSONB)
+  // Format: [{ "date": "2025-12-25", "label": "Christmas" }]
+  blockedDates      Json      @default("[]") @map("blocked_dates")
+
+  // Metadata
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  provider          User      @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@map("provider_availability")
 }

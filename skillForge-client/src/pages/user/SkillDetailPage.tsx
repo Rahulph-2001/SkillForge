@@ -14,6 +14,7 @@ import { useAppSelector } from '../../store/hooks';
 import { skillDetailsService, SkillDetail } from '../../services/skillDetailsService';
 import { bookingService } from '../../services/bookingService';
 import BookSessionModal, { BookingData } from '../../components/booking/BookSessionModal';
+import BookingSuccessModal from '../../components/booking/BookingSuccessModal';
 import { toast } from 'react-hot-toast';
 
 export default function SkillDetailPage() {
@@ -25,6 +26,11 @@ export default function SkillDetailPage() {
   const [loading, setLoading] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [lastBookingDetails, setLastBookingDetails] = useState<{
+    date: string;
+    time: string;
+  } | null>(null);
 
   useEffect(() => {
     if (skillId) {
@@ -59,15 +65,6 @@ export default function SkillDetailPage() {
       return;
     }
 
-    console.log('🟢 [SkillDetailPage] Skill data:', {
-      skillId: skill.id,
-      skillTitle: skill.title,
-      providerId: skill.provider.id,
-      providerName: skill.provider.name,
-      creditsPerHour: skill.creditsPerHour,
-      durationHours: skill.durationHours,
-    });
-
     const requestPayload = {
       skillId: skill.id,
       providerId: skill.provider.id,
@@ -76,28 +73,21 @@ export default function SkillDetailPage() {
       message: bookingData.message,
     };
 
-    console.log('🟢 [SkillDetailPage] Request payload:', requestPayload);
-
     try {
-      console.log('🟢 [SkillDetailPage] Calling bookingService.createBooking...');
-
       const response = await bookingService.createBooking(requestPayload);
-
       console.log('✅ [SkillDetailPage] Booking created successfully:', response);
 
-      toast.success('Booking request sent successfully!');
       setIsBookingModalOpen(false);
+      setLastBookingDetails({
+        date: bookingData.preferredDate,
+        time: bookingData.preferredTime,
+      });
+      setIsSuccessModalOpen(true);
     } catch (error: any) {
       console.error('❌ [SkillDetailPage] Failed to create booking:', error);
-      console.error('❌ [SkillDetailPage] Error response:', error.response);
-      console.error('❌ [SkillDetailPage] Error data:', error.response?.data);
-      console.error('❌ [SkillDetailPage] Error status:', error.response?.status);
-
       const errorMessage = error.response?.data?.message || 'Failed to create booking';
-      console.error('❌ [SkillDetailPage] Error message:', errorMessage);
-
       toast.error(errorMessage);
-      throw error; // Re-throw to let modal handle it
+      throw error;
     }
   };
 
@@ -108,7 +98,6 @@ export default function SkillDetailPage() {
         text: skill.description,
         url: window.location.href,
       }).catch(() => {
-        // Fallback: copy to clipboard
         navigator.clipboard.writeText(window.location.href);
         toast.success('Link copied to clipboard!');
       });
@@ -127,7 +116,6 @@ export default function SkillDetailPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50">
-
         <div className="flex flex-col justify-center items-center py-20">
           <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
           <p className="text-gray-600">Loading skill details...</p>
@@ -142,8 +130,6 @@ export default function SkillDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-
-
       {/* Back Button Header */}
       <div className="bg-white px-6 py-4 border-b border-gray-200">
         <div className="max-w-7xl mx-auto">
@@ -363,6 +349,51 @@ export default function SkillDetailPage() {
                   View Profile
                 </button>
               </div>
+
+              {/* Availability Schedule */}
+              {skill.availability && skill.availability.weeklySchedule && (
+                <>
+                  <div className="border-t border-gray-200" />
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Weekly Availability
+                    </h3>
+                    <div className="space-y-2">
+                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+                        const schedule = skill.availability!.weeklySchedule[day];
+                        if (!schedule || !schedule.enabled) return null;
+
+                        return (
+                          <div key={day} className="flex justify-between text-sm">
+                            <span className="font-medium text-gray-700 w-24">{day}</span>
+                            <div className="flex-1 text-right text-gray-600">
+                              {schedule.slots.map((slot, idx) => {
+                                const formatTime = (time: string) => {
+                                  const [h, m] = time.split(':');
+                                  const hour = parseInt(h);
+                                  const ampm = hour >= 12 ? 'PM' : 'AM';
+                                  const hour12 = hour % 12 || 12;
+                                  return `${hour12}:${m} ${ampm}`;
+                                };
+                                return (
+                                  <div key={idx}>
+                                    {formatTime(slot.start)} - {formatTime(slot.end)}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    {skill.availability.timezone && (
+                      <p className="text-xs text-gray-500 mt-2">
+                        Timezone: {skill.availability.timezone}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -378,6 +409,21 @@ export default function SkillDetailPage() {
           sessionCost={skill.creditsPerHour * skill.durationHours}
           userBalance={user?.credits || 0}
           onBookSession={handleBookingSubmit}
+          availability={skill.availability || undefined}
+        />
+      )}
+
+      {/* Success Modal */}
+      {skill && lastBookingDetails && (
+        <BookingSuccessModal
+          isOpen={isSuccessModalOpen}
+          onClose={() => setIsSuccessModalOpen(false)}
+          bookingDetails={{
+            skillTitle: skill.title,
+            providerName: skill.provider.name,
+            date: lastBookingDetails.date,
+            time: lastBookingDetails.time,
+          }}
         />
       )}
     </div>

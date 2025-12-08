@@ -3,14 +3,16 @@ import { CreateTemplateQuestionUseCase } from '../../../application/useCases/tem
 import { ListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase';
 import { UpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase';
 import { DeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
+import { BulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class TemplateQuestionController {
     private readonly createTemplateQuestionUseCase;
     private readonly listTemplateQuestionsUseCase;
     private readonly updateTemplateQuestionUseCase;
     private readonly deleteTemplateQuestionUseCase;
+    private readonly bulkDeleteTemplateQuestionsUseCase;
     private readonly responseBuilder;
-    constructor(createTemplateQuestionUseCase: CreateTemplateQuestionUseCase, listTemplateQuestionsUseCase: ListTemplateQuestionsUseCase, updateTemplateQuestionUseCase: UpdateTemplateQuestionUseCase, deleteTemplateQuestionUseCase: DeleteTemplateQuestionUseCase, responseBuilder: IResponseBuilder);
+    constructor(createTemplateQuestionUseCase: CreateTemplateQuestionUseCase, listTemplateQuestionsUseCase: ListTemplateQuestionsUseCase, updateTemplateQuestionUseCase: UpdateTemplateQuestionUseCase, deleteTemplateQuestionUseCase: DeleteTemplateQuestionUseCase, bulkDeleteTemplateQuestionsUseCase: BulkDeleteTemplateQuestionsUseCase, responseBuilder: IResponseBuilder);
     /**
      * POST /api/v1/admin/skill-templates/:templateId/questions
      * Create a new question for a template
@@ -31,5 +33,10 @@ export declare class TemplateQuestionController {
      * Delete a question
      */
     delete(req: Request, res: Response, next: NextFunction): Promise<void>;
+    /**
+     * DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk
+     * Bulk delete multiple questions
+     */
+    bulkDelete(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 //# sourceMappingURL=TemplateQuestionController.d.ts.map

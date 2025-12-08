@@ -13,6 +13,7 @@ import { BookingRoutes } from './routes/bookingRoutes';
 import { UserProfileRoutes } from './routes/user/userProfileRoutes';
 import { PassportService } from '../infrastructure/services/PassportService';
 import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
+import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';
 export declare class App {
     private readonly authRoutes;
     private readonly adminRoutes;
@@ -27,9 +28,10 @@ export declare class App {
     private readonly bookingRoutes;
     private readonly userProfileRoutes;
     private readonly mcqImportRoutes;
+    private readonly availabilityRoutes;
     private readonly passportService;
     private app;
-    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, passportService: PassportService);
+    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, availabilityRoutes: AvailabilityRoutes, passportService: PassportService);
     private setupMiddlewares;
     private setupRoutes;
     private setupErrorHandlers;

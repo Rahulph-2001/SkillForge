@@ -33,7 +33,7 @@ const persistConfig = {
 // Middleware to reset transient UI states after rehydration
 const resetTransientStatesMiddleware: Middleware = (store) => (next) => (action: any) => {
   const result = next(action);
-  
+
   // After rehydration, reset transient UI states
   if (action.type === REHYDRATE) {
     console.log('[Store] Rehydration detected, resetting transient UI states');
@@ -43,7 +43,7 @@ const resetTransientStatesMiddleware: Middleware = (store) => (next) => (action:
       store.dispatch({ type: 'auth/resetTransientStates' });
     }
   }
-  
+
   return result;
 };
 
@@ -69,7 +69,7 @@ export const store = configureStore({
           'auth/adminLogin/rejected',
           'auth/resetTransientStates',
         ],
-        
+
         ignoredPaths: ['auth.error'],
       },
     }).concat(resetTransientStatesMiddleware),

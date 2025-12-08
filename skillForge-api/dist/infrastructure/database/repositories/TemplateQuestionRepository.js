@@ -71,6 +71,16 @@ let TemplateQuestionRepository = class TemplateQuestionRepository {
             data: { isActive: false },
         });
     }
+    async bulkDelete(ids) {
+        const result = await this.database.getClient().templateQuestion.updateMany({
+            where: {
+                id: { in: ids },
+                isActive: true
+            },
+            data: { isActive: false },
+        });
+        return result.count;
+    }
     async countByTemplateId(templateId) {
         return this.database.getClient().templateQuestion.count({
             where: { templateId, isActive: true },

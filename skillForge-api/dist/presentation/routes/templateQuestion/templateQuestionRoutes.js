@@ -34,6 +34,8 @@ let TemplateQuestionRoutes = class TemplateQuestionRoutes {
         this.router.get('/', this.templateQuestionController.list.bind(this.templateQuestionController));
         // PUT /api/v1/admin/skill-templates/:templateId/questions/:id - Update question
         this.router.put('/:id', this.templateQuestionController.update.bind(this.templateQuestionController));
+        // DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk - Bulk delete questions
+        this.router.delete('/bulk', this.templateQuestionController.bulkDelete.bind(this.templateQuestionController));
         // DELETE /api/v1/admin/skill-templates/:templateId/questions/:id - Delete question
         this.router.delete('/:id', this.templateQuestionController.delete.bind(this.templateQuestionController));
     }

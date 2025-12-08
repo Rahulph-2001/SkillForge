@@ -67,6 +67,7 @@ export declare const TYPES: {
     ListTemplateQuestionsUseCase: symbol;
     UpdateTemplateQuestionUseCase: symbol;
     DeleteTemplateQuestionUseCase: symbol;
+    BulkDeleteTemplateQuestionsUseCase: symbol;
     TemplateQuestionController: symbol;
     TemplateQuestionRoutes: symbol;
     IMCQRepository: symbol;
@@ -113,5 +114,10 @@ export declare const TYPES: {
     DownloadMCQImportErrorsUseCase: symbol;
     MCQImportController: symbol;
     MCQImportRoutes: symbol;
+    IAvailabilityRepository: symbol;
+    GetProviderAvailabilityUseCase: symbol;
+    UpdateProviderAvailabilityUseCase: symbol;
+    AvailabilityController: symbol;
+    AvailabilityRoutes: symbol;
 };
 //# sourceMappingURL=types.d.ts.map

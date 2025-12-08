@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Users, Plus, Loader2, CheckCircle } from "lucide-react";
 
 import StatCard from "../../components/admin/StatCard";
@@ -9,6 +10,7 @@ import { fetchMySkills, createSkill } from "../../store/slices/skillSlice";
 import { SuccessModal, ErrorModal } from "../../components/common/Modal";
 
 export default function SkillsPage() {
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { mySkills, loading, error } = useAppSelector((state) => state.skills);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -75,13 +77,21 @@ export default function SkillsPage() {
                 All sessions are virtual - teach from anywhere!
               </p>
             </div>
-            <button
-              onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-            >
-              <Plus className="h-5 w-5" />
-              Add New Skill
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/provider/availability')}
+                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              >
+                Availability Settings
+              </button>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+              >
+                <Plus className="h-5 w-5" />
+                Add New Skill
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -17,5 +17,19 @@ export interface SkillDetailsDTO {
         rating: number;
         reviewCount: number;
     };
+    availability: {
+        weeklySchedule: Record<string, {
+            enabled: boolean;
+            slots: {
+                start: string;
+                end: string;
+            }[];
+        }>;
+        blockedDates: {
+            date: Date;
+            reason?: string;
+        }[];
+        timezone: string;
+    } | null;
 }
 //# sourceMappingURL=SkillDetailsResponseDTO.d.ts.map
