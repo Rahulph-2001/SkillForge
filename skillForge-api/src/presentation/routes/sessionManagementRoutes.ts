@@ -2,7 +2,7 @@
 
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { container } from '../../infrastructure/di/container';
+import { container } from '../../infrastructure/di/di';
 import { TYPES } from '../../infrastructure/di/types';
 import { SessionManagementController } from '../controllers/SessionManagementController';
 

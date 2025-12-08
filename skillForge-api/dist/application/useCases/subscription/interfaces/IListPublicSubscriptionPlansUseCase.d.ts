@@ -1,5 +1,0 @@
-import { ListPublicSubscriptionPlansResponseDTO } from '../../../dto/subscription/ListPublicSubscriptionPlansResponseDTO';
-export interface IListPublicSubscriptionPlansUseCase {
-    execute(): Promise<ListPublicSubscriptionPlansResponseDTO>;
-}
-//# sourceMappingURL=IListPublicSubscriptionPlansUseCase.d.ts.map

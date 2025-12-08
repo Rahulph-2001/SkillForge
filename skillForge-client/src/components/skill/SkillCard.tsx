@@ -18,25 +18,35 @@ interface SkillCardProps {
     imageUrl?: string;
     templateId?: string;
     isBlocked?: boolean;
+    isAdminBlocked?: boolean;
     blockedReason?: string;
   };
+  onEdit?: (skill: any) => void;
+  onToggleBlock?: (skill: any) => void;
 }
 
-export default function SkillCard({ skill }: SkillCardProps) {
+export default function SkillCard({ skill, onEdit, onToggleBlock }: SkillCardProps) {
   const navigate = useNavigate();
-  
+
   const statusColors = {
     approved: 'bg-green-100 text-green-800',
     pending: 'bg-yellow-100 text-yellow-800',
     'in-review': 'bg-blue-100 text-blue-800',
     rejected: 'bg-red-100 text-red-800',
     blocked: 'bg-black text-white',
+    adminBlocked: 'bg-red-600 text-white',
   };
 
   // Show blocked status if skill is blocked
-  const displayStatus = skill.isBlocked ? 'blocked' : skill.status;
+  let displayStatus = skill.status;
+  if (skill.isAdminBlocked) {
+    displayStatus = 'adminBlocked';
+  } else if (skill.isBlocked) {
+    displayStatus = 'blocked';
+  }
+
   const statusColor = statusColors[displayStatus as keyof typeof statusColors] || 'bg-gray-100 text-gray-800';
-  
+
   const handleAttendMCQ = () => {
     navigate(`/mcq-test/${skill.id}`);
   };
@@ -74,7 +84,9 @@ export default function SkillCard({ skill }: SkillCardProps) {
         {/* Status Badge */}
         <div className="absolute right-2 top-2">
           <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColor}`}>
-            {skill.isBlocked ? '🚫 Blocked' : (skill.status.charAt(0).toUpperCase() + skill.status.slice(1))}
+            {skill.isAdminBlocked ? '🚫 Blocked by Admin' :
+              skill.isBlocked ? '🚫 Blocked' :
+                (skill.status.charAt(0).toUpperCase() + skill.status.slice(1))}
           </span>
         </div>
       </div>
@@ -102,9 +114,11 @@ export default function SkillCard({ skill }: SkillCardProps) {
         </div>
 
         {/* Blocked Warning */}
-        {skill.isBlocked && skill.blockedReason && (
+        {(skill.isBlocked || skill.isAdminBlocked) && skill.blockedReason && (
           <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-sm font-semibold text-red-900 mb-1">⚠️ Skill Blocked</p>
+            <p className="text-sm font-semibold text-red-900 mb-1">
+              {skill.isAdminBlocked ? '⚠️ Blocked by Admin' : '⚠️ Skill Blocked'}
+            </p>
             <p className="text-xs text-red-700">{skill.blockedReason}</p>
           </div>
         )}
@@ -126,19 +140,46 @@ export default function SkillCard({ skill }: SkillCardProps) {
             </span>
           </div>
         </div>
-        
-        {/* MCQ Attend Button - Show only for pending status and not blocked */}
-        {skill.status === 'pending' && skill.templateId && !skill.isBlocked && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
+
+        {/* Actions */}
+        <div className="mt-4 flex gap-2 border-t border-gray-100 pt-3">
+          {skill.status === 'pending' && skill.templateId && !skill.isBlocked && !skill.isAdminBlocked ? (
             <button
               onClick={handleAttendMCQ}
-              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-3 rounded-lg transition-colors text-sm"
             >
               <FileText className="h-4 w-4" />
-              Attend MCQ Test
+              Attend MCQ
             </button>
-          </div>
-        )}
+          ) : (
+            <button
+              onClick={() => onEdit?.(skill)}
+              disabled={skill.isAdminBlocked}
+              className={`flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium transition-colors
+                ${skill.isAdminBlocked
+                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                  : 'bg-white text-gray-700 hover:bg-gray-50 hover:text-blue-600'}`}
+              title={skill.isAdminBlocked ? "Cannot edit admin-blocked skill" : "Edit Skill"}
+            >
+              Edit
+            </button>
+          )}
+
+          <button
+            onClick={() => onToggleBlock?.(skill)}
+            disabled={skill.isAdminBlocked}
+            className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors 
+              ${skill.isAdminBlocked
+                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                : skill.isBlocked
+                  ? 'bg-green-50 text-green-700 hover:bg-green-100'
+                  : 'bg-red-50 text-red-700 hover:bg-red-100'
+              }`}
+            title={skill.isAdminBlocked ? "Cannot unblock admin-blocked skill" : (skill.isBlocked ? "Unblock Skill" : "Block Skill")}
+          >
+            {skill.isBlocked ? 'Unblock' : 'Block'}
+          </button>
+        </div>
       </div>
     </div>
   );

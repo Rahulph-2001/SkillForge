@@ -28,11 +28,14 @@ export interface ProviderAvailability {
 export const availabilityService = {
     getAvailability: async (): Promise<ProviderAvailability> => {
         const response = await api.get('/availability');
+        console.debug('[availabilityService:get] /availability response', response.data?.data);
         return response.data.data;
     },
 
     updateAvailability: async (data: Partial<ProviderAvailability>): Promise<ProviderAvailability> => {
+        console.debug('[availabilityService:put] /availability payload', data);
         const response = await api.put('/availability', data);
+        console.debug('[availabilityService:put] /availability response', response.data?.data);
         return response.data.data;
     },
 };

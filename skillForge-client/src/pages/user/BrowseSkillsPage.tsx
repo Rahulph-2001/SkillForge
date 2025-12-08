@@ -277,16 +277,29 @@ export default function BrowseSkillsPage() {
                                             )}
                                         </div>
                                         {skill.availableDays && skill.availableDays.length > 0 && (
-                                            <div className="mt-1 px-5 pb-2">
-                                                <div className="text-xs text-green-600 font-medium mb-1">Available:</div>
-                                                <div className="flex flex-col gap-1">
-                                                    {skill.availableDays.slice(0, 2).map((day, idx) => (
-                                                        <span key={idx} className="text-xs text-gray-600 bg-green-50 px-2 py-0.5 rounded border border-green-100 inline-block w-fit truncate max-w-full">
-                                                            {day}
+                                            <div className="mt-1 px-5 pb-4">
+                                                <div className="flex items-center gap-1.5 mb-2">
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                                    <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Available</span>
+                                                </div>
+                                                <div className="flex flex-wrap gap-1.5">
+                                                    {skill.availableDays.slice(0, 4).map((dayStr, idx) => {
+                                                        // Extract Day (e.g. "Monday" from "Monday (09:00 AM - ...)")
+                                                        const dayName = dayStr.split(' ')[0].substring(0, 3);
+                                                        return (
+                                                            <span
+                                                                key={idx}
+                                                                className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-semibold text-gray-600 uppercase tracking-wider hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors"
+                                                                title={dayStr}
+                                                            >
+                                                                {dayName}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                    {skill.availableDays.length > 4 && (
+                                                        <span className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-medium text-gray-500">
+                                                            +{skill.availableDays.length - 4}
                                                         </span>
-                                                    ))}
-                                                    {skill.availableDays.length > 2 && (
-                                                        <span className="text-xs text-gray-400 pl-1">+{skill.availableDays.length - 2} more</span>
                                                     )}
                                                 </div>
                                             </div>

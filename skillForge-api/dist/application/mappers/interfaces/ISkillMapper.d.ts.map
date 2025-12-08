@@ -1,1 +1,0 @@
-{"version":3,"file":"ISkillMapper.d.ts","sourceRoot":"","sources":["../../../../src/application/mappers/interfaces/ISkillMapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,gCAAgC,CAAC;AACvD,OAAO,EAAE,gBAAgB,EAAE,MAAM,kCAAkC,CAAC;AAEpE,MAAM,WAAW,YAAY;IAC3B,aAAa,CAAC,KAAK,EAAE,KAAK,GAAG,gBAAgB,CAAC;CAC/C"}

@@ -1,1 +1,0 @@
-{"version":3,"file":"IBrowseSkillsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/skill/interfaces/IBrowseSkillsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,2CAA2C,CAAC;AACnF,OAAO,EAAE,uBAAuB,EAAE,MAAM,4CAA4C,CAAC;AAErF,MAAM,WAAW,oBAAoB;IACnC,OAAO,CAAC,OAAO,EAAE,sBAAsB,GAAG,OAAO,CAAC,uBAAuB,CAAC,CAAC;CAC5E"}

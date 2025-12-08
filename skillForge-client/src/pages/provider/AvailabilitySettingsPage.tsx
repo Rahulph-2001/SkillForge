@@ -7,14 +7,55 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 
 const DEFAULT_SCHEDULE: WeeklySchedule = DAYS.reduce((acc, day) => ({
     ...acc,
-    [day]: { enabled: true, slots: [{ start: '09:00', end: '17:00' }] }
+    [day]: { enabled: true, slots: [{ start: '09:00', end: '17:00' }] },
 }), {});
+
+const EMPTY_SCHEDULE: WeeklySchedule = DAYS.reduce((acc, day) => ({
+    ...acc,
+    [day]: { enabled: false, slots: [] },
+}), {});
+
+const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
+    const parsed =
+        typeof rawSchedule === 'string'
+            ? (() => {
+                  try {
+                      return JSON.parse(rawSchedule);
+                  } catch {
+                      return {};
+                  }
+              })()
+            : rawSchedule || {};
+
+    const normalized: WeeklySchedule = { ...EMPTY_SCHEDULE };
+
+    DAYS.forEach((day) => {
+        const foundKey = Object.keys(parsed).find(
+            (k) => k.toLowerCase() === day.toLowerCase(),
+        );
+
+        if (!foundKey) return;
+
+        const loadedDay = parsed[foundKey] || {};
+        const slots = Array.isArray(loadedDay.slots) ? loadedDay.slots : [];
+
+        normalized[day] = {
+            enabled: loadedDay.enabled ?? false,
+            slots: slots.map((s) => ({
+                start: s?.start ?? '09:00',
+                end: s?.end ?? '17:00',
+            })),
+        };
+    });
+
+    return normalized;
+};
 
 export const AvailabilitySettingsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [availability, setAvailability] = useState<Partial<ProviderAvailability>>({
-        weeklySchedule: DEFAULT_SCHEDULE,
+        weeklySchedule: EMPTY_SCHEDULE,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         bufferTime: 15,
         minAdvanceBooking: 24,
@@ -30,8 +71,31 @@ export const AvailabilitySettingsPage: React.FC = () => {
     const loadAvailability = async () => {
         try {
             const data = await availabilityService.getAvailability();
+            console.debug('[AvailabilitySettingsPage] loaded availability', data);
             if (data) {
-                setAvailability(data);
+                const schedule = normalizeWeeklySchedule(data.weeklySchedule);
+                console.debug('[AvailabilitySettingsPage] normalized schedule', schedule);
+
+                setAvailability({
+                    weeklySchedule: schedule,
+                    timezone: data.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    bufferTime: data.bufferTime ?? 15,
+                    minAdvanceBooking: data.minAdvanceBooking ?? 24,
+                    maxAdvanceBooking: data.maxAdvanceBooking ?? 30,
+                    autoAccept: data.autoAccept ?? false,
+                    blockedDates: data.blockedDates ?? [],
+                    maxSessionsPerDay: data.maxSessionsPerDay,
+                });
+            } else {
+                setAvailability({
+                    weeklySchedule: DEFAULT_SCHEDULE,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    bufferTime: 15,
+                    minAdvanceBooking: 24,
+                    maxAdvanceBooking: 30,
+                    autoAccept: false,
+                    blockedDates: [],
+                });
             }
         } catch (error) {
             console.error('Failed to load availability', error);
@@ -44,8 +108,34 @@ export const AvailabilitySettingsPage: React.FC = () => {
     const handleSave = async () => {
         setSaving(true);
         try {
-            await availabilityService.updateAvailability(availability);
-            toast.success('Availability settings saved successfully');
+            const base = availability ?? {
+                weeklySchedule: EMPTY_SCHEDULE,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                bufferTime: 15,
+                minAdvanceBooking: 24,
+                maxAdvanceBooking: 30,
+                autoAccept: false,
+                blockedDates: [],
+            };
+
+            const safeSchedule = normalizeWeeklySchedule(base.weeklySchedule || {});
+
+            const updated = await availabilityService.updateAvailability({
+                ...base,
+                weeklySchedule: safeSchedule,
+            });
+            console.debug('[AvailabilitySettingsPage] save response', updated);
+            setAvailability({
+                weeklySchedule: normalizeWeeklySchedule(updated.weeklySchedule),
+                timezone: updated.timezone ?? availability.timezone,
+                bufferTime: updated.bufferTime ?? availability.bufferTime,
+                minAdvanceBooking: updated.minAdvanceBooking ?? availability.minAdvanceBooking,
+                maxAdvanceBooking: updated.maxAdvanceBooking ?? availability.maxAdvanceBooking,
+                autoAccept: updated.autoAccept ?? availability.autoAccept,
+                blockedDates: updated.blockedDates ?? availability.blockedDates ?? [],
+                maxSessionsPerDay: updated.maxSessionsPerDay ?? availability.maxSessionsPerDay,
+            });
+            toast.success('Availability settings saved!');
         } catch (error) {
             console.error('Failed to save availability', error);
             toast.error('Failed to save availability settings');
@@ -55,32 +145,33 @@ export const AvailabilitySettingsPage: React.FC = () => {
     };
 
     const updateSchedule = (day: string, updates: any) => {
-        setAvailability(prev => ({
-            ...prev,
-            weeklySchedule: {
-                ...prev.weeklySchedule,
-                [day]: { ...prev.weeklySchedule![day], ...updates }
-            }
-        }));
+        setAvailability(prev => {
+            const currentSchedule = prev.weeklySchedule || normalizeWeeklySchedule({});
+            return {
+                ...prev,
+                weeklySchedule: {
+                    ...currentSchedule,
+                    [day]: { ...currentSchedule[day], ...updates },
+                },
+            };
+        });
     };
 
     const addSlot = (day: string) => {
-        const currentSlots = availability.weeklySchedule![day].slots;
+        const currentSlots = (availability.weeklySchedule || normalizeWeeklySchedule({}))[day].slots;
         updateSchedule(day, { slots: [...currentSlots, { start: '09:00', end: '17:00' }] });
     };
 
     const removeSlot = (day: string, index: number) => {
-        const currentSlots = availability.weeklySchedule![day].slots;
+        const currentSlots = (availability.weeklySchedule || normalizeWeeklySchedule({}))[day].slots;
         updateSchedule(day, { slots: currentSlots.filter((_, i) => i !== index) });
     };
 
     const updateSlot = (day: string, index: number, field: 'start' | 'end', value: string) => {
-        const currentSlots = [...availability.weeklySchedule![day].slots];
+        const currentSlots = [...(availability.weeklySchedule || normalizeWeeklySchedule({}))[day].slots];
         currentSlots[index] = { ...currentSlots[index], [field]: value };
         updateSchedule(day, { slots: currentSlots });
     };
-
-
 
     const convertTo24Hour = (time12: string, ampm: string) => {
         const [hours, minutes] = time12.split(':');
@@ -190,7 +281,8 @@ export const AvailabilitySettingsPage: React.FC = () => {
 
                 <div className="space-y-6">
                     {DAYS.map(day => {
-                        const daySchedule = availability.weeklySchedule![day];
+                        const schedule = availability.weeklySchedule || normalizeWeeklySchedule({});
+                        const daySchedule = schedule[day];
                         return (
                             <div key={day} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
                                 <div className="flex items-center justify-between mb-4">
@@ -241,6 +333,8 @@ export const AvailabilitySettingsPage: React.FC = () => {
                     })}
                 </div>
             </div>
+
+
         </div>
     );
 };

@@ -25,9 +25,10 @@ export interface CreateSkillProps {
   isBlocked?: boolean;
   blockedReason?: string | null;
   blockedAt?: Date | null;
+  isAdminBlocked?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
-  
+
 }
 
 export class Skill {
@@ -53,6 +54,7 @@ export class Skill {
   private readonly _isBlocked: boolean;
   private readonly _blockedReason: string | null;
   private readonly _blockedAt: Date | null;
+  private readonly _isAdminBlocked: boolean;
   private readonly _createdAt: Date;
   private _updatedAt: Date;
 
@@ -78,22 +80,23 @@ export class Skill {
     this._isBlocked = props.isBlocked || false;
     this._blockedReason = props.blockedReason || null;
     this._blockedAt = props.blockedAt || null;
+    this._isAdminBlocked = props.isAdminBlocked || false;
     this._verifiedAt = props.verifiedAt || null;
     this._createdAt = props.createdAt || new Date();
     this._updatedAt = props.updatedAt || new Date();
-    
+
     this.validate();
   }
 
   private validate(): void {
     if (!this._title || this._title.trim().length === 0) {
-        throw new Error('Title is required');
+      throw new Error('Title is required');
     }
     if (!this._providerId) {
-        throw new Error('Provider ID is required');
+      throw new Error('Provider ID is required');
     }
     if (this._creditsPerHour < 0) {
-        throw new Error('Credits cannot be negative');
+      throw new Error('Credits cannot be negative');
     }
   }
 
@@ -119,6 +122,7 @@ export class Skill {
   public get isBlocked(): boolean { return this._isBlocked; }
   public get blockedReason(): string | null { return this._blockedReason; }
   public get blockedAt(): Date | null { return this._blockedAt; }
+  public get isAdminBlocked(): boolean { return this._isAdminBlocked; }
   public get verifiedAt(): Date | null { return this._verifiedAt; }
   public get createdAt(): Date { return this._createdAt; }
   public get updatedAt(): Date { return this._updatedAt; }
@@ -147,6 +151,7 @@ export class Skill {
       isBlocked: this._isBlocked,
       blockedReason: this._blockedReason,
       blockedAt: this._blockedAt,
+      isAdminBlocked: this._isAdminBlocked,
       createdAt: this._createdAt,
       updatedAt: this._updatedAt
     };

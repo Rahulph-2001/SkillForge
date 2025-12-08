@@ -8,7 +8,7 @@ import { MCQAttempt, MCQQuestion } from '../../../domain/entities/MCQAttempt';
 export class MCQRepository implements IMCQRepository {
   constructor(
     @inject(TYPES.PrismaClient) private prisma: PrismaClient
-  ) {}
+  ) { }
 
   async getQuestionsByTemplate(
     templateId: string,
@@ -19,7 +19,7 @@ export class MCQRepository implements IMCQRepository {
     const allQuestions = await this.prisma.templateQuestion.findMany({
       where: {
         templateId,
-        level,
+        level: { equals: level, mode: 'insensitive' },
         isActive: true,
       },
     });

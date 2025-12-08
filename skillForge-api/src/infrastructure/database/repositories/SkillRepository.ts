@@ -22,6 +22,7 @@ export class SkillRepository implements ISkillRepository {
     const where: any = {
       status: 'approved',
       isBlocked: false,
+      isAdminBlocked: false,
       isDeleted: false,
       verificationStatus: 'passed',
     };
@@ -121,6 +122,7 @@ export class SkillRepository implements ISkillRepository {
         isBlocked: data.isBlocked as boolean,
         blockedReason: data.blockedReason as string | null,
         blockedAt: data.blockedAt as Date | null,
+        isAdminBlocked: data.isAdminBlocked as boolean,
         updatedAt: new Date()
       }
     });
@@ -150,8 +152,8 @@ export class SkillRepository implements ISkillRepository {
 
   async findByProviderId(providerId: string): Promise<Skill[]> {
     const skills = await this.prisma.skill.findMany({
-      where: { 
-        providerId, 
+      where: {
+        providerId,
         isDeleted: false,
         verificationStatus: {
           not: 'failed' // Exclude failed MCQ skills (blocked skills are shown)
@@ -199,6 +201,7 @@ export class SkillRepository implements ISkillRepository {
       isBlocked: ormEntity.isBlocked || false,
       blockedReason: ormEntity.blockedReason || null,
       blockedAt: ormEntity.blockedAt || null,
+      isAdminBlocked: ormEntity.isAdminBlocked || false,
       createdAt: ormEntity.createdAt,
       updatedAt: ormEntity.updatedAt
     });

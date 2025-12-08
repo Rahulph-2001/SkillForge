@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Users, Plus, Loader2, CheckCircle } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 import StatCard from "../../components/admin/StatCard";
 import SkillCard from "../../components/skill/SkillCard";
 import SkillAddModal, { NewSkill } from "../../components/skill/SkillAddModal";
+import EditSkillModal from "../../components/skill/EditSkillModal";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchMySkills, createSkill } from "../../store/slices/skillSlice";
+import { fetchMySkills, createSkill, updateSkill, toggleSkillBlock } from "../../store/slices/skillSlice";
 import { SuccessModal, ErrorModal } from "../../components/common/Modal";
 
 export default function SkillsPage() {
@@ -18,6 +20,7 @@ export default function SkillsPage() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [activeFilter, setActiveFilter] = useState<string>("all");
+  const [editingSkill, setEditingSkill] = useState<any>(null);
 
   useEffect(() => {
     dispatch(fetchMySkills());
@@ -37,6 +40,27 @@ export default function SkillsPage() {
       setShowSuccess(true);
     } catch (err: any) {
       setErrorMessage(err?.message || `Failed to add skill: ${err}`);
+      setShowError(true);
+    }
+  };
+
+  const handleEditSkill = async (id: string, updates: any, imageFile?: File) => {
+    try {
+      await dispatch(updateSkill({ id, data: updates, imageFile })).unwrap();
+      setEditingSkill(null);
+      toast.success('Skill updated successfully');
+    } catch (err: any) {
+      setErrorMessage(err?.message || `Failed to update skill: ${err}`);
+      setShowError(true);
+    }
+  };
+
+  const handleToggleBlock = async (skill: any) => {
+    try {
+      await dispatch(toggleSkillBlock(skill.id)).unwrap();
+      toast.success(skill.isBlocked ? 'Skill unblocked successfully' : 'Skill blocked successfully');
+    } catch (err: any) {
+      setErrorMessage(err?.message || `Failed to update skill status: ${err}`);
       setShowError(true);
     }
   };
@@ -180,6 +204,8 @@ export default function SkillsPage() {
                   sessions: skill.totalSessions,
                   imageUrl: skill.imageUrl
                 }}
+                onEdit={() => setEditingSkill(skill)}
+                onToggleBlock={() => handleToggleBlock(skill)}
               />
             ))}
           </div>
@@ -191,6 +217,15 @@ export default function SkillsPage() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleAddSkill}
       />
+
+      {editingSkill && (
+        <EditSkillModal
+          isOpen={!!editingSkill}
+          skill={editingSkill}
+          onClose={() => setEditingSkill(null)}
+          onSubmit={handleEditSkill}
+        />
+      )}
 
       <SuccessModal
         isOpen={showSuccess}

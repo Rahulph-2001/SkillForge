@@ -78,6 +78,7 @@ model Skill {
   isBlocked       Boolean   @default(false) @map("is_blocked") // Admin can block approved skills
   blockedReason   String?   @map("blocked_reason") @db.Text
   blockedAt       DateTime? @map("blocked_at") @db.Timestamptz(6)
+  isAdminBlocked  Boolean   @default(false) @map("is_admin_blocked")
 
   // Relations
   provider        User      @relation(fields: [providerId], references: [id])

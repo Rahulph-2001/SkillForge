@@ -355,41 +355,55 @@ export default function SkillDetailPage() {
                 <>
                   <div className="border-t border-gray-200" />
                   <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900">
+                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-blue-600" />
                       Weekly Availability
                     </h3>
-                    <div className="space-y-2">
-                      {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
-                        const schedule = skill.availability!.weeklySchedule[day];
-                        if (!schedule || !schedule.enabled) return null;
 
-                        return (
-                          <div key={day} className="flex justify-between text-sm">
-                            <span className="font-medium text-gray-700 w-24">{day}</span>
-                            <div className="flex-1 text-right text-gray-600">
-                              {schedule.slots.map((slot, idx) => {
-                                const formatTime = (time: string) => {
-                                  const [h, m] = time.split(':');
-                                  const hour = parseInt(h);
-                                  const ampm = hour >= 12 ? 'PM' : 'AM';
-                                  const hour12 = hour % 12 || 12;
-                                  return `${hour12}:${m} ${ampm}`;
-                                };
-                                return (
-                                  <div key={idx}>
-                                    {formatTime(slot.start)} - {formatTime(slot.end)}
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <div className="space-y-3">
+                        {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+                          const schedule = skill.availability!.weeklySchedule[day];
+                          const isAvailable = schedule && schedule.enabled && schedule.slots.length > 0;
+
+                          return (
+                            <div key={day} className="flex items-start justify-between text-sm group">
+                              <span className={`font-medium w-24 ${isAvailable ? 'text-gray-900' : 'text-gray-400'}`}>
+                                {day}
+                              </span>
+                              <div className="flex-1 text-right">
+                                {isAvailable ? (
+                                  <div className="space-y-1">
+                                    {schedule.slots.map((slot, idx) => {
+                                      const formatTime = (time: string) => {
+                                        const [h, m] = time.split(':');
+                                        const hour = parseInt(h);
+                                        const ampm = hour >= 12 ? 'PM' : 'AM';
+                                        const hour12 = hour % 12 || 12;
+                                        return `${hour12}:${m} ${ampm}`;
+                                      };
+                                      return (
+                                        <div key={idx} className="inline-block bg-white px-2 py-1 rounded border border-gray-200 text-blue-700 font-medium text-xs shadow-sm ml-2">
+                                          {formatTime(slot.start)} - {formatTime(slot.end)}
+                                        </div>
+                                      );
+                                    })}
                                   </div>
-                                );
-                              })}
+                                ) : (
+                                  <span className="text-gray-400 text-xs italic">Unavailable</span>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
+
                     {skill.availability.timezone && (
-                      <p className="text-xs text-gray-500 mt-2">
-                        Timezone: {skill.availability.timezone}
-                      </p>
+                      <div className="flex items-center gap-2 text-xs text-gray-500 bg-blue-50 px-3 py-2 rounded-lg">
+                        <span className="font-medium">Timezone:</span>
+                        <span>{skill.availability.timezone}</span>
+                      </div>
                     )}
                   </div>
                 </>

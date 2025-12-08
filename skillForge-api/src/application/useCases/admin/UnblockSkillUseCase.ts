@@ -32,6 +32,7 @@ export class UnblockSkillUseCase {
       where: { id: skillId },
       data: {
         isBlocked: false,
+        isAdminBlocked: false,
         blockedReason: null,
         blockedAt: null,
         updatedAt: new Date(),

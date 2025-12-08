@@ -1,1 +1,0 @@
-{"version":3,"file":"IListMCQImportJobsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/mcq/interfaces/IListMCQImportJobsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,4BAA4B,EAAE,MAAM,kCAAkC,CAAC;AAEhF,MAAM,WAAW,yBAAyB;IACxC,OAAO,CAAC,UAAU,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,GAAG,OAAO,CAAC,4BAA4B,CAAC,CAAC;CACrF"}

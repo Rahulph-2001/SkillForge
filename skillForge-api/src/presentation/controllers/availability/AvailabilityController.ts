@@ -16,11 +16,16 @@ export class AvailabilityController {
     async getAvailability(req: Request, res: Response): Promise<void> {
         try {
             const providerId = (req as any).user!.userId; // Assumes auth middleware populates user
+            console.log('[AvailabilityController] GET /availability for provider', providerId);
             const availability = await this.getUseCase.execute(providerId);
-            res.status(200).json(this.responseBuilder.success(availability));
+            console.log('[AvailabilityController] GET result schedule keys', Object.keys(availability.weeklySchedule || {}));
+
+            const response = this.responseBuilder.success(availability);
+            res.status(response.statusCode).json(response.body);
         } catch (error) {
             console.error('Error getting availability:', error);
-            res.status(500).json(this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve availability'));
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve availability');
+            res.status(response.statusCode).json(response.body);
         }
     }
 
@@ -28,12 +33,22 @@ export class AvailabilityController {
         try {
             const providerId = (req as any).user!.userId;
             const data = req.body;
-            console.log(`[AvailabilityController] Updating availability for provider ${providerId}:`, JSON.stringify(data, null, 2));
+            console.log(`[AvailabilityController] PUT /availability for provider ${providerId}`, {
+                timezone: data?.timezone,
+                bufferTime: data?.bufferTime,
+                minAdvanceBooking: data?.minAdvanceBooking,
+                maxAdvanceBooking: data?.maxAdvanceBooking,
+                weeklyScheduleKeys: data?.weeklySchedule ? Object.keys(data.weeklySchedule) : [],
+            });
             const updated = await this.updateUseCase.execute(providerId, data);
-            res.status(200).json(this.responseBuilder.success(updated, 'Availability settings updated successfully'));
+            console.log('[AvailabilityController] PUT result schedule keys', Object.keys(updated.weeklySchedule || {}));
+
+            const response = this.responseBuilder.success(updated, 'Availability settings updated successfully');
+            res.status(response.statusCode).json(response.body);
         } catch (error) {
             console.error('Error updating availability:', error);
-            res.status(500).json(this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to update availability'));
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to update availability');
+            res.status(response.statusCode).json(response.body);
         }
     }
 }

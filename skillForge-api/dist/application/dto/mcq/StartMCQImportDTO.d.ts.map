@@ -1,1 +1,0 @@
-{"version":3,"file":"StartMCQImportDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/mcq/StartMCQImportDTO.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,wBAAwB;IACvC,UAAU,EAAE,MAAM,CAAC;IACnB,OAAO,EAAE,MAAM,CAAC;CACjB;AAED,MAAM,WAAW,yBAAyB;IACxC,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,EAAE,MAAM,CAAC;IACjB,MAAM,EAAE,SAAS,CAAC;IAClB,OAAO,EAAE,2DAA2D,CAAC;CACtE"}

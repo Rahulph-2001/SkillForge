@@ -1,1 +1,0 @@
-{"version":3,"file":"CreateTemplateQuestionDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/templateQuestion/CreateTemplateQuestionDTO.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,yBAAyB;IACxC,UAAU,EAAE,MAAM,CAAC;IACnB,KAAK,EAAE,MAAM,CAAC;IACd,QAAQ,EAAE,MAAM,CAAC;IACjB,OAAO,EAAE,MAAM,EAAE,CAAC;IAClB,aAAa,EAAE,MAAM,CAAC;IACtB,WAAW,CAAC,EAAE,MAAM,CAAC;CACtB"}

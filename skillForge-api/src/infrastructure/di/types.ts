@@ -62,6 +62,8 @@ export const TYPES = {
   SkillDetailsController: Symbol.for('SkillDetailsController'),
   SkillController: Symbol.for('SkillController'),
   SkillRoutes: Symbol.for('SkillRoutes'),
+  UpdateSkillUseCase: Symbol.for('UpdateSkillUseCase'),
+  ToggleSkillBlockUseCase: Symbol.for('ToggleSkillBlockUseCase'),
 
 
   ISkillTemplateRepository: Symbol.for('ISkillTemplateRepository'),

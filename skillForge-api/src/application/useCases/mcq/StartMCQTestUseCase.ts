@@ -11,7 +11,7 @@ export class StartMCQTestUseCase implements IStartMCQTestUseCase {
   constructor(
     @inject(TYPES.IMCQRepository) private mcqRepository: IMCQRepository,
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository
-  ) {}
+  ) { }
 
   async execute(request: StartMCQRequestDTO): Promise<StartMCQResponseDTO> {
     const { skillId, userId } = request;
@@ -52,7 +52,7 @@ export class StartMCQTestUseCase implements IStartMCQTestUseCase {
     // Remove correct answers from questions sent to frontend
     const questionsWithoutAnswers = questions.map(q => ({
       id: q.id,
-      questionText: q.question,
+      question: q.question,
       options: q.options,
     }));
 

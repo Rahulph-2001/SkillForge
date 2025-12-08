@@ -61,6 +61,8 @@ import { CreateSkillUseCase } from '../../application/useCases/skill/CreateSkill
 import { ListUserSkillsUseCase } from '../../application/useCases/skill/ListUserSkillsUseCase';
 import { BrowseSkillsUseCase } from '../../application/useCases/skill/BrowseSkillsUseCase';
 import { GetSkillDetailsUseCase } from '../../application/useCases/skill/GetSkillDetailsUseCase';
+import { UpdateSkillUseCase, IUpdateSkillUseCase } from '../../application/useCases/skill/UpdateSkillUseCase';
+import { ToggleSkillBlockUseCase, IToggleSkillBlockUseCase } from '../../application/useCases/skill/ToggleSkillBlockUseCase';
 import { SkillController } from '../../presentation/controllers/skill/SkillController';
 import { BrowseSkillsController } from '../../presentation/controllers/BrowseSkillsController';
 import { SkillDetailsController } from '../../presentation/controllers/skill/SkillDetailsController';
@@ -143,8 +145,18 @@ import { ListMCQImportJobsUseCase } from '../../application/useCases/mcq/ListMCQ
 import { DownloadMCQImportErrorsUseCase } from '../../application/useCases/mcq/DownloadMCQImportErrorsUseCase';
 import { MCQImportController } from '../../presentation/controllers/mcq/MCQImportController';
 import { MCQImportRoutes } from '../../presentation/routes/mcq/MCQImportRoutes';
+import { container } from './di';
+export { container };
 
-export const container = new Container();
+
+
+// Availability
+import { IAvailabilityRepository } from '../../domain/repositories/IAvailabilityRepository';
+import { PrismaAvailabilityRepository } from '../database/repositories/PrismaAvailabilityRepository';
+import { GetProviderAvailabilityUseCase } from '../../application/useCases/availability/GetProviderAvailabilityUseCase';
+import { UpdateProviderAvailabilityUseCase } from '../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
+import { AvailabilityController } from '../../presentation/controllers/availability/AvailabilityController';
+import { AvailabilityRoutes } from '../../presentation/routes/availability/availabilityRoutes';
 
 // Mappers
 container.bind<IAdminUserDTOMapper>(TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper);
@@ -203,6 +215,8 @@ container.bind<CreateSkillUseCase>(TYPES.CreateSkillUseCase).to(CreateSkillUseCa
 container.bind<ListUserSkillsUseCase>(TYPES.ListUserSkillsUseCase).to(ListUserSkillsUseCase);
 container.bind<BrowseSkillsUseCase>(TYPES.BrowseSkillsUseCase).to(BrowseSkillsUseCase);
 container.bind<GetSkillDetailsUseCase>(TYPES.GetSkillDetailsUseCase).to(GetSkillDetailsUseCase);
+container.bind<IUpdateSkillUseCase>(TYPES.UpdateSkillUseCase).to(UpdateSkillUseCase);
+container.bind<IToggleSkillBlockUseCase>(TYPES.ToggleSkillBlockUseCase).to(ToggleSkillBlockUseCase);
 // Skill Template Repository
 container.bind<ISkillTemplateRepository>(TYPES.ISkillTemplateRepository).to(SkillTemplateRepository);
 // Skill Template Use Cases
@@ -305,14 +319,6 @@ container.bind<MCQImportController>(TYPES.MCQImportController).to(MCQImportContr
 // Routes
 
 container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes);
-
-// Availability
-import { IAvailabilityRepository } from '../../domain/repositories/IAvailabilityRepository';
-import { PrismaAvailabilityRepository } from '../database/repositories/PrismaAvailabilityRepository';
-import { GetProviderAvailabilityUseCase } from '../../application/useCases/availability/GetProviderAvailabilityUseCase';
-import { UpdateProviderAvailabilityUseCase } from '../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
-import { AvailabilityController } from '../../presentation/controllers/availability/AvailabilityController';
-import { AvailabilityRoutes } from '../../presentation/routes/availability/availabilityRoutes';
 
 container.bind<IAvailabilityRepository>(TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository);
 container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);

@@ -1,1 +1,0 @@
-{"version":3,"file":"ListUsersResponseDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/admin/ListUsersResponseDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,gBAAgB,CAAC;AAE9C,MAAM,WAAW,oBAAoB;IACnC,KAAK,EAAE,YAAY,EAAE,CAAC;IACtB,KAAK,EAAE,MAAM,CAAC;CACf"}

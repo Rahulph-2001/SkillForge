@@ -18,17 +18,27 @@ export class SkillRoutes {
   private initializeRoutes(): void {
     this.router.use(authMiddleware);
 
-    
+
     this.router.post(
-      '/', 
-      upload.single('image'), 
+      '/',
+      upload.single('image'),
       this.skillController.create
     );
 
-   
+
     this.router.get(
-      '/me', 
+      '/me',
       this.skillController.listMySkills
+    );
+
+    this.router.put(
+      '/:id',
+      this.skillController.update
+    );
+
+    this.router.patch(
+      '/:id/block',
+      this.skillController.toggleBlock
     );
   }
 }

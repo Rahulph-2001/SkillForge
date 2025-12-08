@@ -1,6 +1,6 @@
 export interface MCQQuestionDTO {
   id: string;
-  questionText: string;
+  question: string;
   options: string[];
   // No correctAnswer or explanation
 }

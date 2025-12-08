@@ -17,7 +17,9 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
 
         if (!data) return null;
 
-        return this.mapToEntity(data);
+        const entity = this.mapToEntity(data);
+        console.log('[PrismaAvailabilityRepository] findByProviderId', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
+        return entity;
     }
 
     async findByProviderIds(providerIds: string[]): Promise<ProviderAvailability[]> {
@@ -45,7 +47,9 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
             },
         });
 
-        return this.mapToEntity(data);
+        const entity = this.mapToEntity(data);
+        console.log('[PrismaAvailabilityRepository] create', availability.providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
+        return entity;
     }
 
     async update(providerId: string, availability: Partial<ProviderAvailability>): Promise<ProviderAvailability> {
@@ -63,14 +67,16 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
             },
         });
 
-        return this.mapToEntity(data);
+        const entity = this.mapToEntity(data);
+        console.log('[PrismaAvailabilityRepository] update', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
+        return entity;
     }
 
     private mapToEntity(data: any): ProviderAvailability {
         return new ProviderAvailability(
             data.id,
             data.providerId,
-            data.weeklySchedule as WeeklySchedule,
+            (data.weeklySchedule || {}) as WeeklySchedule,
             data.timezone,
             data.bufferTime,
             data.minAdvanceBooking,

@@ -1,1 +1,0 @@
-{"version":3,"file":"SuspendUserRequestDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/admin/SuspendUserRequestDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,wBAAwB,CAAC;AAExD,MAAM,WAAW,qBAAsB,SAAQ,cAAc;IAC3D,WAAW,EAAE,MAAM,CAAC;CACrB"}

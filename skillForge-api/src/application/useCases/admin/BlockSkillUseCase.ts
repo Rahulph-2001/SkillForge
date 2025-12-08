@@ -43,6 +43,7 @@ export class BlockSkillUseCase {
       where: { id: data.skillId },
       data: {
         isBlocked: true,
+        isAdminBlocked: true,
         blockedReason: data.reason,
         blockedAt: new Date(),
         updatedAt: new Date(),
