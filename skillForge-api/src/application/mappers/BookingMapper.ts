@@ -6,6 +6,11 @@ import { IBookingMapper } from './interfaces/IBookingMapper';
 @injectable()
 export class BookingMapper implements IBookingMapper {
   toDTO(booking: Booking): BookingResponseDTO {
+    // Debug log to check what's being mapped
+    if (!booking.providerName) {
+      console.log('⚠️ [BookingMapper] Warning: providerName is missing for booking:', booking.id, 'Provider object:', booking.providerName);
+    }
+
     return {
       id: booking.id,
       skillId: booking.skillId,
@@ -23,6 +28,7 @@ export class BookingMapper implements IBookingMapper {
       status: booking.status,
       sessionCost: booking.sessionCost,
       rescheduleInfo: booking.rescheduleInfo,
+      rejectionReason: booking.rejectionReason,
       createdAt: booking.createdAt,
       updatedAt: booking.updatedAt,
     };

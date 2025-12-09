@@ -21,6 +21,7 @@ export interface BookingResponseDTO {
     requestedBy: 'learner' | 'provider';
     requestedAt: Date;
   } | null;
+  rejectionReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }

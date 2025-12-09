@@ -3,6 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
+import { IS3Service } from '../../../domain/services/IS3Service';
 
 export interface UpdateSkillDTO {
     description?: string;
@@ -15,16 +16,28 @@ export interface UpdateSkillDTO {
 }
 
 export interface IUpdateSkillUseCase {
-    execute(skillId: string, providerId: string, updates: UpdateSkillDTO): Promise<Skill>;
+    execute(
+        skillId: string,
+        providerId: string,
+        updates: UpdateSkillDTO,
+        imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
+    ): Promise<Skill>;
 }
 
 @injectable()
 export class UpdateSkillUseCase implements IUpdateSkillUseCase {
     constructor(
-        @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository
+        @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
+        @inject(TYPES.IS3Service) private s3Service: IS3Service
     ) { }
 
-    async execute(skillId: string, providerId: string, updates: UpdateSkillDTO): Promise<Skill> {
+    async execute(
+        skillId: string,
+        providerId: string,
+        updates: UpdateSkillDTO,
+        imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
+    ): Promise<Skill> {
+        console.log('🔍 [UpdateSkillUseCase] Executing update for skill:', skillId);
         const skill = await this.skillRepository.findById(skillId);
 
         if (!skill) {
@@ -39,11 +52,26 @@ export class UpdateSkillUseCase implements IUpdateSkillUseCase {
             throw new ForbiddenError('This skill has been blocked by an admin and cannot be updated');
         }
 
+        let imageUrl = updates.imageUrl;
+
+        if (imageFile) {
+            // Create S3 key with skills/ prefix
+            const key = `skills/${Date.now()}-${imageFile.originalname}`;
+            console.log('🔍 [UpdateSkillUseCase] Uploading new image to S3:', key);
+            imageUrl = await this.s3Service.uploadFile(
+                imageFile.buffer,
+                key,
+                imageFile.mimetype
+            );
+            console.log('✅ [UpdateSkillUseCase] Image uploaded successfully. URL:', imageUrl);
+        }
+
         // Create a new Skill instance with updated properties
         // We do NOT allow updating the title
         const updatedSkill = new Skill({
             ...skill.toJSON() as any, // Spread existing properties
             ...updates, // Overwrite with allowed updates
+            imageUrl: imageUrl || skill.imageUrl, // Use new URL if uploaded, or existing
             updatedAt: new Date()
         });
 

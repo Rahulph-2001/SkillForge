@@ -17,12 +17,12 @@ export class BookingController {
     @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
     @inject(TYPES.IBookingMapper) private bookingMapper: IBookingMapper,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
-  ) {}
-  
+  ) { }
+
   public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
-      
+
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
         res.status(error.statusCode).json(error.body);
@@ -37,7 +37,7 @@ export class BookingController {
         res.status(error.statusCode).json(error.body);
         return;
       }
-      
+
       const request: CreateBookingRequestDTO = {
         learnerId: userId,
         skillId,
@@ -46,9 +46,9 @@ export class BookingController {
         preferredTime,
         message,
       };
-      
+
       const booking = await this.createBookingUseCase.execute(request);
-      
+
       const response = this.responseBuilder.success(booking, 'Booking created successfully', HttpStatusCode.CREATED);
       res.status(response.statusCode).json(response.body);
     } catch (error: any) {
@@ -59,7 +59,7 @@ export class BookingController {
   public getMyBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
-      
+
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
         res.status(error.statusCode).json(error.body);
@@ -68,6 +68,9 @@ export class BookingController {
 
       const bookings = await this.bookingRepository.findByLearnerId(userId);
       const bookingDTOs = this.bookingMapper.toDTOs(bookings);
+
+      console.log('🔍 [BookingController] getMyBookings response DTOs (first 1):',
+        bookingDTOs.length > 0 ? JSON.stringify(bookingDTOs[0], null, 2) : 'No bookings');
 
       const response = this.responseBuilder.success(bookingDTOs, 'Bookings fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
@@ -79,7 +82,7 @@ export class BookingController {
   public getUpcomingSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = (req as any).user?.id;
-      
+
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
         res.status(error.statusCode).json(error.body);
@@ -93,10 +96,10 @@ export class BookingController {
       today.setHours(0, 0, 0, 0);
 
       const upcoming = bookings.filter(b => {
-          const date = new Date(b.preferredDate);
-          return date >= today && (b.status === 'pending' || b.status === 'confirmed');
+        const date = new Date(b.preferredDate);
+        return date >= today && (b.status === 'pending' || b.status === 'confirmed');
       });
-      
+
       // Sort by date asc
       upcoming.sort((a, b) => new Date(a.preferredDate).getTime() - new Date(b.preferredDate).getTime());
 
@@ -113,7 +116,7 @@ export class BookingController {
     try {
       const userId = (req as any).user?.id;
       const { id } = req.params;
-      
+
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
         res.status(error.statusCode).json(error.body);
@@ -130,9 +133,9 @@ export class BookingController {
 
       // Check ownership
       if (booking.learnerId !== userId && booking.providerId !== userId) {
-         const error = this.responseBuilder.error('FORBIDDEN', 'Unauthorized to view this booking', HttpStatusCode.FORBIDDEN);
-         res.status(error.statusCode).json(error.body);
-         return;
+        const error = this.responseBuilder.error('FORBIDDEN', 'Unauthorized to view this booking', HttpStatusCode.FORBIDDEN);
+        res.status(error.statusCode).json(error.body);
+        return;
       }
 
       const response = this.responseBuilder.success(this.bookingMapper.toDTO(booking), 'Booking fetched successfully', HttpStatusCode.OK);
@@ -147,7 +150,7 @@ export class BookingController {
       const userId = (req as any).user?.id;
       const { id } = req.params;
       const { reason } = req.body;
-      
+
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
         res.status(error.statusCode).json(error.body);
@@ -155,9 +158,9 @@ export class BookingController {
       }
 
       await this.cancelBookingUseCase.execute({
-          bookingId: id,
-          userId,
-          reason
+        bookingId: id,
+        userId,
+        reason
       });
 
       const response = this.responseBuilder.success(null, 'Booking cancelled successfully', HttpStatusCode.OK);

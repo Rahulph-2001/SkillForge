@@ -36,7 +36,7 @@ export interface IBookingRepository {
   /**
    * Update booking status
    */
-  updateStatus(bookingId: string, status: BookingStatus): Promise<Booking>;
+  updateStatus(bookingId: string, status: BookingStatus, reason?: string): Promise<Booking>;
 
   /**
    * Update booking with reschedule info

@@ -25,7 +25,7 @@ export class DeclineBookingUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
-  ) {}
+  ) { }
 
   async execute(request: DeclineBookingRequest): Promise<DeclineBookingResponse> {
     try {
@@ -56,7 +56,7 @@ export class DeclineBookingUseCase {
       }
 
       // 4. Update booking status to rejected
-      await this.bookingRepository.updateStatus(request.bookingId, BookingStatus.REJECTED);
+      await this.bookingRepository.updateStatus(request.bookingId, BookingStatus.REJECTED, request.reason);
 
       // TODO: Refund credits to learner
       // TODO: Send notification to learner

@@ -11,8 +11,10 @@ export interface RescheduleInfo {
 export interface ProviderSession {
   id: string;
   skillTitle: string;
-  learnerName: string;
-  learnerAvatar: string | null;
+  learnerName?: string; // Optional because it might be a provider session loop
+  providerName?: string; // Added for learner sessions
+  learnerAvatar?: string | null;
+  providerAvatar?: string | null; // Added for learner sessions
   preferredDate: string;
   preferredTime: string;
   duration?: number;
@@ -21,6 +23,7 @@ export interface ProviderSession {
   status: 'pending' | 'confirmed' | 'rejected' | 'completed' | 'cancelled' | 'reschedule_requested';
   sessionCost: number;
   rescheduleInfo?: RescheduleInfo | null;
+  rejectionReason?: string; // Added field
   createdAt: string;
 }
 

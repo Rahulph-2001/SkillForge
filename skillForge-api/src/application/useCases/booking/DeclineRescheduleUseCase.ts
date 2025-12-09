@@ -20,7 +20,7 @@ export class DeclineRescheduleUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
-  ) {}
+  ) { }
 
   async execute(request: DeclineRescheduleRequest): Promise<DeclineRescheduleResponse> {
     try {
@@ -51,6 +51,7 @@ export class DeclineRescheduleUseCase {
       }
 
       // 4. Decline the reschedule request (revert to confirmed status and clear reschedule info)
+      console.log('🔍 [DeclineRescheduleUseCase] Declining reschedule for booking:', request.bookingId, 'Reason:', request.reason);
       await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
 
       // TODO: Send notification to learner about declined reschedule

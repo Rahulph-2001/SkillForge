@@ -29,6 +29,7 @@ interface UserSession {
   status: string;
   notes: string | null;
   rescheduleInfo: any;
+  rejectionReason?: string;
   sessionCost: number;
   createdAt: string;
 }
@@ -75,9 +76,12 @@ export default function SessionManagementPage() {
         const provider = s.provider || {};
         const skill = s.skill || {};
 
-        const providerName = provider.name || 'Unknown Provider';
-        const skillTitle = skill.title || 'Unknown Skill';
-        const duration = skill.durationHours ? skill.durationHours * 60 : 60;
+        // API returns providerName directly in DTO, or we fallback to provider object
+        // NOTE: The backend DTO property is 'providerName', but 'provider' object also has 'name'.
+        // We prioritize the provider object's name if available as it comes from the relation.
+        const providerName = provider.name || s.providerName || 'Unknown Provider';
+        const skillTitle = s.skillTitle || skill.title || 'Unknown Skill';
+        const duration = s.duration || (skill.durationHours ? skill.durationHours * 60 : 60);
 
         console.log('🔍 [SessionManagementPage] Mapping session:', {
           id: s.id,
@@ -93,7 +97,7 @@ export default function SessionManagementPage() {
           id: s.id,
           skillTitle,
           providerName,
-          providerAvatar: s.provider?.avatarUrl || null,
+          providerAvatar: s.providerAvatar || s.provider?.avatarUrl || null,
           preferredDate: s.preferredDate,
           preferredTime: s.preferredTime,
           duration,
@@ -101,6 +105,7 @@ export default function SessionManagementPage() {
           status: s.status,
           notes: s.notes,
           rescheduleInfo: s.rescheduleInfo,
+          rejectionReason: s.rejectionReason,
           sessionCost: s.sessionCost,
           createdAt: s.createdAt,
         };
@@ -366,7 +371,7 @@ export default function SessionManagementPage() {
                       </h3>
                       <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
                         <User className="w-4 h-4" />
-                        <span>Provider: {session.providerName}</span>
+                        <span>Provider: {session.providerName || 'Unknown'}</span>
                       </div>
                       <div className="flex flex-wrap gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-2">
@@ -397,6 +402,27 @@ export default function SessionManagementPage() {
                           </p>
                         </div>
                       )}
+                      {session.rejectionReason && (
+                        <div className="mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
+                          </div>
+                          <p className="text-sm text-gray-700">
+                            <span className="font-medium text-red-700">Reason:</span> "{session.rejectionReason}"
+                          </p>
+                        </div>
+                      )}
+
+                      {/* DEBUG BLOCK - REMOVE AFTER FIXING */}
+                      <div className="mt-4 p-2 bg-gray-100 rounded text-xs overflow-auto">
+                        <p className="font-bold text-gray-700 mb-1">DEBUG INFO:</p>
+                        <pre>{JSON.stringify({
+                          id: session.id,
+                          providerName: session.providerName,
+                          rejectionReason: session.rejectionReason,
+                          status: session.status
+                        }, null, 2)}</pre>
+                      </div>
                     </div>
                   </div>
 

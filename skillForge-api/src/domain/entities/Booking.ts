@@ -42,6 +42,7 @@ export interface BookingProps {
   status: BookingStatus;
   sessionCost: number;
   rescheduleInfo?: RescheduleInfo | null;
+  rejectionReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -144,6 +145,10 @@ export class Booking {
 
   get rescheduleInfo(): RescheduleInfo | null | undefined {
     return this.props.rescheduleInfo;
+  }
+
+  get rejectionReason(): string | undefined {
+    return this.props.rejectionReason;
   }
 
   get createdAt(): Date {

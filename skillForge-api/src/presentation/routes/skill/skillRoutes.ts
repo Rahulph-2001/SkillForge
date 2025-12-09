@@ -33,6 +33,7 @@ export class SkillRoutes {
 
     this.router.put(
       '/:id',
+      upload.single('image'),
       this.skillController.update
     );
 

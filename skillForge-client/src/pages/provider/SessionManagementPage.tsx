@@ -70,11 +70,13 @@ export default function SessionManagementPage() {
       if (viewMode === 'learner') {
         mappedSessions = mappedSessions.map((s: any) => ({
           ...s,
-          providerName: s.provider?.name || 'Unknown Provider',
-          providerAvatar: s.provider?.avatarUrl || null,
-          skillTitle: s.skill?.title || s.skillTitle,
+          // Improved provider name extraction
+          providerName: s.providerName || s.provider?.name || 'Unknown Provider',
+          providerAvatar: s.providerAvatar || s.provider?.avatarUrl || null,
+          skillTitle: s.skill?.title || s.skillTitle || 'Unknown Skill',
           duration: s.skill?.durationHours ? s.skill.durationHours * 60 : 60,
           sessionType: s.skill?.category || 'Video Call',
+          rejectionReason: s.rejectionReason, // Explicitly pass this through
         }));
       }
 
@@ -664,6 +666,18 @@ export default function SessionManagementPage() {
                             <p className="text-orange-600 text-xs">Requested by {session.rescheduleInfo.requestedBy}</p>
                           </div>
                         </div>
+                      </div>
+                    )}
+
+                    {/* Rejection Reason Display */}
+                    {session.rejectionReason && (
+                      <div className="mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200 mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
+                        </div>
+                        <p className="text-sm text-gray-700">
+                          <span className="font-medium text-red-700">Reason:</span> "{session.rejectionReason}"
+                        </p>
                       </div>
                     )}
 

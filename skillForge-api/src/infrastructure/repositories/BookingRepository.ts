@@ -44,6 +44,7 @@ export class BookingRepository implements IBookingRepository {
       status: data.status as BookingStatus,
       sessionCost: data.sessionCost,
       rescheduleInfo,
+      rejectionReason: data.rejectionReason,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     });
@@ -141,6 +142,12 @@ export class BookingRepository implements IBookingRepository {
         createdAt: 'desc',
       },
     });
+
+    console.log('🔍 [BookingRepository] findByLearnerId raw count:', bookings.length);
+    if (bookings.length > 0) {
+      console.log('🔍 [BookingRepository] First booking provider data:', bookings[0].provider);
+      console.log('🔍 [BookingRepository] First booking rejectionReason:', bookings[0].rejectionReason);
+    }
 
     return bookings.map((b) => this.mapToDomain(b));
   }
@@ -253,11 +260,12 @@ export class BookingRepository implements IBookingRepository {
     return this.mapToDomain(created);
   }
 
-  async updateStatus(bookingId: string, status: BookingStatus): Promise<Booking> {
+  async updateStatus(bookingId: string, status: BookingStatus, reason?: string): Promise<Booking> {
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {
         status,
+        rejectionReason: status === BookingStatus.REJECTED ? reason : undefined,
         updatedAt: new Date(),
       },
       include: {
@@ -433,13 +441,14 @@ export class BookingRepository implements IBookingRepository {
     return this.mapToDomain(updated);
   }
 
-  async declineReschedule(bookingId: string, _reason: string): Promise<Booking> {
-    // Note: reason is not stored in DB as there's no declineReason field
+  async declineReschedule(bookingId: string, reason: string): Promise<Booking> {
+    console.log('🔍 [BookingRepository] Saving decline reason to DB:', reason);
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {
-        status: BookingStatus.CONFIRMED,
-        rescheduleInfo: Prisma.JsonNull,
+        status: BookingStatus.CONFIRMED, // Revert to confirmed
+        rescheduleInfo: Prisma.JsonNull, // Clear request
+        rejectionReason: reason,         // Store the reason for declining reschedule
         updatedAt: new Date(),
       },
       include: {
