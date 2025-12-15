@@ -10,16 +10,17 @@ import { Readable } from 'stream';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { v4 as uuidv4 } from 'uuid';
 import { AppError, ValidationError } from '../../../domain/errors/AppError';
+import * as XLSX from 'xlsx'; 
 
-// Define the expected CSV headers
-interface CSVQuestionRow {
+
+interface ProcessedRowData {
     level: string;
     question: string;
     option_a: string;
     option_b: string;
     option_c: string;
     option_d: string;
-    correct_answer: string; // A, B, C, or D
+    correct_answer: string;
     explanation: string;
 }
 
@@ -36,7 +37,6 @@ export class MCQImportJobProcessor {
 
     public async execute(jobId: string): Promise<void> {
         const job = await this.jobRepository.findById(jobId);
-
         if (!job) {
             console.error(`[MCQProcessor] Job ${jobId} not found.`);
             return;
@@ -50,25 +50,30 @@ export class MCQImportJobProcessor {
         let failedRows = 0;
         const errors: { row: number; reason: string; data: any }[] = [];
         let errorFilePath: string | null = null;
-        let totalRowsCount = 0;
 
         try {
             // 1. Download file from S3
             const fileBuffer = await this.s3Service.downloadFile(job.filePath);
-            const stream = Readable.from(fileBuffer);
+            
+            // 2. Determine file type and parse
+            const isExcel = job.fileName.endsWith('.xlsx') || job.fileName.endsWith('.xls');
+            let rowsToProcess: any[] = [];
 
-            const parser = stream.pipe(csv());
+            if (isExcel) {
+                rowsToProcess = this.parseExcel(fileBuffer);
+            } else {
+                rowsToProcess = await this.parseCSV(fileBuffer);
+            }
 
-            // 2. Process rows iteratively
-            for await (const row of parser) {
-                totalRowsCount++;
-                const rowNumber = totalRowsCount;
+            // 3. Process rows iteratively
+            for (const [index, row] of rowsToProcess.entries()) {
+                const rowNumber = index + 1;
                 processedRows++;
 
                 try {
                     // A. Map and Validate row
-                    const questionData = this.validateAndMapRow(row as CSVQuestionRow, job.templateId);
-
+                    const questionData = this.validateAndMapRow(row, job.templateId);
+                    
                     // B. Create Domain Entity and save
                     const question = TemplateQuestion.create(
                         uuidv4(),
@@ -82,7 +87,6 @@ export class MCQImportJobProcessor {
                         new Date(),
                         new Date()
                     );
-
                     await this.questionRepository.create(question);
                     successfulRows++;
 
@@ -95,8 +99,8 @@ export class MCQImportJobProcessor {
                     });
                 }
 
-                // C. Update progress every N rows (e.g., every 50 rows or if it's the last row)
-                if (processedRows % 50 === 0 || processedRows === job.totalRows) {
+                // C. Update progress every 50 rows
+                if (processedRows % 50 === 0) {
                     await this.jobRepository.updateProgress(
                         job.id,
                         ImportStatus.IN_PROGRESS,
@@ -108,14 +112,14 @@ export class MCQImportJobProcessor {
                 }
             }
 
-            // 3. Handle errors and cleanup
+            // 4. Handle errors and cleanup
             if (errors.length > 0) {
                 const errorLog = this.createErrorCSV(errors);
                 const errorKey = `mcq-imports/${job.templateId}/errors/${job.id}-${Date.now()}.csv`;
                 errorFilePath = await this.s3Service.uploadFile(Buffer.from(errorLog), errorKey, 'text/csv');
             }
 
-            // 4. Final status update
+            // 5. Final status update
             await this.jobRepository.updateProgress(
                 job.id,
                 errors.length > 0 ? ImportStatus.COMPLETED_WITH_ERRORS : ImportStatus.COMPLETED,
@@ -126,17 +130,58 @@ export class MCQImportJobProcessor {
                 undefined,
                 new Date()
             );
-
         } catch (e) {
-            // Log critical failure (e.g., S3 download failed, database transaction failed)
             console.error(`[MCQProcessor] Critical failure for job ${jobId}:`, e);
             job.markFailed();
             await this.jobRepository.update(job);
         }
     }
 
-    private validateAndMapRow(row: CSVQuestionRow, templateId: string) {
-        const { level, question, option_a, option_b, option_c, option_d, correct_answer, explanation } = row;
+    private parseExcel(buffer: Buffer): any[] {
+        const workbook = XLSX.read(buffer, { type: 'buffer' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        
+        // Parse to JSON
+        const rawData = XLSX.utils.sheet_to_json(sheet);
+        
+        
+        return rawData.map((row: any) => {
+            return {
+                level: row['Level'] || row['level'],
+                question: row['Question'] || row['question'],
+                option_a: row['Option A'] || row['option_a'] || row['Option_A'],
+                option_b: row['Option B'] || row['option_b'] || row['Option_B'],
+                option_c: row['Option C'] || row['option_c'] || row['Option_C'],
+                option_d: row['Option D'] || row['option_d'] || row['Option_D'],
+                correct_answer: row['Correct Answer'] || row['correct_answer'] || row['CorrectAnswer'],
+                explanation: row['Explanation'] || row['explanation']
+            };
+        });
+    }
+
+    private parseCSV(buffer: Buffer): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            const results: any[] = [];
+            const stream = Readable.from(buffer);
+            stream
+                .pipe(csv())
+                .on('data', (data) => results.push(data))
+                .on('end', () => resolve(results))
+                .on('error', (err) => reject(err));
+        });
+    }
+
+    private validateAndMapRow(row: any, templateId: string) {
+        
+        const level = row.level || row.Level;
+        const question = row.question || row.Question;
+        const option_a = row.option_a || row['Option A'] || row.Option_A;
+        const option_b = row.option_b || row['Option B'] || row.Option_B;
+        const option_c = row.option_c || row['Option C'] || row.Option_C;
+        const option_d = row.option_d || row['Option D'] || row.Option_D;
+        const correct_answer = row.correct_answer || row['Correct Answer'] || row.CorrectAnswer;
+        const explanation = row.explanation || row.Explanation;
 
         // 1. Basic Presence
         if (!level || !question || !option_a || !option_b || !option_c || !option_d || !correct_answer) {
@@ -149,7 +194,7 @@ export class MCQImportJobProcessor {
         }
 
         // 3. Correct Answer Mapping
-        const answerKey = correct_answer.toUpperCase().trim();
+        const answerKey = correct_answer.toString().toUpperCase().trim();
         if (!this.validAnswers.includes(answerKey)) {
             throw new ValidationError(`Invalid correct_answer: ${correct_answer}. Must be A, B, C, or D.`);
         }
@@ -158,7 +203,7 @@ export class MCQImportJobProcessor {
         const correctAnswerIndex = answerMap[answerKey];
 
         // 4. Options Array
-        const options = [option_a, option_b, option_c, option_d];
+        const options = [option_a, option_b, option_c, option_d].map(String);
         if (options.some(opt => !opt || opt.trim().length === 0)) {
             throw new ValidationError('All options (A, B, C, D) must have content.');
         }
@@ -169,16 +214,15 @@ export class MCQImportJobProcessor {
             question: question.trim(),
             options: options.map(o => o.trim()),
             correctAnswerIndex,
-            explanation: explanation?.trim() || null,
+            explanation: explanation?.toString().trim() || null,
         };
     }
-
     private createErrorCSV(errors: { row: number; reason: string; data: any }[]): string {
         const headers = ['Row_Number', 'Reason', 'Level', 'Question', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Correct_Answer', 'Explanation'];
         let csvContent = headers.join(',') + '\n';
 
         errors.forEach(err => {
-            const data = err.data as CSVQuestionRow;
+            const data = err.data as ProcessedRowData;
             const rowData = [
                 err.row,
                 `"${err.reason.replace(/"/g, '""')}"`, // Escape quotes in reason

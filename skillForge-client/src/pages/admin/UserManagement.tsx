@@ -3,6 +3,7 @@ import { Search, Ban, CheckCircle, Eye, RotateCcw } from 'lucide-react'
 
 import adminService, { User } from '../../services/adminService'
 import { ConfirmModal, SuccessModal, ErrorModal } from '../../components/common/Modal'
+import UserDetailsModal from '../../components/admin/UserDetailsModal'
 
 export default function UserManagement() {
     const [users, setUsers] = useState<User[]>([])
@@ -31,6 +32,11 @@ export default function UserManagement() {
         title: string
         message: string
     }>({ isOpen: false, title: '', message: '' })
+
+    const [viewUserModal, setViewUserModal] = useState<{
+        isOpen: boolean
+        user: User | null
+    }>({ isOpen: false, user: null })
 
     useEffect(() => {
         loadUsers()
@@ -103,15 +109,9 @@ export default function UserManagement() {
         }
     }
 
-    const handleViewProfile = (userId: string, userName: string) => {
-        console.log('[UserManagement] View profile:', { userId, userName })
-        setErrorModal({
-            isOpen: true,
-            title: 'Feature Coming Soon',
-            message: 'View profile feature is under development.'
-        });
-        // TODO: Navigate to user profile page
-        // navigate(`/admin/users/${userId}`)
+    const handleViewProfile = (user: User) => {
+        console.log('[UserManagement] View profile:', user)
+        setViewUserModal({ isOpen: true, user })
     }
 
     const handleVerifyUser = async (userId: string, userName: string) => {
@@ -224,8 +224,18 @@ export default function UserManagement() {
             header: 'User',
             render: (user: User) => (
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                        {user.name.charAt(0).toUpperCase()}
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border border-gray-200">
+                        {user.avatarUrl ? (
+                            <img
+                                src={user.avatarUrl}
+                                alt={user.name}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-sm">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                        )}
                     </div>
                     <div>
                         <div className="font-semibold text-gray-900">{user.name}</div>
@@ -279,7 +289,7 @@ export default function UserManagement() {
                 <div className="flex items-center gap-2">
                     {/* View Profile Button */}
                     <button
-                        onClick={() => handleViewProfile(user.id, user.name)}
+                        onClick={() => handleViewProfile(user)}
                         className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                         title="View Profile"
                     >
@@ -459,6 +469,13 @@ export default function UserManagement() {
                 title={errorModal.title}
                 message={errorModal.message}
                 onClose={() => setErrorModal({ ...errorModal, isOpen: false })}
+            />
+
+            {/* View Profile Modal */}
+            <UserDetailsModal
+                isOpen={viewUserModal.isOpen}
+                onClose={() => setViewUserModal({ isOpen: false, user: null })}
+                user={viewUserModal.user}
             />
         </div>
     )

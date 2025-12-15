@@ -14,7 +14,8 @@ export class AdminUserDTOMapper implements IAdminUserDTOMapper {
       credits: user.credits,
       isActive: user.isActive,
       isDeleted: user.isDeleted,
-      emailVerified: user.verification.email_verified
+      emailVerified: user.verification.email_verified,
+      avatarUrl: user.avatarUrl
     };
   }
 }

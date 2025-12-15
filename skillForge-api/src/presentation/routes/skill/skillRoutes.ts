@@ -3,7 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { SkillController } from '../../controllers/skill/SkillController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
-import { upload } from '../../../config/multer';
+import { uploadImage } from '../../../config/multer';
 
 @injectable()
 export class SkillRoutes {
@@ -21,7 +21,7 @@ export class SkillRoutes {
 
     this.router.post(
       '/',
-      upload.single('image'),
+      uploadImage.single('image'),
       this.skillController.create
     );
 
@@ -33,7 +33,7 @@ export class SkillRoutes {
 
     this.router.put(
       '/:id',
-      upload.single('image'),
+      uploadImage.single('image'),
       this.skillController.update
     );
 

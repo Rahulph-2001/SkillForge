@@ -13,6 +13,7 @@ import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import csv from 'csv-parser';
 import { Readable } from 'stream';
+import * as XLSX from 'xlsx';
 
 @injectable()
 export class StartMCQImportUseCase implements IStartMCQImportUseCase {
@@ -39,16 +40,21 @@ export class StartMCQImportUseCase implements IStartMCQImportUseCase {
       throw new NotFoundError('Skill template not found');
     }
 
-    // 3. Basic File Validation (Content/Format)
-    if (file.mimetype !== 'text/csv' && file.mimetype !== 'application/vnd.ms-excel') {
-      throw new ValidationError('Only CSV files are supported for bulk import');
-    }
+   
+    const allowedMimes = [
+      'text/csv',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ]
 
+    if(!allowedMimes.includes(file.mimetype)){
+      throw new ValidationError('Only CSV and Excel (.xlsx, .xls) files are supported')
+    }
     // 4. Count Rows for Context (Pre-pass)
-    const rowCount = await this.countRows(file.buffer);
+    const rowCount = await this.countRows(file.buffer, file.originalname);
 
     if (rowCount === 0) {
-      throw new ValidationError('The uploaded CSV file is empty');
+      throw new ValidationError('The uploaded  file is empty or contains no data');
     }
 
     // 5. Upload File to S3
@@ -86,15 +92,29 @@ export class StartMCQImportUseCase implements IStartMCQImportUseCase {
     };
   }
   
-  private async countRows(buffer: Buffer): Promise<number> {
-    return new Promise((resolve, reject) => {
-      let count = 0;
-      const stream = Readable.from(buffer);
-      stream
+   private async countRows(buffer: Buffer, fileName: string): Promise<number> {
+    if(fileName.endsWith('xlsx') || fileName.endsWith('.xls')){
+
+      const workbook = XLSX.read(buffer, {type: 'buffer'});
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const range = XLSX.utils.decode_range(sheet['!ref'] || 'A1: A1')
+
+      const count = range.e.r - range.s.r;
+      return count> 0? count: 0
+    }else {
+      return new Promise((resolve, reject)=> {
+        let count=0
+        const stream = Readable.from(buffer);
+        stream
+
         .pipe(csv())
-        .on('data', () => count++)
-        .on('end', () => resolve(count))
-        .on('error', (err) => reject(new ValidationError('Failed to parse CSV file: ' + err.message)));
-    });
+        .on('data',()=> count++)
+        .on('end',()=>resolve(count))
+        .on('error', (err)=> reject(new ValidationError('Faailed to parse CSV file: ' + err.message)))
+
+      })
+    }
   }
 }
+   

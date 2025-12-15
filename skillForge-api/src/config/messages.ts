@@ -66,4 +66,16 @@ export const ERROR_MESSAGES = {
     INVALID_DATA: 'Invalid skill data provided.',
     IMAGE_UPLOAD_FAILED: 'Failed to upload skill image.',
   },
+
+  
 } as const;
+
+export const API_MESSAGES = {
+MCQ_IMPORT_START: 'MCQ import job started successfully.',
+    MCQ_IMPORT_FILE_MISSING: 'No file uploaded. Please select a CSV or Excel file.',
+    MCQ_IMPORT_INVALID_FILE_TYPE: 'Invalid file format. Only CSV and XLSX/XLS files are supported.',
+    MCQ_IMPORT_SUCCESS: 'MCQ questions imported successfully.',
+    MCQ_IMPORT_PARTIAL_SUCCESS: 'MCQ questions imported with some errors. Please check the error file.',
+    VALIDATION_INVALID_FILE_CONTENT: 'The file content is invalid or missing required columns in one or more rows.',
+    //
+}

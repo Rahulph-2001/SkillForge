@@ -10,6 +10,7 @@ export interface User {
     isActive: boolean;
     isDeleted: boolean;
     emailVerified: boolean;
+    avatarUrl: string | null;
 }
 
 
@@ -28,73 +29,73 @@ export interface SuspendUserRequest {
 class AdminService {
     private readonly baseUrl = '/admin';
 
-   
+
     async listUsers(): Promise<ListUsersResponse> {
         try {
             const response = await api.get(`${this.baseUrl}/users`);
-            
+
             if (response.data?.success && response.data?.data) {
                 return response.data.data;
             }
-            
+
             if (response.data?.users) {
                 return response.data;
             }
-            
+
             throw new Error('Invalid response structure from server');
         } catch (error: any) {
-            const errorMessage = error?.response?.data?.message 
+            const errorMessage = error?.response?.data?.message
                 || error?.response?.data?.error?.message
-                || error?.message 
+                || error?.message
                 || 'Failed to load users';
-            
+
             throw new Error(errorMessage);
         }
     }
 
-    
+
     async suspendUser(userId: string, reason?: string): Promise<{ success: boolean; message: string }> {
         try {
-            const response = await api.post(`${this.baseUrl}/users/suspend`, { 
-                userId, 
-                reason 
+            const response = await api.post(`${this.baseUrl}/users/suspend`, {
+                userId,
+                reason
             });
-            
+
             if (response.data?.success) {
                 const message = response.data?.data?.message || response.data?.message || 'User suspended successfully';
                 return { success: true, message };
             }
-            
+
             throw new Error('Invalid response from server');
         } catch (error: any) {
-            const errorMessage = error?.response?.data?.message 
+            const errorMessage = error?.response?.data?.message
                 || error?.response?.data?.error?.message
-                || error?.message 
+                || error?.message
                 || 'Failed to suspend user';
-            
+
             throw new Error(errorMessage);
         }
     }
 
-    
+
     async unsuspendUser(userId: string): Promise<{ success: boolean; message: string }> {
         try {
-            const response = await api.post(`${this.baseUrl}/users/unsuspend`, { 
+            const response = await api.post(`${this.baseUrl}/users/unsuspend`, {
                 userId
             });
-            
+
             if (response.data?.success) {
                 const message = response.data?.data?.message || response.data?.message || 'User reactivated successfully';
                 return { success: true, message };
             }
-            
+
             throw new Error('Invalid response from server');
         } catch (error: any) {
-            const errorMessage = error?.response?.data?.message 
+            const errorMessage = error?.response?.data?.message
                 || error?.response?.data?.error?.message
-                || error?.message 
+                || error?.message
                 || 'Failed to unsuspend user';
-            
+
             throw new Error(errorMessage);
         }
     }

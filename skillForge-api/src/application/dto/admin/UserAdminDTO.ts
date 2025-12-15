@@ -7,4 +7,5 @@ export interface UserAdminDTO {
   isActive: boolean;
   isDeleted: boolean;
   emailVerified: boolean;
+  avatarUrl: string | null;
 }
