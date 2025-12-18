@@ -1,0 +1,1 @@
+{"version":3,"file":"IListUserSkillsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/skill/interfaces/IListUserSkillsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,qCAAqC,CAAC;AAEvE,MAAM,WAAW,sBAAsB;IACrC,OAAO,CAAC,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,gBAAgB,EAAE,CAAC,CAAC;CACtD"}

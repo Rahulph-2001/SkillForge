@@ -159,6 +159,32 @@ import { GetOccupiedSlotsUseCase } from '../../application/useCases/availability
 import { AvailabilityController } from '../../presentation/controllers/availability/AvailabilityController';
 import { AvailabilityRoutes } from '../../presentation/routes/availability/availabilityRoutes';
 
+// Community
+import { ICommunityRepository } from '../../domain/repositories/ICommunityRepository';
+import { CommunityRepository } from '../database/repositories/CommunityRepository';
+import { ICommunityMessageRepository } from '../../domain/repositories/ICommunityMessageRepository';
+import { CommunityMessageRepository } from '../database/repositories/CommunityMessageRepository';
+import { IWebSocketService } from '../../domain/services/IWebSocketService';
+import { WebSocketService } from '../services/WebSocketService';
+import { ICommunityMapper } from '../../application/mappers/interfaces/ICommunityMapper';
+import { CommunityMapper } from '../../application/mappers/CommunityMapper';
+import { ICommunityMessageMapper } from '../../application/mappers/interfaces/ICommunityMessageMapper';
+import { CommunityMessageMapper } from '../../application/mappers/CommunityMessageMapper';
+import { ICreateCommunityUseCase, CreateCommunityUseCase } from '../../application/useCases/community/CreateCommunityUseCase';
+import { IUpdateCommunityUseCase, UpdateCommunityUseCase } from '../../application/useCases/community/UpdateCommunityUseCase';
+import { IGetCommunitiesUseCase, GetCommunitiesUseCase } from '../../application/useCases/community/GetCommunitiesUseCase';
+import { IGetCommunityDetailsUseCase, GetCommunityDetailsUseCase } from '../../application/useCases/community/GetCommunityDetailsUseCase';
+import { IJoinCommunityUseCase, JoinCommunityUseCase } from '../../application/useCases/community/JoinCommunityUseCase';
+import { ILeaveCommunityUseCase, LeaveCommunityUseCase } from '../../application/useCases/community/LeaveCommunityUseCase';
+import { ISendMessageUseCase, SendMessageUseCase } from '../../application/useCases/community/SendMessageUseCase';
+import { IGetCommunityMessagesUseCase, GetCommunityMessagesUseCase } from '../../application/useCases/community/GetCommunityMessagesUseCase';
+import { IPinMessageUseCase, PinMessageUseCase } from '../../application/useCases/community/PinMessageUseCase';
+import { IUnpinMessageUseCase, UnpinMessageUseCase } from '../../application/useCases/community/UnpinMessageUseCase';
+import { IDeleteMessageUseCase, DeleteMessageUseCase } from '../../application/useCases/community/DeleteMessageUseCase';
+import { IRemoveCommunityMemberUseCase, RemoveCommunityMemberUseCase } from '../../application/useCases/community/RemoveCommunityMemberUseCase';
+import { CommunityController } from '../../presentation/controllers/community/CommunityController';
+import { CommunityRoutes } from '../../presentation/routes/community/communityRoutes';
+
 // Mappers
 container.bind<IAdminUserDTOMapper>(TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper);
 container.bind<IUserDTOMapper>(TYPES.IUserDTOMapper).to(UserDTOMapper);
@@ -320,6 +346,40 @@ container.bind<MCQImportController>(TYPES.MCQImportController).to(MCQImportContr
 // Routes
 
 container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes);
+
+
+// Add to src/infrastructure/di/container.ts
+
+// Community Repositories
+container.bind<ICommunityRepository>(TYPES.ICommunityRepository).to(CommunityRepository);
+container.bind<ICommunityMessageRepository>(TYPES.ICommunityMessageRepository).to(CommunityMessageRepository);
+
+// WebSocket Service
+container.bind<IWebSocketService>(TYPES.IWebSocketService).to(WebSocketService).inSingletonScope();
+
+// Community Mappers
+container.bind<ICommunityMapper>(TYPES.ICommunityMapper).to(CommunityMapper);
+container.bind<ICommunityMessageMapper>(TYPES.ICommunityMessageMapper).to(CommunityMessageMapper);
+
+// Community Use Cases
+container.bind<ICreateCommunityUseCase>(TYPES.CreateCommunityUseCase).to(CreateCommunityUseCase);
+container.bind<IUpdateCommunityUseCase>(TYPES.UpdateCommunityUseCase).to(UpdateCommunityUseCase);
+container.bind<IGetCommunitiesUseCase>(TYPES.GetCommunitiesUseCase).to(GetCommunitiesUseCase);
+container.bind<IGetCommunityDetailsUseCase>(TYPES.GetCommunityDetailsUseCase).to(GetCommunityDetailsUseCase);
+container.bind<IJoinCommunityUseCase>(TYPES.JoinCommunityUseCase).to(JoinCommunityUseCase);
+container.bind<ILeaveCommunityUseCase>(TYPES.LeaveCommunityUseCase).to(LeaveCommunityUseCase);
+container.bind<ISendMessageUseCase>(TYPES.SendMessageUseCase).to(SendMessageUseCase);
+container.bind<IGetCommunityMessagesUseCase>(TYPES.GetCommunityMessagesUseCase).to(GetCommunityMessagesUseCase);
+container.bind<IPinMessageUseCase>(TYPES.PinMessageUseCase).to(PinMessageUseCase);
+container.bind<IUnpinMessageUseCase>(TYPES.UnpinMessageUseCase).to(UnpinMessageUseCase);
+container.bind<IDeleteMessageUseCase>(TYPES.DeleteMessageUseCase).to(DeleteMessageUseCase);
+container.bind<IRemoveCommunityMemberUseCase>(TYPES.RemoveCommunityMemberUseCase).to(RemoveCommunityMemberUseCase);
+
+// Community Controller
+container.bind<CommunityController>(TYPES.CommunityController).to(CommunityController);
+
+// Community Routes
+container.bind<CommunityRoutes>(TYPES.CommunityRoutes).to(CommunityRoutes);
 
 container.bind<IAvailabilityRepository>(TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository);
 container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);

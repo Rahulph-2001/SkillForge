@@ -152,4 +152,26 @@ export const TYPES = {
   AvailabilityRoutes: Symbol.for('AvailabilityRoutes'),
 
 
+  // Add to src/infrastructure/di/types.ts TYPES object
+ICommunityRepository: Symbol.for('ICommunityRepository'),
+ICommunityMessageRepository: Symbol.for('ICommunityMessageRepository'),
+IWebSocketService: Symbol.for('IWebSocketService'),
+ICommunityMapper: Symbol.for('ICommunityMapper'),
+ICommunityMessageMapper: Symbol.for('ICommunityMessageMapper'),
+CreateCommunityUseCase: Symbol.for('CreateCommunityUseCase'),
+UpdateCommunityUseCase: Symbol.for('UpdateCommunityUseCase'),
+GetCommunitiesUseCase: Symbol.for('GetCommunitiesUseCase'),
+GetCommunityDetailsUseCase: Symbol.for('GetCommunityDetailsUseCase'),
+JoinCommunityUseCase: Symbol.for('JoinCommunityUseCase'),
+LeaveCommunityUseCase: Symbol.for('LeaveCommunityUseCase'),
+SendMessageUseCase: Symbol.for('SendMessageUseCase'),
+GetCommunityMessagesUseCase: Symbol.for('GetCommunityMessagesUseCase'),
+PinMessageUseCase: Symbol.for('PinMessageUseCase'),
+UnpinMessageUseCase: Symbol.for('UnpinMessageUseCase'),
+DeleteMessageUseCase: Symbol.for('DeleteMessageUseCase'),
+RemoveCommunityMemberUseCase: Symbol.for('RemoveCommunityMemberUseCase'),
+CommunityController: Symbol.for('CommunityController'),
+CommunityRoutes: Symbol.for('CommunityRoutes'),
+
+
 };

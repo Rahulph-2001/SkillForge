@@ -2,41 +2,47 @@ export interface Community {
     id: string;
     name: string;
     description: string;
-    category: 'Technology' | 'Languages' | 'Music' | 'Fitness' | 'Creative' | 'Professional' | 'Business';
-    imageUrl: string;
-    membersCount: number;
+    category: string;
+    imageUrl: string | null;
+    videoUrl?: string | null;
+    adminId: string;
     creditsCost: number;
-    creditsPeriod: string; // e.g. "30 days"
-    isJoined: boolean;
-    daysRemaining?: number;
-    adminId?: string;
-    isAutoRenew?: boolean;
+    creditsPeriod: string;
+    membersCount: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    isAdmin?: boolean;
 }
 
 export interface CommunityMember {
     id: string;
-    name: string;
+    userId: string;
+    name?: string;
     avatar?: string;
     role: 'admin' | 'member';
     joinedAt: string;
+    isActive: boolean;
 }
 
 export interface CommunityMessage {
     id: string;
+    communityId: string;
     senderId: string;
     senderName: string;
-    senderAvatar?: string;
+    senderAvatar?: string | null;
     content: string;
-    timestamp: string; // ISO string
-    isPinned?: boolean;
-    type?: 'text' | 'image' | 'file';
-    fileUrl?: string;
-    fileName?: string;
-    reactions?: {
-        emoji: string;
-        count: number;
-        userReacted: boolean;
-    }[];
+    type: 'text' | 'image' | 'video' | 'file';
+    fileUrl?: string | null;
+    fileName?: string | null;
+    isPinned: boolean;
+    pinnedAt?: string | null;
+    pinnedBy?: string | null;
+    replyToId?: string | null;
+    forwardedFromId?: string | null;
+    replyTo?: CommunityMessage;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CommunityStats {

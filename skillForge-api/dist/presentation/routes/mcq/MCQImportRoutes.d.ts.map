@@ -1,0 +1,1 @@
+{"version":3,"file":"MCQImportRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/mcq/MCQImportRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,mBAAmB,EAAE,MAAM,2CAA2C,CAAC;AAKhF,qBACa,eAAe;IAIW,OAAO,CAAC,mBAAmB;IAHzD,MAAM,EAAE,MAAM,CAAC;gBAGuB,mBAAmB,EAAE,mBAAmB;IAMrF,OAAO,CAAC,WAAW;IAwBZ,SAAS,IAAI,MAAM;CAG3B"}

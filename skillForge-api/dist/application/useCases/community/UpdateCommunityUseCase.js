@@ -1,0 +1,61 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.UpdateCommunityUseCase = void 0;
+const inversify_1 = require("inversify");
+const types_1 = require("../../../infrastructure/di/types");
+const AppError_1 = require("../../../domain/errors/AppError");
+let UpdateCommunityUseCase = class UpdateCommunityUseCase {
+    constructor(communityRepository, s3Service) {
+        this.communityRepository = communityRepository;
+        this.s3Service = s3Service;
+    }
+    async execute(communityId, userId, dto, imageFile) {
+        const community = await this.communityRepository.findById(communityId);
+        if (!community) {
+            throw new AppError_1.NotFoundError('Community not found');
+        }
+        if (community.adminId !== userId) {
+            throw new AppError_1.ForbiddenError('Only community admin can update community details');
+        }
+        let imageUrl = dto.imageUrl;
+        if (imageFile) {
+            // Delete old image if exists
+            if (community.imageUrl) {
+                await this.s3Service.deleteFile(community.imageUrl);
+            }
+            const timestamp = Date.now();
+            const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
+            imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+        }
+        community.updateDetails({
+            name: dto.name,
+            description: dto.description,
+            category: dto.category,
+            imageUrl,
+            videoUrl: dto.videoUrl,
+            creditsCost: dto.creditsCost,
+            creditsPeriod: dto.creditsPeriod,
+        });
+        return await this.communityRepository.update(communityId, community);
+    }
+};
+exports.UpdateCommunityUseCase = UpdateCommunityUseCase;
+exports.UpdateCommunityUseCase = UpdateCommunityUseCase = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __metadata("design:paramtypes", [Object, Object])
+], UpdateCommunityUseCase);
+//# sourceMappingURL=UpdateCommunityUseCase.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"skillRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/skill/skillRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,eAAe,EAAE,MAAM,yCAAyC,CAAC;AAI1E,qBACa,WAAW;IAIW,OAAO,CAAC,QAAQ,CAAC,eAAe;IAHjE,SAAgB,MAAM,EAAE,MAAM,CAAY;gBAGQ,eAAe,EAAE,eAAe;IAKlF,OAAO,CAAC,gBAAgB;CA2BzB"}

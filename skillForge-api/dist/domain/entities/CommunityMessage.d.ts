@@ -1,0 +1,53 @@
+export type MessageType = 'text' | 'image' | 'video' | 'file';
+export interface CreateCommunityMessageData {
+    id?: string;
+    communityId: string;
+    senderId: string;
+    content: string;
+    type?: MessageType;
+    fileUrl?: string | null;
+    fileName?: string | null;
+    replyToId?: string | null;
+    forwardedFromId?: string | null;
+}
+export declare class CommunityMessage {
+    private _id;
+    private _communityId;
+    private _senderId;
+    private _content;
+    private _type;
+    private _fileUrl;
+    private _fileName;
+    private _isPinned;
+    private _pinnedAt;
+    private _pinnedBy;
+    private _replyToId;
+    private _forwardedFromId;
+    private _isDeleted;
+    private _deletedAt;
+    private _createdAt;
+    private _updatedAt;
+    constructor(data: CreateCommunityMessageData);
+    get id(): string;
+    get communityId(): string;
+    get senderId(): string;
+    get content(): string;
+    get type(): MessageType;
+    get fileUrl(): string | null;
+    get fileName(): string | null;
+    get isPinned(): boolean;
+    get pinnedAt(): Date | null;
+    get pinnedBy(): string | null;
+    get replyToId(): string | null;
+    get forwardedFromId(): string | null;
+    get isDeleted(): boolean;
+    get deletedAt(): Date | null;
+    get createdAt(): Date;
+    get updatedAt(): Date;
+    pin(userId: string): void;
+    unpin(): void;
+    delete(): void;
+    toJSON(): Record<string, unknown>;
+    static fromDatabaseRow(row: Record<string, unknown>): CommunityMessage;
+}
+//# sourceMappingURL=CommunityMessage.d.ts.map

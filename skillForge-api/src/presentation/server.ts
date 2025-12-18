@@ -25,6 +25,7 @@ import { generalLimiter } from './middlewares/rateLimitMiddileWare';
 import { PassportService } from '../infrastructure/services/PassportService';
 import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
 import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';
+import { CommunityRoutes } from './routes/community/communityRoutes';
 
 @injectable()
 export class App {
@@ -45,6 +46,7 @@ export class App {
         @inject(TYPES.UserProfileRoutes) private readonly userProfileRoutes: UserProfileRoutes,
         @inject(TYPES.MCQImportRoutes) private readonly mcqImportRoutes: MCQImportRoutes,
         @inject(TYPES.AvailabilityRoutes) private readonly availabilityRoutes: AvailabilityRoutes,
+        @inject(TYPES.CommunityRoutes) private readonly communityRoutes: CommunityRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
     ) {
         this.app = express();
@@ -112,6 +114,7 @@ export class App {
         this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
         this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter());
         this.app.use('/api/v1/availability', this.availabilityRoutes.router);
+        this.app.use('/api/v1/communities', this.communityRoutes.getRouter());
         this.app.all('*', notFoundHandler);
     }
 

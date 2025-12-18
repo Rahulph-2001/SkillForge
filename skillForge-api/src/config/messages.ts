@@ -21,6 +21,17 @@ export const SUCCESS_MESSAGES = {
     UPDATED: 'Skill updated successfully.',
     DELETED: 'Skill deleted successfully.',
   },
+
+  COMMUNITY: {
+  CREATED: 'Community created successfully',
+  UPDATED: 'Community updated successfully',
+  JOINED: 'Joined community successfully',
+  LEFT: 'Left community successfully',
+  MESSAGE_SENT: 'Message sent successfully',
+  MESSAGE_PINNED: 'Message pinned successfully',
+  MESSAGE_UNPINNED: 'Message unpinned successfully',
+  MESSAGE_DELETED: 'Message deleted successfully',
+},
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -57,6 +68,16 @@ export const ERROR_MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many requests, try again later.',
     EMAIL_SEND_FAILED: 'Failed to send email. Please try again.',
   },
+  COMMUNITY: {
+  NOT_FOUND: 'Community not found',
+  ALREADY_MEMBER: 'Already a member of this community',
+  NOT_MEMBER: 'Not a member of this community',
+  INSUFFICIENT_CREDITS: 'Insufficient credits to join community',
+  ADMIN_CANNOT_LEAVE: 'Community admin cannot leave',
+  ONLY_ADMIN_CAN_UPDATE: 'Only admin can update community',
+  ONLY_ADMIN_CAN_PIN: 'Only admin can pin messages',
+  MESSAGE_NOT_FOUND: 'Message not found',
+},
 
    SKILL: {
     CREATION_FAILED: 'Failed to create skill.',

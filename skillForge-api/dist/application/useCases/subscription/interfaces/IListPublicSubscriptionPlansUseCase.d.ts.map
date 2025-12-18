@@ -1,0 +1,1 @@
+{"version":3,"file":"IListPublicSubscriptionPlansUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/subscription/interfaces/IListPublicSubscriptionPlansUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sCAAsC,EAAE,MAAM,kEAAkE,CAAC;AAE1H,MAAM,WAAW,mCAAmC;IAClD,OAAO,IAAI,OAAO,CAAC,sCAAsC,CAAC,CAAC;CAC5D"}

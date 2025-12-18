@@ -314,6 +314,56 @@ export class User {
     this._updatedAt = new Date();
   }
 
+  /**
+   * Deduct credits from user account
+   * @param amount - Amount of credits to deduct
+   * @throws Error if insufficient credits
+   */
+  public deductCredits(amount: number): void {
+    if (amount <= 0) {
+      throw new Error('Credit amount must be positive');
+    }
+    if (this._credits < amount) {
+      throw new Error(`Insufficient credits. Required: ${amount}, Available: ${this._credits}`);
+    }
+    this._credits -= amount;
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Add credits to user account
+   * @param amount - Amount of credits to add
+   * @param type - Type of credit (earned, bonus, purchased)
+   */
+  public addCredits(amount: number, type: 'earned' | 'bonus' | 'purchased' = 'earned'): void {
+    if (amount <= 0) {
+      throw new Error('Credit amount must be positive');
+    }
+    this._credits += amount;
+
+    switch (type) {
+      case 'earned':
+        this._earnedCredits += amount;
+        break;
+      case 'bonus':
+        this._bonusCredits += amount;
+        break;
+      case 'purchased':
+        this._purchasedCredits += amount;
+        break;
+    }
+
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Transfer credits to another user (for internal transactions)
+   * @param amount - Amount to transfer
+   */
+  public transferCredits(amount: number): void {
+    this.deductCredits(amount); // Will throw if insufficient
+  }
+
   public toJSON(): Record<string, unknown> {
     return {
       id: this._id,
@@ -353,56 +403,56 @@ export class User {
     };
   }
 
-  
- public static fromDatabaseRow(row: Record<string, unknown>): User {
-  // Create base User with minimal data (public props)
-  const user = new User({
-    id: row.id as string,
-    name: row.name as string,
-    email: row.email as string,
-    password: (row.password_hash as string) || (row.passwordHash as string),
-    role: row.role as UserRole,
-  });
 
- 
-  const userAny = user as unknown as Record<string, unknown>;
+  public static fromDatabaseRow(row: Record<string, unknown>): User {
+    // Create base User with minimal data (public props)
+    const user = new User({
+      id: row.id as string,
+      name: row.name as string,
+      email: row.email as string,
+      password: (row.password_hash as string) || (row.passwordHash as string),
+      role: row.role as UserRole,
+    });
 
-  
-  userAny._avatarUrl = (row.avatar_url as string) || (row.avatarUrl as string) || null;
-  userAny._bio = row.bio as string | null;
-  userAny._location = row.location as string | null;
-  userAny._credits = (row.credits as number) || 0;
-  userAny._earnedCredits = (row.earned_credits as number) || (row.earnedCredits as number) || 0;
-  userAny._bonusCredits = (row.bonus_credits as number) || (row.bonusCredits as number) || 0;
-  userAny._purchasedCredits = (row.purchased_credits as number) || (row.purchasedCredits as number) || 0;
-  userAny._walletBalance = parseFloat(String(row.wallet_balance || row.walletBalance || 0));
-  userAny._skillsOffered = (row.skills_offered as string[]) || (row.skillsOffered as string[]) || [];
-  userAny._skillsLearning = (row.skills_learning as string[]) || (row.skillsLearning as string[]) || [];
-  userAny._rating = parseFloat(String(row.rating || 0));
-  userAny._reviewCount = (row.review_count as number) || (row.reviewCount as number) || 0;
-  userAny._totalSessionsCompleted = (row.total_sessions_completed as number) || (row.totalSessionsCompleted as number) || 0;
-  userAny._memberSince = (row.member_since as Date || row.memberSince as Date) || new Date();
-  userAny._verification = row.verification as VerificationData;
-  userAny._antiFraud = (row.anti_fraud as AntiFraudData) || (row.antiFraud as AntiFraudData);
-  userAny._settings = row.settings as UserSettings;
-  userAny._adminPermissions = (row.admin_permissions as AdminPermissions) || (row.adminPermissions as AdminPermissions);
-  userAny._subscriptionPlan = (row.subscription_plan as SubscriptionPlan) || (row.subscriptionPlan as SubscriptionPlan) || 'free';
-  userAny._subscriptionValidUntil = (row.subscription_valid_until as Date || row.subscriptionValidUntil as Date) || null;
-  userAny._subscriptionAutoRenew = (row.subscription_auto_renew as boolean) !== undefined 
-    ? (row.subscription_auto_renew as boolean) 
-    : ((row.subscriptionAutoRenew as boolean) || false);
-  userAny._subscriptionStartedAt = (row.subscription_started_at as Date || row.subscriptionStartedAt as Date) || null;
-  userAny._createdAt = (row.created_at as Date || row.createdAt as Date) || new Date();
-  userAny._updatedAt = (row.updated_at as Date || row.updatedAt as Date) || new Date();
-  userAny._lastLogin = (row.last_login as Date || row.lastLogin as Date) || null;
-  userAny._lastActive = (row.last_active as Date || row.lastActive as Date) || null;
-  userAny._isActive = (row.is_active as boolean) !== undefined 
-    ? (row.is_active as boolean) 
-    : ((row.isActive as boolean) !== undefined ? (row.isActive as boolean) : true);
-  userAny._isDeleted = (row.is_deleted as boolean) || (row.isDeleted as boolean) || false;
-  userAny._deletedAt = (row.deleted_at as Date || row.deletedAt as Date) || null;
 
-  
-  return user;
-}
+    const userAny = user as unknown as Record<string, unknown>;
+
+
+    userAny._avatarUrl = (row.avatar_url as string) || (row.avatarUrl as string) || null;
+    userAny._bio = row.bio as string | null;
+    userAny._location = row.location as string | null;
+    userAny._credits = (row.credits as number) || 0;
+    userAny._earnedCredits = (row.earned_credits as number) || (row.earnedCredits as number) || 0;
+    userAny._bonusCredits = (row.bonus_credits as number) || (row.bonusCredits as number) || 0;
+    userAny._purchasedCredits = (row.purchased_credits as number) || (row.purchasedCredits as number) || 0;
+    userAny._walletBalance = parseFloat(String(row.wallet_balance || row.walletBalance || 0));
+    userAny._skillsOffered = (row.skills_offered as string[]) || (row.skillsOffered as string[]) || [];
+    userAny._skillsLearning = (row.skills_learning as string[]) || (row.skillsLearning as string[]) || [];
+    userAny._rating = parseFloat(String(row.rating || 0));
+    userAny._reviewCount = (row.review_count as number) || (row.reviewCount as number) || 0;
+    userAny._totalSessionsCompleted = (row.total_sessions_completed as number) || (row.totalSessionsCompleted as number) || 0;
+    userAny._memberSince = (row.member_since as Date || row.memberSince as Date) || new Date();
+    userAny._verification = row.verification as VerificationData;
+    userAny._antiFraud = (row.anti_fraud as AntiFraudData) || (row.antiFraud as AntiFraudData);
+    userAny._settings = row.settings as UserSettings;
+    userAny._adminPermissions = (row.admin_permissions as AdminPermissions) || (row.adminPermissions as AdminPermissions);
+    userAny._subscriptionPlan = (row.subscription_plan as SubscriptionPlan) || (row.subscriptionPlan as SubscriptionPlan) || 'free';
+    userAny._subscriptionValidUntil = (row.subscription_valid_until as Date || row.subscriptionValidUntil as Date) || null;
+    userAny._subscriptionAutoRenew = (row.subscription_auto_renew as boolean) !== undefined
+      ? (row.subscription_auto_renew as boolean)
+      : ((row.subscriptionAutoRenew as boolean) || false);
+    userAny._subscriptionStartedAt = (row.subscription_started_at as Date || row.subscriptionStartedAt as Date) || null;
+    userAny._createdAt = (row.created_at as Date || row.createdAt as Date) || new Date();
+    userAny._updatedAt = (row.updated_at as Date || row.updatedAt as Date) || new Date();
+    userAny._lastLogin = (row.last_login as Date || row.lastLogin as Date) || null;
+    userAny._lastActive = (row.last_active as Date || row.lastActive as Date) || null;
+    userAny._isActive = (row.is_active as boolean) !== undefined
+      ? (row.is_active as boolean)
+      : ((row.isActive as boolean) !== undefined ? (row.isActive as boolean) : true);
+    userAny._isDeleted = (row.is_deleted as boolean) || (row.isDeleted as boolean) || false;
+    userAny._deletedAt = (row.deleted_at as Date || row.deletedAt as Date) || null;
+
+
+    return user;
+  }
 }
