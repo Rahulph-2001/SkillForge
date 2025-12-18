@@ -1,129 +1,206 @@
 import { injectable, inject } from 'inversify';
-import { v4 as uuidv4 } from 'uuid';
 import { TYPES } from '../../../infrastructure/di/types';
+import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
-import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
+import { Booking } from '../../../domain/entities/Booking';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
-import { Booking, BookingStatus } from '../../../domain/entities/Booking';
-import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
+import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
+import { BookingValidator } from '../../../shared/validators/BookingValidator';
+import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
 
 @injectable()
-export class CreateBookingUseCase implements ICreateBookingUseCase {
-  constructor(
-    @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
-    @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
-    @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
-    @inject(TYPES.IAvailabilityRepository) private availabilityRepository: IAvailabilityRepository,
-    @inject(TYPES.IBookingMapper) private bookingMapper: IBookingMapper
-  ) { }
+export class CreateBookingUseCase {
+    constructor(
+        @inject(TYPES.IBookingRepository) private readonly bookingRepository: IBookingRepository,
+        @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
+        @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+        @inject(TYPES.IAvailabilityRepository) private readonly availabilityRepository: IAvailabilityRepository,
+        @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper
+    ) { }
 
-  async execute(request: CreateBookingRequestDTO): Promise<BookingResponseDTO> {
-    const { learnerId, skillId, providerId, preferredDate, preferredTime, message } = request;
+    async execute(request: CreateBookingRequestDTO): Promise<BookingResponseDTO> {
+        // 1. Validate required fields
+        const fieldsValidation = BookingValidator.validateRequiredFields(request);
+        if (!fieldsValidation.valid) {
+            throw new ValidationError(fieldsValidation.error || 'Invalid booking request');
+        }
 
-    const skill = await this.skillRepository.findById(skillId);
+        // 2. Validate date and time format
+        const formatValidation = BookingValidator.validateDateTimeFormat(
+            request.preferredDate,
+            request.preferredTime
+        );
+        if (!formatValidation.valid) {
+            throw new ValidationError(formatValidation.error || 'Invalid date or time format');
+        }
 
-    if (!skill) {
-      throw new NotFoundError('Skill not found');
+        // 3. Validate not self-booking
+        const selfBookingValidation = BookingValidator.validateNotSelfBooking(
+            request.learnerId,
+            request.providerId
+        );
+        if (!selfBookingValidation.valid) {
+            throw new ValidationError(selfBookingValidation.error || 'Cannot book your own skill');
+        }
+
+        // 4. Verify skill exists and belongs to provider
+        const skill = await this.skillRepository.findById(request.skillId);
+        if (!skill) {
+            throw new NotFoundError('Skill not found');
+        }
+
+        if (skill.providerId !== request.providerId) {
+            throw new ValidationError('Skill does not belong to the specified provider');
+        }
+
+        // 5. Verify learner exists and has sufficient credits
+        const learner = await this.userRepository.findById(request.learnerId);
+        if (!learner) {
+            throw new NotFoundError('Learner not found');
+        }
+
+        const sessionCost = skill.creditsPerHour * skill.durationHours;
+        if (learner.credits < sessionCost) {
+            throw new ValidationError(`Insufficient credits. Required: ${sessionCost}, Available: ${learner.credits}`);
+        }
+
+        // 6. Check for duplicate booking
+        const duplicate = await this.bookingRepository.findDuplicateBooking(
+            request.learnerId,
+            request.skillId,
+            request.preferredDate,
+            request.preferredTime
+        );
+        if (duplicate) {
+            throw new ValidationError('You already have a booking for this skill at this time');
+        }
+
+        // 7. Get provider availability settings
+        const availability = await this.availabilityRepository.findByProviderId(request.providerId);
+        if (availability) {
+            // Validate booking is not in the past
+            const pastValidation = BookingValidator.validateDateNotInPast(
+                request.preferredDate,
+                request.preferredTime,
+                availability.timezone
+            );
+            if (!pastValidation.valid) {
+                throw new ValidationError(pastValidation.error || 'Booking date must be in the future');
+            }
+
+            // Validate advance booking window
+            const bookingDate = DateTimeUtils.parseDateTime(request.preferredDate, request.preferredTime);
+            const advanceValidation = BookingValidator.validateWithinAdvanceBookingWindow(
+                bookingDate,
+                availability.minAdvanceBooking,
+                availability.maxAdvanceBooking
+            );
+            if (!advanceValidation.valid) {
+                throw new ValidationError(advanceValidation.error || 'Booking outside allowed time window');
+            }
+
+            // Validate against blocked dates
+            const blockedDates = availability.blockedDates as any[];
+            const blockedValidation = BookingValidator.validateAgainstBlockedDates(
+                request.preferredDate,
+                blockedDates
+            );
+            if (!blockedValidation.valid) {
+                throw new ValidationError(blockedValidation.error || 'Provider unavailable on this date');
+            }
+
+            // Validate session doesn't cross midnight
+            const midnightValidation = BookingValidator.validateSessionWithinSameDay(
+                request.preferredDate,
+                request.preferredTime,
+                skill.durationHours,
+                availability.timezone
+            );
+            if (!midnightValidation.valid) {
+                throw new ValidationError(midnightValidation.error || 'Session cannot cross midnight');
+            }
+
+            // Validate within working hours
+            const dayOfWeek = new Date(request.preferredDate).toLocaleDateString('en-US', { weekday: 'long' });
+            const weeklySchedule = availability.weeklySchedule as any;
+            const daySchedule = weeklySchedule[dayOfWeek];
+
+            if (daySchedule) {
+                const workingHoursValidation = BookingValidator.validateWithinWorkingHours(
+                    request.preferredTime,
+                    skill.durationHours,
+                    daySchedule
+                );
+                if (!workingHoursValidation.valid) {
+                    throw new ValidationError(workingHoursValidation.error || 'Outside provider working hours');
+                }
+            }
+
+            // Check for overlapping bookings with buffer
+            const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
+            const startDate = new Date(request.preferredDate);
+            startDate.setHours(startHours, startMinutes, 0, 0);
+
+            const endDate = DateTimeUtils.addHours(startDate, skill.durationHours);
+            const endTime = DateTimeUtils.formatTime(endDate);
+
+            const overlapping = await this.bookingRepository.findOverlappingWithBuffer(
+                request.providerId,
+                startDate,
+                request.preferredTime,
+                endTime,
+                availability.bufferTime
+            );
+
+            if (overlapping.length > 0) {
+                throw new ValidationError('This time slot conflicts with an existing booking');
+            }
+
+            // Check max sessions per day if configured
+            if (availability.maxSessionsPerDay) {
+                const sessionsCount = await this.bookingRepository.countActiveBookingsByProviderAndDate(
+                    request.providerId,
+                    request.preferredDate
+                );
+                if (sessionsCount >= availability.maxSessionsPerDay) {
+                    throw new ValidationError(`Provider has reached maximum sessions for this day (${availability.maxSessionsPerDay})`);
+                }
+            }
+        }
+
+        // 8. Calculate start and end times for the booking
+        const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
+        const startAt = new Date(request.preferredDate);
+        startAt.setHours(startHours, startMinutes, 0, 0);
+
+        const endAt = DateTimeUtils.addHours(startAt, skill.durationHours);
+
+        // 9. Create booking entity
+        const booking = Booking.create({
+            learnerId: request.learnerId,
+            skillId: request.skillId,
+            providerId: request.providerId,
+            preferredDate: request.preferredDate,
+            preferredTime: request.preferredTime,
+            message: request.message || null,
+            sessionCost,
+            status: 'pending' as any,
+            startAt,
+            endAt,
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+
+        // 9. Create booking with transaction (deducts credits from learner)
+        const createdBooking = await this.bookingRepository.createTransactional(booking, sessionCost);
+
+        // TODO: Send notification to provider
+        // TODO: Send confirmation to learner
+
+        return this.bookingMapper.toDTO(createdBooking);
     }
-
-    if (skill.status !== 'approved') {
-      throw new ValidationError('This skill is not available for booking');
-    }
-
-    if (skill.isBlocked) {
-      throw new ValidationError('This skill is currently blocked');
-    }
-
-    if (skill.providerId !== providerId) {
-      throw new ValidationError('Invalid provider for this skill');
-    }
-
-    // Validate learner is not the provider
-    if (learnerId === providerId) {
-      throw new ValidationError('You cannot book your own skill');
-    }
-
-    // Calculate session cost
-    const sessionCost = skill.creditsPerHour * skill.durationHours;
-
-    // Validate learner has sufficient credits
-    const learner = await this.userRepository.findById(learnerId);
-
-    if (!learner) {
-      throw new NotFoundError('Learner not found');
-    }
-
-    if (learner.credits < sessionCost) {
-      throw new ValidationError('Insufficient credits to book this session');
-    }
-
-    // Validate date is in the future
-    const preferredDateTime = new Date(`${preferredDate}T${preferredTime}`);
-    if (preferredDateTime <= new Date()) {
-      throw new ValidationError('Preferred date and time must be in the future');
-    }
-
-    // --- Availability Validation ---
-    const availability = await this.availabilityRepository.findByProviderId(providerId);
-    if (!availability) {
-      throw new ValidationError('Provider availability not set');
-    }
-
-    // 1. Check Blocked Dates
-    const isBlocked = availability.blockedDates.some(d => d.date === preferredDate);
-    if (isBlocked) {
-      throw new ValidationError('Provider is not available on this date');
-    }
-
-    // 2. Check Weekly Schedule
-    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const dayName = days[preferredDateTime.getDay()];
-    const daySchedule = availability.weeklySchedule[dayName];
-
-    if (!daySchedule || !daySchedule.enabled) {
-      throw new ValidationError(`Provider is not available on ${dayName}s`);
-    }
-
-    // 3. Check Time Slots
-    const isTimeValid = daySchedule.slots.some(slot => {
-      const slotStart = new Date(`${preferredDate}T${slot.start}`);
-      const slotEnd = new Date(`${preferredDate}T${slot.end}`);
-
-      // Simple check: preferred time must be >= slot start AND (preferred time + duration) <= slot end
-      // Assuming duration is in hours
-      const sessionEnd = new Date(preferredDateTime.getTime() + skill.durationHours * 60 * 60 * 1000);
-
-      return preferredDateTime >= slotStart && sessionEnd <= slotEnd;
-    });
-
-    if (!isTimeValid) {
-      throw new ValidationError('Selected time is outside provider\'s available slots');
-    }
-
-    // Create booking entity
-    const booking = Booking.create({
-      id: uuidv4(),
-      learnerId,
-      skillId,
-      providerId,
-      preferredDate,
-      preferredTime,
-      message: message || null,
-      status: BookingStatus.PENDING,
-      sessionCost,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
-
-    // Persist booking
-    const createdBooking = await this.bookingRepository.create(booking);
-
-    // Return DTO
-    return this.bookingMapper.toDTO(createdBooking);
-  }
 }

@@ -147,6 +147,7 @@ export const TYPES = {
   IAvailabilityRepository: Symbol.for('IAvailabilityRepository'),
   GetProviderAvailabilityUseCase: Symbol.for('GetProviderAvailabilityUseCase'),
   UpdateProviderAvailabilityUseCase: Symbol.for('UpdateProviderAvailabilityUseCase'),
+  GetOccupiedSlotsUseCase: Symbol.for('GetOccupiedSlotsUseCase'),
   AvailabilityController: Symbol.for('AvailabilityController'),
   AvailabilityRoutes: Symbol.for('AvailabilityRoutes'),
 

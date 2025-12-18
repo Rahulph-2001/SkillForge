@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { availabilityService, ProviderAvailability, WeeklySchedule } from '../../services/availabilityService';
 import { toast } from 'react-hot-toast';
 import { Clock, Calendar, Save, Plus, Trash2 } from 'lucide-react';
+import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -19,12 +20,12 @@ const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
     const parsed =
         typeof rawSchedule === 'string'
             ? (() => {
-                  try {
-                      return JSON.parse(rawSchedule);
-                  } catch {
-                      return {};
-                  }
-              })()
+                try {
+                    return JSON.parse(rawSchedule);
+                } catch {
+                    return {};
+                }
+            })()
             : rawSchedule || {};
 
     const normalized: WeeklySchedule = { ...EMPTY_SCHEDULE };
@@ -41,7 +42,7 @@ const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
 
         normalized[day] = {
             enabled: loadedDay.enabled ?? false,
-            slots: slots.map((s) => ({
+            slots: slots.map((s: any) => ({
                 start: s?.start ?? '09:00',
                 end: s?.end ?? '17:00',
             })),
@@ -54,6 +55,8 @@ const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
 export const AvailabilitySettingsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [pendingSaveData, setPendingSaveData] = useState<any>(null);
     const [availability, setAvailability] = useState<Partial<ProviderAvailability>>({
         weeklySchedule: EMPTY_SCHEDULE,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -105,26 +108,68 @@ export const AvailabilitySettingsPage: React.FC = () => {
         }
     };
 
-    const handleSave = async () => {
+    const hasOverlaps = (schedule: WeeklySchedule): boolean => {
+        let found = false;
+        DAYS.forEach(day => {
+            const slots = schedule[day]?.slots || [];
+            if (slots.length > 1) {
+                const timeToMin = (t: string) => {
+                    const [h, m] = t.split(':').map(Number);
+                    return h * 60 + m;
+                };
+                const ranges = slots
+                    .map(s => ({ start: timeToMin(s.start), end: timeToMin(s.end) }))
+                    .sort((a, b) => a.start - b.start);
+
+                for (let i = 0; i < ranges.length - 1; i++) {
+                    if (ranges[i + 1].start < ranges[i].end) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        });
+        return found;
+    };
+
+    const handleSaveRequest = async () => {
+        const base = availability ?? {
+            weeklySchedule: EMPTY_SCHEDULE,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            bufferTime: 15,
+            minAdvanceBooking: 24,
+            maxAdvanceBooking: 30,
+            autoAccept: false,
+            blockedDates: [],
+        };
+
+        const safeSchedule = normalizeWeeklySchedule(base.weeklySchedule || {});
+
+        if (hasOverlaps(safeSchedule)) {
+            setPendingSaveData({ ...base, weeklySchedule: safeSchedule });
+            setModalOpen(true);
+            return;
+        }
+
+        await executeSave({ ...base, weeklySchedule: safeSchedule });
+    };
+
+    const confirmOptimization = async () => {
+        if (!pendingSaveData) return;
+        setModalOpen(false);
+        const optimizedSchedule = { ...pendingSaveData.weeklySchedule };
+        DAYS.forEach(day => {
+            if (optimizedSchedule[day].enabled && optimizedSchedule[day].slots.length > 0) {
+                optimizedSchedule[day].slots = mergeFrontendSlots(optimizedSchedule[day].slots);
+            }
+        });
+        await executeSave({ ...pendingSaveData, weeklySchedule: optimizedSchedule }, true);
+    };
+
+    const executeSave = async (data: any, optimized = false) => {
         setSaving(true);
         try {
-            const base = availability ?? {
-                weeklySchedule: EMPTY_SCHEDULE,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                bufferTime: 15,
-                minAdvanceBooking: 24,
-                maxAdvanceBooking: 30,
-                autoAccept: false,
-                blockedDates: [],
-            };
-
-            const safeSchedule = normalizeWeeklySchedule(base.weeklySchedule || {});
-
-            const updated = await availabilityService.updateAvailability({
-                ...base,
-                weeklySchedule: safeSchedule,
-            });
-            console.debug('[AvailabilitySettingsPage] save response', updated);
+            const updated = await availabilityService.updateAvailability(data);
             setAvailability({
                 weeklySchedule: normalizeWeeklySchedule(updated.weeklySchedule),
                 timezone: updated.timezone ?? availability.timezone,
@@ -135,13 +180,47 @@ export const AvailabilitySettingsPage: React.FC = () => {
                 blockedDates: updated.blockedDates ?? availability.blockedDates ?? [],
                 maxSessionsPerDay: updated.maxSessionsPerDay ?? availability.maxSessionsPerDay,
             });
-            toast.success('Availability settings saved!');
+            toast.success(optimized ? 'Schedule optimized and saved!' : 'Availability settings saved!');
         } catch (error) {
             console.error('Failed to save availability', error);
             toast.error('Failed to save availability settings');
         } finally {
             setSaving(false);
+            setPendingSaveData(null);
         }
+    };
+
+    // Helper: Front-end merge logic (Duplicate of backend logic for instant feedback)
+    const mergeFrontendSlots = (slots: { start: string; end: string }[]) => {
+        const timeToMin = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+        const minToTime = (min: number) => {
+            const h = Math.floor(min / 60).toString().padStart(2, '0');
+            const m = (min % 60).toString().padStart(2, '0');
+            return `${h}:${m}`;
+        };
+
+        const ranges = slots
+            .map(s => ({ start: timeToMin(s.start), end: timeToMin(s.end) }))
+            .sort((a, b) => a.start - b.start);
+
+        const merged: { start: number; end: number }[] = [];
+        for (const current of ranges) {
+            if (current.start >= current.end) continue;
+            if (merged.length === 0) {
+                merged.push(current);
+            } else {
+                const prev = merged[merged.length - 1];
+                if (current.start <= prev.end) {
+                    prev.end = Math.max(prev.end, current.end);
+                } else {
+                    merged.push(current);
+                }
+            }
+        }
+        return merged.map(r => ({ start: minToTime(r.start), end: minToTime(r.end) }));
     };
 
     const updateSchedule = (day: string, updates: any) => {
@@ -224,10 +303,20 @@ export const AvailabilitySettingsPage: React.FC = () => {
 
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-8">
+            <ConfirmModal
+                isOpen={modalOpen}
+                title="Optimize Schedule?"
+                message="We detected overlapping time slots in your schedule. Would you like us to merge them automatically to prevent booking conflicts?"
+                confirmText="Yes, Optimize & Save"
+                cancelText="Cancel"
+                onConfirm={confirmOptimization}
+                onCancel={() => setModalOpen(false)}
+                type="info"
+            />
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-900">Availability Settings</h1>
                 <button
-                    onClick={handleSave}
+                    onClick={handleSaveRequest}
                     disabled={saving}
                     className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
                 >

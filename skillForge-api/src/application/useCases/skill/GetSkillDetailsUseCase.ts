@@ -7,66 +7,85 @@ import { NotFoundError } from '../../../domain/errors/AppError';
 import { IGetSkillDetailsUseCase } from './interfaces/IGetSkillDetailsUseCase';
 import { SkillDetailsDTO } from '../../dto/skill/SkillDetailsResponseDTO';
 import { ISkillDetailsMapper } from '../../mappers/interfaces/ISkillDetailsMapper';
-
+import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 @injectable()
 export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
   constructor(
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IAvailabilityRepository) private availabilityRepository: IAvailabilityRepository,
+    @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
     @inject(TYPES.ISkillDetailsMapper) private skillDetailsMapper: ISkillDetailsMapper
   ) { }
 
   async execute(skillId: string): Promise<SkillDetailsDTO> {
-    // Fetch skill
     const skill = await this.skillRepository.findById(skillId);
-    if (!skill) {
-      throw new NotFoundError('Skill not found');
+    if (!skill) throw new NotFoundError('Skill not found');
+
+    // Check if skill is active
+    if (skill.status !== 'approved' || skill.isBlocked) {
+      throw new NotFoundError('This skill is currently not available');
     }
 
-    // Only show approved, verified, non-blocked, non-deleted skills
-    if (
-      skill.status !== 'approved' ||
-      skill.verificationStatus !== 'passed' ||
-      skill.isBlocked
-    ) {
-      throw new NotFoundError('Skill not available');
-    }
-
-    // Fetch provider
     const provider = await this.userRepository.findById(skill.providerId);
-    if (!provider) {
-      throw new NotFoundError('Provider not found');
-    }
+    if (!provider) throw new NotFoundError('Provider not found');
 
-    // Calculate provider stats from all their skills
+    // 1. Get Provider Statistics (Rating)
     const providerSkills = await this.skillRepository.findByProviderId(skill.providerId);
+    const validSkills = providerSkills.filter(s => s.status === 'approved' && !s.isBlocked);
 
-    // Filter for valid skills for stats
-    const validSkills = providerSkills.filter(s =>
-      s.status === 'approved' &&
-      s.verificationStatus === 'passed' &&
-      !s.isBlocked
-    );
+    const totalRating = validSkills.reduce((sum, s) => sum + (s.rating || 0), 0);
+    const avgRating = validSkills.length ? totalRating / validSkills.length : 0;
+    const reviewCount = validSkills.reduce((sum, s) => sum + (s.totalSessions || 0), 0); // Approx logic
 
-    const providerTotalRating = validSkills.reduce(
-      (sum, s) => sum + (s.rating || 0),
-      0
-    );
-    const providerAverageRating =
-      validSkills.length > 0 ? providerTotalRating / validSkills.length : 0;
-
-    const providerTotalSessions = validSkills.reduce(
-      (sum, s) => sum + (s.totalSessions || 0),
-      0
-    );
-
-    // Fetch availability
+    // 2. Fetch Availability & Booked Slots
     const availability = await this.availabilityRepository.findByProviderId(skill.providerId);
 
-    return this.skillDetailsMapper.toDTO(skill, provider, {
-      rating: Number(providerAverageRating.toFixed(1)),
-      reviewCount: providerTotalSessions
-    }, availability);
+    let enrichedAvailability = null;
+    if (availability) {
+      // Calculate date range (Next 30 days)
+      const today = new Date();
+      const nextMonth = new Date();
+      nextMonth.setDate(today.getDate() + 30);
+
+      // Fetch existing confirmed/pending bookings
+      const activeBookings = await this.bookingRepository.findInDateRange(
+        skill.providerId,
+        today,
+        nextMonth
+      );
+
+      // Map to simple objects for Frontend to gray out
+      // User Request: Only show bookings related to THIS skill.
+      const bookedSlots = activeBookings
+        .filter((b: any) => b.skillId === skillId)
+        .map((b: any) => ({
+          id: b.id,
+          title: b.skillTitle || 'Session',
+          date: b.preferredDate,
+          startTime: b.preferredTime,
+          endTime: this.calculateEndTime(b.preferredTime, b.duration || (skill.durationHours * 60))
+        }));
+
+      enrichedAvailability = {
+        ...availability,
+        bookedSlots // <-- Crucial for "Industrial" feel
+      };
+    }
+
+    return this.skillDetailsMapper.toDTO(
+      skill,
+      provider,
+      { rating: Number(avgRating.toFixed(1)), reviewCount },
+      enrichedAvailability
+    );
+  }
+
+  private calculateEndTime(startTime: string, durationMinutes: number): string {
+    const [h, m] = startTime.split(':').map(Number);
+    const totalMinutes = h * 60 + m + durationMinutes;
+    const endH = Math.floor(totalMinutes / 60);
+    const endM = totalMinutes % 60;
+    return `${endH.toString().padStart(2, '0')}:${endM.toString().padStart(2, '0')}`;
   }
 }

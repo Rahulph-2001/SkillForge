@@ -55,9 +55,10 @@ export class RegisterUseCase implements IRegisterUseCase {
       bonusCredits: env.DEFAULT_BONUS_CREDITS,
     });
 
-    // Generate and save OTP with temporary userId
+    
     const tempUserId = `temp_${Date.now()}_${rawEmail}`;
     const otpCode = this.otpService.generateOTP();
+    console.log(otpCode)
     
     const otp = new OTPToken({
       userId: tempUserId,

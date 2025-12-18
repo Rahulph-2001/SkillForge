@@ -19,6 +19,7 @@ import SessionManagementPage from '../pages/provider/SessionManagementPage';
 import EditProfilePage from '../pages/user/EditProfilePage';
 import MCQTestPage from '../pages/user/MCQTestPage';
 import { AvailabilitySettingsPage } from '../pages/provider/AvailabilitySettingsPage';
+import CommunitiesPage from '../pages/user/CommunitiesPage';
 import AdminLoginPage from '../pages/admin/AdminLoginPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import UserManagement from '../pages/admin/UserManagement';
@@ -112,6 +113,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
                             <SessionManagementPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/communities"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <CommunitiesPage />
                         </ProtectedRoute>
                     }
                 />

@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Calendar as CalendarIcon, Clock } from 'lucide-react';
+import { bookingService } from '../../services/bookingService';
 
 interface BookSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   skillTitle: string;
+  providerId: string;
   providerName: string;
   sessionCost: number;
   userBalance: number;
@@ -31,6 +33,7 @@ interface TimePickerState {
 export default function BookSessionModal({
   isOpen,
   onClose,
+  providerId,
   providerName,
   sessionCost,
   userBalance,
@@ -46,6 +49,21 @@ export default function BookSessionModal({
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<{ date?: string; time?: string }>({});
+  const [occupiedSlots, setOccupiedSlots] = useState<{ start: string; end: string }[]>([]);
+
+  useEffect(() => {
+    if (preferredDate && isOpen) {
+      // Fetch occupied slots for the selected date
+      // We pass the date as both start and end to get slots for that day
+      // Ideally backend handles timezone, but for now we pass simple date string
+      bookingService.getOccupiedSlots(providerId, preferredDate, preferredDate)
+        .then(slots => {
+          console.log('Booked slots:', slots);
+          setOccupiedSlots(slots);
+        })
+        .catch(err => console.error('Failed to fetch slots', err));
+    }
+  }, [preferredDate, isOpen, providerId]);
 
   if (!isOpen) return null;
 
@@ -85,27 +103,43 @@ export default function BookSessionModal({
       const minute = parseInt(time.minute);
       if (hour < 1 || hour > 12 || minute < 0 || minute > 59) {
         newErrors.time = 'Invalid time format';
-      } else if (availability && preferredDate) {
-        // Check time slots
+      } else if (preferredDate) {
         const formattedTime = formatTime24Hour();
         const selectedDateTime = new Date(`${preferredDate}T${formattedTime}`);
 
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const dayName = days[selectedDateTime.getDay()];
-        const daySchedule = availability.weeklySchedule[dayName];
+        // 1. Check availability (Weekly Schedule)
+        if (availability) {
+          const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          const dayName = days[selectedDateTime.getDay()];
+          const daySchedule = availability.weeklySchedule[dayName];
 
-        if (daySchedule && daySchedule.enabled && daySchedule.slots) {
-          const isTimeValid = daySchedule.slots.some((slot: any) => {
-            const slotStart = new Date(`${preferredDate}T${slot.start}`);
-            const slotEnd = new Date(`${preferredDate}T${slot.end}`);
-            // Assuming 1 hour duration for validation simplicity on frontend
-            // Ideally pass duration from props
-            const sessionEnd = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
-            return selectedDateTime >= slotStart && sessionEnd <= slotEnd;
+          if (daySchedule && daySchedule.enabled && daySchedule.slots) {
+            const isTimeValid = daySchedule.slots.some((slot: any) => {
+              const slotStart = new Date(`${preferredDate}T${slot.start}`);
+              const slotEnd = new Date(`${preferredDate}T${slot.end}`);
+              // Assuming 1 hour duration if not passed, but industrial needs strict check.
+              // We'll use 60 mins as default for validation
+              const sessionEnd = new Date(selectedDateTime.getTime() + 60 * 60 * 1000);
+              return selectedDateTime >= slotStart && sessionEnd <= slotEnd;
+            });
+
+            if (!isTimeValid) {
+              newErrors.time = 'Selected time is outside working hours';
+            }
+          }
+        }
+
+        // 2. Check Overlaps (Occupied Slots)
+        if (!newErrors.time && occupiedSlots.length > 0) {
+          const sessionEnd = new Date(selectedDateTime.getTime() + 60 * 60 * 1000); // 1 Hour default
+          const hasOverlap = occupiedSlots.some(slot => {
+            const bookedStart = new Date(slot.start);
+            const bookedEnd = new Date(slot.end);
+            return selectedDateTime < bookedEnd && sessionEnd > bookedStart;
           });
 
-          if (!isTimeValid) {
-            newErrors.time = 'Selected time is outside available slots';
+          if (hasOverlap) {
+            newErrors.time = 'This time slot is already booked';
           }
         }
       }

@@ -49,7 +49,7 @@ interface McqImportManagerProps {
   templateTitle: string;
 }
 
-const McqImportManager: React.FC<McqImportManagerProps> = ({ templateId, templateTitle }) => {
+const McqImportManager: React.FC<McqImportManagerProps> = ({ templateId }) => {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [jobs, setJobs] = useState<McqImportJobResponse[]>([]);

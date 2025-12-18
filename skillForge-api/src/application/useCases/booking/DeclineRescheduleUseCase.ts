@@ -3,16 +3,12 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
+import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 
 export interface DeclineRescheduleRequest {
   bookingId: string;
-  providerId: string;
+  userId: string; // Can be either provider or learner
   reason: string;
-}
-
-export interface DeclineRescheduleResponse {
-  success: boolean;
-  message: string;
 }
 
 @injectable()
@@ -22,49 +18,45 @@ export class DeclineRescheduleUseCase {
     private readonly bookingRepository: IBookingRepository
   ) { }
 
-  async execute(request: DeclineRescheduleRequest): Promise<DeclineRescheduleResponse> {
-    try {
-      // 1. Get the booking
-      const booking = await this.bookingRepository.findById(request.bookingId);
+  async execute(request: DeclineRescheduleRequest): Promise<void> {
+    // 1. Get the booking
+    const booking = await this.bookingRepository.findById(request.bookingId);
 
-      if (!booking) {
-        return {
-          success: false,
-          message: 'Booking not found',
-        };
-      }
-
-      // 2. Verify authorization (Must be the provider)
-      if (booking.providerId !== request.providerId) {
-        return {
-          success: false,
-          message: 'Unauthorized to decline this reschedule request',
-        };
-      }
-
-      // 3. Verify booking has a reschedule request
-      if (!booking.isRescheduleRequest()) {
-        return {
-          success: false,
-          message: 'No reschedule request found for this booking',
-        };
-      }
-
-      // 4. Decline the reschedule request (revert to confirmed status and clear reschedule info)
-      console.log('🔍 [DeclineRescheduleUseCase] Declining reschedule for booking:', request.bookingId, 'Reason:', request.reason);
-      await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
-
-      // TODO: Send notification to learner about declined reschedule
-
-      return {
-        success: true,
-        message: 'Reschedule request declined',
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        message: error.message || 'Failed to decline reschedule request',
-      };
+    if (!booking) {
+      throw new NotFoundError('Booking not found');
     }
+
+    // 2. Verify booking has a reschedule request
+    if (!booking.isRescheduleRequest()) {
+      throw new ValidationError('No reschedule request found for this booking');
+    }
+
+    // 3. Get reschedule info
+    const rescheduleInfo = booking.rescheduleInfo;
+    if (!rescheduleInfo) {
+      throw new ValidationError('Reschedule information not found');
+    }
+
+    // 4. Verify authorization - The person who DIDN'T request the reschedule should decline it
+    const isLearner = booking.learnerId === request.userId;
+    const isProvider = booking.providerId === request.userId;
+
+    if (!isLearner && !isProvider) {
+      throw new ForbiddenError('Unauthorized to decline this reschedule request');
+    }
+
+    // Check if the user is the one who should decline (not the one who requested)
+    if (rescheduleInfo.requestedBy === 'learner' && !isProvider) {
+      throw new ForbiddenError('Only the provider can decline a learner-initiated reschedule request');
+    }
+
+    if (rescheduleInfo.requestedBy === 'provider' && !isLearner) {
+      throw new ForbiddenError('Only the learner can decline a provider-initiated reschedule request');
+    }
+
+    // 5. Decline the reschedule request (revert to confirmed status and clear reschedule info)
+    await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
+
+    // TODO: Send notification to the requester about declined reschedule
   }
 }

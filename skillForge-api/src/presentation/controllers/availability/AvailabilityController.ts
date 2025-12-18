@@ -5,11 +5,14 @@ import { GetProviderAvailabilityUseCase } from '../../../application/useCases/av
 import { UpdateProviderAvailabilityUseCase } from '../../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 
+import { GetOccupiedSlotsUseCase } from '../../../application/useCases/availability/GetOccupiedSlotsUseCase';
+
 @injectable()
 export class AvailabilityController {
     constructor(
         @inject(TYPES.GetProviderAvailabilityUseCase) private readonly getUseCase: GetProviderAvailabilityUseCase,
         @inject(TYPES.UpdateProviderAvailabilityUseCase) private readonly updateUseCase: UpdateProviderAvailabilityUseCase,
+        @inject(TYPES.GetOccupiedSlotsUseCase) private readonly getOccupiedSlotsUseCase: GetOccupiedSlotsUseCase,
         @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
     ) { }
 
@@ -48,6 +51,32 @@ export class AvailabilityController {
         } catch (error) {
             console.error('Error updating availability:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to update availability');
+            res.status(response.statusCode).json(response.body);
+        }
+    }
+
+    async getOccupiedSlots(req: Request, res: Response): Promise<void> {
+        try {
+            const { providerId } = req.params;
+            const { start, end } = req.query;
+
+            if (!start || !end) {
+                const response = this.responseBuilder.error('BAD_REQUEST', 'Start and end dates are required');
+                res.status(response.statusCode).json(response.body);
+                return;
+            }
+
+            const slots = await this.getOccupiedSlotsUseCase.execute(
+                providerId,
+                start as string,
+                end as string
+            );
+
+            const response = this.responseBuilder.success(slots);
+            res.status(response.statusCode).json(response.body);
+        } catch (error) {
+            console.error('Error getting occupied slots:', error);
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve occupied slots');
             res.status(response.statusCode).json(response.body);
         }
     }

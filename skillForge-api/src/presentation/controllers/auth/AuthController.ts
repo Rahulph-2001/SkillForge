@@ -170,6 +170,7 @@ export class AuthController {
             role: user.role,
             credits: user.credits,
             avatar: user.avatarUrl, // Include avatar URL
+            subscriptionPlan: user.subscriptionPlan,
             verification: {
               email_verified: user.verification.email_verified,
             },

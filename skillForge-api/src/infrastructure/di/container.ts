@@ -103,7 +103,7 @@ import { AdminSkillController } from '../../presentation/controllers/admin/Admin
 import { MCQTestRoutes } from '../../presentation/routes/mcq/mcqTestRoutes';
 import { AdminSkillRoutes } from '../../presentation/routes/admin/adminSkillRoutes';
 import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
-import { BookingRepository } from '../repositories/BookingRepository';
+import { BookingRepository } from '../database/repositories/BookingRepository';
 import { CreateBookingUseCase } from '../../application/useCases/booking/CreateBookingUseCase';
 import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
 import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
@@ -155,6 +155,7 @@ import { IAvailabilityRepository } from '../../domain/repositories/IAvailability
 import { PrismaAvailabilityRepository } from '../database/repositories/PrismaAvailabilityRepository';
 import { GetProviderAvailabilityUseCase } from '../../application/useCases/availability/GetProviderAvailabilityUseCase';
 import { UpdateProviderAvailabilityUseCase } from '../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
+import { GetOccupiedSlotsUseCase } from '../../application/useCases/availability/GetOccupiedSlotsUseCase';
 import { AvailabilityController } from '../../presentation/controllers/availability/AvailabilityController';
 import { AvailabilityRoutes } from '../../presentation/routes/availability/availabilityRoutes';
 
@@ -323,5 +324,6 @@ container.bind<MCQImportRoutes>(TYPES.MCQImportRoutes).to(MCQImportRoutes);
 container.bind<IAvailabilityRepository>(TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository);
 container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);
 container.bind<UpdateProviderAvailabilityUseCase>(TYPES.UpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase);
+container.bind<GetOccupiedSlotsUseCase>(TYPES.GetOccupiedSlotsUseCase).to(GetOccupiedSlotsUseCase);
 container.bind<AvailabilityController>(TYPES.AvailabilityController).to(AvailabilityController);
 container.bind<AvailabilityRoutes>(TYPES.AvailabilityRoutes).to(AvailabilityRoutes);

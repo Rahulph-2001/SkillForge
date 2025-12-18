@@ -1,61 +1,49 @@
-
-
 import { Booking, BookingStatus } from '../entities/Booking';
 
 export interface IBookingRepository {
-  /**
-   * Find booking by ID
-   */
+  // Read Operations
   findById(bookingId: string): Promise<Booking | null>;
-
-  /**
-   * Find all bookings for a provider
-   */
   findByProviderId(providerId: string): Promise<Booking[]>;
-
-  /**
-   * Find all bookings for a learner
-   */
   findByLearnerId(learnerId: string): Promise<Booking[]>;
-
-  /**
-   * Find bookings by status for a provider
-   */
   findByProviderIdAndStatus(providerId: string, status: BookingStatus): Promise<Booking[]>;
-
-  /**
-   * Find bookings by status for a learner
-   */
   findByLearnerIdAndStatus(learnerId: string, status: BookingStatus): Promise<Booking[]>;
 
-  /**
-   * Create a new booking
-   */
+  // Availability & Overlap Checks
+  findOverlapping(providerId: string, date: Date, startTime: string, endTime: string): Promise<Booking[]>;
+  findInDateRange(providerId: string, startDate: Date, endDate: Date): Promise<Booking[]>;
+
+  // Production-Level Validation Methods
+  findOverlappingWithBuffer(
+    providerId: string,
+    date: Date,
+    startTime: string,
+    endTime: string,
+    bufferMinutes: number
+  ): Promise<Booking[]>;
+  countActiveBookingsByProviderAndDate(providerId: string, dateString: string): Promise<number>;
+  findDuplicateBooking(
+    learnerId: string,
+    skillId: string,
+    preferredDate: string,
+    preferredTime: string
+  ): Promise<Booking | null>;
+
+  // Transactional Operations (Industrial Level)
+  createTransactional(booking: Booking, sessionCost: number): Promise<Booking>;
+  confirmTransactional(bookingId: string): Promise<Booking>;
+  cancelTransactional(bookingId: string, cancelledBy: string, reason: string): Promise<Booking>;
+
+  // Standard CRUD
   create(booking: Booking): Promise<Booking>;
-
-  /**
-   * Update booking status
-   */
   updateStatus(bookingId: string, status: BookingStatus, reason?: string): Promise<Booking>;
-
-  /**
-   * Update booking with reschedule info
-   */
-  updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking>;
-
-  /**
-   * Cancel booking with metadata
-   */
-  cancel(bookingId: string, cancelledBy: string, reason: string): Promise<Booking>;
-
-  /**
-   * Delete booking (soft delete)
-   */
   delete(bookingId: string): Promise<void>;
 
-  /**
-   * Get booking statistics for a provider
-   */
+  // Rescheduling Logic
+  updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking>;
+  acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking>;
+  declineReschedule(bookingId: string, reason: string): Promise<Booking>;
+
+  // Analytics
   getProviderStats(providerId: string): Promise<{
     pending: number;
     confirmed: number;
@@ -63,14 +51,4 @@ export interface IBookingRepository {
     completed: number;
     cancelled: number;
   }>;
-
-  /**
-   * Accept reschedule request and update booking with new date/time
-   */
-  acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking>;
-
-  /**
-   * Decline reschedule request and revert to confirmed status
-   */
-  declineReschedule(bookingId: string, reason: string): Promise<Booking>;
 }

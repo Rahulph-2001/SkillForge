@@ -213,6 +213,115 @@ model SkillVerificationAttempt {
   @@map("skill_verification_attempts")
 }
 
+// Add to schema.prisma
+
+model Community {
+  id                  String    @id @default(uuid()) @db.Uuid
+  name                String    @db.VarChar(255)
+  description         String    @db.Text
+  category            String    @db.VarChar(100)
+  imageUrl            String?   @map("image_url") @db.Text
+  videoUrl            String?   @map("video_url") @db.Text
+  adminId             String    @map("admin_id") @db.Uuid
+  creditsCost         Int       @map("credits_cost") @default(0)
+  creditsPeriod       String    @map("credits_period") @default("30 days") @db.VarChar(50)
+  membersCount        Int       @map("members_count") @default(0)
+  
+  isActive            Boolean   @default(true) @map("is_active")
+  isDeleted           Boolean   @default(false) @map("is_deleted")
+  
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  admin               User      @relation("CommunityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  members             CommunityMember[]
+  messages            CommunityMessage[]
+  
+  @@index([adminId])
+  @@index([category])
+  @@index([isActive])
+  @@index([isDeleted])
+  @@map("communities")
+}
+
+model CommunityMember {
+  id                  String    @id @default(uuid()) @db.Uuid
+  communityId         String    @map("community_id") @db.Uuid
+  userId              String    @map("user_id") @db.Uuid
+  role                String    @default("member") @db.VarChar(50) // admin, member
+  
+  isAutoRenew         Boolean   @default(false) @map("is_auto_renew")
+  subscriptionEndsAt  DateTime? @map("subscription_ends_at") @db.Timestamptz(6)
+  
+  joinedAt            DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
+  leftAt              DateTime? @map("left_at") @db.Timestamptz(6)
+  isActive            Boolean   @default(true) @map("is_active")
+  
+  community           Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user                User      @relation("CommunityMemberships", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([communityId, userId])
+  @@index([communityId])
+  @@index([userId])
+  @@index([isActive])
+  @@map("community_members")
+}
+
+model CommunityMessage {
+  id                  String    @id @default(uuid()) @db.Uuid
+  communityId         String    @map("community_id") @db.Uuid
+  senderId            String    @map("sender_id") @db.Uuid
+  
+  content             String    @db.Text
+  type                String    @default("text") @db.VarChar(50) // text, image, video, file
+  fileUrl             String?   @map("file_url") @db.Text
+  fileName            String?   @map("file_name") @db.VarChar(255)
+  
+  isPinned            Boolean   @default(false) @map("is_pinned")
+  pinnedAt            DateTime? @map("pinned_at") @db.Timestamptz(6)
+  pinnedBy            String?   @map("pinned_by") @db.Uuid
+  
+  replyToId           String?   @map("reply_to_id") @db.Uuid
+  forwardedFromId     String?   @map("forwarded_from_id") @db.Uuid
+  
+  isDeleted           Boolean   @default(false) @map("is_deleted")
+  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz(6)
+  
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  community           Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  sender              User      @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo             CommunityMessage? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies             CommunityMessage[] @relation("MessageReplies")
+  reactions           MessageReaction[]
+  
+  @@index([communityId])
+  @@index([senderId])
+  @@index([isPinned])
+  @@index([createdAt])
+  @@index([replyToId])
+  @@map("community_messages")
+}
+
+model MessageReaction {
+  id                  String    @id @default(uuid()) @db.Uuid
+  messageId           String    @map("message_id") @db.Uuid
+  userId              String    @map("user_id") @db.Uuid
+  emoji               String    @db.VarChar(10)
+  
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  
+  message             CommunityMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user                User      @relation("MessageReactions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([messageId, userId, emoji])
+  @@index([messageId])
+  @@index([userId])
+  @@map("message_reactions")
+}
+
+
 model User {
   id                      String           @id @default(uuid()) @db.Uuid
   name                    String           @db.VarChar(255)
@@ -269,6 +378,11 @@ model User {
   bookingsAsLearner       Booking[] @relation("LearnerBookings")
   bookingsAsProvider      Booking[] @relation("ProviderBookings")
   availability            ProviderAvailability?
+
+  adminCommunities    Community[] @relation("CommunityAdmin")
+  communityMemberships CommunityMember[] @relation("CommunityMemberships")
+  sentMessages        CommunityMessage[] @relation("SentMessages")
+  messageReactions    MessageReaction[] @relation("MessageReactions")
 
   @@index([role])
   @@index([isActive])
@@ -344,6 +458,10 @@ model Booking {
   isDeleted         Boolean        @default(false) @map("is_deleted")
   createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  // Industrial Level Time Range (Exact overlap checks)
+  startAt           DateTime?      @map("start_at") @db.Timestamptz(6)
+  endAt             DateTime?      @map("end_at") @db.Timestamptz(6)
 
   // Relations
   learner           User           @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
@@ -356,6 +474,7 @@ model Booking {
   @@index([status])
   @@index([preferredDate])
   @@index([isDeleted])
+  @@index([providerId, startAt, endAt])
   @@map("bookings")
 }
 

@@ -25,6 +25,7 @@ export interface SkillDetail {
     weeklySchedule: Record<string, { enabled: boolean; slots: { start: string; end: string }[] }>;
     blockedDates: { date: Date; reason?: string }[];
     timezone: string;
+    bookedSlots?: { id: string; title: string; date: string; startTime: string; endTime: string }[];
   } | null;
 }
 

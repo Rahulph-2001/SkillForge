@@ -406,6 +406,23 @@ export default function SkillDetailPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Booked Slots Indicator */}
+                  {skill.availability.bookedSlots && skill.availability.bookedSlots.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <h4 className="text-sm font-bold text-gray-900 mb-2">Provider Schedule (Busy)</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {skill.availability.bookedSlots.slice(0, 5).map((slot, idx) => (
+                          <span key={idx} className="px-2 py-1 bg-red-50 text-red-600 text-xs font-medium rounded border border-red-100" title={`Busy with: ${slot.title}`}>
+                            {new Date(slot.date).toLocaleDateString()} {slot.startTime} ({slot.title})
+                          </span>
+                        ))}
+                        {skill.availability.bookedSlots.length > 5 && (
+                          <span className="px-2 py-1 text-gray-500 text-xs font-medium">+{skill.availability.bookedSlots.length - 5} more</span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -419,6 +436,7 @@ export default function SkillDetailPage() {
           isOpen={isBookingModalOpen}
           onClose={() => setIsBookingModalOpen(false)}
           skillTitle={skill.title}
+          providerId={skill.provider.id}
           providerName={skill.provider.name}
           sessionCost={skill.creditsPerHour * skill.durationHours}
           userBalance={user?.credits || 0}

@@ -6,6 +6,11 @@ import { IBookingMapper } from './interfaces/IBookingMapper';
 @injectable()
 export class BookingMapper implements IBookingMapper {
   toDTO(booking: Booking): BookingResponseDTO {
+    // Ensure booking has been persisted (has an ID)
+    if (!booking.id) {
+      throw new Error('Cannot map booking to DTO: booking has not been persisted');
+    }
+
     // Debug log to check what's being mapped
     if (!booking.providerName) {
       console.log('⚠️ [BookingMapper] Warning: providerName is missing for booking:', booking.id, 'Provider object:', booking.providerName);

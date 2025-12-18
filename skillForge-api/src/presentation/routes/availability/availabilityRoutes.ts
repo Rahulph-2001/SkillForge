@@ -20,5 +20,6 @@ export class AvailabilityRoutes {
 
         this.router.get('/', this.controller.getAvailability.bind(this.controller));
         this.router.put('/', this.controller.updateAvailability.bind(this.controller));
+        this.router.get('/:providerId/slots', this.controller.getOccupiedSlots.bind(this.controller));
     }
 }

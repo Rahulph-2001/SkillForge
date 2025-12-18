@@ -28,7 +28,7 @@ export class SessionManagementController {
     private readonly declineRescheduleUseCase: DeclineRescheduleUseCase,
     @inject(TYPES.GetProviderBookingsUseCase)
     private readonly getProviderBookingsUseCase: GetProviderBookingsUseCase
-  ) {}
+  ) { }
 
   /**
    * Get all bookings for provider with statistics
@@ -56,7 +56,7 @@ export class SessionManagementController {
         console.error(' [SessionManagementController] Use case failed:', result.message);
         return res.status(400).json(result);
       }
-      
+
       return res.status(200).json({
         success: true,
         data: {
@@ -110,7 +110,7 @@ export class SessionManagementController {
     }
   }
 
-  
+
   async declineBooking(req: Request, res: Response): Promise<Response> {
     try {
       const providerId = req.user?.id;
@@ -124,30 +124,27 @@ export class SessionManagementController {
         });
       }
 
-      const result = await this.declineBookingUseCase.execute({
+      await this.declineBookingUseCase.execute({
         bookingId,
         providerId,
         reason,
       });
 
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
       return res.status(200).json({
         success: true,
-        message: result.message,
+        message: 'Booking declined successfully',
       });
     } catch (error: any) {
-      console.error(' [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      console.error('❌ [SessionManagementController] Error:', error);
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to decline booking',
+        message: error.message || 'Failed to decline booking',
       });
     }
   }
 
- 
+
   async cancelBooking(req: Request, res: Response): Promise<Response> {
     try {
       const userId = req.user?.id;
@@ -205,7 +202,7 @@ export class SessionManagementController {
         });
       }
 
-      const result = await this.rescheduleBookingUseCase.execute({
+      await this.rescheduleBookingUseCase.execute({
         bookingId,
         userId,
         newDate,
@@ -213,19 +210,16 @@ export class SessionManagementController {
         reason,
       });
 
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
       return res.status(200).json({
         success: true,
-        message: result.message,
+        message: 'Reschedule request submitted successfully. Waiting for approval.',
       });
     } catch (error: any) {
       console.error('❌ [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to request reschedule',
+        message: error.message || 'Failed to request reschedule',
       });
     }
   }
@@ -236,34 +230,31 @@ export class SessionManagementController {
    */
   async acceptReschedule(req: Request, res: Response): Promise<Response> {
     try {
-      const providerId = req.user?.id;
+      const userId = req.user?.id;
       const { bookingId } = req.params;
 
-      if (!providerId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: 'Unauthorized',
         });
       }
 
-      const result = await this.acceptRescheduleUseCase.execute({
+      await this.acceptRescheduleUseCase.execute({
         bookingId,
-        providerId,
+        userId,
       });
-
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
 
       return res.status(200).json({
         success: true,
-        message: result.message,
+        message: 'Reschedule request accepted successfully',
       });
     } catch (error: any) {
       console.error('❌ [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to accept reschedule',
+        message: error.message || 'Failed to accept reschedule',
       });
     }
   }
@@ -274,11 +265,11 @@ export class SessionManagementController {
    */
   async declineReschedule(req: Request, res: Response): Promise<Response> {
     try {
-      const providerId = req.user?.id;
+      const userId = req.user?.id;
       const { bookingId } = req.params;
       const { reason } = req.body;
 
-      if (!providerId) {
+      if (!userId) {
         return res.status(401).json({
           success: false,
           message: 'Unauthorized',
@@ -292,25 +283,22 @@ export class SessionManagementController {
         });
       }
 
-      const result = await this.declineRescheduleUseCase.execute({
+      await this.declineRescheduleUseCase.execute({
         bookingId,
-        providerId,
+        userId,
         reason,
       });
 
-      if (!result.success) {
-        return res.status(400).json(result);
-      }
-
       return res.status(200).json({
         success: true,
-        message: result.message,
+        message: 'Reschedule request declined',
       });
     } catch (error: any) {
       console.error('❌ [SessionManagementController] Error:', error);
-      return res.status(500).json({
+      const statusCode = error.statusCode || 500;
+      return res.status(statusCode).json({
         success: false,
-        message: 'Failed to decline reschedule',
+        message: error.message || 'Failed to decline reschedule',
       });
     }
   }

@@ -40,6 +40,7 @@ export interface LoginResponse {
       role: string;
       credits: number;
       avatar?: string | null;
+      subscriptionPlan?: string;
       verification: {
         email_verified: boolean;
       };
@@ -64,6 +65,7 @@ export interface VerifyOtpResponse {
       role: string;
       credits: number;
       avatar?: string | null;
+      subscriptionPlan?: string;
       verification: {
         email_verified: boolean;
       };

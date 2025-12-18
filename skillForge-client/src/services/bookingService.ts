@@ -73,4 +73,14 @@ export const bookingService = {
     const response = await api.get('/bookings/upcoming');
     return response.data.data;
   },
+
+  /**
+   * Get occupied slots for a provider on a specific date (range)
+   */
+  async getOccupiedSlots(providerId: string, startDate: string, endDate: string): Promise<{ start: string; end: string }[]> {
+    const response = await api.get(`/availability/${providerId}/slots`, {
+      params: { start: startDate, end: endDate }
+    });
+    return response.data.data;
+  }
 };

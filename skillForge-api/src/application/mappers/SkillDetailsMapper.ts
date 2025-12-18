@@ -29,7 +29,8 @@ export class SkillDetailsMapper implements ISkillDetailsMapper {
       availability: availability ? {
         weeklySchedule: availability.weeklySchedule,
         blockedDates: availability.blockedDates,
-        timezone: availability.timezone
+        timezone: availability.timezone,
+        bookedSlots: availability.bookedSlots // Map this field!
       } : null
     };
   }
