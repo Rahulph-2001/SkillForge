@@ -13,6 +13,8 @@ import { IPinMessageUseCase } from '../../../application/useCases/community/PinM
 import { IUnpinMessageUseCase } from '../../../application/useCases/community/UnpinMessageUseCase';
 import { IDeleteMessageUseCase } from '../../../application/useCases/community/DeleteMessageUseCase';
 import { IRemoveCommunityMemberUseCase } from '../../../application/useCases/community/RemoveCommunityMemberUseCase';
+import { IAddReactionUseCase } from '../../../application/useCases/community/AddReactionUseCase';
+import { IRemoveReactionUseCase } from '../../../application/useCases/community/RemoveReactionUseCase';
 import { ICommunityMapper } from '../../../application/mappers/interfaces/ICommunityMapper';
 import { ICommunityMessageMapper } from '../../../application/mappers/interfaces/ICommunityMessageMapper';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
@@ -38,6 +40,8 @@ export class CommunityController {
     @inject(TYPES.UnpinMessageUseCase) private readonly unpinMessageUseCase: IUnpinMessageUseCase,
     @inject(TYPES.DeleteMessageUseCase) private readonly deleteMessageUseCase: IDeleteMessageUseCase,
     @inject(TYPES.RemoveCommunityMemberUseCase) private readonly removeCommunityMemberUseCase: IRemoveCommunityMemberUseCase,
+    @inject(TYPES.AddReactionUseCase) private readonly addReactionUseCase: IAddReactionUseCase,
+    @inject(TYPES.RemoveReactionUseCase) private readonly removeReactionUseCase: IRemoveReactionUseCase,
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper,
     @inject(TYPES.ICommunityMessageMapper) private readonly communityMessageMapper: ICommunityMessageMapper,
@@ -116,7 +120,7 @@ export class CommunityController {
       const { category } = req.query;
       const communities = await this.getCommunitiesUseCase.execute({
         category: category as string
-      });
+      }, userId);
       const response = this.responseBuilder.success(
         this.communityMapper.toDTOList(communities, userId),
         'Communities retrieved successfully',
@@ -131,7 +135,7 @@ export class CommunityController {
     try {
       const userId = (req as any).user?.userId;
       const { id } = req.params;
-      const community = await this.getCommunityDetailsUseCase.execute(id);
+      const community = await this.getCommunityDetailsUseCase.execute(id, userId);
       const response = this.responseBuilder.success(
         this.communityMapper.toDTO(community, userId),
         'Community details retrieved successfully',
@@ -298,6 +302,43 @@ export class CommunityController {
           offset,
         },
         'Members retrieved successfully',
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public addReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = (req as any).user.userId;
+      const { messageId } = req.params;
+      const { emoji } = req.body;
+
+      const reaction = await this.addReactionUseCase.execute(userId, messageId, emoji);
+
+      const response = this.responseBuilder.success(
+        reaction.toJSON(),
+        'Reaction added successfully',
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public removeReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = (req as any).user.userId;
+      const { messageId, emoji } = req.params;
+
+      await this.removeReactionUseCase.execute(userId, messageId, emoji);
+
+      const response = this.responseBuilder.success(
+        { messageId, emoji },
+        'Reaction removed successfully',
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

@@ -117,13 +117,13 @@ export default function MemberListModal({
                                         <div className="flex items-center gap-4">
                                             {/* Avatar */}
                                             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
-                                                {(member.name ? member.name.charAt(0) : 'U').toUpperCase()}
+                                                {(member.userName ? member.userName.charAt(0) : 'U').toUpperCase()}
                                             </div>
 
                                             {/* Info */}
                                             <div>
                                                 <p className="font-semibold text-gray-900">
-                                                    {member.name || 'Unknown User'}
+                                                    {member.userName || 'Unknown User'}
                                                 </p>
                                                 <div className="flex items-center gap-3 text-sm text-gray-500">
                                                     <span className="capitalize">{member.role}</span>
@@ -167,7 +167,7 @@ export default function MemberListModal({
             <ConfirmModal
                 isOpen={showRemoveConfirm}
                 title="Remove Member"
-                message={`Are you sure you want to remove ${selectedMember?.name} from the community?`}
+                message={`Are you sure you want to remove ${selectedMember?.userName} from the community?`}
                 type="danger"
                 onConfirm={handleRemoveConfirm}
                 onCancel={() => setShowRemoveConfirm(false)}

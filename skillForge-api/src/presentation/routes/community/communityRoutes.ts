@@ -10,6 +10,7 @@ import {
   updateCommunitySchema,
   sendMessageSchema
 } from '../../../application/validators/community/CommunityValidationSchemas';
+import { optionalAuthMiddleware } from '../../middlewares/optionalAuthMiddleware';
 
 @injectable()
 export class CommunityRoutes {
@@ -41,11 +42,13 @@ export class CommunityRoutes {
 
     this.router.get(
       '/',
+      optionalAuthMiddleware,
       this.communityController.getCommunities
     );
 
     this.router.get(
       '/:id',
+      optionalAuthMiddleware,
       this.communityController.getCommunityDetails
     );
 
@@ -91,6 +94,19 @@ export class CommunityRoutes {
       '/messages/:messageId',
       authMiddleware,
       this.communityController.deleteMessage
+    );
+
+    // Reaction routes
+    this.router.post(
+      '/messages/:messageId/reactions',
+      authMiddleware,
+      this.communityController.addReaction
+    );
+
+    this.router.delete(
+      '/messages/:messageId/reactions/:emoji',
+      authMiddleware,
+      this.communityController.removeReaction
     );
 
     // New route for removing members

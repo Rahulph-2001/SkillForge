@@ -106,6 +106,7 @@ export class CommunityRepository implements ICommunityRepository {
   public async findMembersByCommunityId(communityId: string): Promise<CommunityMember[]> {
     const members = await this.prisma.communityMember.findMany({
       where: { communityId, isActive: true },
+      include: { user: true },
       orderBy: { joinedAt: 'asc' },
     });
     return members.map(m => CommunityMember.fromDatabaseRow(m));
@@ -115,6 +116,12 @@ export class CommunityRepository implements ICommunityRepository {
       where: { userId, communityId },
     });
     return member ? CommunityMember.fromDatabaseRow(member) : null;
+  }
+  public async findMembershipsByUserId(userId: string): Promise<CommunityMember[]> {
+    const members = await this.prisma.communityMember.findMany({
+      where: { userId, isActive: true },
+    });
+    return members.map(m => CommunityMember.fromDatabaseRow(m));
   }
   public async updateMember(member: CommunityMember): Promise<CommunityMember> {
     const data = member.toJSON();

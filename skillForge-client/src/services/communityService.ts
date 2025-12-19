@@ -2,6 +2,12 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
 
+// Configure axios defaults for this service
+const api = axios.create({
+    baseURL: API_URL,
+    withCredentials: true,
+});
+
 // Community interfaces
 export interface Community {
     id: string;
@@ -18,6 +24,7 @@ export interface Community {
     createdAt: Date;
     updatedAt: Date;
     isAdmin?: boolean;
+    isJoined?: boolean;
 }
 
 export interface CommunityMember {
@@ -46,17 +53,21 @@ export interface CommunityMessage {
     replyToId?: string | null;
     forwardedFromId?: string | null;
     replyTo?: CommunityMessage;
+    reactions?: Array<{
+        emoji: string;
+        count: number;
+        users: Array<{ id: string; name: string; avatar?: string }>;
+        hasReacted: boolean;
+    }>;
     createdAt: Date;
     updatedAt: Date;
 }
 
 // Get all communities
 export const getCommunities = async (category?: string): Promise<Community[]> => {
-    const token = localStorage.getItem('token');
     const params = category ? { category } : {};
 
-    const response = await axios.get(`${API_URL}/communities`, {
-        headers: { Authorization: `Bearer ${token}` },
+    const response = await api.get('/communities', {
         params,
     });
 
@@ -65,11 +76,7 @@ export const getCommunities = async (category?: string): Promise<Community[]> =>
 
 // Get community details
 export const getCommunityDetails = async (id: string): Promise<Community> => {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.get(`${API_URL}/communities/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await api.get(`/communities/${id}`);
 
     return response.data.data;
 };
@@ -83,7 +90,6 @@ export const createCommunity = async (data: {
     creditsPeriod?: string;
     image?: File;
 }): Promise<Community> => {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
 
     formData.append('name', data.name);
@@ -93,9 +99,8 @@ export const createCommunity = async (data: {
     if (data.creditsPeriod) formData.append('creditsPeriod', data.creditsPeriod);
     if (data.image) formData.append('image', data.image);
 
-    const response = await axios.post(`${API_URL}/communities`, formData, {
+    const response = await api.post('/communities', formData, {
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
         },
     });
@@ -115,7 +120,6 @@ export const updateCommunity = async (
         image?: File;
     }
 ): Promise<Community> => {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
 
     if (data.name) formData.append('name', data.name);
@@ -125,9 +129,8 @@ export const updateCommunity = async (
     if (data.creditsPeriod) formData.append('creditsPeriod', data.creditsPeriod);
     if (data.image) formData.append('image', data.image);
 
-    const response = await axios.put(`${API_URL}/communities/${id}`, formData, {
+    const response = await api.put(`/communities/${id}`, formData, {
         headers: {
-            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
         },
     });
@@ -137,28 +140,12 @@ export const updateCommunity = async (
 
 // Join community
 export const joinCommunity = async (id: string): Promise<void> => {
-    const token = localStorage.getItem('token');
-
-    await axios.post(
-        `${API_URL}/communities/${id}/join`,
-        {},
-        {
-            headers: { Authorization: `Bearer ${token}` },
-        }
-    );
+    await api.post(`/communities/${id}/join`);
 };
 
 // Leave community
 export const leaveCommunity = async (id: string): Promise<void> => {
-    const token = localStorage.getItem('token');
-
-    await axios.post(
-        `${API_URL}/communities/${id}/leave`,
-        {},
-        {
-            headers: { Authorization: `Bearer ${token}` },
-        }
-    );
+    await api.post(`/communities/${id}/leave`);
 };
 
 // Get community members
@@ -167,10 +154,7 @@ export const getCommunityMembers = async (
     limit = 50,
     offset = 0
 ): Promise<{ members: CommunityMember[]; total: number }> => {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.get(`${API_URL}/communities/${id}/members`, {
-        headers: { Authorization: `Bearer ${token}` },
+    const response = await api.get(`/communities/${id}/members`, {
         params: { limit, offset },
     });
 
@@ -182,11 +166,7 @@ export const removeCommunityMember = async (
     communityId: string,
     memberId: string
 ): Promise<void> => {
-    const token = localStorage.getItem('token');
-
-    await axios.delete(`${API_URL}/communities/${communityId}/members/${memberId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+    await api.delete(`/communities/${communityId}/members/${memberId}`);
 };
 
 // Send message
@@ -198,7 +178,6 @@ export const sendMessage = async (data: {
     forwardedFromId?: string;
     file?: File;
 }): Promise<CommunityMessage> => {
-    const token = localStorage.getItem('token');
     const formData = new FormData();
 
     formData.append('communityId', data.communityId);
@@ -208,12 +187,11 @@ export const sendMessage = async (data: {
     if (data.forwardedFromId) formData.append('forwardedFromId', data.forwardedFromId);
     if (data.file) formData.append('file', data.file);
 
-    const response = await axios.post(
-        `${API_URL}/communities/${data.communityId}/messages`,
+    const response = await api.post(
+        `/communities/${data.communityId}/messages`,
         formData,
         {
             headers: {
-                Authorization: `Bearer ${token}`,
                 'Content-Type': 'multipart/form-data',
             },
         }
@@ -228,10 +206,7 @@ export const getMessages = async (
     limit = 50,
     offset = 0
 ): Promise<CommunityMessage[]> => {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.get(`${API_URL}/communities/${communityId}/messages`, {
-        headers: { Authorization: `Bearer ${token}` },
+    const response = await api.get(`/communities/${communityId}/messages`, {
         params: { limit, offset },
     });
 
@@ -240,39 +215,29 @@ export const getMessages = async (
 
 // Pin message (admin only)
 export const pinMessage = async (messageId: string): Promise<CommunityMessage> => {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.post(
-        `${API_URL}/communities/messages/${messageId}/pin`,
-        {},
-        {
-            headers: { Authorization: `Bearer ${token}` },
-        }
-    );
+    const response = await api.post(`/communities/messages/${messageId}/pin`);
 
     return response.data.data;
 };
 
 // Unpin message (admin only)
 export const unpinMessage = async (messageId: string): Promise<CommunityMessage> => {
-    const token = localStorage.getItem('token');
-
-    const response = await axios.post(
-        `${API_URL}/communities/messages/${messageId}/unpin`,
-        {},
-        {
-            headers: { Authorization: `Bearer ${token}` },
-        }
-    );
+    const response = await api.post(`/communities/messages/${messageId}/unpin`);
 
     return response.data.data;
 };
 
 // Delete message
 export const deleteMessage = async (messageId: string): Promise<void> => {
-    const token = localStorage.getItem('token');
+    await api.delete(`/communities/messages/${messageId}`);
+};
 
-    await axios.delete(`${API_URL}/communities/messages/${messageId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+// Add reaction
+export const addReaction = async (messageId: string, emoji: string): Promise<void> => {
+    await api.post(`/communities/messages/${messageId}/reactions`, { emoji });
+};
+
+// Remove reaction
+export const removeReaction = async (messageId: string, emoji: string): Promise<void> => {
+    await api.delete(`/communities/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
 };

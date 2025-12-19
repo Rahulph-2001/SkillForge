@@ -7,6 +7,7 @@ import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
+import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
 export interface ISendMessageUseCase {
   execute(
     userId: string,
@@ -20,8 +21,10 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     @inject(TYPES.ICommunityMessageRepository) private readonly messageRepository: ICommunityMessageRepository,
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IS3Service) private readonly s3Service: IS3Service,
-    @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService
-  ) {}
+    @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService,
+    @inject(TYPES.ICommunityMessageMapper) private readonly messageMapper: ICommunityMessageMapper
+  ) { }
+
   public async execute(
     userId: string,
     dto: SendMessageDTO,
@@ -31,14 +34,17 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     if (!member || !member.isActive) {
       throw new ForbiddenError('You are not a member of this community');
     }
+
     let fileUrl: string | null = null;
     let fileName: string | null = null;
     let messageType = dto.type || 'text';
+
     if (file) {
       const timestamp = Date.now();
       const key = `communities/${dto.communityId}/files/${userId}/${timestamp}-${file.originalname}`;
       fileUrl = await this.s3Service.uploadFile(file.buffer, key, file.mimetype);
       fileName = file.originalname;
+
       if (file.mimetype.startsWith('image/')) {
         messageType = 'image';
       } else if (file.mimetype.startsWith('video/')) {
@@ -47,6 +53,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
         messageType = 'file';
       }
     }
+
     const message = new CommunityMessage({
       communityId: dto.communityId,
       senderId: userId,
@@ -57,13 +64,17 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       replyToId: dto.replyToId,
       forwardedFromId: dto.forwardedFromId,
     });
+
     const createdMessage = await this.messageRepository.create(message);
+    const messageDTO = await this.messageMapper.toDTO(createdMessage);
+
     // Broadcast via WebSocket
     this.webSocketService.sendToCommunity(dto.communityId, {
       type: 'message',
       communityId: dto.communityId,
-      data: createdMessage.toJSON(),
+      data: messageDTO,
     });
+
     return createdMessage;
   }
 }

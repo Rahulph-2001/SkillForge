@@ -4,6 +4,8 @@ import { App } from './presentation/server';
 import { Database } from './infrastructure/database/Database';
 import { RedisService } from './infrastructure/services/RedisService';
 import { env } from './config/env';
+import { Server } from 'socket.io';
+import { IWebSocketService } from './domain/services/IWebSocketService';
 
 const port = env.PORT;
 const appInstance = container.get<App>(TYPES.App).getInstance();
@@ -26,6 +28,24 @@ async function startServer() {
     const server = appInstance.listen(port, () => {
       console.log(`Server running on port ${port} in ${env.NODE_ENV} mode`);
     });
+
+    // Initialize Socket.IO
+    const io = new Server(server, {
+      cors: {
+        origin: [
+          env.FRONTEND_URL,
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3002',
+          'http://localhost:5173',
+          'http://localhost:5174'
+        ],
+        credentials: true
+      }
+    });
+
+    const webSocketService = container.get<IWebSocketService>(TYPES.IWebSocketService);
+    webSocketService.initialize(io);
 
     // Handle port already in use error
     server.on('error', (error: NodeJS.ErrnoException) => {

@@ -28,6 +28,9 @@ export class CommunityMessage {
   private _deletedAt: Date | null;
   private _createdAt: Date;
   private _updatedAt: Date;
+  private _senderName: string;
+  private _senderAvatar: string | null;
+  private _reactions?: any[];
   constructor(data: CreateCommunityMessageData) {
     this._id = data.id || uuidv4();
     this._communityId = data.communityId;
@@ -46,6 +49,9 @@ export class CommunityMessage {
     const now = new Date();
     this._createdAt = now;
     this._updatedAt = now;
+    // Initialize sender fields with defaults (will be populated from DB row)
+    this._senderName = 'Unknown User';
+    this._senderAvatar = null;
   }
   // Getters
   get id(): string { return this._id; }
@@ -64,6 +70,8 @@ export class CommunityMessage {
   get deletedAt(): Date | null { return this._deletedAt; }
   get createdAt(): Date { return this._createdAt; }
   get updatedAt(): Date { return this._updatedAt; }
+  get senderName(): string { return this._senderName; }
+  get senderAvatar(): string | null { return this._senderAvatar; }
   public pin(userId: string): void {
     this._isPinned = true;
     this._pinnedAt = new Date();
@@ -99,6 +107,9 @@ export class CommunityMessage {
       deleted_at: this._deletedAt,
       created_at: this._createdAt,
       updated_at: this._updatedAt,
+      sender_name: this._senderName,
+      sender_avatar: this._senderAvatar,
+      reactions: this._reactions || [],
     };
   }
   public static fromDatabaseRow(row: Record<string, unknown>): CommunityMessage {
@@ -121,6 +132,40 @@ export class CommunityMessage {
     messageAny._deletedAt = (row.deleted_at || row.deletedAt) as Date | null;
     messageAny._createdAt = (row.created_at || row.createdAt) as Date || new Date();
     messageAny._updatedAt = (row.updated_at || row.updatedAt) as Date || new Date();
+    // Extract sender details from joined user relation
+    messageAny._senderName = (row.sender as any)?.name || 'Unknown User';
+    messageAny._senderAvatar = (row.sender as any)?.avatar || (row.sender as any)?.avatarUrl || null;
+
+    // Map reactions if available
+    if (row.reactions && Array.isArray(row.reactions)) {
+      const reactionsArray = row.reactions as any[];
+      const grouped = new Map<string, { emoji: string; users: any[]; count: number; hasReacted: boolean }>();
+
+      reactionsArray.forEach((reaction: any) => {
+        const emoji = reaction.emoji;
+        if (!grouped.has(emoji)) {
+          grouped.set(emoji, {
+            emoji,
+            users: [],
+            count: 0,
+            hasReacted: false,
+          });
+        }
+
+        const group = grouped.get(emoji)!;
+        group.users.push({
+          id: reaction.userId,
+          name: reaction.user?.name || 'Unknown',
+          avatar: reaction.user?.avatarUrl || null,
+        });
+        group.count++;
+      });
+
+      messageAny._reactions = Array.from(grouped.values());
+    } else {
+      messageAny._reactions = [];
+    }
+
     return message;
   }
 }

@@ -14,6 +14,7 @@ export interface MessageResponseDTO {
   replyToId: string | null;
   forwardedFromId: string | null;
   replyTo?: MessageResponseDTO;
+  reactions?: any[];
   createdAt: Date;
   updatedAt: Date;
 }

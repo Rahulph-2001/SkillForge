@@ -20,6 +20,7 @@ import EditProfilePage from '../pages/user/EditProfilePage';
 import MCQTestPage from '../pages/user/MCQTestPage';
 import { AvailabilitySettingsPage } from '../pages/provider/AvailabilitySettingsPage';
 import CommunitiesPage from '../pages/user/CommunitiesPage';
+import CommunityDetailsPage from '../pages/user/CommunityDetailsPage';
 import AdminLoginPage from '../pages/admin/AdminLoginPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import UserManagement from '../pages/admin/UserManagement';
@@ -121,6 +122,34 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
                             <CommunitiesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/communities/:id"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <CommunityDetailsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/communities/:id/settings"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            {/* Reuse Details page or Create a standalone settings page if needed. 
+                                For now, let's assume Settings is a modal or separate page. 
+                                Since I haven't implemented a specific settings page wrapper, 
+                                I'll map standard details or a placeholder. 
+                                Actually, checking my previous task, I saw CommunityDetails handles settings via modal or separate view.
+                                CommunityDetails.tsx has a navigate to /settings.
+                                I'll leave this for now or map to details if settings is inside details.
+                                CommunityDetails has: <button onClick={() => navigate(`/communities/${id}/settings`)} ...
+                                I'll add a route for it if I have EditCommunityModal used as a page?
+                                No, let's just add the details page for now. 
+                                Wait, I have EditCommunityModal.tsx in components.
+                            */}
+                            <CommunityDetailsPage />
                         </ProtectedRoute>
                     }
                 />

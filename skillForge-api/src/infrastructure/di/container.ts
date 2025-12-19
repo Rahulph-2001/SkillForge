@@ -182,6 +182,10 @@ import { IPinMessageUseCase, PinMessageUseCase } from '../../application/useCase
 import { IUnpinMessageUseCase, UnpinMessageUseCase } from '../../application/useCases/community/UnpinMessageUseCase';
 import { IDeleteMessageUseCase, DeleteMessageUseCase } from '../../application/useCases/community/DeleteMessageUseCase';
 import { IRemoveCommunityMemberUseCase, RemoveCommunityMemberUseCase } from '../../application/useCases/community/RemoveCommunityMemberUseCase';
+import { IAddReactionUseCase, AddReactionUseCase } from '../../application/useCases/community/AddReactionUseCase';
+import { IRemoveReactionUseCase, RemoveReactionUseCase } from '../../application/useCases/community/RemoveReactionUseCase';
+import { IMessageReactionRepository } from '../../domain/repositories/IMessageReactionRepository';
+import { MessageReactionRepository } from '../database/repositories/MessageReactionRepository';
 import { CommunityController } from '../../presentation/controllers/community/CommunityController';
 import { CommunityRoutes } from '../../presentation/routes/community/communityRoutes';
 
@@ -374,6 +378,9 @@ container.bind<IPinMessageUseCase>(TYPES.PinMessageUseCase).to(PinMessageUseCase
 container.bind<IUnpinMessageUseCase>(TYPES.UnpinMessageUseCase).to(UnpinMessageUseCase);
 container.bind<IDeleteMessageUseCase>(TYPES.DeleteMessageUseCase).to(DeleteMessageUseCase);
 container.bind<IRemoveCommunityMemberUseCase>(TYPES.RemoveCommunityMemberUseCase).to(RemoveCommunityMemberUseCase);
+container.bind<IMessageReactionRepository>(TYPES.IMessageReactionRepository).to(MessageReactionRepository);
+container.bind<IAddReactionUseCase>(TYPES.AddReactionUseCase).to(AddReactionUseCase);
+container.bind<IRemoveReactionUseCase>(TYPES.RemoveReactionUseCase).to(RemoveReactionUseCase);
 
 // Community Controller
 container.bind<CommunityController>(TYPES.CommunityController).to(CommunityController);

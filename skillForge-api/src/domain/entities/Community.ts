@@ -110,6 +110,16 @@ export class Community {
     }
     this._updatedAt = new Date();
   }
+  private _isJoined?: boolean;
+  private _isAdmin?: boolean;
+
+  // ... getters and setters
+  get isJoined(): boolean | undefined { return this._isJoined; }
+  set isJoined(value: boolean | undefined) { this._isJoined = value; }
+
+  get isAdmin(): boolean | undefined { return this._isAdmin; }
+  set isAdmin(value: boolean | undefined) { this._isAdmin = value; }
+
   public toJSON(): Record<string, unknown> {
     return {
       id: this._id,
@@ -126,6 +136,8 @@ export class Community {
       is_deleted: this._isDeleted,
       created_at: this._createdAt,
       updated_at: this._updatedAt,
+      isJoined: this._isJoined,
+      isAdmin: this._isAdmin,
     };
   }
   public static fromDatabaseRow(row: Record<string, unknown>): Community {
@@ -146,6 +158,9 @@ export class Community {
     communityAny._isDeleted = (row.is_deleted || row.isDeleted) as boolean || false;
     communityAny._createdAt = (row.created_at || row.createdAt) as Date || new Date();
     communityAny._updatedAt = (row.updated_at || row.updatedAt) as Date || new Date();
+    // Assuming these are not in DB row but might be preserved if re-hydrating
+    communityAny._isJoined = row.isJoined as boolean | undefined;
+    communityAny._isAdmin = row.isAdmin as boolean | undefined;
     return community;
   }
 }

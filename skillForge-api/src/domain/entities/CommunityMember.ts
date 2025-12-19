@@ -18,6 +18,9 @@ export class CommunityMember {
   private _joinedAt: Date;
   private _leftAt: Date | null;
   private _isActive: boolean;
+  private _userName?: string;
+  private _userAvatar?: string;
+
   constructor(data: CreateCommunityMemberData) {
     this._id = data.id || uuidv4();
     this._communityId = data.communityId;
@@ -39,6 +42,9 @@ export class CommunityMember {
   get joinedAt(): Date { return this._joinedAt; }
   get leftAt(): Date | null { return this._leftAt; }
   get isActive(): boolean { return this._isActive; }
+  get userName(): string | undefined { return this._userName; }
+  get userAvatar(): string | undefined { return this._userAvatar; }
+
   public toggleAutoRenew(): void {
     this._isAutoRenew = !this._isAutoRenew;
   }
@@ -52,17 +58,19 @@ export class CommunityMember {
   public toJSON(): Record<string, unknown> {
     return {
       id: this._id,
-      community_id: this._communityId,
-      user_id: this._userId,
+      communityId: this._communityId,
+      userId: this._userId,
       role: this._role,
-      is_auto_renew: this._isAutoRenew,
-      subscription_ends_at: this._subscriptionEndsAt,
-      joined_at: this._joinedAt,
-      left_at: this._leftAt,
-      is_active: this._isActive,
+      isAutoRenew: this._isAutoRenew,
+      subscriptionEndsAt: this._subscriptionEndsAt,
+      joinedAt: this._joinedAt,
+      leftAt: this._leftAt,
+      isActive: this._isActive,
+      userName: this._userName,
+      userAvatar: this._userAvatar,
     };
   }
-  public static fromDatabaseRow(row: Record<string, unknown>): CommunityMember {
+  public static fromDatabaseRow(row: Record<string, any>): CommunityMember {
     const member = new CommunityMember({
       id: row.id as string,
       communityId: (row.community_id || row.communityId) as string,
@@ -75,6 +83,13 @@ export class CommunityMember {
     memberAny._joinedAt = (row.joined_at || row.joinedAt) as Date || new Date();
     memberAny._leftAt = (row.left_at || row.leftAt) as Date | null;
     memberAny._isActive = (row.is_active !== undefined ? row.is_active : row.isActive) as boolean;
+
+    // Map user details if available
+    if (row.user) {
+      memberAny._userName = row.user.name || null;
+      memberAny._userAvatar = row.user.avatarUrl || null;
+    }
+
     return member;
   }
 }

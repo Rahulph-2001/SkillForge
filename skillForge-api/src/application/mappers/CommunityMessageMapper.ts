@@ -10,7 +10,7 @@ export class CommunityMessageMapper implements ICommunityMessageMapper {
   constructor(
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.ICommunityMessageRepository) private readonly messageRepository: ICommunityMessageRepository
-  ) {}
+  ) { }
   public async toDTO(message: CommunityMessage): Promise<MessageResponseDTO> {
     const sender = await this.userRepository.findById(message.senderId);
     let replyTo: MessageResponseDTO | undefined;
@@ -20,6 +20,7 @@ export class CommunityMessageMapper implements ICommunityMessageMapper {
         replyTo = await this.toDTO(replyToMessage);
       }
     }
+    const messageData = message.toJSON();
     return {
       id: message.id,
       communityId: message.communityId,
@@ -36,6 +37,7 @@ export class CommunityMessageMapper implements ICommunityMessageMapper {
       replyToId: message.replyToId,
       forwardedFromId: message.forwardedFromId,
       replyTo,
+      reactions: (messageData.reactions as any[]) || [],
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,
     };

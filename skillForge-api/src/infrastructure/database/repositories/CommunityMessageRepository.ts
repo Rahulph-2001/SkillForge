@@ -9,7 +9,7 @@ import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 export class CommunityMessageRepository implements ICommunityMessageRepository {
   constructor(
     @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
-  ) {}
+  ) { }
   public async create(message: CommunityMessage): Promise<CommunityMessage> {
     const data = message.toJSON();
     const created = await this.prisma.communityMessage.create({
@@ -40,6 +40,12 @@ export class CommunityMessageRepository implements ICommunityMessageRepository {
   public async findByCommunityId(communityId: string, limit = 50, offset = 0): Promise<CommunityMessage[]> {
     const messages = await this.prisma.communityMessage.findMany({
       where: { communityId, isDeleted: false },
+      include: {
+        sender: true,
+        reactions: {
+          include: { user: true }
+        }
+      },
       orderBy: { createdAt: 'desc' },
       take: limit,
       skip: offset,
