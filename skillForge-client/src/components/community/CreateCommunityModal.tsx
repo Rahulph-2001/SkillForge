@@ -59,11 +59,19 @@ export default function CreateCommunityModal({
         setError(null);
         setIsSubmitting(true);
 
+        console.log('=== CREATE COMMUNITY SUBMIT ===');
+        console.log('Form data:', formData);
+        console.log('Image:', image);
+
         try {
-            await createCommunity({
+            const communityData = {
                 ...formData,
                 image: image || undefined,
-            });
+            };
+            console.log('Sending data to API:', communityData);
+
+            const result = await createCommunity(communityData);
+            console.log('API Response:', result);
 
             setShowSuccess(true);
             setTimeout(() => {
@@ -81,6 +89,10 @@ export default function CreateCommunityModal({
                 if (onSuccess) onSuccess();
             }, 2000);
         } catch (err: any) {
+            console.error('=== CREATE COMMUNITY ERROR ===');
+            console.error('Full error:', err);
+            console.error('Error response:', err.response);
+            console.error('Error data:', err.response?.data);
             setError(err.response?.data?.message || 'Failed to create community');
         } finally {
             setIsSubmitting(false);

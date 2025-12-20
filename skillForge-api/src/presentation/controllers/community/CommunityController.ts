@@ -53,7 +53,11 @@ export class CommunityController {
       const userId = (req as any).user.userId;
       console.log('👤 User ID from auth:', userId);
 
-      const dto: CreateCommunityDTO = req.body;
+      // Parse FormData fields - FormData sends everything as strings
+      const dto: CreateCommunityDTO = {
+        ...req.body,
+        creditsCost: req.body.creditsCost ? parseInt(req.body.creditsCost, 10) : undefined
+      };
       console.log('📝 DTO received:', dto);
 
       const file = req.file;
@@ -92,7 +96,12 @@ export class CommunityController {
     try {
       const userId = (req as any).user.userId;
       const { id } = req.params;
-      const dto: UpdateCommunityDTO = req.body;
+
+      // Parse FormData fields - FormData sends everything as strings
+      const dto: UpdateCommunityDTO = {
+        ...req.body,
+        creditsCost: req.body.creditsCost ? parseInt(req.body.creditsCost, 10) : undefined
+      };
       const file = req.file;
       const community = await this.updateCommunityUseCase.execute(
         id,

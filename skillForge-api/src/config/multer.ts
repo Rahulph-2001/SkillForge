@@ -58,24 +58,39 @@
 
 
 
-import multer, {Options, FileFilterCallback} from 'multer';
-import {Request} from 'express';
-import {ValidationError} from '../domain/errors/AppError';
+import multer, { Options, FileFilterCallback } from 'multer';
+import { Request } from 'express';
+import { ValidationError } from '../domain/errors/AppError';
 
 
 const storage = multer.memoryStorage();
 
-const imageFileFilter= (
-  _req: Request,
-  file: Express.Multer.File,
-  cb: FileFilterCallback
-): void => {
-  if(file.mimetype.startsWith('image/')) {
-    cb(null, true)
-  }else {
-    cb(new ValidationError('Not an image ! Please upload only images'))
+const communityFileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  const allowedMimeTypes = [
+    // Images
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+    // Videos
+    'video/mp4',
+    'video/mpeg',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/webm',
+    // Documents
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new ValidationError('Invalid file type! Please upload images, videos, or documents (PDF, DOC, DOCX)'));
   }
-}
+};
 
 const importFileFilter = (
   _req: Request,
@@ -89,13 +104,13 @@ const importFileFilter = (
     'application/vnd.openxmlformats-officedocument.spreadsheetmal.sheet'
   ];
 
-  if(allowedMimes.includes(file.mimetype)) {
+  if (allowedMimes.includes(file.mimetype)) {
     cb(null, true)
-  }else {
+  } else {
     const isValidExt = file.originalname.match(/\.(csv|xlsx|xls)$/i)
-    if(isValidExt){
-      cb(null,true)
-    }else {
+    if (isValidExt) {
+      cb(null, true)
+    } else {
       cb(new ValidationError('Invalid file type. Plesase upload a CSV or Excel  filr.'))
     }
   }
@@ -103,9 +118,9 @@ const importFileFilter = (
 
 export const uploadImage = multer({
   storage: storage,
-  fileFilter: imageFileFilter,
+  fileFilter: communityFileFilter,
   limits: {
-    fileSize: 5 * 1024 * 1024
+    fileSize: 50 * 1024 * 1024 // 50MB for videos
   }
 })
 

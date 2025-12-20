@@ -17,7 +17,7 @@ export const createCommunitySchema = z.object({
         .min(1, 'Category is required')
         .trim(),
     creditsCost: z
-        .number()
+        .coerce.number()
         .min(0, 'Credits cost must be non-negative')
         .optional()
         .default(0),
@@ -57,7 +57,7 @@ export const updateCommunitySchema = z.object({
         .nullable()
         .optional(),
     creditsCost: z
-        .number()
+        .coerce.number()
         .min(0, 'Credits cost must be non-negative')
         .optional(),
     creditsPeriod: z

@@ -60,7 +60,7 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
       const subscriptionEndsAt = new Date();
       subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30); // Default 30 days
 
-      // 6. Create member record
+      // 6. Create or reactivate member record (upsert for rejoin support)
       const member = new CommunityMember({
         communityId,
         userId,
@@ -69,8 +69,14 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
       });
 
       const memberData = member.toJSON();
-      await tx.communityMember.create({
-        data: {
+      await tx.communityMember.upsert({
+        where: {
+          communityId_userId: {
+            communityId: communityId,
+            userId: userId,
+          },
+        },
+        create: {
           id: memberData.id as string,
           communityId: memberData.communityId as string,
           userId: memberData.userId as string,
@@ -78,7 +84,14 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
           isAutoRenew: memberData.isAutoRenew as boolean,
           subscriptionEndsAt: memberData.subscriptionEndsAt as Date | null,
           joinedAt: memberData.joinedAt as Date,
-          isActive: memberData.isActive as boolean,
+          isActive: true,
+        },
+        update: {
+          isActive: true,
+          role: 'member',
+          subscriptionEndsAt: memberData.subscriptionEndsAt as Date | null,
+          joinedAt: new Date(),
+          leftAt: null,
         },
       });
 

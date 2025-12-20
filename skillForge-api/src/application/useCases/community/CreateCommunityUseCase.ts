@@ -126,13 +126,13 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
       await tx.communityMember.create({
         data: {
           id: memberData.id as string,
-          communityId: memberData.community_id as string,
-          userId: memberData.user_id as string,
+          communityId: memberData.communityId as string,
+          userId: memberData.userId as string,
           role: memberData.role as string,
-          isAutoRenew: memberData.is_auto_renew as boolean,
-          subscriptionEndsAt: memberData.subscription_ends_at as Date | null,
-          joinedAt: memberData.joined_at as Date,
-          isActive: memberData.is_active as boolean,
+          isAutoRenew: memberData.isAutoRenew as boolean,
+          subscriptionEndsAt: memberData.subscriptionEndsAt as Date | null,
+          joinedAt: memberData.joinedAt as Date,
+          isActive: memberData.isActive as boolean,
         },
       });
 
