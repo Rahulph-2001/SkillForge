@@ -18,7 +18,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let CommunityController = class CommunityController {
-    constructor(createCommunityUseCase, updateCommunityUseCase, getCommunitiesUseCase, getCommunityDetailsUseCase, joinCommunityUseCase, leaveCommunityUseCase, sendMessageUseCase, getCommunityMessagesUseCase, pinMessageUseCase, unpinMessageUseCase, deleteMessageUseCase, removeCommunityMemberUseCase, communityRepository, communityMapper, communityMessageMapper, responseBuilder) {
+    constructor(createCommunityUseCase, updateCommunityUseCase, getCommunitiesUseCase, getCommunityDetailsUseCase, joinCommunityUseCase, leaveCommunityUseCase, sendMessageUseCase, getCommunityMessagesUseCase, pinMessageUseCase, unpinMessageUseCase, deleteMessageUseCase, removeCommunityMemberUseCase, addReactionUseCase, removeReactionUseCase, communityRepository, communityMapper, communityMessageMapper, responseBuilder) {
         this.createCommunityUseCase = createCommunityUseCase;
         this.updateCommunityUseCase = updateCommunityUseCase;
         this.getCommunitiesUseCase = getCommunitiesUseCase;
@@ -31,24 +31,41 @@ let CommunityController = class CommunityController {
         this.unpinMessageUseCase = unpinMessageUseCase;
         this.deleteMessageUseCase = deleteMessageUseCase;
         this.removeCommunityMemberUseCase = removeCommunityMemberUseCase;
+        this.addReactionUseCase = addReactionUseCase;
+        this.removeReactionUseCase = removeReactionUseCase;
         this.communityRepository = communityRepository;
         this.communityMapper = communityMapper;
         this.communityMessageMapper = communityMessageMapper;
         this.responseBuilder = responseBuilder;
         this.createCommunity = async (req, res, next) => {
             try {
+                console.log('🎯 CommunityController.createCommunity - START');
                 const userId = req.user.userId;
-                const dto = req.body;
+                console.log('👤 User ID from auth:', userId);
+                // Parse FormData fields - FormData sends everything as strings
+                const dto = {
+                    ...req.body,
+                    creditsCost: req.body.creditsCost ? parseInt(req.body.creditsCost, 10) : undefined
+                };
+                console.log('📝 DTO received:', dto);
                 const file = req.file;
+                console.log('📎 File received:', file ? { name: file.originalname, size: file.size, type: file.mimetype } : 'No file');
+                console.log('🚀 Calling createCommunityUseCase.execute...');
                 const community = await this.createCommunityUseCase.execute(userId, dto, file ? {
                     buffer: file.buffer,
                     originalname: file.originalname,
                     mimetype: file.mimetype
                 } : undefined);
-                const response = this.responseBuilder.success(this.communityMapper.toDTO(community, userId), messages_1.SUCCESS_MESSAGES.COMMUNITY.CREATED, HttpStatusCode_1.HttpStatusCode.CREATED);
+                console.log('✅ Use case completed, community created:', community.id);
+                console.log('🗺️  Mapping to DTO...');
+                const communityDTO = this.communityMapper.toDTO(community, userId);
+                console.log('📤 Building response...');
+                const response = this.responseBuilder.success(communityDTO, messages_1.SUCCESS_MESSAGES.COMMUNITY.CREATED, HttpStatusCode_1.HttpStatusCode.CREATED);
+                console.log('✅ Sending response with status:', response.statusCode);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
+                console.error('❌ ERROR in createCommunity controller:', error);
                 next(error);
             }
         };
@@ -56,7 +73,11 @@ let CommunityController = class CommunityController {
             try {
                 const userId = req.user.userId;
                 const { id } = req.params;
-                const dto = req.body;
+                // Parse FormData fields - FormData sends everything as strings
+                const dto = {
+                    ...req.body,
+                    creditsCost: req.body.creditsCost ? parseInt(req.body.creditsCost, 10) : undefined
+                };
                 const file = req.file;
                 const community = await this.updateCommunityUseCase.execute(id, userId, dto, file ? {
                     buffer: file.buffer,
@@ -76,8 +97,8 @@ let CommunityController = class CommunityController {
                 const { category } = req.query;
                 const communities = await this.getCommunitiesUseCase.execute({
                     category: category
-                });
-                const response = this.responseBuilder.success(this.communityMapper.toDTOList(communities, userId), 'Communities retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                }, userId);
+                const response = this.responseBuilder.success(this.communityMapper.toDTOList(communities, userId), messages_1.SUCCESS_MESSAGES.COMMUNITY.FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -88,8 +109,8 @@ let CommunityController = class CommunityController {
             try {
                 const userId = req.user?.userId;
                 const { id } = req.params;
-                const community = await this.getCommunityDetailsUseCase.execute(id);
-                const response = this.responseBuilder.success(this.communityMapper.toDTO(community, userId), 'Community details retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const community = await this.getCommunityDetailsUseCase.execute(id, userId);
+                const response = this.responseBuilder.success(this.communityMapper.toDTO(community, userId), messages_1.SUCCESS_MESSAGES.COMMUNITY.DETAILS_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -146,7 +167,7 @@ let CommunityController = class CommunityController {
                 const offset = parseInt(req.query.offset) || 0;
                 const messages = await this.getCommunityMessagesUseCase.execute(userId, id, limit, offset);
                 const messageDTOs = await this.communityMessageMapper.toDTOList(messages);
-                const response = this.responseBuilder.success(messageDTOs, 'Messages retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success(messageDTOs, messages_1.SUCCESS_MESSAGES.COMMUNITY.MESSAGES_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -196,7 +217,7 @@ let CommunityController = class CommunityController {
                 const userId = req.user.userId;
                 const { id: communityId, memberId } = req.params;
                 await this.removeCommunityMemberUseCase.execute(userId, communityId, memberId);
-                const response = this.responseBuilder.success({ communityId, memberId }, 'Member removed successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success({ communityId, memberId }, messages_1.SUCCESS_MESSAGES.COMMUNITY.MEMBER_REMOVED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -216,7 +237,32 @@ let CommunityController = class CommunityController {
                     total: members.length,
                     limit,
                     offset,
-                }, 'Members retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                }, messages_1.SUCCESS_MESSAGES.COMMUNITY.MEMBERS_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.addReaction = async (req, res, next) => {
+            try {
+                const userId = req.user.userId;
+                const { messageId } = req.params;
+                const { emoji } = req.body;
+                const reaction = await this.addReactionUseCase.execute(userId, messageId, emoji);
+                const response = this.responseBuilder.success(reaction.toJSON(), messages_1.SUCCESS_MESSAGES.COMMUNITY.REACTION_ADDED, HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.removeReaction = async (req, res, next) => {
+            try {
+                const userId = req.user.userId;
+                const { messageId, emoji } = req.params;
+                await this.removeReactionUseCase.execute(userId, messageId, emoji);
+                const response = this.responseBuilder.success({ messageId, emoji }, messages_1.SUCCESS_MESSAGES.COMMUNITY.REACTION_REMOVED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -240,10 +286,12 @@ exports.CommunityController = CommunityController = __decorate([
     __param(9, (0, inversify_1.inject)(types_1.TYPES.UnpinMessageUseCase)),
     __param(10, (0, inversify_1.inject)(types_1.TYPES.DeleteMessageUseCase)),
     __param(11, (0, inversify_1.inject)(types_1.TYPES.RemoveCommunityMemberUseCase)),
-    __param(12, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __param(13, (0, inversify_1.inject)(types_1.TYPES.ICommunityMapper)),
-    __param(14, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageMapper)),
-    __param(15, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object])
+    __param(12, (0, inversify_1.inject)(types_1.TYPES.AddReactionUseCase)),
+    __param(13, (0, inversify_1.inject)(types_1.TYPES.RemoveReactionUseCase)),
+    __param(14, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
+    __param(15, (0, inversify_1.inject)(types_1.TYPES.ICommunityMapper)),
+    __param(16, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageMapper)),
+    __param(17, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object])
 ], CommunityController);
 //# sourceMappingURL=CommunityController.js.map

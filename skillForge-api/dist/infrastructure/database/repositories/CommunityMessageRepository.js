@@ -51,6 +51,12 @@ let CommunityMessageRepository = class CommunityMessageRepository {
     async findByCommunityId(communityId, limit = 50, offset = 0) {
         const messages = await this.prisma.communityMessage.findMany({
             where: { communityId, isDeleted: false },
+            include: {
+                sender: true,
+                reactions: {
+                    include: { user: true }
+                }
+            },
             orderBy: { createdAt: 'desc' },
             take: limit,
             skip: offset,

@@ -35,5 +35,8 @@ export declare const env: {
     readonly AWS_ACCESS_KEY_ID: string;
     readonly AWS_SECRET_ACCESS_KEY: string;
     readonly AWS_S3_BUCKET_NAME: string;
+    readonly STRIPE_SECRET_KEY: string;
+    readonly STRIPE_PUBLISHABLE_KEY: string;
+    readonly STRIPE_WEBHOOK_SECRET: string;
 };
 //# sourceMappingURL=env.d.ts.map

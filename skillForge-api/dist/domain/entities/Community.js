@@ -85,6 +85,11 @@ class Community {
         }
         this._updatedAt = new Date();
     }
+    // ... getters and setters
+    get isJoined() { return this._isJoined; }
+    set isJoined(value) { this._isJoined = value; }
+    get isAdmin() { return this._isAdmin; }
+    set isAdmin(value) { this._isAdmin = value; }
     toJSON() {
         return {
             id: this._id,
@@ -101,6 +106,8 @@ class Community {
             is_deleted: this._isDeleted,
             created_at: this._createdAt,
             updated_at: this._updatedAt,
+            isJoined: this._isJoined,
+            isAdmin: this._isAdmin,
         };
     }
     static fromDatabaseRow(row) {
@@ -121,6 +128,9 @@ class Community {
         communityAny._isDeleted = (row.is_deleted || row.isDeleted) || false;
         communityAny._createdAt = (row.created_at || row.createdAt) || new Date();
         communityAny._updatedAt = (row.updated_at || row.updatedAt) || new Date();
+        // Assuming these are not in DB row but might be preserved if re-hydrating
+        communityAny._isJoined = row.isJoined;
+        communityAny._isAdmin = row.isAdmin;
         return community;
     }
 }

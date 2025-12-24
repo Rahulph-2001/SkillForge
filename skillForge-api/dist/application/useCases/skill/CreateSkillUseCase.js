@@ -17,9 +17,9 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const Skill_1 = require("../../../domain/entities/Skill");
 let CreateSkillUseCase = class CreateSkillUseCase {
-    constructor(skillRepository, s3Service, skillMapper) {
+    constructor(skillRepository, storageService, skillMapper) {
         this.skillRepository = skillRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
         this.skillMapper = skillMapper;
     }
     async execute(userId, data, imageFile) {
@@ -27,7 +27,7 @@ let CreateSkillUseCase = class CreateSkillUseCase {
         if (imageFile) {
             // Create S3 key with skills/ prefix
             const key = `skills/${Date.now()}-${imageFile.originalname}`;
-            imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+            imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
         }
         const skill = new Skill_1.Skill({
             providerId: userId,
@@ -50,7 +50,7 @@ exports.CreateSkillUseCase = CreateSkillUseCase;
 exports.CreateSkillUseCase = CreateSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.ISkillMapper)),
     __metadata("design:paramtypes", [Object, Object, Object])
 ], CreateSkillUseCase);

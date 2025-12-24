@@ -132,7 +132,7 @@ export class CommunityController {
       }, userId);
       const response = this.responseBuilder.success(
         this.communityMapper.toDTOList(communities, userId),
-        'Communities retrieved successfully',
+        SUCCESS_MESSAGES.COMMUNITY.FETCHED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -147,7 +147,7 @@ export class CommunityController {
       const community = await this.getCommunityDetailsUseCase.execute(id, userId);
       const response = this.responseBuilder.success(
         this.communityMapper.toDTO(community, userId),
-        'Community details retrieved successfully',
+        SUCCESS_MESSAGES.COMMUNITY.DETAILS_FETCHED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -220,7 +220,7 @@ export class CommunityController {
       const messageDTOs = await this.communityMessageMapper.toDTOList(messages);
       const response = this.responseBuilder.success(
         messageDTOs,
-        'Messages retrieved successfully',
+        SUCCESS_MESSAGES.COMMUNITY.MESSAGES_FETCHED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -283,7 +283,7 @@ export class CommunityController {
       await this.removeCommunityMemberUseCase.execute(userId, communityId, memberId);
       const response = this.responseBuilder.success(
         { communityId, memberId },
-        'Member removed successfully',
+        SUCCESS_MESSAGES.COMMUNITY.MEMBER_REMOVED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -310,7 +310,7 @@ export class CommunityController {
           limit,
           offset,
         },
-        'Members retrieved successfully',
+        SUCCESS_MESSAGES.COMMUNITY.MEMBERS_FETCHED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -329,7 +329,7 @@ export class CommunityController {
 
       const response = this.responseBuilder.success(
         reaction.toJSON(),
-        'Reaction added successfully',
+        SUCCESS_MESSAGES.COMMUNITY.REACTION_ADDED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -347,7 +347,7 @@ export class CommunityController {
 
       const response = this.responseBuilder.success(
         { messageId, emoji },
-        'Reaction removed successfully',
+        SUCCESS_MESSAGES.COMMUNITY.REACTION_REMOVED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

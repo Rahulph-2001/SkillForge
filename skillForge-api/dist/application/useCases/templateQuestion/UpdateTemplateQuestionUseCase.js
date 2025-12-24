@@ -22,19 +22,21 @@ let UpdateTemplateQuestionUseCase = class UpdateTemplateQuestionUseCase {
         this.templateQuestionRepository = templateQuestionRepository;
         this.userRepository = userRepository;
     }
-    async execute(adminUserId, dto) {
+    async execute(adminUserId, questionId, dto) {
         // Verify admin authorization
         const admin = await this.userRepository.findById(adminUserId);
         if (!admin || admin.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.UnauthorizedError('Only admins can update template questions');
         }
         // Check if question exists
-        const existingQuestion = await this.templateQuestionRepository.findById(dto.questionId);
+        const existingQuestion = await this.templateQuestionRepository.findById(questionId);
         if (!existingQuestion) {
             throw new AppError_1.NotFoundError('Template question not found');
         }
         // Prepare update data
         const updateData = {};
+        if (dto.level !== undefined)
+            updateData.level = dto.level;
         if (dto.question !== undefined)
             updateData.question = dto.question;
         if (dto.options !== undefined)
@@ -46,7 +48,7 @@ let UpdateTemplateQuestionUseCase = class UpdateTemplateQuestionUseCase {
         if (dto.isActive !== undefined)
             updateData.isActive = dto.isActive;
         // Update question
-        return await this.templateQuestionRepository.update(dto.questionId, updateData);
+        return await this.templateQuestionRepository.update(questionId, updateData);
     }
 };
 exports.UpdateTemplateQuestionUseCase = UpdateTemplateQuestionUseCase;

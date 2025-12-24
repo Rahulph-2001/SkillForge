@@ -20,10 +20,16 @@ let GetCommunityDetailsUseCase = class GetCommunityDetailsUseCase {
     constructor(communityRepository) {
         this.communityRepository = communityRepository;
     }
-    async execute(communityId) {
+    async execute(communityId, userId) {
         const community = await this.communityRepository.findById(communityId);
         if (!community) {
             throw new AppError_1.NotFoundError('Community not found');
+        }
+        if (userId) {
+            const membership = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
+            // Check if membership exists AND is active
+            community.isJoined = !!membership && membership.isActive;
+            community.isAdmin = community.adminId === userId;
         }
         return community;
     }

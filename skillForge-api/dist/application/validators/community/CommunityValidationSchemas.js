@@ -19,7 +19,7 @@ exports.createCommunitySchema = zod_1.z.object({
         .min(1, 'Category is required')
         .trim(),
     creditsCost: zod_1.z
-        .number()
+        .coerce.number()
         .min(0, 'Credits cost must be non-negative')
         .optional()
         .default(0),
@@ -58,7 +58,7 @@ exports.updateCommunitySchema = zod_1.z.object({
         .nullable()
         .optional(),
     creditsCost: zod_1.z
-        .number()
+        .coerce.number()
         .min(0, 'Credits cost must be non-negative')
         .optional(),
     creditsPeriod: zod_1.z

@@ -1,5 +1,4 @@
 
-
 import { Router } from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 import { container } from '../../infrastructure/di/di';
@@ -15,24 +14,24 @@ router.use(authMiddleware);
 const getController = () => container.get<SessionManagementController>(TYPES.SessionManagementController);
 
 
-router.get('/provider', (req, res) => getController().getProviderSessions(req, res));
+router.get('/provider', (req, res, next) => getController().getProviderSessions(req, res, next));
 
 
-router.post('/:bookingId/accept', (req, res) => getController().acceptBooking(req, res));
+router.post('/:bookingId/accept', (req, res, next) => getController().acceptBooking(req, res, next));
 
 
-router.post('/:bookingId/decline', (req, res) => getController().declineBooking(req, res));
+router.post('/:bookingId/decline', (req, res, next) => getController().declineBooking(req, res, next));
 
 
-router.post('/:bookingId/cancel', (req, res) => getController().cancelBooking(req, res));
+router.post('/:bookingId/cancel', (req, res, next) => getController().cancelBooking(req, res, next));
 
 
-router.post('/:bookingId/reschedule', (req, res) => getController().rescheduleBooking(req, res));
+router.post('/reschedule/:id', (req, res, next) => getController().rescheduleBooking(req, res, next));
 
 
-router.post('/:bookingId/reschedule/accept', (req, res) => getController().acceptReschedule(req, res));
+router.post('/reschedule/:id/accept', (req, res, next) => getController().acceptReschedule(req, res, next));
 
 
-router.post('/:bookingId/reschedule/decline', (req, res) => getController().declineReschedule(req, res));
+router.post('/:bookingId/reschedule/decline', (req, res, next) => getController().declineReschedule(req, res, next));
 
 export default router;

@@ -34,7 +34,8 @@ let CommunityMapper = class CommunityMapper {
             isActive: community.isActive,
             createdAt: community.createdAt,
             updatedAt: community.updatedAt,
-            isAdmin: userId ? community.adminId === userId : false,
+            isAdmin: (userId && community.adminId === userId) || community.isAdmin || false,
+            isJoined: community.isJoined || false,
         };
     }
     toDTOList(communities, userId) {

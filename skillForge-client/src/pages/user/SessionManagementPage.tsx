@@ -16,6 +16,7 @@ import {
 import { sessionManagementService } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
+import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 
 interface UserSession {
   id: string;
@@ -58,6 +59,8 @@ export default function SessionManagementPage() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<UserSession | null>(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [sessionToCancel, setSessionToCancel] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSessions();
@@ -129,14 +132,17 @@ export default function SessionManagementPage() {
     }
   };
 
-  const handleCancelSession = async (sessionId: string) => {
-    if (!window.confirm('Are you sure you want to cancel this session?')) {
-      return;
-    }
+  const handleCancelSession = (sessionId: string) => {
+    setSessionToCancel(sessionId);
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancelSession = async () => {
+    if (!sessionToCancel) return;
 
     try {
-      setActionLoading(sessionId);
-      await sessionManagementService.cancelSession(sessionId, 'User requested cancellation');
+      setActionLoading(sessionToCancel);
+      await sessionManagementService.cancelSession(sessionToCancel, 'User requested cancellation');
       toast.success('Session cancelled successfully');
       fetchSessions();
     } catch (error: any) {
@@ -144,6 +150,8 @@ export default function SessionManagementPage() {
       toast.error(error.response?.data?.message || 'Failed to cancel session');
     } finally {
       setActionLoading(null);
+      setShowCancelConfirm(false);
+      setSessionToCancel(null);
     }
   };
 
@@ -412,17 +420,6 @@ export default function SessionManagementPage() {
                           </p>
                         </div>
                       )}
-
-                      {/* DEBUG BLOCK - REMOVE AFTER FIXING */}
-                      <div className="mt-4 p-2 bg-gray-100 rounded text-xs overflow-auto">
-                        <p className="font-bold text-gray-700 mb-1">DEBUG INFO:</p>
-                        <pre>{JSON.stringify({
-                          id: session.id,
-                          providerName: session.providerName,
-                          rejectionReason: session.rejectionReason,
-                          status: session.status
-                        }, null, 2)}</pre>
-                      </div>
                     </div>
                   </div>
 
@@ -518,6 +515,21 @@ export default function SessionManagementPage() {
           onReschedule={handleRescheduleSubmit}
         />
       )}
+
+      {/* Cancel Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showCancelConfirm}
+        title="Cancel Session"
+        message="Are you sure you want to cancel this session? This action cannot be undone."
+        confirmText="Yes, Cancel Session"
+        cancelText="No, Keep Session"
+        type="danger"
+        onConfirm={confirmCancelSession}
+        onCancel={() => {
+          setShowCancelConfirm(false);
+          setSessionToCancel(null);
+        }}
+      />
     </div>
   );
 }

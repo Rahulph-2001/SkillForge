@@ -119,6 +119,7 @@ let CommunityRepository = class CommunityRepository {
     async findMembersByCommunityId(communityId) {
         const members = await this.prisma.communityMember.findMany({
             where: { communityId, isActive: true },
+            include: { user: true },
             orderBy: { joinedAt: 'asc' },
         });
         return members.map(m => CommunityMember_1.CommunityMember.fromDatabaseRow(m));
@@ -128,6 +129,12 @@ let CommunityRepository = class CommunityRepository {
             where: { userId, communityId },
         });
         return member ? CommunityMember_1.CommunityMember.fromDatabaseRow(member) : null;
+    }
+    async findMembershipsByUserId(userId) {
+        const members = await this.prisma.communityMember.findMany({
+            where: { userId, isActive: true },
+        });
+        return members.map(m => CommunityMember_1.CommunityMember.fromDatabaseRow(m));
     }
     async updateMember(member) {
         const data = member.toJSON();

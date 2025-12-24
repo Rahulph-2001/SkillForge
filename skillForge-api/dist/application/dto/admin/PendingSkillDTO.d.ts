@@ -1,24 +1,29 @@
-export interface PendingSkillDTO {
-    id: string;
-    providerId: string;
-    providerName: string;
-    providerEmail: string;
-    title: string;
-    description: string;
-    category: string;
-    level: string;
-    durationHours: number;
-    creditsPerHour: number;
-    tags: string[];
-    imageUrl: string | null;
-    templateId: string | null;
-    status: string;
-    verificationStatus: string | null;
-    mcqScore: number | null;
-    mcqTotalQuestions: number | null;
-    mcqPassingScore: number | null;
-    verifiedAt: Date | null;
-    createdAt: Date;
-    updatedAt: Date;
-}
+import { z } from 'zod';
+/**
+ * Zod schema for Pending Skill DTO
+ */
+export declare const PendingSkillDTOSchema: z.ZodObject<{
+    id: z.ZodString;
+    providerId: z.ZodString;
+    providerName: z.ZodString;
+    providerEmail: z.ZodString;
+    title: z.ZodString;
+    description: z.ZodString;
+    category: z.ZodString;
+    level: z.ZodString;
+    durationHours: z.ZodNumber;
+    creditsPerHour: z.ZodNumber;
+    tags: z.ZodArray<z.ZodString>;
+    imageUrl: z.ZodNullable<z.ZodString>;
+    templateId: z.ZodNullable<z.ZodString>;
+    status: z.ZodString;
+    verificationStatus: z.ZodNullable<z.ZodString>;
+    mcqScore: z.ZodNullable<z.ZodNumber>;
+    mcqTotalQuestions: z.ZodNullable<z.ZodNumber>;
+    mcqPassingScore: z.ZodNullable<z.ZodNumber>;
+    verifiedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
+    createdAt: z.ZodCoercedDate<unknown>;
+    updatedAt: z.ZodCoercedDate<unknown>;
+}, z.core.$strip>;
+export type PendingSkillDTO = z.infer<typeof PendingSkillDTOSchema>;
 //# sourceMappingURL=PendingSkillDTO.d.ts.map

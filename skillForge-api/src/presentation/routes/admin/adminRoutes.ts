@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { AdminController } from '../../controllers/admin/AdminController';
 import { SubscriptionRoutes } from '../subscription/subscriptionRoutes';
+import { FeatureRoutes } from '../feature/featureRoutes';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
 
@@ -12,7 +13,8 @@ export class AdminRoutes {
 
   constructor(
     @inject(TYPES.AdminController) private readonly adminController: AdminController,
-    @inject(TYPES.SubscriptionRoutes) private readonly subscriptionRoutes: SubscriptionRoutes
+    @inject(TYPES.SubscriptionRoutes) private readonly subscriptionRoutes: SubscriptionRoutes,
+    @inject(TYPES.FeatureRoutes) private readonly featureRoutes: FeatureRoutes
   ) {
     this.initializeRoutes();
   }
@@ -35,5 +37,9 @@ export class AdminRoutes {
     // Subscription Management Routes
     // Mount subscription routes at /api/v1/admin/subscriptions
     this.router.use('/subscriptions', this.subscriptionRoutes.router);
+
+    // Feature Management Routes
+    // Mount feature routes at /api/v1/admin/features
+    this.router.use('/features', this.featureRoutes.router);
   }
 }

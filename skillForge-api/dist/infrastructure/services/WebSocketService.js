@@ -5,9 +5,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WebSocketService = void 0;
 const inversify_1 = require("inversify");
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const env_1 = require("../../config/env");
 let WebSocketService = class WebSocketService {
     constructor() {
         this.io = null;
@@ -16,15 +21,45 @@ let WebSocketService = class WebSocketService {
     }
     initialize(io) {
         this.io = io;
+        // Middleware for Authentication
+        this.io.use((socket, next) => {
+            const token = socket.handshake.auth.token || socket.handshake.headers.cookie?.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
+            if (!token) {
+                return next(new Error('Authentication error'));
+            }
+            try {
+                const decoded = jsonwebtoken_1.default.verify(token, env_1.env.JWT_SECRET);
+                socket.data.user = decoded;
+                next();
+            }
+            catch (err) {
+                next(new Error('Authentication error'));
+            }
+        });
         this.io.on('connection', (socket) => {
-            console.log('WebSocket connected:', socket.id);
-            socket.on('join_community', (data) => {
-                this.joinCommunity(data.userId, data.communityId, socket.id);
-                socket.join(`community:${data.communityId}`);
+            const user = socket.data.user;
+            console.log(`WebSocket connected: ${socket.id} (User: ${user.userId})`);
+            // Auto-join user to their own room for direct notifications
+            if (user.userId) {
+                if (!this.userSockets.has(user.userId)) {
+                    this.userSockets.set(user.userId, new Set());
+                }
+                this.userSockets.get(user.userId)?.add(socket.id);
+            }
+            socket.on('join_community', (communityId) => {
+                // Frontend sends string ID directly
+                if (user.userId && communityId) {
+                    this.joinCommunity(user.userId, communityId, socket.id);
+                    socket.join(`community:${communityId}`);
+                    console.log(`User ${user.userId} joined community channel: ${communityId}`);
+                }
             });
-            socket.on('leave_community', (data) => {
-                this.leaveCommunity(data.userId, data.communityId, socket.id);
-                socket.leave(`community:${data.communityId}`);
+            socket.on('leave_community', (communityId) => {
+                if (user.userId && communityId) {
+                    this.leaveCommunity(user.userId, communityId, socket.id);
+                    socket.leave(`community:${communityId}`);
+                    console.log(`User ${user.userId} left community channel: ${communityId}`);
+                }
             });
             socket.on('disconnect', () => {
                 this.handleDisconnect(socket.id);
@@ -34,7 +69,29 @@ let WebSocketService = class WebSocketService {
     sendToCommunity(communityId, message) {
         if (!this.io)
             return;
-        this.io.to(`community:${communityId}`).emit('community_event', message);
+        // Map internal event structure to frontend's expected events
+        if (message.type === 'message') {
+            this.io.to(`community:${communityId}`).emit('new_message', message.data);
+        }
+        else if (message.type === 'pin') {
+            this.io.to(`community:${communityId}`).emit('message_pinned', message.data);
+        }
+        else if (message.type === 'unpin') {
+            this.io.to(`community:${communityId}`).emit('message_unpinned', message.data);
+        }
+        else if (message.type === 'delete') {
+            this.io.to(`community:${communityId}`).emit('message_deleted', message.data);
+        }
+        else if (message.type === 'reaction_added') {
+            this.io.to(`community:${communityId}`).emit('reaction_added', message.data);
+        }
+        else if (message.type === 'reaction_removed') {
+            this.io.to(`community:${communityId}`).emit('reaction_removed', message.data);
+        }
+        else {
+            // Fallback for other events
+            this.io.to(`community:${communityId}`).emit('community_event', message);
+        }
     }
     sendToUser(userId, message) {
         if (!this.io)
@@ -58,10 +115,10 @@ let WebSocketService = class WebSocketService {
             this.userSockets.get(userId)?.add(socketId);
         }
     }
-    leaveCommunity(userId, communityId, socketId) {
+    leaveCommunity(_userId, communityId, socketId) {
         if (socketId) {
             this.communitySockets.get(communityId)?.delete(socketId);
-            this.userSockets.get(userId)?.delete(socketId);
+            // We don't remove from userSockets on leave_community, only on disconnect
         }
     }
     handleDisconnect(socketId) {
@@ -72,6 +129,7 @@ let WebSocketService = class WebSocketService {
         this.userSockets.forEach((sockets) => {
             sockets.delete(socketId);
         });
+        console.log(`WebSocket disconnected: ${socketId}`);
     }
 };
 exports.WebSocketService = WebSocketService;

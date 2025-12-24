@@ -52,7 +52,7 @@ export const TYPES = {
 
 
   ISkillRepository: Symbol.for('ISkillRepository'),
-  IS3Service: Symbol.for('IS3Service'),
+  IStorageService: Symbol.for('IStorageService'),
   CreateSkillUseCase: Symbol.for('CreateSkillUseCase'),
   ListUserSkillsUseCase: Symbol.for('ListUserSkillsUseCase'),
   BrowseSkillsUseCase: Symbol.for('BrowseSkillsUseCase'),
@@ -176,5 +176,40 @@ export const TYPES = {
   CommunityController: Symbol.for('CommunityController'),
   CommunityRoutes: Symbol.for('CommunityRoutes'),
 
+  // Industrial Subscription System
+  IFeatureRepository: Symbol.for('IFeatureRepository'),
+  IUserSubscriptionRepository: Symbol.for('IUserSubscriptionRepository'),
+  IUsageRecordRepository: Symbol.for('IUsageRecordRepository'),
+  ICreateFeatureUseCase: Symbol.for('ICreateFeatureUseCase'),
+  IAssignSubscriptionUseCase: Symbol.for('IAssignSubscriptionUseCase'),
+  ITrackFeatureUsageUseCase: Symbol.for('ITrackFeatureUsageUseCase'),
+  IListFeaturesUseCase: Symbol.for('IListFeaturesUseCase'),
+  IGetFeatureByIdUseCase: Symbol.for('IGetFeatureByIdUseCase'),
+  IUpdateFeatureUseCase: Symbol.for('IUpdateFeatureUseCase'),
+  IDeleteFeatureUseCase: Symbol.for('IDeleteFeatureUseCase'),
 
+  // Controllers
+  FeatureController: Symbol.for('FeatureController'),
+
+  IPaymentGateway: Symbol.for('IPaymentGateway'),
+  IPaymentRepository: Symbol.for('IPaymentRepository'),
+  // Payment Use Cases
+  ICreatePaymentIntentUseCase: Symbol.for('ICreatePaymentIntentUseCase'),
+  IConfirmPaymentUseCase: Symbol.for('IConfirmPaymentUseCase'),
+  IHandleWebhookUseCase: Symbol.for('IHandleWebhookUseCase'),
+  IActivateSubscriptionUseCase: Symbol.for('IActivateSubscriptionUseCase'),
+  ICreditAdminWalletUseCase: Symbol.for('ICreditAdminWalletUseCase'),
+  PaymentController: Symbol.for('PaymentController'),
+
+  // User Subscription
+  IGetUserSubscriptionUseCase: Symbol.for('IGetUserSubscriptionUseCase'),
+  ICancelSubscriptionUseCase: Symbol.for('ICancelSubscriptionUseCase'),
+  UserSubscriptionController: Symbol.for('UserSubscriptionController'),
+  UserSubscriptionRoutes: Symbol.for('UserSubscriptionRoutes'),
+  IReactivateSubscriptionUseCase: Symbol.for('IReactivateSubscriptionUseCase'),
+
+  // Routes
+  FeatureRoutes: Symbol.for('FeatureRoutes'),
+  PaymentRoutes: Symbol.for('PaymentRoutes'),
+  ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
 };

@@ -5,6 +5,7 @@ const types_1 = require("./infrastructure/di/types");
 const Database_1 = require("./infrastructure/database/Database");
 const RedisService_1 = require("./infrastructure/services/RedisService");
 const env_1 = require("./config/env");
+const socket_io_1 = require("socket.io");
 const port = env_1.env.PORT;
 const appInstance = container_1.container.get(types_1.TYPES.App).getInstance();
 async function startServer() {
@@ -22,6 +23,22 @@ async function startServer() {
         const server = appInstance.listen(port, () => {
             console.log(`Server running on port ${port} in ${env_1.env.NODE_ENV} mode`);
         });
+        // Initialize Socket.IO
+        const io = new socket_io_1.Server(server, {
+            cors: {
+                origin: [
+                    env_1.env.FRONTEND_URL,
+                    'http://localhost:3000',
+                    'http://localhost:3001',
+                    'http://localhost:3002',
+                    'http://localhost:5173',
+                    'http://localhost:5174'
+                ],
+                credentials: true
+            }
+        });
+        const webSocketService = container_1.container.get(types_1.TYPES.IWebSocketService);
+        webSocketService.initialize(io);
         // Handle port already in use error
         server.on('error', (error) => {
             if (error.code === 'EADDRINUSE') {

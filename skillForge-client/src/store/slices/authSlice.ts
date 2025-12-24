@@ -215,6 +215,12 @@ const authSlice = createSlice({
         state.user.avatar = action.payload
       }
     },
+    // Update user subscription after successful payment
+    updateSubscription: (state, action: PayloadAction<string>) => {
+      if (state.user) {
+        state.user.subscriptionPlan = action.payload
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -395,5 +401,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized, updateUserAvatar } = authSlice.actions
+export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized, updateUserAvatar, updateSubscription } = authSlice.actions
 export default authSlice.reducer

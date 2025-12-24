@@ -14,6 +14,7 @@ export interface ICommunityRepository {
     removeMember(communityId: string, userId: string): Promise<void>;
     findMembersByCommunityId(communityId: string): Promise<CommunityMember[]>;
     findMemberByUserAndCommunity(userId: string, communityId: string): Promise<CommunityMember | null>;
+    findMembershipsByUserId(userId: string): Promise<CommunityMember[]>;
     updateMember(member: CommunityMember): Promise<CommunityMember>;
 }
 //# sourceMappingURL=ICommunityRepository.d.ts.map

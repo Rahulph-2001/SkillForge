@@ -29,6 +29,7 @@ let CommunityMessageMapper = class CommunityMessageMapper {
                 replyTo = await this.toDTO(replyToMessage);
             }
         }
+        const messageData = message.toJSON();
         return {
             id: message.id,
             communityId: message.communityId,
@@ -45,6 +46,7 @@ let CommunityMessageMapper = class CommunityMessageMapper {
             replyToId: message.replyToId,
             forwardedFromId: message.forwardedFromId,
             replyTo,
+            reactions: messageData.reactions || [],
             createdAt: message.createdAt,
             updatedAt: message.updatedAt,
         };

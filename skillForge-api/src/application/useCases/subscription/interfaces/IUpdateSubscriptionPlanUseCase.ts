@@ -2,5 +2,5 @@ import { UpdateSubscriptionPlanDTO } from '../../../dto/subscription/UpdateSubsc
 import { SubscriptionPlanDTO } from '../../../dto/subscription/SubscriptionPlanDTO';
 
 export interface IUpdateSubscriptionPlanUseCase {
-  execute(adminUserId: string, dto: UpdateSubscriptionPlanDTO): Promise<SubscriptionPlanDTO>;
+  execute(adminUserId: string, planId: string, dto: UpdateSubscriptionPlanDTO): Promise<SubscriptionPlanDTO>;
 }

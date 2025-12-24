@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.container = void 0;
 require("reflect-metadata");
+const di_1 = require("./di");
+Object.defineProperty(exports, "container", { enumerable: true, get: function () { return di_1.container; } });
 const types_1 = require("./types");
 const Database_1 = require("../database/Database");
 const RedisService_1 = require("../services/RedisService");
@@ -27,7 +29,8 @@ const SuspendUserUseCase_1 = require("../../application/useCases/admin/SuspendUs
 const UnsuspendUserUseCase_1 = require("../../application/useCases/admin/UnsuspendUserUseCase");
 const GetUserProfileUseCase_1 = require("../../application/useCases/user/GetUserProfileUseCase");
 const UpdateUserProfileUseCase_1 = require("../../application/useCases/user/UpdateUserProfileUseCase");
-const PrismaSubscriptionPlanRepository_1 = require("../database/repositories/PrismaSubscriptionPlanRepository");
+const SubscriptionPlanRepository_1 = require("../database/repositories/SubscriptionPlanRepository");
+const FeatureRepository_1 = require("../database/repositories/FeatureRepository");
 const ListSubscriptionPlansUseCase_1 = require("../../application/useCases/subscription/ListSubscriptionPlansUseCase");
 const ListPublicSubscriptionPlansUseCase_1 = require("../../application/useCases/subscription/ListPublicSubscriptionPlansUseCase");
 const GetSubscriptionStatsUseCase_1 = require("../../application/useCases/subscription/GetSubscriptionStatsUseCase");
@@ -47,7 +50,7 @@ const userProfileRoutes_1 = require("../../presentation/routes/user/userProfileR
 const server_1 = require("../../presentation/server");
 const ResponseBuilder_1 = require("../../shared/http/ResponseBuilder");
 const SkillRepository_1 = require("../database/repositories/SkillRepository");
-const S3Service_1 = require("../services/S3Service");
+const S3StorageService_1 = require("../services/S3StorageService");
 const CreateSkillUseCase_1 = require("../../application/useCases/skill/CreateSkillUseCase");
 const ListUserSkillsUseCase_1 = require("../../application/useCases/skill/ListUserSkillsUseCase");
 const BrowseSkillsUseCase_1 = require("../../application/useCases/skill/BrowseSkillsUseCase");
@@ -115,13 +118,13 @@ const MCQImportJobRepository_1 = require("../database/repositories/MCQImportJobR
 const JobQueueService_1 = require("../services/JobQueueService");
 const MCQImportJobProcessor_1 = require("../../application/useCases/mcq/MCQImportJobProcessor");
 const StartMCQImportUseCase_1 = require("../../application/useCases/mcq/StartMCQImportUseCase");
+const CheckSubscriptionExpiryUseCase_1 = require("../../application/useCases/subscription/CheckSubscriptionExpiryUseCase");
+// ... (existing imports)
 const ListMCQImportJobsUseCase_1 = require("../../application/useCases/mcq/ListMCQImportJobsUseCase");
 const DownloadMCQImportErrorsUseCase_1 = require("../../application/useCases/mcq/DownloadMCQImportErrorsUseCase");
 const MCQImportController_1 = require("../../presentation/controllers/mcq/MCQImportController");
 const MCQImportRoutes_1 = require("../../presentation/routes/mcq/MCQImportRoutes");
-const di_1 = require("./di");
-Object.defineProperty(exports, "container", { enumerable: true, get: function () { return di_1.container; } });
-const PrismaAvailabilityRepository_1 = require("../database/repositories/PrismaAvailabilityRepository");
+const AvailabilityRepository_1 = require("../database/repositories/AvailabilityRepository");
 const GetProviderAvailabilityUseCase_1 = require("../../application/useCases/availability/GetProviderAvailabilityUseCase");
 const UpdateProviderAvailabilityUseCase_1 = require("../../application/useCases/availability/UpdateProviderAvailabilityUseCase");
 const GetOccupiedSlotsUseCase_1 = require("../../application/useCases/availability/GetOccupiedSlotsUseCase");
@@ -144,8 +147,37 @@ const PinMessageUseCase_1 = require("../../application/useCases/community/PinMes
 const UnpinMessageUseCase_1 = require("../../application/useCases/community/UnpinMessageUseCase");
 const DeleteMessageUseCase_1 = require("../../application/useCases/community/DeleteMessageUseCase");
 const RemoveCommunityMemberUseCase_1 = require("../../application/useCases/community/RemoveCommunityMemberUseCase");
+const AddReactionUseCase_1 = require("../../application/useCases/community/AddReactionUseCase");
+const RemoveReactionUseCase_1 = require("../../application/useCases/community/RemoveReactionUseCase");
+const MessageReactionRepository_1 = require("../database/repositories/MessageReactionRepository");
 const CommunityController_1 = require("../../presentation/controllers/community/CommunityController");
 const communityRoutes_1 = require("../../presentation/routes/community/communityRoutes");
+const UserSubscriptionRepository_1 = require("../database/repositories/UserSubscriptionRepository");
+const UsageRecordRepository_1 = require("../database/repositories/UsageRecordRepository");
+const CreateFeatureUseCase_1 = require("../../application/useCases/feature/CreateFeatureUseCase");
+const AssignSubscriptionUseCase_1 = require("../../application/useCases/subscription/AssignSubscriptionUseCase");
+const TrackFeatureUsageUseCase_1 = require("../../application/useCases/usage/TrackFeatureUsageUseCase");
+const ListFeaturesUseCase_1 = require("../../application/useCases/feature/ListFeaturesUseCase");
+const GetFeatureByIdUseCase_1 = require("../../application/useCases/feature/GetFeatureByIdUseCase");
+const UpdateFeatureUseCase_1 = require("../../application/useCases/feature/UpdateFeatureUseCase");
+const DeleteFeatureUseCase_1 = require("../../application/useCases/feature/DeleteFeatureUseCase");
+const FeatureController_1 = require("../../presentation/controllers/feature/FeatureController");
+const featureRoutes_1 = require("../../presentation/routes/feature/featureRoutes");
+// Payment 
+const StripePaymentGateway_1 = require("../services/StripePaymentGateway");
+const PaymentRepository_1 = require("../database/repositories/PaymentRepository");
+const CreatePaymentIntentUseCase_1 = require("../../application/useCases/payment/CreatePaymentIntentUseCase");
+const ConfirmPaymentUseCase_1 = require("../../application/useCases/payment/ConfirmPaymentUseCase");
+const HandleWebhookUseCase_1 = require("../../application/useCases/payment/HandleWebhookUseCase");
+const ActivateSubscriptionUseCase_1 = require("../../application/useCases/subscription/ActivateSubscriptionUseCase");
+const CreditAdminWalletUseCase_1 = require("../../application/useCases/admin/CreditAdminWalletUseCase");
+const PaymentController_1 = require("../../presentation/controllers/payment/PaymentController");
+const paymentRoutes_1 = require("../../presentation/routes/payment/paymentRoutes");
+// User Subscription
+const GetUserSubscriptionUseCase_1 = require("../../application/useCases/subscription/GetUserSubscriptionUseCase");
+const CancelSubscriptionUseCase_1 = require("../../application/useCases/subscription/CancelSubscriptionUseCase");
+const UserSubscriptionController_1 = require("../../presentation/controllers/subscription/UserSubscriptionController");
+const userSubscriptionRoutes_1 = require("../../presentation/routes/subscription/userSubscriptionRoutes");
 // Mappers
 di_1.container.bind(types_1.TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper_1.AdminUserDTOMapper);
 di_1.container.bind(types_1.TYPES.IUserDTOMapper).to(UserDTOMapper_1.UserDTOMapper);
@@ -185,7 +217,10 @@ di_1.container.bind(types_1.TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase_
 di_1.container.bind(types_1.TYPES.GetUserProfileUseCase).to(GetUserProfileUseCase_1.GetUserProfileUseCase);
 di_1.container.bind(types_1.TYPES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase_1.UpdateUserProfileUseCase);
 // Subscription Repository
-di_1.container.bind(types_1.TYPES.ISubscriptionPlanRepository).to(PrismaSubscriptionPlanRepository_1.PrismaSubscriptionPlanRepository);
+di_1.container.bind(types_1.TYPES.ISubscriptionPlanRepository).to(SubscriptionPlanRepository_1.PrismaSubscriptionPlanRepository);
+// Industrial Subscription System Repositories
+di_1.container.bind(types_1.TYPES.IUserSubscriptionRepository).to(UserSubscriptionRepository_1.PrismaUserSubscriptionRepository);
+di_1.container.bind(types_1.TYPES.IUsageRecordRepository).to(UsageRecordRepository_1.PrismaUsageRecordRepository);
 // Subscription Use Cases
 di_1.container.bind(types_1.TYPES.ListSubscriptionPlansUseCase).to(ListSubscriptionPlansUseCase_1.ListSubscriptionPlansUseCase);
 di_1.container.bind(types_1.TYPES.ListPublicSubscriptionPlansUseCase).to(ListPublicSubscriptionPlansUseCase_1.ListPublicSubscriptionPlansUseCase);
@@ -193,9 +228,23 @@ di_1.container.bind(types_1.TYPES.GetSubscriptionStatsUseCase).to(GetSubscriptio
 di_1.container.bind(types_1.TYPES.CreateSubscriptionPlanUseCase).to(CreateSubscriptionPlanUseCase_1.CreateSubscriptionPlanUseCase);
 di_1.container.bind(types_1.TYPES.UpdateSubscriptionPlanUseCase).to(UpdateSubscriptionPlanUseCase_1.UpdateSubscriptionPlanUseCase);
 di_1.container.bind(types_1.TYPES.DeleteSubscriptionPlanUseCase).to(DeleteSubscriptionPlanUseCase_1.DeleteSubscriptionPlanUseCase);
+// Industrial Subscription System Use Cases
+di_1.container.bind(types_1.TYPES.ICreateFeatureUseCase).to(CreateFeatureUseCase_1.CreateFeatureUseCase);
+di_1.container.bind(types_1.TYPES.IAssignSubscriptionUseCase).to(AssignSubscriptionUseCase_1.AssignSubscriptionUseCase);
+di_1.container.bind(types_1.TYPES.ITrackFeatureUsageUseCase).to(TrackFeatureUsageUseCase_1.TrackFeatureUsageUseCase);
+di_1.container.bind(types_1.TYPES.IListFeaturesUseCase).to(ListFeaturesUseCase_1.ListFeaturesUseCase);
+di_1.container.bind(types_1.TYPES.IGetFeatureByIdUseCase).to(GetFeatureByIdUseCase_1.GetFeatureByIdUseCase);
+di_1.container.bind(types_1.TYPES.IUpdateFeatureUseCase).to(UpdateFeatureUseCase_1.UpdateFeatureUseCase);
+di_1.container.bind(types_1.TYPES.IDeleteFeatureUseCase).to(DeleteFeatureUseCase_1.DeleteFeatureUseCase);
+// Feature Repository
+di_1.container.bind(types_1.TYPES.IFeatureRepository).to(FeatureRepository_1.PrismaFeatureRepository);
+// Feature Controller
+di_1.container.bind(types_1.TYPES.FeatureController).to(FeatureController_1.FeatureController);
+// Feature Routes
+di_1.container.bind(types_1.TYPES.FeatureRoutes).to(featureRoutes_1.FeatureRoutes);
 // Skill Repository and Services
 di_1.container.bind(types_1.TYPES.ISkillRepository).to(SkillRepository_1.SkillRepository);
-di_1.container.bind(types_1.TYPES.IS3Service).to(S3Service_1.S3Service);
+di_1.container.bind(types_1.TYPES.IStorageService).to(S3StorageService_1.S3StorageService);
 // Skill Use Cases
 di_1.container.bind(types_1.TYPES.CreateSkillUseCase).to(CreateSkillUseCase_1.CreateSkillUseCase);
 di_1.container.bind(types_1.TYPES.ListUserSkillsUseCase).to(ListUserSkillsUseCase_1.ListUserSkillsUseCase);
@@ -295,6 +344,21 @@ di_1.container.bind(types_1.TYPES.ICommunityRepository).to(CommunityRepository_1
 di_1.container.bind(types_1.TYPES.ICommunityMessageRepository).to(CommunityMessageRepository_1.CommunityMessageRepository);
 // WebSocket Service
 di_1.container.bind(types_1.TYPES.IWebSocketService).to(WebSocketService_1.WebSocketService).inSingletonScope();
+// Payment 
+di_1.container.bind(types_1.TYPES.IPaymentGateway).to(StripePaymentGateway_1.StripePaymentGateway).inSingletonScope();
+di_1.container.bind(types_1.TYPES.IPaymentRepository).to(PaymentRepository_1.PrismaPaymentRepository).inSingletonScope();
+di_1.container.bind(types_1.TYPES.ICreatePaymentIntentUseCase).to(CreatePaymentIntentUseCase_1.CreatePaymentIntentUseCase);
+di_1.container.bind(types_1.TYPES.IConfirmPaymentUseCase).to(ConfirmPaymentUseCase_1.ConfirmPaymentUseCase);
+di_1.container.bind(types_1.TYPES.IHandleWebhookUseCase).to(HandleWebhookUseCase_1.HandleWebhookUseCase);
+di_1.container.bind(types_1.TYPES.IActivateSubscriptionUseCase).to(ActivateSubscriptionUseCase_1.ActivateSubscriptionUseCase);
+di_1.container.bind(types_1.TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase_1.CreditAdminWalletUseCase);
+di_1.container.bind(types_1.TYPES.PaymentController).to(PaymentController_1.PaymentController);
+di_1.container.bind(types_1.TYPES.PaymentRoutes).to(paymentRoutes_1.PaymentRoutes);
+// User Subscription
+di_1.container.bind(types_1.TYPES.IGetUserSubscriptionUseCase).to(GetUserSubscriptionUseCase_1.GetUserSubscriptionUseCase);
+di_1.container.bind(types_1.TYPES.ICancelSubscriptionUseCase).to(CancelSubscriptionUseCase_1.CancelSubscriptionUseCase);
+di_1.container.bind(types_1.TYPES.UserSubscriptionController).to(UserSubscriptionController_1.UserSubscriptionController);
+di_1.container.bind(types_1.TYPES.UserSubscriptionRoutes).to(userSubscriptionRoutes_1.UserSubscriptionRoutes);
 // Community Mappers
 di_1.container.bind(types_1.TYPES.ICommunityMapper).to(CommunityMapper_1.CommunityMapper);
 di_1.container.bind(types_1.TYPES.ICommunityMessageMapper).to(CommunityMessageMapper_1.CommunityMessageMapper);
@@ -311,14 +375,18 @@ di_1.container.bind(types_1.TYPES.PinMessageUseCase).to(PinMessageUseCase_1.PinM
 di_1.container.bind(types_1.TYPES.UnpinMessageUseCase).to(UnpinMessageUseCase_1.UnpinMessageUseCase);
 di_1.container.bind(types_1.TYPES.DeleteMessageUseCase).to(DeleteMessageUseCase_1.DeleteMessageUseCase);
 di_1.container.bind(types_1.TYPES.RemoveCommunityMemberUseCase).to(RemoveCommunityMemberUseCase_1.RemoveCommunityMemberUseCase);
+di_1.container.bind(types_1.TYPES.IMessageReactionRepository).to(MessageReactionRepository_1.MessageReactionRepository);
+di_1.container.bind(types_1.TYPES.AddReactionUseCase).to(AddReactionUseCase_1.AddReactionUseCase);
+di_1.container.bind(types_1.TYPES.RemoveReactionUseCase).to(RemoveReactionUseCase_1.RemoveReactionUseCase);
 // Community Controller
 di_1.container.bind(types_1.TYPES.CommunityController).to(CommunityController_1.CommunityController);
 // Community Routes
 di_1.container.bind(types_1.TYPES.CommunityRoutes).to(communityRoutes_1.CommunityRoutes);
-di_1.container.bind(types_1.TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository_1.PrismaAvailabilityRepository);
+di_1.container.bind(types_1.TYPES.IAvailabilityRepository).to(AvailabilityRepository_1.PrismaAvailabilityRepository);
 di_1.container.bind(types_1.TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase_1.GetProviderAvailabilityUseCase);
 di_1.container.bind(types_1.TYPES.UpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase_1.UpdateProviderAvailabilityUseCase);
 di_1.container.bind(types_1.TYPES.GetOccupiedSlotsUseCase).to(GetOccupiedSlotsUseCase_1.GetOccupiedSlotsUseCase);
 di_1.container.bind(types_1.TYPES.AvailabilityController).to(AvailabilityController_1.AvailabilityController);
+di_1.container.bind(types_1.TYPES.ICheckSubscriptionExpiryUseCase).to(CheckSubscriptionExpiryUseCase_1.CheckSubscriptionExpiryUseCase);
 di_1.container.bind(types_1.TYPES.AvailabilityRoutes).to(availabilityRoutes_1.AvailabilityRoutes);
 //# sourceMappingURL=container.js.map

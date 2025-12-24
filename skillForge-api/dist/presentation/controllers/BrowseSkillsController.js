@@ -22,16 +22,17 @@ let BrowseSkillsController = class BrowseSkillsController {
         this.responseBuilder = responseBuilder;
         this.browse = async (req, res, next) => {
             try {
-                const { search, category, level, minPrice, maxPrice, page, limit, excludeProviderId } = req.query;
+                const { search, category, level, minCredits, maxCredits, page, limit, sortBy, sortOrder } = req.query;
                 const filters = {
                     search: search,
                     category: category,
                     level: level,
-                    minPrice: minPrice ? Number(minPrice) : undefined,
-                    maxPrice: maxPrice ? Number(maxPrice) : undefined,
+                    minCredits: minCredits ? Number(minCredits) : undefined,
+                    maxCredits: maxCredits ? Number(maxCredits) : undefined,
                     page: page ? Number(page) : 1,
                     limit: limit ? Number(limit) : 12,
-                    excludeProviderId: excludeProviderId,
+                    sortBy: sortBy,
+                    sortOrder: sortOrder,
                 };
                 const result = await this.browseSkillsUseCase.execute(filters);
                 const response = this.responseBuilder.success(result, 'Skills retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);

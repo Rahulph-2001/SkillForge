@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
@@ -20,7 +20,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
   constructor(
     @inject(TYPES.ICommunityMessageRepository) private readonly messageRepository: ICommunityMessageRepository,
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
-    @inject(TYPES.IS3Service) private readonly s3Service: IS3Service,
+    @inject(TYPES.IStorageService) private readonly storageService: IStorageService,
     @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService,
     @inject(TYPES.ICommunityMessageMapper) private readonly messageMapper: ICommunityMessageMapper
   ) { }
@@ -42,7 +42,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
     if (file) {
       const timestamp = Date.now();
       const key = `communities/${dto.communityId}/files/${userId}/${timestamp}-${file.originalname}`;
-      fileUrl = await this.s3Service.uploadFile(file.buffer, key, file.mimetype);
+      fileUrl = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
       fileName = file.originalname;
 
       if (file.mimetype.startsWith('image/')) {
@@ -62,7 +62,6 @@ export class SendMessageUseCase implements ISendMessageUseCase {
       fileUrl,
       fileName,
       replyToId: dto.replyToId,
-      forwardedFromId: dto.forwardedFromId,
     });
 
     const createdMessage = await this.messageRepository.create(message);

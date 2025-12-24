@@ -22,13 +22,13 @@ let UpdateSkillTemplateUseCase = class UpdateSkillTemplateUseCase {
         this.skillTemplateRepository = skillTemplateRepository;
         this.userRepository = userRepository;
     }
-    async execute(adminUserId, dto) {
+    async execute(adminUserId, templateId, dto) {
         // Verify admin
         const admin = await this.userRepository.findById(adminUserId);
         if (!admin || admin.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.UnauthorizedError('Only admins can update skill templates');
         }
-        const existing = await this.skillTemplateRepository.findById(dto.templateId);
+        const existing = await this.skillTemplateRepository.findById(templateId);
         if (!existing) {
             throw new AppError_1.NotFoundError('Skill template not found');
         }
@@ -53,7 +53,7 @@ let UpdateSkillTemplateUseCase = class UpdateSkillTemplateUseCase {
             updates.tags = dto.tags;
         if (dto.status)
             updates.status = dto.status;
-        return await this.skillTemplateRepository.update(dto.templateId, updates);
+        return await this.skillTemplateRepository.update(templateId, updates);
     }
 };
 exports.UpdateSkillTemplateUseCase = UpdateSkillTemplateUseCase;

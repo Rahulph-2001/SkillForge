@@ -8,8 +8,6 @@ export declare class GetCommunityMessagesUseCase implements IGetCommunityMessage
     private readonly messageRepository;
     private readonly communityRepository;
     constructor(messageRepository: ICommunityMessageRepository, communityRepository: ICommunityRepository);
-    execute(userId: string, communityId: string, limit?: number, offset?: number): Promise<Community>;
-    Message: any;
-    []: any;
+    execute(userId: string, communityId: string, limit?: number, offset?: number): Promise<CommunityMessage[]>;
 }
 //# sourceMappingURL=GetCommunityMessagesUseCase.d.ts.map

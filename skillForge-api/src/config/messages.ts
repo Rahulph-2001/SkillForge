@@ -14,24 +14,98 @@ export const SUCCESS_MESSAGES = {
   GENERAL: {
     HEALTH_CHECK: 'Service is healthy.',
   },
+  PAYMENT: {
+    INTENT_CREATED: 'Payment intent created successfully',
+    CONFIRMED: 'Payment confirmed successfully',
+    REFUNDED: 'Payment refunded successfully',
+  },
+
+  USER: {
+    PROFILE_FETCHED: 'Profile retrieved successfully',
+    PROFILE_UPDATED: 'Profile updated successfully',
+    REVIEWS_FETCHED: 'Reviews retrieved successfully',
+  },
 
   SKILL: {
     CREATED: 'Skill created successfully.',
     FETCHED: 'Skills retrieved successfully.',
     UPDATED: 'Skill updated successfully.',
     DELETED: 'Skill deleted successfully.',
+    DETAILS_FETCHED: 'Skill details retrieved successfully',
+    APPROVED: 'Skill approved successfully',
+    REJECTED: 'Skill rejected successfully',
+    BLOCKED: 'Skill blocked successfully',
+    UNBLOCKED: 'Skill unblocked successfully',
+    PENDING_FETCHED: (count: number) => `Found ${count} skills pending approval`,
+    ALL_FETCHED: (count: number) => `Found ${count} skills`,
+  },
+
+  BOOKING: {
+    CREATED: 'Booking created successfully',
+    ACCEPTED: 'Booking accepted successfully',
+    DECLINED: 'Booking declined successfully',
+    CANCELLED: 'Booking cancelled successfully',
+    RESCHEDULE_REQUESTED: 'Reschedule request submitted successfully. Waiting for approval.',
+    RESCHEDULE_ACCEPTED: 'Reschedule request accepted successfully',
+    RESCHEDULE_DECLINED: 'Reschedule request declined',
+    SESSIONS_FETCHED: 'Sessions retrieved successfully',
+  },
+
+  MCQ: {
+    TEST_FETCHED: 'Test retrieved successfully',
+    TEST_SUBMITTED_PASS: 'Congratulations! You passed the test!',
+    TEST_SUBMITTED_FAIL: 'Test completed',
+    HISTORY_FETCHED: 'Test history retrieved successfully',
+  },
+
+  SUBSCRIPTION: {
+    PLANS_FETCHED: 'Subscription plans retrieved successfully',
+    STATS_FETCHED: 'Subscription statistics retrieved successfully',
+    PLAN_CREATED: 'Subscription plan created successfully',
+    PLAN_UPDATED: 'Subscription plan updated successfully',
+    PLAN_DELETED: 'Subscription plan deleted successfully',
+    SUBSCRIPTION_FETCHED: 'Subscription retrieved successfully',
+    SUBSCRIPTION_CANCELLED: 'Subscription cancelled successfully',
+  },
+
+  FEATURE: {
+    CREATED: 'Feature created successfully',
+    UPDATED: 'Feature updated successfully',
+    DELETED: 'Feature deleted successfully',
+    FETCHED: 'Features retrieved successfully',
+    FEATURE_FETCHED: 'Feature retrieved successfully',
+  },
+
+  TEMPLATE: {
+    QUESTION_CREATED: 'Question created successfully',
+    QUESTIONS_FETCHED: 'Questions retrieved successfully',
+    QUESTION_UPDATED: 'Question updated successfully',
+    QUESTION_DELETED: 'Question deleted successfully',
+    SKILL_CREATED: 'Skill template created successfully',
+    SKILL_FETCHED: 'Skill templates retrieved successfully',
+    SKILL_UPDATED: 'Skill template updated successfully',
+    SKILL_DELETED: 'Skill template deleted successfully',
+    SKILL_STATUS_TOGGLED: 'Skill template status toggled successfully',
+    ACTIVE_FETCHED: 'Active skill templates retrieved successfully',
   },
 
   COMMUNITY: {
-  CREATED: 'Community created successfully',
-  UPDATED: 'Community updated successfully',
-  JOINED: 'Joined community successfully',
-  LEFT: 'Left community successfully',
-  MESSAGE_SENT: 'Message sent successfully',
-  MESSAGE_PINNED: 'Message pinned successfully',
-  MESSAGE_UNPINNED: 'Message unpinned successfully',
-  MESSAGE_DELETED: 'Message deleted successfully',
-},
+    CREATED: 'Community created successfully',
+    UPDATED: 'Community updated successfully',
+    JOINED: 'Joined community successfully',
+    LEFT: 'Left community successfully',
+    MESSAGE_SENT: 'Message sent successfully',
+    MESSAGE_PINNED: 'Message pinned successfully',
+    MESSAGE_UNPINNED: 'Message unpinned successfully',
+    MESSAGE_DELETED: 'Message deleted successfully',
+    FETCHED: 'Communities retrieved successfully',
+    DETAILS_FETCHED: 'Community details retrieved successfully',
+    MESSAGES_FETCHED: 'Messages retrieved successfully',
+    MEMBER_REMOVED: 'Member removed successfully',
+    MEMBERS_FETCHED: 'Members retrieved successfully',
+    REACTION_ADDED: 'Reaction added successfully',
+    REACTION_REMOVED: 'Reaction removed successfully',
+  },
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -51,7 +125,7 @@ export const ERROR_MESSAGES = {
     ACCOUNT_SUSPENDED: 'Your account has been suspended. Please contact support.',
     ACCESS_DENIED: 'Access denied. Admin privileges required.',
     GOOGLE_PROFILE_MISSING_EMAIL: 'Google profile is missing an email address.',
-    EMAIL_ALREADY_EXISTS:'User with this email already exists',
+    EMAIL_ALREADY_EXISTS: 'User with this email already exists',
   },
   ADMIN: {
     ACCESS_REQUIRED: 'Admin access required',
@@ -68,35 +142,84 @@ export const ERROR_MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many requests, try again later.',
     EMAIL_SEND_FAILED: 'Failed to send email. Please try again.',
   },
-  COMMUNITY: {
-  NOT_FOUND: 'Community not found',
-  ALREADY_MEMBER: 'Already a member of this community',
-  NOT_MEMBER: 'Not a member of this community',
-  INSUFFICIENT_CREDITS: 'Insufficient credits to join community',
-  ADMIN_CANNOT_LEAVE: 'Community admin cannot leave',
-  ONLY_ADMIN_CAN_UPDATE: 'Only admin can update community',
-  ONLY_ADMIN_CAN_PIN: 'Only admin can pin messages',
-  MESSAGE_NOT_FOUND: 'Message not found',
-},
+  PAYMENT: {
+    INTENT_CREATION_FAILED: 'Failed to create payment intent',
+    CONFIRMATION_FAILED: 'Payment confirmation failed',
+    REFUND_FAILED: 'Payment refund failed',
+    NOT_FOUND: 'Payment not found',
+    INVALID_AMOUNT: 'Invalid payment amount',
+  },
 
-   SKILL: {
+  USER: {
+    NOT_FOUND: 'User not found',
+    PROFILE_FETCH_FAILED: 'Failed to fetch profile',
+    REVIEWS_FETCH_FAILED: 'Failed to fetch reviews',
+  },
+
+  BOOKING: {
+    ACCEPT_FAILED: 'Failed to accept booking',
+    DECLINE_FAILED: 'Failed to decline booking',
+    CANCEL_FAILED: 'Failed to cancel booking',
+    RESCHEDULE_FAILED: 'Failed to request reschedule',
+    RESCHEDULE_ACCEPT_FAILED: 'Failed to accept reschedule',
+    RESCHEDULE_DECLINE_FAILED: 'Failed to decline reschedule',
+    SESSIONS_FETCH_FAILED: 'Failed to retrieve sessions',
+    REQUIRED_FIELDS: 'New date, time, and reason are required',
+    REASON_REQUIRED: 'Reason is required to decline a reschedule request',
+  },
+
+  MCQ: {
+    TEMPLATE_NOT_FOUND: 'Skill template not found',
+    TEMPLATE_INACTIVE: 'This skill template is not currently available',
+    INVALID_LEVEL: 'Invalid level for this skill template',
+    NO_QUESTIONS: 'No questions available for this test',
+    INVALID_REQUEST: 'Invalid request data',
+    TEST_FETCH_FAILED: 'Failed to retrieve test',
+    TEST_SUBMIT_FAILED: 'Failed to submit test',
+    HISTORY_FETCH_FAILED: 'Failed to retrieve test history',
+  },
+
+  SKILL: {
     CREATION_FAILED: 'Failed to create skill.',
     NOT_FOUND: 'Skill not found.',
     UPDATE_FAILED: 'Failed to update skill.',
     DELETE_FAILED: 'Failed to delete skill.',
     INVALID_DATA: 'Invalid skill data provided.',
     IMAGE_UPLOAD_FAILED: 'Failed to upload skill image.',
+    REJECTION_REASON_REQUIRED: 'Rejection reason is required',
+    BLOCK_REASON_REQUIRED: 'Block reason is required',
   },
 
-  
+  FEATURE: {
+    NOT_FOUND: 'Feature not found',
+    ALREADY_EXISTS: 'Feature with this name already exists for this plan',
+    IN_USE: 'Feature is in use by subscription plans and cannot be deleted',
+    INVALID_TYPE: 'Invalid feature type',
+    LIMIT_REQUIRED: 'Limit value is required for numeric limit features',
+  },
+
+  COMMUNITY: {
+    NOT_FOUND: 'Community not found',
+    ALREADY_MEMBER: 'Already a member of this community',
+    NOT_MEMBER: 'Not a member of this community',
+    INSUFFICIENT_CREDITS: 'Insufficient credits to join community',
+    ADMIN_CANNOT_LEAVE: 'Community admin cannot leave',
+    ONLY_ADMIN_CAN_UPDATE: 'Only admin can update community',
+    ONLY_ADMIN_CAN_PIN: 'Only admin can pin messages',
+    MESSAGE_NOT_FOUND: 'Message not found',
+  },
+
+  VALIDATION: {
+    VALIDATION_ERROR: 'VALIDATION_ERROR',
+  },
 } as const;
 
 export const API_MESSAGES = {
-MCQ_IMPORT_START: 'MCQ import job started successfully.',
-    MCQ_IMPORT_FILE_MISSING: 'No file uploaded. Please select a CSV or Excel file.',
-    MCQ_IMPORT_INVALID_FILE_TYPE: 'Invalid file format. Only CSV and XLSX/XLS files are supported.',
-    MCQ_IMPORT_SUCCESS: 'MCQ questions imported successfully.',
-    MCQ_IMPORT_PARTIAL_SUCCESS: 'MCQ questions imported with some errors. Please check the error file.',
-    VALIDATION_INVALID_FILE_CONTENT: 'The file content is invalid or missing required columns in one or more rows.',
-    //
+  MCQ_IMPORT_START: 'MCQ import job started successfully.',
+  MCQ_IMPORT_FILE_MISSING: 'No file uploaded. Please select a CSV or Excel file.',
+  MCQ_IMPORT_INVALID_FILE_TYPE: 'Invalid file format. Only CSV and XLSX/XLS files are supported.',
+  MCQ_IMPORT_SUCCESS: 'MCQ questions imported successfully.',
+  MCQ_IMPORT_PARTIAL_SUCCESS: 'MCQ questions imported with some errors. Please check the error file.',
+  VALIDATION_INVALID_FILE_CONTENT: 'The file content is invalid or missing required columns in one or more rows.',
+  //
 }

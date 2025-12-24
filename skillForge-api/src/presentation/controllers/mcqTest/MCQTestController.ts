@@ -1,9 +1,12 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTemplateRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
+import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
+import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
 
 @injectable()
 export class MCQTestController {
@@ -11,124 +14,120 @@ export class MCQTestController {
     @inject(TYPES.ITemplateQuestionRepository)
     private readonly templateQuestionRepository: ITemplateQuestionRepository,
     @inject(TYPES.ISkillTemplateRepository)
-    private readonly skillTemplateRepository: ISkillTemplateRepository
-  ) {}
+    private readonly skillTemplateRepository: ISkillTemplateRepository,
+    @inject(TYPES.IResponseBuilder)
+    private readonly responseBuilder: IResponseBuilder
+  ) { }
 
-  
-  async getTest(req: Request, res: Response): Promise<void> {
+  async getTest(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { templateId, level } = req.params;
 
-      // Validate template exists
       const template = await this.skillTemplateRepository.findById(templateId);
       if (!template) {
-        res.status(404).json({
-          success: false,
-          message: 'Skill template not found',
-        });
+        const response = this.responseBuilder.error(
+          'TEMPLATE_NOT_FOUND',
+          ERROR_MESSAGES.MCQ.TEMPLATE_NOT_FOUND,
+          HttpStatusCode.NOT_FOUND
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Check if template is active
       if (template.status !== 'Active') {
-        res.status(400).json({
-          success: false,
-          message: 'This skill template is not currently available',
-        });
+        const response = this.responseBuilder.error(
+          'TEMPLATE_INACTIVE',
+          ERROR_MESSAGES.MCQ.TEMPLATE_INACTIVE,
+          HttpStatusCode.BAD_REQUEST
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Check if level is valid for this template
       if (!template.levels.includes(level)) {
-        res.status(400).json({
-          success: false,
-          message: 'Invalid level for this skill template',
-        });
+        const response = this.responseBuilder.error(
+          'INVALID_LEVEL',
+          ERROR_MESSAGES.MCQ.INVALID_LEVEL,
+          HttpStatusCode.BAD_REQUEST
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Get questions for this template and level
       const allQuestions = await this.templateQuestionRepository.findByTemplateIdAndLevel(
         templateId,
         level
       );
 
-      // Filter only active questions
       const activeQuestions = allQuestions.filter((q: TemplateQuestion) => q.isActive);
 
       if (activeQuestions.length === 0) {
-        res.status(404).json({
-          success: false,
-          message: 'No questions available for this test',
-        });
+        const response = this.responseBuilder.error(
+          'NO_QUESTIONS',
+          ERROR_MESSAGES.MCQ.NO_QUESTIONS,
+          HttpStatusCode.NOT_FOUND
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Shuffle and limit questions to mcqCount
       const shuffled = activeQuestions.sort(() => Math.random() - 0.5);
       const selectedQuestions = shuffled.slice(0, template.mcqCount);
 
-      // Remove correct answers from response
       const questionsForTest = selectedQuestions.map((q: TemplateQuestion) => ({
         id: q.id,
         question: q.question,
         options: q.options,
       }));
 
-      res.status(200).json({
-        success: true,
-        message: 'Test retrieved successfully',
-        data: {
+      const response = this.responseBuilder.success(
+        {
           templateId: template.id,
           templateTitle: template.title,
           level,
           questions: questionsForTest,
-          duration: 30, // 30 minutes
+          duration: 30,
           passingScore: template.passRange,
         },
-      });
+        SUCCESS_MESSAGES.MCQ.TEST_FETCHED,
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
     } catch (error) {
-      console.error('Get test error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to retrieve test',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      next(error);
     }
   }
 
-  
-  async submitTest(req: Request, res: Response): Promise<void> {
+  async submitTest(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { templateId, level, answers } = req.body;
-      // const userId = (req as any).user?.userId;
 
-      // Validate input
       if (!templateId || !level || !Array.isArray(answers)) {
-        res.status(400).json({
-          success: false,
-          message: 'Invalid request data',
-        });
+        const response = this.responseBuilder.error(
+          'INVALID_REQUEST',
+          ERROR_MESSAGES.MCQ.INVALID_REQUEST,
+          HttpStatusCode.BAD_REQUEST
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Get template
       const template = await this.skillTemplateRepository.findById(templateId);
       if (!template) {
-        res.status(404).json({
-          success: false,
-          message: 'Skill template not found',
-        });
+        const response = this.responseBuilder.error(
+          'TEMPLATE_NOT_FOUND',
+          ERROR_MESSAGES.MCQ.TEMPLATE_NOT_FOUND,
+          HttpStatusCode.NOT_FOUND
+        );
+        res.status(response.statusCode).json(response.body);
         return;
       }
 
-      // Get questions
       const allQuestions = await this.templateQuestionRepository.findByTemplateIdAndLevel(
         templateId,
         level
       );
 
-      // Calculate score
       let correctAnswers = 0;
       const questionsWithAnswers = allQuestions.slice(0, answers.length).map((q: TemplateQuestion, index: number) => {
         const userAnswer = answers[index];
@@ -148,47 +147,33 @@ export class MCQTestController {
       const score = Math.round((correctAnswers / totalQuestions) * 100);
       const passed = score >= template.passRange;
 
-      // TODO: Save test result to database for history
-
-      res.status(200).json({
-        success: true,
-        message: passed ? 'Congratulations! You passed the test!' : 'Test completed',
-        data: {
+      const response = this.responseBuilder.success(
+        {
           score,
           totalQuestions,
           correctAnswers,
           passed,
           questions: questionsWithAnswers,
         },
-      });
+        passed ? SUCCESS_MESSAGES.MCQ.TEST_SUBMITTED_PASS : SUCCESS_MESSAGES.MCQ.TEST_SUBMITTED_FAIL,
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
     } catch (error) {
-      console.error('Submit test error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to submit test',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      next(error);
     }
   }
 
-  
-  async getHistory(_req: Request, res: Response): Promise<void> {
+  async getHistory(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      // const userId = (req as any).user?.userId;
-
-      
-      res.status(200).json({
-        success: true,
-        message: 'Test history retrieved successfully',
-        data: [],
-      });
+      const response = this.responseBuilder.success(
+        [],
+        SUCCESS_MESSAGES.MCQ.HISTORY_FETCHED,
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
     } catch (error) {
-      console.error('Get history error:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to retrieve test history',
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
+      next(error);
     }
   }
 }

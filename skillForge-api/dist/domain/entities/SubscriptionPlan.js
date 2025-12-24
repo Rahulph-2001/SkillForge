@@ -2,18 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptionPlan = void 0;
 class SubscriptionPlan {
-    constructor(id, name, price, projectPosts, communityPosts, features, badge, color, isActive = true, createdAt, updatedAt) {
+    constructor(id, name, price, projectPosts, createCommunity, features, badge, color, isActive = true, createdAt, updatedAt, trialDays = 0) {
         this._id = id;
         this._name = name;
         this._price = price;
         this._projectPosts = projectPosts;
-        this._communityPosts = communityPosts;
+        this._createCommunity = createCommunity;
         this._features = features;
         this._badge = badge;
         this._color = color;
         this._isActive = isActive;
         this._createdAt = createdAt || new Date();
         this._updatedAt = updatedAt || new Date();
+        this._trialDays = trialDays;
         this.validate();
     }
     // Getters
@@ -29,8 +30,8 @@ class SubscriptionPlan {
     get projectPosts() {
         return this._projectPosts;
     }
-    get communityPosts() {
-        return this._communityPosts;
+    get createCommunity() {
+        return this._createCommunity;
     }
     get features() {
         return [...this._features];
@@ -49,6 +50,9 @@ class SubscriptionPlan {
     }
     get updatedAt() {
         return this._updatedAt;
+    }
+    get trialDays() {
+        return this._trialDays;
     }
     /**
      * Validate subscription plan business rules
@@ -74,7 +78,7 @@ class SubscriptionPlan {
         if (this._projectPosts !== null && this._projectPosts < -1) {
             throw new Error('Project posts must be null (unlimited), -1 (unlimited), or >= 0');
         }
-        if (this._communityPosts !== null && this._communityPosts < -1) {
+        if (this._createCommunity !== null && this._createCommunity < -1) {
             throw new Error('Community posts must be null (unlimited), -1 (unlimited), or >= 0');
         }
         // Rule 6: Features must not have empty names
@@ -87,11 +91,11 @@ class SubscriptionPlan {
     /**
      * Update plan details
      */
-    updateDetails(name, price, projectPosts, communityPosts, badge, color) {
+    updateDetails(name, price, projectPosts, createCommunity, badge, color) {
         this._name = name;
         this._price = price;
         this._projectPosts = projectPosts;
-        this._communityPosts = communityPosts;
+        this._createCommunity = createCommunity;
         this._badge = badge;
         this._color = color;
         this._updatedAt = new Date();
@@ -100,16 +104,16 @@ class SubscriptionPlan {
     /**
      * Add a new feature to the plan
      */
-    addFeature(id, name) {
-        if (!name || name.trim().length === 0) {
+    addFeature(feature) {
+        if (!feature.name || feature.name.trim().length === 0) {
             throw new Error('Feature name cannot be empty');
         }
         // Check for duplicate feature names
-        const exists = this._features.some(f => f.name.toLowerCase() === name.toLowerCase());
+        const exists = this._features.some(f => f.name.toLowerCase() === feature.name.toLowerCase());
         if (exists) {
             throw new Error('Feature with this name already exists');
         }
-        this._features.push({ id, name: name.trim() });
+        this._features.push(feature);
         this._updatedAt = new Date();
     }
     /**
@@ -126,15 +130,30 @@ class SubscriptionPlan {
     /**
      * Update a feature
      */
-    updateFeature(featureId, newName) {
-        if (!newName || newName.trim().length === 0) {
-            throw new Error('Feature name cannot be empty');
-        }
+    updateFeature(featureId, updates) {
         const feature = this._features.find(f => f.id === featureId);
         if (!feature) {
             throw new Error('Feature not found');
         }
-        feature.name = newName.trim();
+        if (updates.name !== undefined) {
+            if (!updates.name || updates.name.trim().length === 0) {
+                throw new Error('Feature name cannot be empty');
+            }
+            feature.name = updates.name.trim();
+        }
+        // Update other properties if provided
+        if (updates.description !== undefined)
+            feature.description = updates.description;
+        if (updates.featureType !== undefined)
+            feature.featureType = updates.featureType;
+        if (updates.limitValue !== undefined)
+            feature.limitValue = updates.limitValue;
+        if (updates.isEnabled !== undefined)
+            feature.isEnabled = updates.isEnabled;
+        if (updates.displayOrder !== undefined)
+            feature.displayOrder = updates.displayOrder;
+        if (updates.isHighlighted !== undefined)
+            feature.isHighlighted = updates.isHighlighted;
         this._updatedAt = new Date();
     }
     /**
@@ -175,7 +194,7 @@ class SubscriptionPlan {
      * Check if plan allows unlimited community posts
      */
     hasUnlimitedCommunityPosts() {
-        return this._communityPosts === null || this._communityPosts === -1;
+        return this._createCommunity === null || this._createCommunity === -1;
     }
     /**
      * Convert to JSON for API responses
@@ -186,7 +205,7 @@ class SubscriptionPlan {
             name: this._name,
             price: this._price,
             projectPosts: this._projectPosts,
-            communityPosts: this._communityPosts,
+            createCommunity: this._createCommunity,
             features: this._features,
             badge: this._badge,
             color: this._color,
@@ -199,7 +218,7 @@ class SubscriptionPlan {
      * Create from plain object (for repository)
      */
     static fromJSON(data) {
-        return new SubscriptionPlan(data.id || data._id?.toString(), data.name, data.price, data.projectPosts, data.communityPosts, data.features || [], data.badge, data.color, data.isActive !== undefined ? data.isActive : true, data.createdAt ? new Date(data.createdAt) : undefined, data.updatedAt ? new Date(data.updatedAt) : undefined);
+        return new SubscriptionPlan(data.id || data._id?.toString(), data.name, data.price, data.projectPosts ?? data.project_posts, data.createCommunity ?? data.create_community, data.features || [], data.badge, data.color, data.isActive ?? data.is_active ?? true, data.createdAt ? new Date(data.createdAt) : new Date(data.created_at), data.updatedAt ? new Date(data.updatedAt) : new Date(data.updated_at), data.trialDays ?? data.trial_days ?? 0);
     }
 }
 exports.SubscriptionPlan = SubscriptionPlan;

@@ -12,6 +12,8 @@ import HomePage from '../pages/user/HomePage';
 import SubscriptionPlansPage from '../pages/user/SubscriptionPlansPage';
 import SkillsPage from '../pages/user/SkillsPage';
 import BrowseSkillsPage from '../pages/user/BrowseSkillsPage';
+import ProjectsPage from '../pages/user/ProjectsPage';
+import CreateProjectPage from '../pages/user/CreateProjectPage';
 import SkillDetailPage from '../pages/user/SkillDetailPage';
 import ProviderProfilePage from '../pages/user/ProviderProfilePage';
 import UserProfilePage from '../pages/user/UserProfilePage';
@@ -25,6 +27,7 @@ import AdminLoginPage from '../pages/admin/AdminLoginPage';
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import UserManagement from '../pages/admin/UserManagement';
 import SubscriptionManagement from '../pages/admin/SubscriptionManagement';
+import FeatureManagement from '../pages/admin/FeatureManagement/FeatureManagement';
 import SkillTemplateListPage from '../pages/admin/SkillTemplateListPage';
 import SkillTemplateCreatePage from '../pages/admin/SkillTemplateCreatePage';
 import AdminSkillVerificationPage from '../pages/admin/AdminSkillVerificationPage';
@@ -114,6 +117,22 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
                             <SessionManagementPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <ProjectsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/create"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <CreateProjectPage />
                         </ProtectedRoute>
                     }
                 />
@@ -210,6 +229,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <SubscriptionManagement />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/feature-management"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <FeatureManagement />
                         </ProtectedRoute>
                     }
                 />

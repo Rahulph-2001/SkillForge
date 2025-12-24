@@ -43,8 +43,11 @@ const rateLimitMiddileWare_1 = require("./middlewares/rateLimitMiddileWare");
 const PassportService_1 = require("../infrastructure/services/PassportService");
 const MCQImportRoutes_1 = require("./routes/mcq/MCQImportRoutes");
 const availabilityRoutes_1 = require("./routes/availability/availabilityRoutes");
+const communityRoutes_1 = require("./routes/community/communityRoutes");
+const paymentRoutes_1 = require("./routes/payment/paymentRoutes");
+const userSubscriptionRoutes_1 = require("./routes/subscription/userSubscriptionRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, passportService) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, passportService) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -59,6 +62,9 @@ let App = class App {
         this.userProfileRoutes = userProfileRoutes;
         this.mcqImportRoutes = mcqImportRoutes;
         this.availabilityRoutes = availabilityRoutes;
+        this.communityRoutes = communityRoutes;
+        this.paymentRoutes = paymentRoutes;
+        this.userSubscriptionRoutes = userSubscriptionRoutes;
         this.passportService = passportService;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
@@ -116,6 +122,9 @@ let App = class App {
         this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
         this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter());
         this.app.use('/api/v1/availability', this.availabilityRoutes.router);
+        this.app.use('/api/v1/communities', this.communityRoutes.getRouter());
+        this.app.use('/api/v1/payments', this.paymentRoutes.getRouter());
+        this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
     setupErrorHandlers() {
@@ -142,7 +151,10 @@ exports.App = App = __decorate([
     __param(11, (0, inversify_1.inject)(types_1.TYPES.UserProfileRoutes)),
     __param(12, (0, inversify_1.inject)(types_1.TYPES.MCQImportRoutes)),
     __param(13, (0, inversify_1.inject)(types_1.TYPES.AvailabilityRoutes)),
-    __param(14, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
+    __param(14, (0, inversify_1.inject)(types_1.TYPES.CommunityRoutes)),
+    __param(15, (0, inversify_1.inject)(types_1.TYPES.PaymentRoutes)),
+    __param(16, (0, inversify_1.inject)(types_1.TYPES.UserSubscriptionRoutes)),
+    __param(17, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -157,6 +169,9 @@ exports.App = App = __decorate([
         userProfileRoutes_1.UserProfileRoutes,
         MCQImportRoutes_1.MCQImportRoutes,
         availabilityRoutes_1.AvailabilityRoutes,
+        communityRoutes_1.CommunityRoutes,
+        paymentRoutes_1.PaymentRoutes,
+        userSubscriptionRoutes_1.UserSubscriptionRoutes,
         PassportService_1.PassportService])
 ], App);
 //# sourceMappingURL=server.js.map

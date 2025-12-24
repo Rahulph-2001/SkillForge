@@ -26,6 +26,8 @@ import { PassportService } from '../infrastructure/services/PassportService';
 import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
 import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';
 import { CommunityRoutes } from './routes/community/communityRoutes';
+import { PaymentRoutes } from './routes/payment/paymentRoutes';
+import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRoutes';
 
 @injectable()
 export class App {
@@ -47,6 +49,8 @@ export class App {
         @inject(TYPES.MCQImportRoutes) private readonly mcqImportRoutes: MCQImportRoutes,
         @inject(TYPES.AvailabilityRoutes) private readonly availabilityRoutes: AvailabilityRoutes,
         @inject(TYPES.CommunityRoutes) private readonly communityRoutes: CommunityRoutes,
+        @inject(TYPES.PaymentRoutes) private readonly paymentRoutes: PaymentRoutes,
+        @inject(TYPES.UserSubscriptionRoutes) private readonly userSubscriptionRoutes: UserSubscriptionRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
     ) {
         this.app = express();
@@ -115,6 +119,8 @@ export class App {
         this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter());
         this.app.use('/api/v1/availability', this.availabilityRoutes.router);
         this.app.use('/api/v1/communities', this.communityRoutes.getRouter());
+        this.app.use('/api/v1/payments', this.paymentRoutes.getRouter());
+        this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
         this.app.all('*', notFoundHandler);
     }
 

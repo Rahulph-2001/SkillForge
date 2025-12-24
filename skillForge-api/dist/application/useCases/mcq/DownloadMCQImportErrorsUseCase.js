@@ -19,9 +19,9 @@ const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 const messages_1 = require("../../../config/messages");
 let DownloadMCQImportErrorsUseCase = class DownloadMCQImportErrorsUseCase {
-    constructor(jobRepository, s3Service, userRepository) {
+    constructor(jobRepository, storageSevice, userRepository) {
         this.jobRepository = jobRepository;
-        this.s3Service = s3Service;
+        this.storageSevice = storageSevice;
         this.userRepository = userRepository;
     }
     async execute(jobId, adminId) {
@@ -40,7 +40,7 @@ let DownloadMCQImportErrorsUseCase = class DownloadMCQImportErrorsUseCase {
             throw new AppError_1.NotFoundError('No error file available for this job');
         }
         // 4. Get File Stream from S3
-        const fileStream = await this.s3Service.downloadFileAsStream(job.errorFilePath);
+        const fileStream = await this.storageSevice.downloadFileAsStream(job.errorFilePath);
         const fileName = `import-errors-${job.id}.csv`;
         return {
             fileStream,
@@ -53,7 +53,7 @@ exports.DownloadMCQImportErrorsUseCase = DownloadMCQImportErrorsUseCase;
 exports.DownloadMCQImportErrorsUseCase = DownloadMCQImportErrorsUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IMCQImportJobRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __metadata("design:paramtypes", [Object, Object, Object])
 ], DownloadMCQImportErrorsUseCase);

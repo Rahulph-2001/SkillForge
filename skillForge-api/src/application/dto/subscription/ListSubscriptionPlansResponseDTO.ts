@@ -1,6 +1,12 @@
-import { SubscriptionPlanDTO } from './SubscriptionPlanDTO';
+import { z } from 'zod';
+import { SubscriptionPlanDTOSchema } from './SubscriptionPlanDTO';
 
-export interface ListSubscriptionPlansResponseDTO {
-  plans: SubscriptionPlanDTO[];
-  total: number;
-}
+/**
+ * Zod schema for List Subscription Plans Response DTO
+ */
+export const ListSubscriptionPlansResponseDTOSchema = z.object({
+  plans: z.array(SubscriptionPlanDTOSchema),
+  total: z.number().int().min(0, 'Total must be non-negative'),
+});
+
+export type ListSubscriptionPlansResponseDTO = z.infer<typeof ListSubscriptionPlansResponseDTOSchema>;

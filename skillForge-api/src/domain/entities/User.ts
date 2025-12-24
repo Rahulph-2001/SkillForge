@@ -241,6 +241,8 @@ export class User {
   get isDeleted(): boolean { return this._isDeleted; }
   get isActive(): boolean { return this._isActive; }
   get subscriptionPlan(): SubscriptionPlan { return this._subscriptionPlan; }
+  get subscriptionValidUntil(): Date | null { return this._subscriptionValidUntil; }
+  get subscriptionStartedAt(): Date | null { return this._subscriptionStartedAt; }
   get settings(): UserSettings { return this._settings; }
 
   // Business Methods
@@ -362,6 +364,54 @@ export class User {
    */
   public transferCredits(amount: number): void {
     this.deductCredits(amount); // Will throw if insufficient
+  }
+
+  /**
+   * Activate or update user subscription
+   * @param planType - Subscription plan type
+   * @param validUntil - Subscription validity end date
+   * @param startedAt - Subscription start date (optional, defaults to now)
+   * @param autoRenew - Enable auto-renewal (optional, defaults to false)
+   */
+  public activateSubscription(
+    planType: SubscriptionPlan,
+    validUntil: Date,
+    startedAt?: Date,
+    autoRenew: boolean = false
+  ): void {
+    this._subscriptionPlan = planType;
+    this._subscriptionValidUntil = validUntil;
+    this._subscriptionStartedAt = startedAt || new Date();
+    this._subscriptionAutoRenew = autoRenew;
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Credit amount to user wallet
+   * @param amount - Amount to credit (must be positive)
+   */
+  public creditWallet(amount: number): void {
+    if (amount <= 0) {
+      throw new Error('Credit amount must be positive');
+    }
+    this._walletBalance += amount;
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Debit amount from user wallet
+   * @param amount - Amount to debit
+   * @throws Error if insufficient balance
+   */
+  public debitWallet(amount: number): void {
+    if (amount <= 0) {
+      throw new Error('Debit amount must be positive');
+    }
+    if (this._walletBalance < amount) {
+      throw new Error(`Insufficient wallet balance. Required: ${amount}, Available: ${this._walletBalance}`);
+    }
+    this._walletBalance -= amount;
+    this._updatedAt = new Date();
   }
 
   public toJSON(): Record<string, unknown> {

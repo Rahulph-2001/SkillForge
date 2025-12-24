@@ -2,12 +2,12 @@ import { IListMCQImportJobsUseCase } from './interfaces/IListMCQImportJobsUseCas
 import { ListMCQImportJobsResponseDTO } from '../../dto/mcq/MCQImportJobDTO';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 export declare class ListMCQImportJobsUseCase implements IListMCQImportJobsUseCase {
     private userRepository;
     private jobRepository;
-    private s3Service;
-    constructor(userRepository: IUserRepository, jobRepository: IMCQImportJobRepository, s3Service: IS3Service);
+    private storageService;
+    constructor(userRepository: IUserRepository, jobRepository: IMCQImportJobRepository, storageService: IStorageService);
     execute(templateId: string, adminId: string): Promise<ListMCQImportJobsResponseDTO>;
 }
 //# sourceMappingURL=ListMCQImportJobsUseCase.d.ts.map

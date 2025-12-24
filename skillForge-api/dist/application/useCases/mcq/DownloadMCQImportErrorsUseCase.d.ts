@@ -1,12 +1,12 @@
 import { IDownloadMCQImportErrorsUseCase } from './interfaces/IDownloadMCQImportErrorsUseCase';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 export declare class DownloadMCQImportErrorsUseCase implements IDownloadMCQImportErrorsUseCase {
     private jobRepository;
-    private s3Service;
+    private storageSevice;
     private userRepository;
-    constructor(jobRepository: IMCQImportJobRepository, s3Service: IS3Service, userRepository: IUserRepository);
+    constructor(jobRepository: IMCQImportJobRepository, storageSevice: IStorageService, userRepository: IUserRepository);
     execute(jobId: string, adminId: string): Promise<{
         fileStream: NodeJS.ReadableStream;
         fileName: string;

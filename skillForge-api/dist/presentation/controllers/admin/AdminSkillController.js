@@ -21,6 +21,7 @@ const GetAllSkillsUseCase_1 = require("../../../application/useCases/admin/GetAl
 const BlockSkillUseCase_1 = require("../../../application/useCases/admin/BlockSkillUseCase");
 const UnblockSkillUseCase_1 = require("../../../application/useCases/admin/UnblockSkillUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
+const messages_1 = require("../../../config/messages");
 let AdminSkillController = class AdminSkillController {
     constructor(listPendingSkillsUseCase, approveSkillUseCase, rejectSkillUseCase, getAllSkillsUseCase, blockSkillUseCase, unblockSkillUseCase, responseBuilder) {
         this.listPendingSkillsUseCase = listPendingSkillsUseCase;
@@ -37,7 +38,7 @@ let AdminSkillController = class AdminSkillController {
         this.listPending = async (_req, res, next) => {
             try {
                 const skills = await this.listPendingSkillsUseCase.execute();
-                const response = this.responseBuilder.success(skills, `Found ${skills.length} skills pending approval`, HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success(skills, messages_1.SUCCESS_MESSAGES.SKILL.PENDING_FETCHED(skills.length), HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -53,7 +54,7 @@ let AdminSkillController = class AdminSkillController {
                 const { skillId } = req.params;
                 const adminId = req.user.userId;
                 await this.approveSkillUseCase.execute(skillId, adminId);
-                const response = this.responseBuilder.success({ skillId, status: 'approved' }, 'Skill approved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success({ skillId, status: 'approved' }, messages_1.SUCCESS_MESSAGES.SKILL.APPROVED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -71,7 +72,7 @@ let AdminSkillController = class AdminSkillController {
                 const adminId = req.user.userId;
                 // Validate reason
                 if (!reason || reason.trim().length === 0) {
-                    const errorResponse = this.responseBuilder.error('VALIDATION_ERROR', 'Rejection reason is required', HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                    const errorResponse = this.responseBuilder.error('VALIDATION_ERROR', messages_1.ERROR_MESSAGES.SKILL.REJECTION_REASON_REQUIRED, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
                     res.status(errorResponse.statusCode).json(errorResponse.body);
                     return;
                 }
@@ -80,7 +81,7 @@ let AdminSkillController = class AdminSkillController {
                     adminId,
                     reason,
                 });
-                const response = this.responseBuilder.success({ skillId, status: 'rejected' }, 'Skill rejected successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success({ skillId, status: 'rejected' }, messages_1.SUCCESS_MESSAGES.SKILL.REJECTED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -94,7 +95,7 @@ let AdminSkillController = class AdminSkillController {
         this.getAllSkills = async (_req, res, next) => {
             try {
                 const skills = await this.getAllSkillsUseCase.execute();
-                const response = this.responseBuilder.success(skills, `Found ${skills.length} skills`, HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success(skills, messages_1.SUCCESS_MESSAGES.SKILL.ALL_FETCHED(skills.length), HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -112,7 +113,7 @@ let AdminSkillController = class AdminSkillController {
                 const adminId = req.user.userId;
                 // Validate reason
                 if (!reason || reason.trim().length === 0) {
-                    const errorResponse = this.responseBuilder.error('VALIDATION_ERROR', 'Block reason is required', HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                    const errorResponse = this.responseBuilder.error('VALIDATION_ERROR', messages_1.ERROR_MESSAGES.SKILL.BLOCK_REASON_REQUIRED, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
                     res.status(errorResponse.statusCode).json(errorResponse.body);
                     return;
                 }
@@ -121,7 +122,7 @@ let AdminSkillController = class AdminSkillController {
                     adminId,
                     reason,
                 });
-                const response = this.responseBuilder.success({ skillId, isBlocked: true }, 'Skill blocked successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success({ skillId, isBlocked: true }, messages_1.SUCCESS_MESSAGES.SKILL.BLOCKED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -137,7 +138,7 @@ let AdminSkillController = class AdminSkillController {
                 const { skillId } = req.params;
                 const adminId = req.user.userId;
                 await this.unblockSkillUseCase.execute(skillId, adminId);
-                const response = this.responseBuilder.success({ skillId, isBlocked: false }, 'Skill unblocked successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success({ skillId, isBlocked: false }, messages_1.SUCCESS_MESSAGES.SKILL.UNBLOCKED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {

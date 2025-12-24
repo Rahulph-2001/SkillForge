@@ -18,11 +18,12 @@ const types_1 = require("../../../infrastructure/di/types");
 const CommunityMessage_1 = require("../../../domain/entities/CommunityMessage");
 const AppError_1 = require("../../../domain/errors/AppError");
 let SendMessageUseCase = class SendMessageUseCase {
-    constructor(messageRepository, communityRepository, s3Service, webSocketService) {
+    constructor(messageRepository, communityRepository, storageService, webSocketService, messageMapper) {
         this.messageRepository = messageRepository;
         this.communityRepository = communityRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
         this.webSocketService = webSocketService;
+        this.messageMapper = messageMapper;
     }
     async execute(userId, dto, file) {
         const member = await this.communityRepository.findMemberByUserAndCommunity(userId, dto.communityId);
@@ -35,7 +36,7 @@ let SendMessageUseCase = class SendMessageUseCase {
         if (file) {
             const timestamp = Date.now();
             const key = `communities/${dto.communityId}/files/${userId}/${timestamp}-${file.originalname}`;
-            fileUrl = await this.s3Service.uploadFile(file.buffer, key, file.mimetype);
+            fileUrl = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
             fileName = file.originalname;
             if (file.mimetype.startsWith('image/')) {
                 messageType = 'image';
@@ -55,14 +56,14 @@ let SendMessageUseCase = class SendMessageUseCase {
             fileUrl,
             fileName,
             replyToId: dto.replyToId,
-            forwardedFromId: dto.forwardedFromId,
         });
         const createdMessage = await this.messageRepository.create(message);
+        const messageDTO = await this.messageMapper.toDTO(createdMessage);
         // Broadcast via WebSocket
         this.webSocketService.sendToCommunity(dto.communityId, {
             type: 'message',
             communityId: dto.communityId,
-            data: createdMessage.toJSON(),
+            data: messageDTO,
         });
         return createdMessage;
     }
@@ -72,8 +73,9 @@ exports.SendMessageUseCase = SendMessageUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IWebSocketService)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], SendMessageUseCase);
 //# sourceMappingURL=SendMessageUseCase.js.map

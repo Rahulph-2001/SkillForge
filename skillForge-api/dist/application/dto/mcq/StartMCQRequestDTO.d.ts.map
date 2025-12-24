@@ -1,1 +1,1 @@
-{"version":3,"file":"StartMCQRequestDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/mcq/StartMCQRequestDTO.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,kBAAkB;IACjC,OAAO,EAAE,MAAM,CAAC;IAChB,MAAM,EAAE,MAAM,CAAC;CAChB"}
+{"version":3,"file":"StartMCQRequestDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/mcq/StartMCQRequestDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB,eAAO,MAAM,qBAAqB;;;iBAGhC,CAAC;AAEH,MAAM,MAAM,kBAAkB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,qBAAqB,CAAC,CAAC"}

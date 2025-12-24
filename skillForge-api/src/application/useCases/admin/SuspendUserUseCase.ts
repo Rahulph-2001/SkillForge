@@ -12,7 +12,7 @@ import { SuspendUserResponseDTO } from '../../dto/admin/SuspendUserResponseDTO';
 export class SuspendUserUseCase implements ISuspendUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository
-  ) {}
+  ) { }
 
   async execute(request: SuspendUserRequestDTO): Promise<SuspendUserResponseDTO> {
     const adminUser = await this.userRepository.findById(request.adminUserId);
@@ -20,7 +20,7 @@ export class SuspendUserUseCase implements ISuspendUserUseCase {
       throw new ForbiddenError(ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
     }
 
-    const user = await this.userRepository.findById(request.userId);
+    const user = await this.userRepository.findById(request.targetUserId);
     if (!user) {
       throw new NotFoundError(ERROR_MESSAGES.ADMIN.USER_NOT_FOUND);
     }

@@ -58,7 +58,7 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
             // 5. Calculate subscription end date
             const subscriptionEndsAt = new Date();
             subscriptionEndsAt.setDate(subscriptionEndsAt.getDate() + 30); // Default 30 days
-            // 6. Create member record
+            // 6. Create or reactivate member record (upsert for rejoin support)
             const member = new CommunityMember_1.CommunityMember({
                 communityId,
                 userId,
@@ -66,16 +66,29 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
                 subscriptionEndsAt,
             });
             const memberData = member.toJSON();
-            await tx.communityMember.create({
-                data: {
+            await tx.communityMember.upsert({
+                where: {
+                    communityId_userId: {
+                        communityId: communityId,
+                        userId: userId,
+                    },
+                },
+                create: {
                     id: memberData.id,
-                    communityId: memberData.community_id,
-                    userId: memberData.user_id,
+                    communityId: memberData.communityId,
+                    userId: memberData.userId,
                     role: memberData.role,
-                    isAutoRenew: memberData.is_auto_renew,
-                    subscriptionEndsAt: memberData.subscription_ends_at,
-                    joinedAt: memberData.joined_at,
-                    isActive: memberData.is_active,
+                    isAutoRenew: memberData.isAutoRenew,
+                    subscriptionEndsAt: memberData.subscriptionEndsAt,
+                    joinedAt: memberData.joinedAt,
+                    isActive: true,
+                },
+                update: {
+                    isActive: true,
+                    role: 'member',
+                    subscriptionEndsAt: memberData.subscriptionEndsAt,
+                    joinedAt: new Date(),
+                    leftAt: null,
                 },
             });
             // 7. Increment member count

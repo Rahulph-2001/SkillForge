@@ -26,7 +26,19 @@ let AdminController = class AdminController {
     async listUsers(req, res, next) {
         try {
             const adminUserId = req.user.userId; // Typed via middleware
-            const result = await this.listUsersUseCase.execute({ adminUserId });
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 20;
+            const search = req.query.search;
+            const role = req.query.role;
+            const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
+            const result = await this.listUsersUseCase.execute({
+                adminUserId,
+                page,
+                limit,
+                search,
+                role,
+                isActive
+            });
             const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.AUTH.LIST_USERS_SUCCESS);
             res.status(response.statusCode).json(response.body);
         }
@@ -37,8 +49,13 @@ let AdminController = class AdminController {
     async suspendUser(req, res, next) {
         try {
             const adminUserId = req.user.userId;
-            const { userId, reason } = req.body;
-            const result = await this.suspendUserUseCase.execute({ adminUserId, userId, reason });
+            const { targetUserId, reason, duration } = req.body;
+            const result = await this.suspendUserUseCase.execute({
+                adminUserId,
+                targetUserId,
+                reason,
+                duration
+            });
             const response = this.responseBuilder.success({ message: result.message }, result.message);
             res.status(response.statusCode).json(response.body);
         }
@@ -49,8 +66,12 @@ let AdminController = class AdminController {
     async unsuspendUser(req, res, next) {
         try {
             const adminUserId = req.user.userId;
-            const { userId } = req.body;
-            const result = await this.unsuspendUserUseCase.execute({ adminUserId, userId });
+            const { targetUserId } = req.body;
+            const result = await this.unsuspendUserUseCase.execute({
+                adminUserId,
+                targetUserId,
+                reason: '' // Required by DTO but not used for unsuspend
+            });
             const response = this.responseBuilder.success({ message: result.message }, result.message);
             res.status(response.statusCode).json(response.body);
         }

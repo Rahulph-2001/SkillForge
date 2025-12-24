@@ -1,6 +1,13 @@
+import { FeatureType } from '../enums/SubscriptionEnums';
 export interface SubscriptionFeature {
     id: string;
     name: string;
+    description?: string;
+    featureType: FeatureType;
+    limitValue?: number;
+    isEnabled: boolean;
+    displayOrder: number;
+    isHighlighted: boolean;
 }
 export type PlanBadge = 'Free' | 'Starter' | 'Professional' | 'Enterprise';
 export declare class SubscriptionPlan {
@@ -8,25 +15,27 @@ export declare class SubscriptionPlan {
     private _name;
     private _price;
     private _projectPosts;
-    private _communityPosts;
+    private _createCommunity;
     private _features;
     private _badge;
     private _color;
     private _isActive;
     private _createdAt;
     private _updatedAt;
-    constructor(id: string, name: string, price: number, projectPosts: number | null, communityPosts: number | null, features: SubscriptionFeature[], badge: PlanBadge, color: string, isActive?: boolean, createdAt?: Date, updatedAt?: Date);
+    private _trialDays;
+    constructor(id: string, name: string, price: number, projectPosts: number | null, createCommunity: number | null, features: SubscriptionFeature[], badge: PlanBadge, color: string, isActive?: boolean, createdAt?: Date, updatedAt?: Date, trialDays?: number);
     get id(): string;
     get name(): string;
     get price(): number;
     get projectPosts(): number | null;
-    get communityPosts(): number | null;
+    get createCommunity(): number | null;
     get features(): SubscriptionFeature[];
     get badge(): PlanBadge;
     get color(): string;
     get isActive(): boolean;
     get createdAt(): Date;
     get updatedAt(): Date;
+    get trialDays(): number;
     /**
      * Validate subscription plan business rules
      */
@@ -34,11 +43,11 @@ export declare class SubscriptionPlan {
     /**
      * Update plan details
      */
-    updateDetails(name: string, price: number, projectPosts: number | null, communityPosts: number | null, badge: PlanBadge, color: string): void;
+    updateDetails(name: string, price: number, projectPosts: number | null, createCommunity: number | null, badge: PlanBadge, color: string): void;
     /**
      * Add a new feature to the plan
      */
-    addFeature(id: string, name: string): void;
+    addFeature(feature: SubscriptionFeature): void;
     /**
      * Remove a feature from the plan
      */
@@ -46,7 +55,7 @@ export declare class SubscriptionPlan {
     /**
      * Update a feature
      */
-    updateFeature(featureId: string, newName: string): void;
+    updateFeature(featureId: string, updates: Partial<SubscriptionFeature>): void;
     /**
      * Set all features at once (useful for updates)
      */

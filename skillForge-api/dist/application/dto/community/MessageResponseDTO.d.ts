@@ -1,20 +1,29 @@
-export interface MessageResponseDTO {
-    id: string;
-    communityId: string;
-    senderId: string;
-    senderName: string;
-    senderAvatar: string | null;
-    content: string;
-    type: string;
-    fileUrl: string | null;
-    fileName: string | null;
-    isPinned: boolean;
-    pinnedAt: Date | null;
-    pinnedBy: string | null;
-    replyToId: string | null;
-    forwardedFromId: string | null;
+import { z } from 'zod';
+declare const MessageResponseDTOSchemaBase: z.ZodObject<{
+    id: z.ZodString;
+    communityId: z.ZodString;
+    senderId: z.ZodString;
+    senderName: z.ZodString;
+    senderAvatar: z.ZodNullable<z.ZodString>;
+    content: z.ZodString;
+    type: z.ZodString;
+    fileUrl: z.ZodNullable<z.ZodString>;
+    fileName: z.ZodNullable<z.ZodString>;
+    isPinned: z.ZodBoolean;
+    pinnedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
+    pinnedBy: z.ZodNullable<z.ZodString>;
+    replyToId: z.ZodNullable<z.ZodString>;
+    forwardedFromId: z.ZodNullable<z.ZodString>;
+    reactions: z.ZodOptional<z.ZodArray<z.ZodAny>>;
+    createdAt: z.ZodCoercedDate<unknown>;
+    updatedAt: z.ZodCoercedDate<unknown>;
+}, z.core.$strip>;
+/**
+ * Zod schema for Message Response DTO
+ */
+export declare const MessageResponseDTOSchema: z.ZodType<any>;
+export type MessageResponseDTO = z.infer<typeof MessageResponseDTOSchemaBase> & {
     replyTo?: MessageResponseDTO;
-    createdAt: Date;
-    updatedAt: Date;
-}
+};
+export {};
 //# sourceMappingURL=MessageResponseDTO.d.ts.map

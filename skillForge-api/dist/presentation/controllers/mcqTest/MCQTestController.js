@@ -15,105 +15,76 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MCQTestController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
+const messages_1 = require("../../../config/messages");
 let MCQTestController = class MCQTestController {
-    constructor(templateQuestionRepository, skillTemplateRepository) {
+    constructor(templateQuestionRepository, skillTemplateRepository, responseBuilder) {
         this.templateQuestionRepository = templateQuestionRepository;
         this.skillTemplateRepository = skillTemplateRepository;
+        this.responseBuilder = responseBuilder;
     }
-    async getTest(req, res) {
+    async getTest(req, res, next) {
         try {
             const { templateId, level } = req.params;
-            // Validate template exists
             const template = await this.skillTemplateRepository.findById(templateId);
             if (!template) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Skill template not found',
-                });
+                const response = this.responseBuilder.error('TEMPLATE_NOT_FOUND', messages_1.ERROR_MESSAGES.MCQ.TEMPLATE_NOT_FOUND, HttpStatusCode_1.HttpStatusCode.NOT_FOUND);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Check if template is active
             if (template.status !== 'Active') {
-                res.status(400).json({
-                    success: false,
-                    message: 'This skill template is not currently available',
-                });
+                const response = this.responseBuilder.error('TEMPLATE_INACTIVE', messages_1.ERROR_MESSAGES.MCQ.TEMPLATE_INACTIVE, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Check if level is valid for this template
             if (!template.levels.includes(level)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid level for this skill template',
-                });
+                const response = this.responseBuilder.error('INVALID_LEVEL', messages_1.ERROR_MESSAGES.MCQ.INVALID_LEVEL, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Get questions for this template and level
             const allQuestions = await this.templateQuestionRepository.findByTemplateIdAndLevel(templateId, level);
-            // Filter only active questions
             const activeQuestions = allQuestions.filter((q) => q.isActive);
             if (activeQuestions.length === 0) {
-                res.status(404).json({
-                    success: false,
-                    message: 'No questions available for this test',
-                });
+                const response = this.responseBuilder.error('NO_QUESTIONS', messages_1.ERROR_MESSAGES.MCQ.NO_QUESTIONS, HttpStatusCode_1.HttpStatusCode.NOT_FOUND);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Shuffle and limit questions to mcqCount
             const shuffled = activeQuestions.sort(() => Math.random() - 0.5);
             const selectedQuestions = shuffled.slice(0, template.mcqCount);
-            // Remove correct answers from response
             const questionsForTest = selectedQuestions.map((q) => ({
                 id: q.id,
                 question: q.question,
                 options: q.options,
             }));
-            res.status(200).json({
-                success: true,
-                message: 'Test retrieved successfully',
-                data: {
-                    templateId: template.id,
-                    templateTitle: template.title,
-                    level,
-                    questions: questionsForTest,
-                    duration: 30, // 30 minutes
-                    passingScore: template.passRange,
-                },
-            });
+            const response = this.responseBuilder.success({
+                templateId: template.id,
+                templateTitle: template.title,
+                level,
+                questions: questionsForTest,
+                duration: 30,
+                passingScore: template.passRange,
+            }, messages_1.SUCCESS_MESSAGES.MCQ.TEST_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Get test error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to retrieve test',
-                error: error instanceof Error ? error.message : 'Unknown error',
-            });
+            next(error);
         }
     }
-    async submitTest(req, res) {
+    async submitTest(req, res, next) {
         try {
             const { templateId, level, answers } = req.body;
-            // const userId = (req as any).user?.userId;
-            // Validate input
             if (!templateId || !level || !Array.isArray(answers)) {
-                res.status(400).json({
-                    success: false,
-                    message: 'Invalid request data',
-                });
+                const response = this.responseBuilder.error('INVALID_REQUEST', messages_1.ERROR_MESSAGES.MCQ.INVALID_REQUEST, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Get template
             const template = await this.skillTemplateRepository.findById(templateId);
             if (!template) {
-                res.status(404).json({
-                    success: false,
-                    message: 'Skill template not found',
-                });
+                const response = this.responseBuilder.error('TEMPLATE_NOT_FOUND', messages_1.ERROR_MESSAGES.MCQ.TEMPLATE_NOT_FOUND, HttpStatusCode_1.HttpStatusCode.NOT_FOUND);
+                res.status(response.statusCode).json(response.body);
                 return;
             }
-            // Get questions
             const allQuestions = await this.templateQuestionRepository.findByTemplateIdAndLevel(templateId, level);
-            // Calculate score
             let correctAnswers = 0;
             const questionsWithAnswers = allQuestions.slice(0, answers.length).map((q, index) => {
                 const userAnswer = answers[index];
@@ -131,44 +102,26 @@ let MCQTestController = class MCQTestController {
             const totalQuestions = answers.length;
             const score = Math.round((correctAnswers / totalQuestions) * 100);
             const passed = score >= template.passRange;
-            // TODO: Save test result to database for history
-            res.status(200).json({
-                success: true,
-                message: passed ? 'Congratulations! You passed the test!' : 'Test completed',
-                data: {
-                    score,
-                    totalQuestions,
-                    correctAnswers,
-                    passed,
-                    questions: questionsWithAnswers,
-                },
-            });
+            const response = this.responseBuilder.success({
+                score,
+                totalQuestions,
+                correctAnswers,
+                passed,
+                questions: questionsWithAnswers,
+            }, passed ? messages_1.SUCCESS_MESSAGES.MCQ.TEST_SUBMITTED_PASS : messages_1.SUCCESS_MESSAGES.MCQ.TEST_SUBMITTED_FAIL, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Submit test error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to submit test',
-                error: error instanceof Error ? error.message : 'Unknown error',
-            });
+            next(error);
         }
     }
-    async getHistory(_req, res) {
+    async getHistory(_req, res, next) {
         try {
-            // const userId = (req as any).user?.userId;
-            res.status(200).json({
-                success: true,
-                message: 'Test history retrieved successfully',
-                data: [],
-            });
+            const response = this.responseBuilder.success([], messages_1.SUCCESS_MESSAGES.MCQ.HISTORY_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Get history error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Failed to retrieve test history',
-                error: error instanceof Error ? error.message : 'Unknown error',
-            });
+            next(error);
         }
     }
 };
@@ -177,6 +130,7 @@ exports.MCQTestController = MCQTestController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ITemplateQuestionRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillTemplateRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], MCQTestController);
 //# sourceMappingURL=MCQTestController.js.map

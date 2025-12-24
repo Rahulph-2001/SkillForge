@@ -26,12 +26,18 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
         const plans = await this.prisma.subscriptionPlanModel.findMany({
             where: { isActive: true },
             orderBy: { price: 'asc' },
+            include: {
+                features: true
+            }
         });
         return plans.map((plan) => this.toDomain(plan));
     }
     async findById(id) {
         const plan = await this.prisma.subscriptionPlanModel.findUnique({
             where: { id },
+            include: {
+                features: true
+            }
         });
         if (!plan) {
             return null;
@@ -54,19 +60,28 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
     }
     async create(plan) {
         const planData = plan.toJSON();
+        // Note: features is now a relation, not a JSON field
+        // Use the new Feature model for proper feature management
         const createdPlan = await this.prisma.subscriptionPlanModel.create({
             data: {
                 name: planData.name,
                 price: planData.price,
+                currency: planData.currency || 'INR',
+                billingInterval: planData.billingInterval || 'MONTHLY',
+                trialDays: planData.trialDays || 0,
                 projectPosts: planData.projectPosts,
-                communityPosts: planData.communityPosts,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                badge: planData.badge, // PlanBadge enum from Prisma
+                createCommunity: planData.createCommunity,
+                badge: planData.badge,
                 color: planData.color,
+                isPopular: planData.isPopular || false,
+                displayOrder: planData.displayOrder || 0,
                 isActive: planData.isActive,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                features: planData.features, // JsonValue from Prisma
+                isPublic: planData.isPublic !== undefined ? planData.isPublic : true,
+                // Link features if provided
             },
+            include: {
+                features: true // Include features in response
+            }
         });
         return this.toDomain(createdPlan);
     }
@@ -78,16 +93,22 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
                 data: {
                     name: planData.name,
                     price: planData.price,
+                    currency: planData.currency,
+                    billingInterval: planData.billingInterval,
+                    trialDays: planData.trialDays,
                     projectPosts: planData.projectPosts,
-                    communityPosts: planData.communityPosts,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    badge: planData.badge, // PlanBadge enum from Prisma
+                    createCommunity: planData.createCommunity,
+                    badge: planData.badge,
                     color: planData.color,
+                    isPopular: planData.isPopular,
+                    displayOrder: planData.displayOrder,
                     isActive: planData.isActive,
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    features: planData.features, // JsonValue from Prisma
+                    isPublic: planData.isPublic,
                     updatedAt: new Date(),
                 },
+                include: {
+                    features: true // Include features in response
+                }
             });
             return this.toDomain(updatedPlan);
         }
@@ -152,13 +173,23 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
             name: prismaModel.name,
             price: Number(prismaModel.price),
             projectPosts: prismaModel.projectPosts,
-            communityPosts: prismaModel.communityPosts,
-            features: prismaModel.features,
+            createCommunity: prismaModel.createCommunity,
+            features: prismaModel.features ? prismaModel.features.map((f) => ({
+                id: f.id,
+                name: f.name,
+                description: f.description,
+                featureType: f.featureType,
+                limitValue: f.limitValue,
+                isEnabled: f.isEnabled,
+                displayOrder: f.displayOrder,
+                isHighlighted: f.isHighlighted
+            })) : [],
             badge: prismaModel.badge,
             color: prismaModel.color,
             isActive: prismaModel.isActive,
             createdAt: prismaModel.createdAt,
             updatedAt: prismaModel.updatedAt,
+            trialDays: prismaModel.trialDays || 0,
         });
     }
 };

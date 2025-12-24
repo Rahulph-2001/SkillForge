@@ -18,12 +18,14 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AdminController_1 = require("../../controllers/admin/AdminController");
 const subscriptionRoutes_1 = require("../subscription/subscriptionRoutes");
+const featureRoutes_1 = require("../feature/featureRoutes");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
 let AdminRoutes = class AdminRoutes {
-    constructor(adminController, subscriptionRoutes) {
+    constructor(adminController, subscriptionRoutes, featureRoutes) {
         this.adminController = adminController;
         this.subscriptionRoutes = subscriptionRoutes;
+        this.featureRoutes = featureRoutes;
         this.router = (0, express_1.Router)();
         this.initializeRoutes();
     }
@@ -41,6 +43,9 @@ let AdminRoutes = class AdminRoutes {
         // Subscription Management Routes
         // Mount subscription routes at /api/v1/admin/subscriptions
         this.router.use('/subscriptions', this.subscriptionRoutes.router);
+        // Feature Management Routes
+        // Mount feature routes at /api/v1/admin/features
+        this.router.use('/features', this.featureRoutes.router);
     }
 };
 exports.AdminRoutes = AdminRoutes;
@@ -48,7 +53,9 @@ exports.AdminRoutes = AdminRoutes = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.AdminController)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.SubscriptionRoutes)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.FeatureRoutes)),
     __metadata("design:paramtypes", [AdminController_1.AdminController,
-        subscriptionRoutes_1.SubscriptionRoutes])
+        subscriptionRoutes_1.SubscriptionRoutes,
+        featureRoutes_1.FeatureRoutes])
 ], AdminRoutes);
 //# sourceMappingURL=adminRoutes.js.map

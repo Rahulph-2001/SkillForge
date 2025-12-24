@@ -1,6 +1,6 @@
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 export interface UpdateSkillDTO {
     description?: string;
     category?: string;
@@ -19,8 +19,8 @@ export interface IUpdateSkillUseCase {
 }
 export declare class UpdateSkillUseCase implements IUpdateSkillUseCase {
     private skillRepository;
-    private s3Service;
-    constructor(skillRepository: ISkillRepository, s3Service: IS3Service);
+    private storageService;
+    constructor(skillRepository: ISkillRepository, storageService: IStorageService);
     execute(skillId: string, providerId: string, updates: UpdateSkillDTO, imageFile?: {
         buffer: Buffer;
         originalname: string;

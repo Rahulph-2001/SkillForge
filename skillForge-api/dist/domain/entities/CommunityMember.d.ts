@@ -17,6 +17,8 @@ export declare class CommunityMember {
     private _joinedAt;
     private _leftAt;
     private _isActive;
+    private _userName?;
+    private _userAvatar?;
     constructor(data: CreateCommunityMemberData);
     get id(): string;
     get communityId(): string;
@@ -27,10 +29,12 @@ export declare class CommunityMember {
     get joinedAt(): Date;
     get leftAt(): Date | null;
     get isActive(): boolean;
+    get userName(): string | undefined;
+    get userAvatar(): string | undefined;
     toggleAutoRenew(): void;
     leave(): void;
     updateSubscription(endsAt: Date): void;
     toJSON(): Record<string, unknown>;
-    static fromDatabaseRow(row: Record<string, unknown>): CommunityMember;
+    static fromDatabaseRow(row: Record<string, any>): CommunityMember;
 }
 //# sourceMappingURL=CommunityMember.d.ts.map

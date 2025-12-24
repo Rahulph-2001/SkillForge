@@ -14,11 +14,72 @@ export declare const SUCCESS_MESSAGES: {
     readonly GENERAL: {
         readonly HEALTH_CHECK: "Service is healthy.";
     };
+    readonly PAYMENT: {
+        readonly INTENT_CREATED: "Payment intent created successfully";
+        readonly CONFIRMED: "Payment confirmed successfully";
+        readonly REFUNDED: "Payment refunded successfully";
+    };
+    readonly USER: {
+        readonly PROFILE_FETCHED: "Profile retrieved successfully";
+        readonly PROFILE_UPDATED: "Profile updated successfully";
+        readonly REVIEWS_FETCHED: "Reviews retrieved successfully";
+    };
     readonly SKILL: {
         readonly CREATED: "Skill created successfully.";
         readonly FETCHED: "Skills retrieved successfully.";
         readonly UPDATED: "Skill updated successfully.";
         readonly DELETED: "Skill deleted successfully.";
+        readonly DETAILS_FETCHED: "Skill details retrieved successfully";
+        readonly APPROVED: "Skill approved successfully";
+        readonly REJECTED: "Skill rejected successfully";
+        readonly BLOCKED: "Skill blocked successfully";
+        readonly UNBLOCKED: "Skill unblocked successfully";
+        readonly PENDING_FETCHED: (count: number) => string;
+        readonly ALL_FETCHED: (count: number) => string;
+    };
+    readonly BOOKING: {
+        readonly CREATED: "Booking created successfully";
+        readonly ACCEPTED: "Booking accepted successfully";
+        readonly DECLINED: "Booking declined successfully";
+        readonly CANCELLED: "Booking cancelled successfully";
+        readonly RESCHEDULE_REQUESTED: "Reschedule request submitted successfully. Waiting for approval.";
+        readonly RESCHEDULE_ACCEPTED: "Reschedule request accepted successfully";
+        readonly RESCHEDULE_DECLINED: "Reschedule request declined";
+        readonly SESSIONS_FETCHED: "Sessions retrieved successfully";
+    };
+    readonly MCQ: {
+        readonly TEST_FETCHED: "Test retrieved successfully";
+        readonly TEST_SUBMITTED_PASS: "Congratulations! You passed the test!";
+        readonly TEST_SUBMITTED_FAIL: "Test completed";
+        readonly HISTORY_FETCHED: "Test history retrieved successfully";
+    };
+    readonly SUBSCRIPTION: {
+        readonly PLANS_FETCHED: "Subscription plans retrieved successfully";
+        readonly STATS_FETCHED: "Subscription statistics retrieved successfully";
+        readonly PLAN_CREATED: "Subscription plan created successfully";
+        readonly PLAN_UPDATED: "Subscription plan updated successfully";
+        readonly PLAN_DELETED: "Subscription plan deleted successfully";
+        readonly SUBSCRIPTION_FETCHED: "Subscription retrieved successfully";
+        readonly SUBSCRIPTION_CANCELLED: "Subscription cancelled successfully";
+    };
+    readonly FEATURE: {
+        readonly CREATED: "Feature created successfully";
+        readonly UPDATED: "Feature updated successfully";
+        readonly DELETED: "Feature deleted successfully";
+        readonly FETCHED: "Features retrieved successfully";
+        readonly FEATURE_FETCHED: "Feature retrieved successfully";
+    };
+    readonly TEMPLATE: {
+        readonly QUESTION_CREATED: "Question created successfully";
+        readonly QUESTIONS_FETCHED: "Questions retrieved successfully";
+        readonly QUESTION_UPDATED: "Question updated successfully";
+        readonly QUESTION_DELETED: "Question deleted successfully";
+        readonly SKILL_CREATED: "Skill template created successfully";
+        readonly SKILL_FETCHED: "Skill templates retrieved successfully";
+        readonly SKILL_UPDATED: "Skill template updated successfully";
+        readonly SKILL_DELETED: "Skill template deleted successfully";
+        readonly SKILL_STATUS_TOGGLED: "Skill template status toggled successfully";
+        readonly ACTIVE_FETCHED: "Active skill templates retrieved successfully";
     };
     readonly COMMUNITY: {
         readonly CREATED: "Community created successfully";
@@ -29,6 +90,13 @@ export declare const SUCCESS_MESSAGES: {
         readonly MESSAGE_PINNED: "Message pinned successfully";
         readonly MESSAGE_UNPINNED: "Message unpinned successfully";
         readonly MESSAGE_DELETED: "Message deleted successfully";
+        readonly FETCHED: "Communities retrieved successfully";
+        readonly DETAILS_FETCHED: "Community details retrieved successfully";
+        readonly MESSAGES_FETCHED: "Messages retrieved successfully";
+        readonly MEMBER_REMOVED: "Member removed successfully";
+        readonly MEMBERS_FETCHED: "Members retrieved successfully";
+        readonly REACTION_ADDED: "Reaction added successfully";
+        readonly REACTION_REMOVED: "Reaction removed successfully";
     };
 };
 export declare const ERROR_MESSAGES: {
@@ -65,6 +133,56 @@ export declare const ERROR_MESSAGES: {
         readonly TOO_MANY_REQUESTS: "Too many requests, try again later.";
         readonly EMAIL_SEND_FAILED: "Failed to send email. Please try again.";
     };
+    readonly PAYMENT: {
+        readonly INTENT_CREATION_FAILED: "Failed to create payment intent";
+        readonly CONFIRMATION_FAILED: "Payment confirmation failed";
+        readonly REFUND_FAILED: "Payment refund failed";
+        readonly NOT_FOUND: "Payment not found";
+        readonly INVALID_AMOUNT: "Invalid payment amount";
+    };
+    readonly USER: {
+        readonly NOT_FOUND: "User not found";
+        readonly PROFILE_FETCH_FAILED: "Failed to fetch profile";
+        readonly REVIEWS_FETCH_FAILED: "Failed to fetch reviews";
+    };
+    readonly BOOKING: {
+        readonly ACCEPT_FAILED: "Failed to accept booking";
+        readonly DECLINE_FAILED: "Failed to decline booking";
+        readonly CANCEL_FAILED: "Failed to cancel booking";
+        readonly RESCHEDULE_FAILED: "Failed to request reschedule";
+        readonly RESCHEDULE_ACCEPT_FAILED: "Failed to accept reschedule";
+        readonly RESCHEDULE_DECLINE_FAILED: "Failed to decline reschedule";
+        readonly SESSIONS_FETCH_FAILED: "Failed to retrieve sessions";
+        readonly REQUIRED_FIELDS: "New date, time, and reason are required";
+        readonly REASON_REQUIRED: "Reason is required to decline a reschedule request";
+    };
+    readonly MCQ: {
+        readonly TEMPLATE_NOT_FOUND: "Skill template not found";
+        readonly TEMPLATE_INACTIVE: "This skill template is not currently available";
+        readonly INVALID_LEVEL: "Invalid level for this skill template";
+        readonly NO_QUESTIONS: "No questions available for this test";
+        readonly INVALID_REQUEST: "Invalid request data";
+        readonly TEST_FETCH_FAILED: "Failed to retrieve test";
+        readonly TEST_SUBMIT_FAILED: "Failed to submit test";
+        readonly HISTORY_FETCH_FAILED: "Failed to retrieve test history";
+    };
+    readonly SKILL: {
+        readonly CREATION_FAILED: "Failed to create skill.";
+        readonly NOT_FOUND: "Skill not found.";
+        readonly UPDATE_FAILED: "Failed to update skill.";
+        readonly DELETE_FAILED: "Failed to delete skill.";
+        readonly INVALID_DATA: "Invalid skill data provided.";
+        readonly IMAGE_UPLOAD_FAILED: "Failed to upload skill image.";
+        readonly REJECTION_REASON_REQUIRED: "Rejection reason is required";
+        readonly BLOCK_REASON_REQUIRED: "Block reason is required";
+    };
+    readonly FEATURE: {
+        readonly NOT_FOUND: "Feature not found";
+        readonly ALREADY_EXISTS: "Feature with this name already exists for this plan";
+        readonly IN_USE: "Feature is in use by subscription plans and cannot be deleted";
+        readonly INVALID_TYPE: "Invalid feature type";
+        readonly LIMIT_REQUIRED: "Limit value is required for numeric limit features";
+    };
     readonly COMMUNITY: {
         readonly NOT_FOUND: "Community not found";
         readonly ALREADY_MEMBER: "Already a member of this community";
@@ -75,13 +193,8 @@ export declare const ERROR_MESSAGES: {
         readonly ONLY_ADMIN_CAN_PIN: "Only admin can pin messages";
         readonly MESSAGE_NOT_FOUND: "Message not found";
     };
-    readonly SKILL: {
-        readonly CREATION_FAILED: "Failed to create skill.";
-        readonly NOT_FOUND: "Skill not found.";
-        readonly UPDATE_FAILED: "Failed to update skill.";
-        readonly DELETE_FAILED: "Failed to delete skill.";
-        readonly INVALID_DATA: "Invalid skill data provided.";
-        readonly IMAGE_UPLOAD_FAILED: "Failed to upload skill image.";
+    readonly VALIDATION: {
+        readonly VALIDATION_ERROR: "VALIDATION_ERROR";
     };
 };
 export declare const API_MESSAGES: {

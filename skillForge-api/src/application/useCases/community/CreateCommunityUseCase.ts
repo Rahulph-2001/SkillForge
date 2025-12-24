@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { Community } from '../../../domain/entities/Community';
 import { CommunityMember } from '../../../domain/entities/CommunityMember';
 import { CreateCommunityDTO } from '../../dto/community/CreateCommunityDTO';
@@ -20,7 +20,7 @@ export interface ICreateCommunityUseCase {
 export class CreateCommunityUseCase implements ICreateCommunityUseCase {
   constructor(
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
-    @inject(TYPES.IS3Service) private readonly s3Service: IS3Service,
+    @inject(TYPES.IStorageService) private readonly storageService: IStorageService,
     @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
   ) { }
 
@@ -67,7 +67,7 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
         const timestamp = Date.now();
         const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
         console.log('☁️  Uploading to S3 with key:', key);
-        imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+        imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
         console.log('✅ Image uploaded successfully:', imageUrl);
       } catch (error) {
         console.error('❌ S3 upload failed:', error);

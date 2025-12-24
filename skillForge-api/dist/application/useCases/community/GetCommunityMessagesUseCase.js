@@ -21,6 +21,13 @@ let GetCommunityMessagesUseCase = class GetCommunityMessagesUseCase {
         this.messageRepository = messageRepository;
         this.communityRepository = communityRepository;
     }
+    async execute(userId, communityId, limit = 50, offset = 0) {
+        const member = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
+        if (!member || !member.isActive) {
+            throw new AppError_1.ForbiddenError('You are not a member of this community');
+        }
+        return await this.messageRepository.findByCommunityId(communityId, limit, offset);
+    }
 };
 exports.GetCommunityMessagesUseCase = GetCommunityMessagesUseCase;
 exports.GetCommunityMessagesUseCase = GetCommunityMessagesUseCase = __decorate([
@@ -29,12 +36,4 @@ exports.GetCommunityMessagesUseCase = GetCommunityMessagesUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
     __metadata("design:paramtypes", [Object, Object])
 ], GetCommunityMessagesUseCase);
- > {
-    const: member = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId),
-    if(, member) { }
-} || !member.isActive;
-{
-    throw new AppError_1.ForbiddenError('You are not a member of this community');
-}
-return await this.messageRepository.findByCommunityId(communityId, limit, offset);
 //# sourceMappingURL=GetCommunityMessagesUseCase.js.map

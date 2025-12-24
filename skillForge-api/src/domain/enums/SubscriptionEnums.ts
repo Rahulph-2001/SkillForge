@@ -1,0 +1,21 @@
+export enum FeatureType {
+    BOOLEAN = 'BOOLEAN',
+    NUMERIC_LIMIT = 'NUMERIC_LIMIT',
+    TEXT = 'TEXT',
+}
+
+export enum SubscriptionStatus {
+    ACTIVE = 'ACTIVE',
+    TRIALING = 'TRIALING',
+    PAST_DUE = 'PAST_DUE',
+    CANCELED = 'CANCELED',
+    UNPAID = 'UNPAID',
+    INCOMPLETE = 'INCOMPLETE',
+}
+
+export enum BillingInterval {
+    MONTHLY = 'MONTHLY',
+    QUARTERLY = 'QUARTERLY',
+    YEARLY = 'YEARLY',
+    LIFETIME = 'LIFETIME',
+}

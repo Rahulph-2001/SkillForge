@@ -19,8 +19,20 @@ let GetCommunitiesUseCase = class GetCommunitiesUseCase {
     constructor(communityRepository) {
         this.communityRepository = communityRepository;
     }
-    async execute(filters) {
-        return await this.communityRepository.findAll({ ...filters, isActive: true });
+    async execute(filters, userId) {
+        const communities = await this.communityRepository.findAll({ ...filters, isActive: true });
+        if (userId) {
+            const memberships = await this.communityRepository.findMembershipsByUserId(userId);
+            const joinedCommunityIds = new Set(memberships.map(m => m.communityId));
+            return communities.map(community => {
+                const isJoined = joinedCommunityIds.has(community.id);
+                const isAdmin = community.adminId === userId;
+                community.isJoined = isJoined;
+                community.isAdmin = isAdmin;
+                return community;
+            });
+        }
+        return communities;
     }
 };
 exports.GetCommunitiesUseCase = GetCommunitiesUseCase;

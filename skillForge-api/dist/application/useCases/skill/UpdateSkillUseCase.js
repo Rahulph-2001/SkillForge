@@ -18,9 +18,9 @@ const types_1 = require("../../../infrastructure/di/types");
 const Skill_1 = require("../../../domain/entities/Skill");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UpdateSkillUseCase = class UpdateSkillUseCase {
-    constructor(skillRepository, s3Service) {
+    constructor(skillRepository, storageService) {
         this.skillRepository = skillRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
     }
     async execute(skillId, providerId, updates, imageFile) {
         console.log('🔍 [UpdateSkillUseCase] Executing update for skill:', skillId);
@@ -39,7 +39,7 @@ let UpdateSkillUseCase = class UpdateSkillUseCase {
             // Create S3 key with skills/ prefix
             const key = `skills/${Date.now()}-${imageFile.originalname}`;
             console.log('🔍 [UpdateSkillUseCase] Uploading new image to S3:', key);
-            imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+            imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
             console.log('✅ [UpdateSkillUseCase] Image uploaded successfully. URL:', imageUrl);
         }
         // Create a new Skill instance with updated properties
@@ -57,7 +57,7 @@ exports.UpdateSkillUseCase = UpdateSkillUseCase;
 exports.UpdateSkillUseCase = UpdateSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __metadata("design:paramtypes", [Object, Object])
 ], UpdateSkillUseCase);
 //# sourceMappingURL=UpdateSkillUseCase.js.map

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
+import { container } from './di';
 import { TYPES } from './types';
 import { Database } from '../database/Database';
 import { RedisService } from '../services/RedisService';
@@ -33,7 +34,9 @@ import { UnsuspendUserUseCase } from '../../application/useCases/admin/Unsuspend
 import { GetUserProfileUseCase } from '../../application/useCases/user/GetUserProfileUseCase';
 import { UpdateUserProfileUseCase } from '../../application/useCases/user/UpdateUserProfileUseCase';
 import { ISubscriptionPlanRepository } from '../../domain/repositories/ISubscriptionPlanRepository';
-import { PrismaSubscriptionPlanRepository } from '../database/repositories/PrismaSubscriptionPlanRepository';
+import { IFeatureRepository } from '../../domain/repositories/IFeatureRepository';
+import { PrismaSubscriptionPlanRepository } from '../database/repositories/SubscriptionPlanRepository';
+import { PrismaFeatureRepository } from '../database/repositories/FeatureRepository';
 import { ListSubscriptionPlansUseCase } from '../../application/useCases/subscription/ListSubscriptionPlansUseCase';
 import { ListPublicSubscriptionPlansUseCase } from '../../application/useCases/subscription/ListPublicSubscriptionPlansUseCase';
 import { GetSubscriptionStatsUseCase } from '../../application/useCases/subscription/GetSubscriptionStatsUseCase';
@@ -55,8 +58,8 @@ import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { ResponseBuilder } from '../../shared/http/ResponseBuilder';
 import { ISkillRepository } from '../../domain/repositories/ISkillRepository';
 import { SkillRepository } from '../database/repositories/SkillRepository';
-import { IS3Service } from '../../domain/services/IS3Service';
-import { S3Service } from '../services/S3Service';
+import { IStorageService } from '../../domain/services/IStorageService';
+import { S3StorageService } from '../services/S3StorageService';
 import { CreateSkillUseCase } from '../../application/useCases/skill/CreateSkillUseCase';
 import { ListUserSkillsUseCase } from '../../application/useCases/skill/ListUserSkillsUseCase';
 import { BrowseSkillsUseCase } from '../../application/useCases/skill/BrowseSkillsUseCase';
@@ -141,18 +144,22 @@ import { IJobQueueService } from '../../domain/services/IJobQueueService';
 import { JobQueueService } from '../services/JobQueueService';
 import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
 import { StartMCQImportUseCase } from '../../application/useCases/mcq/StartMCQImportUseCase';
+import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/CheckSubscriptionExpiryUseCase';
+import { CheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/CheckSubscriptionExpiryUseCase';
+
+// ... (existing imports)
+
 import { ListMCQImportJobsUseCase } from '../../application/useCases/mcq/ListMCQImportJobsUseCase';
 import { DownloadMCQImportErrorsUseCase } from '../../application/useCases/mcq/DownloadMCQImportErrorsUseCase';
 import { MCQImportController } from '../../presentation/controllers/mcq/MCQImportController';
 import { MCQImportRoutes } from '../../presentation/routes/mcq/MCQImportRoutes';
-import { container } from './di';
 export { container };
 
 
 
 // Availability
 import { IAvailabilityRepository } from '../../domain/repositories/IAvailabilityRepository';
-import { PrismaAvailabilityRepository } from '../database/repositories/PrismaAvailabilityRepository';
+import { PrismaAvailabilityRepository } from '../database/repositories/AvailabilityRepository';
 import { GetProviderAvailabilityUseCase } from '../../application/useCases/availability/GetProviderAvailabilityUseCase';
 import { UpdateProviderAvailabilityUseCase } from '../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
 import { GetOccupiedSlotsUseCase } from '../../application/useCases/availability/GetOccupiedSlotsUseCase';
@@ -188,6 +195,42 @@ import { IMessageReactionRepository } from '../../domain/repositories/IMessageRe
 import { MessageReactionRepository } from '../database/repositories/MessageReactionRepository';
 import { CommunityController } from '../../presentation/controllers/community/CommunityController';
 import { CommunityRoutes } from '../../presentation/routes/community/communityRoutes';
+
+// Industrial Subscription System
+import { IUserSubscriptionRepository } from '../../domain/repositories/IUserSubscriptionRepository';
+import { PrismaUserSubscriptionRepository } from '../database/repositories/UserSubscriptionRepository';
+import { IUsageRecordRepository } from '../../domain/repositories/IUsageRecordRepository';
+import { PrismaUsageRecordRepository } from '../database/repositories/UsageRecordRepository';
+import { CreateFeatureUseCase } from '../../application/useCases/feature/CreateFeatureUseCase';
+import { AssignSubscriptionUseCase } from '../../application/useCases/subscription/AssignSubscriptionUseCase';
+import { TrackFeatureUsageUseCase } from '../../application/useCases/usage/TrackFeatureUsageUseCase';
+import { ListFeaturesUseCase } from '../../application/useCases/feature/ListFeaturesUseCase';
+import { GetFeatureByIdUseCase } from '../../application/useCases/feature/GetFeatureByIdUseCase';
+import { UpdateFeatureUseCase } from '../../application/useCases/feature/UpdateFeatureUseCase';
+import { DeleteFeatureUseCase } from '../../application/useCases/feature/DeleteFeatureUseCase';
+import { FeatureController } from '../../presentation/controllers/feature/FeatureController';
+import { FeatureRoutes } from '../../presentation/routes/feature/featureRoutes';
+
+// Payment 
+
+import { StripePaymentGateway } from '../services/StripePaymentGateway';
+import { PrismaPaymentRepository } from '../database/repositories/PaymentRepository';
+import { CreatePaymentIntentUseCase } from '../../application/useCases/payment/CreatePaymentIntentUseCase';
+import { ConfirmPaymentUseCase } from '../../application/useCases/payment/ConfirmPaymentUseCase';
+import { HandleWebhookUseCase } from '../../application/useCases/payment/HandleWebhookUseCase';
+import { ActivateSubscriptionUseCase } from '../../application/useCases/subscription/ActivateSubscriptionUseCase';
+import { CreditAdminWalletUseCase } from '../../application/useCases/admin/CreditAdminWalletUseCase';
+import { PaymentController } from '../../presentation/controllers/payment/PaymentController';
+import { PaymentRoutes } from '../../presentation/routes/payment/paymentRoutes';
+
+// User Subscription
+import { GetUserSubscriptionUseCase } from '../../application/useCases/subscription/GetUserSubscriptionUseCase';
+import { CancelSubscriptionUseCase } from '../../application/useCases/subscription/CancelSubscriptionUseCase';
+import { UserSubscriptionController } from '../../presentation/controllers/subscription/UserSubscriptionController';
+import { UserSubscriptionRoutes } from '../../presentation/routes/subscription/userSubscriptionRoutes';
+import { ReactivateSubscriptionUseCase } from '../../application/useCases/subscription/ReactivateSubscriptionUseCase';
+
+
 
 // Mappers
 container.bind<IAdminUserDTOMapper>(TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper);
@@ -231,6 +274,11 @@ container.bind<GetUserProfileUseCase>(TYPES.GetUserProfileUseCase).to(GetUserPro
 container.bind<UpdateUserProfileUseCase>(TYPES.UpdateUserProfileUseCase).to(UpdateUserProfileUseCase);
 // Subscription Repository
 container.bind<ISubscriptionPlanRepository>(TYPES.ISubscriptionPlanRepository).to(PrismaSubscriptionPlanRepository);
+
+// Industrial Subscription System Repositories
+container.bind<IUserSubscriptionRepository>(TYPES.IUserSubscriptionRepository).to(PrismaUserSubscriptionRepository);
+container.bind<IUsageRecordRepository>(TYPES.IUsageRecordRepository).to(PrismaUsageRecordRepository);
+
 // Subscription Use Cases
 container.bind<ListSubscriptionPlansUseCase>(TYPES.ListSubscriptionPlansUseCase).to(ListSubscriptionPlansUseCase);
 container.bind<ListPublicSubscriptionPlansUseCase>(TYPES.ListPublicSubscriptionPlansUseCase).to(ListPublicSubscriptionPlansUseCase);
@@ -238,9 +286,28 @@ container.bind<GetSubscriptionStatsUseCase>(TYPES.GetSubscriptionStatsUseCase).t
 container.bind<CreateSubscriptionPlanUseCase>(TYPES.CreateSubscriptionPlanUseCase).to(CreateSubscriptionPlanUseCase);
 container.bind<UpdateSubscriptionPlanUseCase>(TYPES.UpdateSubscriptionPlanUseCase).to(UpdateSubscriptionPlanUseCase);
 container.bind<DeleteSubscriptionPlanUseCase>(TYPES.DeleteSubscriptionPlanUseCase).to(DeleteSubscriptionPlanUseCase);
+
+// Industrial Subscription System Use Cases
+container.bind<CreateFeatureUseCase>(TYPES.ICreateFeatureUseCase).to(CreateFeatureUseCase);
+container.bind<AssignSubscriptionUseCase>(TYPES.IAssignSubscriptionUseCase).to(AssignSubscriptionUseCase);
+container.bind<TrackFeatureUsageUseCase>(TYPES.ITrackFeatureUsageUseCase).to(TrackFeatureUsageUseCase);
+container.bind<ListFeaturesUseCase>(TYPES.IListFeaturesUseCase).to(ListFeaturesUseCase);
+container.bind<GetFeatureByIdUseCase>(TYPES.IGetFeatureByIdUseCase).to(GetFeatureByIdUseCase);
+container.bind<UpdateFeatureUseCase>(TYPES.IUpdateFeatureUseCase).to(UpdateFeatureUseCase);
+container.bind<DeleteFeatureUseCase>(TYPES.IDeleteFeatureUseCase).to(DeleteFeatureUseCase);
+
+// Feature Repository
+container.bind<IFeatureRepository>(TYPES.IFeatureRepository).to(PrismaFeatureRepository);
+
+// Feature Controller
+container.bind<FeatureController>(TYPES.FeatureController).to(FeatureController);
+
+// Feature Routes
+container.bind<FeatureRoutes>(TYPES.FeatureRoutes).to(FeatureRoutes);
+
 // Skill Repository and Services
 container.bind<ISkillRepository>(TYPES.ISkillRepository).to(SkillRepository);
-container.bind<IS3Service>(TYPES.IS3Service).to(S3Service);
+container.bind<IStorageService>(TYPES.IStorageService).to(S3StorageService);
 // Skill Use Cases
 container.bind<CreateSkillUseCase>(TYPES.CreateSkillUseCase).to(CreateSkillUseCase);
 container.bind<ListUserSkillsUseCase>(TYPES.ListUserSkillsUseCase).to(ListUserSkillsUseCase);
@@ -361,6 +428,26 @@ container.bind<ICommunityMessageRepository>(TYPES.ICommunityMessageRepository).t
 // WebSocket Service
 container.bind<IWebSocketService>(TYPES.IWebSocketService).to(WebSocketService).inSingletonScope();
 
+// Payment 
+
+container.bind(TYPES.IPaymentGateway).to(StripePaymentGateway).inSingletonScope();
+container.bind(TYPES.IPaymentRepository).to(PrismaPaymentRepository).inSingletonScope();
+container.bind(TYPES.ICreatePaymentIntentUseCase).to(CreatePaymentIntentUseCase);
+container.bind(TYPES.IConfirmPaymentUseCase).to(ConfirmPaymentUseCase);
+container.bind(TYPES.IHandleWebhookUseCase).to(HandleWebhookUseCase);
+container.bind(TYPES.IActivateSubscriptionUseCase).to(ActivateSubscriptionUseCase);
+container.bind(TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase);
+container.bind(TYPES.PaymentController).to(PaymentController);
+container.bind(TYPES.PaymentRoutes).to(PaymentRoutes);
+
+// User Subscription
+container.bind(TYPES.IGetUserSubscriptionUseCase).to(GetUserSubscriptionUseCase);
+container.bind(TYPES.ICancelSubscriptionUseCase).to(CancelSubscriptionUseCase);
+container.bind(TYPES.UserSubscriptionController).to(UserSubscriptionController);
+container.bind(TYPES.UserSubscriptionRoutes).to(UserSubscriptionRoutes);
+container.bind(TYPES.IReactivateSubscriptionUseCase).to(ReactivateSubscriptionUseCase);
+
+
 // Community Mappers
 container.bind<ICommunityMapper>(TYPES.ICommunityMapper).to(CommunityMapper);
 container.bind<ICommunityMessageMapper>(TYPES.ICommunityMessageMapper).to(CommunityMessageMapper);
@@ -393,4 +480,5 @@ container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseC
 container.bind<UpdateProviderAvailabilityUseCase>(TYPES.UpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase);
 container.bind<GetOccupiedSlotsUseCase>(TYPES.GetOccupiedSlotsUseCase).to(GetOccupiedSlotsUseCase);
 container.bind<AvailabilityController>(TYPES.AvailabilityController).to(AvailabilityController);
+container.bind<ICheckSubscriptionExpiryUseCase>(TYPES.ICheckSubscriptionExpiryUseCase).to(CheckSubscriptionExpiryUseCase);
 container.bind<AvailabilityRoutes>(TYPES.AvailabilityRoutes).to(AvailabilityRoutes);

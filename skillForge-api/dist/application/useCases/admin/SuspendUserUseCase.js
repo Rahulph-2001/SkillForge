@@ -27,7 +27,7 @@ let SuspendUserUseCase = class SuspendUserUseCase {
         if (!adminUser || adminUser.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
         }
-        const user = await this.userRepository.findById(request.userId);
+        const user = await this.userRepository.findById(request.targetUserId);
         if (!user) {
             throw new AppError_1.NotFoundError(messages_1.ERROR_MESSAGES.ADMIN.USER_NOT_FOUND);
         }

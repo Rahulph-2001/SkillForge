@@ -17,6 +17,7 @@ export default function AdminNavbar() {
         if (path.startsWith('/admin/skill-templates')) return 'Skill Templates';
         if (path.startsWith('/admin/projects')) return 'Projects';
         if (path.startsWith('/admin/subscriptions')) return 'Subscriptions';
+        if (path.startsWith('/admin/feature-management')) return 'Feature Management';
         if (path.startsWith('/admin/sessions')) return 'Sessions';
         if (path.startsWith('/admin/transactions')) return 'Transactions';
         if (path.startsWith('/admin/wallet')) return 'Wallet';
@@ -56,6 +57,7 @@ export default function AdminNavbar() {
         { label: 'Skill Templates', path: '/admin/skill-templates' },
         { label: 'Projects', path: '/admin/projects' },
         { label: 'Subscriptions', path: '/admin/subscriptions' },
+        { label: 'Feature Management', path: '/admin/feature-management' },
         { label: 'Sessions', path: '/admin/sessions' },
         { label: 'Transactions', path: '/admin/transactions' },
         { label: 'Wallet', path: '/admin/wallet' },
@@ -107,8 +109,8 @@ export default function AdminNavbar() {
                                 key={item.label}
                                 onClick={() => navigate(item.path)}
                                 className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === item.label
-                                        ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50'
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-b-2 border-transparent'
+                                    ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50'
+                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-b-2 border-transparent'
                                     }`}
                             >
                                 {item.label}

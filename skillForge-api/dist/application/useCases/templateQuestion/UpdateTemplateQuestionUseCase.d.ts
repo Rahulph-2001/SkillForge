@@ -6,6 +6,6 @@ export declare class UpdateTemplateQuestionUseCase {
     private readonly templateQuestionRepository;
     private readonly userRepository;
     constructor(templateQuestionRepository: ITemplateQuestionRepository, userRepository: IUserRepository);
-    execute(adminUserId: string, dto: UpdateTemplateQuestionDTO): Promise<TemplateQuestion>;
+    execute(adminUserId: string, questionId: string, dto: UpdateTemplateQuestionDTO): Promise<TemplateQuestion>;
 }
 //# sourceMappingURL=UpdateTemplateQuestionUseCase.d.ts.map

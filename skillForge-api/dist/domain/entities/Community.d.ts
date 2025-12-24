@@ -51,6 +51,12 @@ export declare class Community {
     }): void;
     incrementMembersCount(): void;
     decrementMembersCount(): void;
+    private _isJoined?;
+    private _isAdmin?;
+    get isJoined(): boolean | undefined;
+    set isJoined(value: boolean | undefined);
+    get isAdmin(): boolean | undefined;
+    set isAdmin(value: boolean | undefined);
     toJSON(): Record<string, unknown>;
     static fromDatabaseRow(row: Record<string, unknown>): Community;
 }

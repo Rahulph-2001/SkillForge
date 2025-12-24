@@ -29,7 +29,7 @@ let UnsuspendUserUseCase = class UnsuspendUserUseCase {
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
         }
         // Find user to unsuspend
-        const user = await this.userRepository.findById(request.userId);
+        const user = await this.userRepository.findById(request.targetUserId);
         if (!user) {
             throw new AppError_1.NotFoundError(messages_1.ERROR_MESSAGES.ADMIN.USER_NOT_FOUND);
         }

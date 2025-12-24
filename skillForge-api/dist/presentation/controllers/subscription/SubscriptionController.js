@@ -17,6 +17,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const GetSubscriptionStatsUseCase_1 = require("../../../application/useCases/subscription/GetSubscriptionStatsUseCase");
 const DeleteSubscriptionPlanUseCase_1 = require("../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase");
+const messages_1 = require("../../../config/messages");
 let SubscriptionController = class SubscriptionController {
     constructor(listPlansUseCase, getStatsUseCase, createPlanUseCase, updatePlanUseCase, deletePlanUseCase, responseBuilder) {
         this.listPlansUseCase = listPlansUseCase;
@@ -33,8 +34,16 @@ let SubscriptionController = class SubscriptionController {
     async listPlans(req, res, next) {
         try {
             const adminUserId = req.user.userId;
-            const result = await this.listPlansUseCase.execute({ adminUserId });
-            const response = this.responseBuilder.success(result, 'Subscription plans retrieved successfully');
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 20;
+            const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
+            const result = await this.listPlansUseCase.execute({
+                adminUserId,
+                page,
+                limit,
+                isActive
+            });
+            const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.PLANS_FETCHED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -49,7 +58,7 @@ let SubscriptionController = class SubscriptionController {
         try {
             const adminUserId = req.user.userId;
             const stats = await this.getStatsUseCase.execute(adminUserId);
-            const response = this.responseBuilder.success(stats, 'Subscription statistics retrieved successfully');
+            const response = this.responseBuilder.success(stats, messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.STATS_FETCHED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -65,7 +74,7 @@ let SubscriptionController = class SubscriptionController {
             const adminUserId = req.user.userId;
             const dto = req.body;
             const plan = await this.createPlanUseCase.execute(adminUserId, dto);
-            const response = this.responseBuilder.success(plan, 'Subscription plan created successfully');
+            const response = this.responseBuilder.success(plan, messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_CREATED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -80,9 +89,9 @@ let SubscriptionController = class SubscriptionController {
         try {
             const adminUserId = req.user.userId;
             const planId = req.params.id;
-            const dto = { ...req.body, planId };
-            const plan = await this.updatePlanUseCase.execute(adminUserId, dto);
-            const response = this.responseBuilder.success(plan, 'Subscription plan updated successfully');
+            const dto = req.body;
+            const plan = await this.updatePlanUseCase.execute(adminUserId, planId, dto);
+            const response = this.responseBuilder.success(plan, messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_UPDATED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -98,7 +107,7 @@ let SubscriptionController = class SubscriptionController {
             const adminUserId = req.user.userId;
             const planId = req.params.id;
             await this.deletePlanUseCase.execute(adminUserId, planId);
-            const response = this.responseBuilder.success({ message: 'Subscription plan deleted successfully' }, 'Subscription plan deleted successfully');
+            const response = this.responseBuilder.success({ message: messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_DELETED }, messages_1.SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_DELETED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {

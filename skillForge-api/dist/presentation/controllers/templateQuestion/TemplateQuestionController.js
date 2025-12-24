@@ -21,6 +21,7 @@ const UpdateTemplateQuestionUseCase_1 = require("../../../application/useCases/t
 const DeleteTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase");
 const BulkDeleteTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
+const messages_1 = require("../../../config/messages");
 let TemplateQuestionController = class TemplateQuestionController {
     constructor(createTemplateQuestionUseCase, listTemplateQuestionsUseCase, updateTemplateQuestionUseCase, deleteTemplateQuestionUseCase, bulkDeleteTemplateQuestionsUseCase, responseBuilder) {
         this.createTemplateQuestionUseCase = createTemplateQuestionUseCase;
@@ -71,9 +72,9 @@ let TemplateQuestionController = class TemplateQuestionController {
     async update(req, res, next) {
         try {
             const adminUserId = req.user.userId;
-            const { id } = req.params;
-            const dto = { ...req.body, questionId: id };
-            const question = await this.updateTemplateQuestionUseCase.execute(adminUserId, dto);
+            const questionId = req.params.id;
+            const dto = req.body;
+            const question = await this.updateTemplateQuestionUseCase.execute(adminUserId, questionId, dto);
             const response = this.responseBuilder.success(question.toJSON(), 'Question updated successfully', HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
@@ -90,7 +91,7 @@ let TemplateQuestionController = class TemplateQuestionController {
             const adminUserId = req.user.userId;
             const { id } = req.params;
             await this.deleteTemplateQuestionUseCase.execute(adminUserId, id);
-            const response = this.responseBuilder.success({ message: 'Question deleted successfully' }, 'Question deleted successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            const response = this.responseBuilder.success({ message: messages_1.SUCCESS_MESSAGES.TEMPLATE.QUESTION_DELETED }, messages_1.SUCCESS_MESSAGES.TEMPLATE.QUESTION_DELETED, HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {

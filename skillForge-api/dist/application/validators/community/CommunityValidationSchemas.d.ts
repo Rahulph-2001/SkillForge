@@ -3,7 +3,7 @@ export declare const createCommunitySchema: z.ZodObject<{
     name: z.ZodString;
     description: z.ZodString;
     category: z.ZodString;
-    creditsCost: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
+    creditsCost: z.ZodDefault<z.ZodOptional<z.ZodCoercedNumber<unknown>>>;
     creditsPeriod: z.ZodDefault<z.ZodOptional<z.ZodString>>;
 }, z.core.$strip>;
 export declare const updateCommunitySchema: z.ZodObject<{
@@ -12,7 +12,7 @@ export declare const updateCommunitySchema: z.ZodObject<{
     category: z.ZodOptional<z.ZodString>;
     imageUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     videoUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
-    creditsCost: z.ZodOptional<z.ZodNumber>;
+    creditsCost: z.ZodOptional<z.ZodCoercedNumber<unknown>>;
     creditsPeriod: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export declare const sendMessageSchema: z.ZodObject<{

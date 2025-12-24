@@ -4,6 +4,7 @@ import { IJobQueueService, JobQueueName } from '../../domain/services/IJobQueueS
 import { RedisService } from './RedisService';
 import { Queue, Worker, Job } from 'bullmq';
 import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
+import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/CheckSubscriptionExpiryUseCase';
 
 @injectable()
 export class JobQueueService implements IJobQueueService {
@@ -12,7 +13,8 @@ export class JobQueueService implements IJobQueueService {
 
   constructor(
     @inject(TYPES.RedisService) private redisService: RedisService,
-    @inject(TYPES.MCQImportJobProcessor) private mcqImportJobProcessor: MCQImportJobProcessor
+    @inject(TYPES.MCQImportJobProcessor) private mcqImportJobProcessor: MCQImportJobProcessor,
+    @inject(TYPES.ICheckSubscriptionExpiryUseCase) private checkSubscriptionExpiryUseCase: ICheckSubscriptionExpiryUseCase
   ) {
     this.initializeQueues();
   }
@@ -23,6 +25,18 @@ export class JobQueueService implements IJobQueueService {
     // Initialize MCQ Import Queue
     const mcqQueue = new Queue(JobQueueName.MCQ_IMPORT, { connection: connectionOptions });
     this.queues.set(JobQueueName.MCQ_IMPORT, mcqQueue);
+
+    // Initialize Subscription Expiry Queue
+    const expiryQueue = new Queue(JobQueueName.SUBSCRIPTION_EXPIRY, { connection: connectionOptions });
+    this.queues.set(JobQueueName.SUBSCRIPTION_EXPIRY, expiryQueue);
+
+    // Schedule the daily check
+    expiryQueue.add(JobQueueName.SUBSCRIPTION_EXPIRY, {}, {
+      repeat: {
+        pattern: '0 0 * * *', // Daily at midnight
+      },
+      removeOnComplete: true,
+    });
   }
 
   async addJob<T extends Record<string, unknown>>(queueName: JobQueueName, data: T): Promise<void> {
@@ -59,16 +73,41 @@ export class JobQueueService implements IJobQueueService {
         { connection: connectionOptions }
       );
 
-      worker.on('completed', (job) => {
-        console.log(`[Worker] Job ${job.id} has completed!`);
-      });
-
-      worker.on('failed', (job, err) => {
-        console.log(`[Worker] Job ${job?.id} has failed with ${err.message}`);
-      });
-
+      this.setupWorkerListeners(worker, JobQueueName.MCQ_IMPORT);
       this.workers.set(JobQueueName.MCQ_IMPORT, worker);
-      console.log(`[JobQueueService] Worker for ${JobQueueName.MCQ_IMPORT} started`);
     }
+
+    // Start Subscription Expiry Worker
+    if (!this.workers.has(JobQueueName.SUBSCRIPTION_EXPIRY)) {
+      const worker = new Worker(
+        JobQueueName.SUBSCRIPTION_EXPIRY,
+        async (job: Job) => {
+          console.log(`[Worker] Processing job ${job.id} from ${JobQueueName.SUBSCRIPTION_EXPIRY}`);
+          try {
+            await this.checkSubscriptionExpiryUseCase.execute();
+            console.log(`[Worker] Job ${job.id} completed`);
+          } catch (error) {
+            console.error(`[Worker] Job ${job.id} failed:`, error);
+            throw error;
+          }
+        },
+        { connection: connectionOptions }
+      );
+
+      this.setupWorkerListeners(worker, JobQueueName.SUBSCRIPTION_EXPIRY);
+      this.workers.set(JobQueueName.SUBSCRIPTION_EXPIRY, worker);
+    }
+  }
+
+  private setupWorkerListeners(worker: Worker, queueName: string) {
+    worker.on('completed', (job) => {
+      console.log(`[Worker] Job ${job.id} in ${queueName} has completed!`);
+    });
+
+    worker.on('failed', (job, err) => {
+      console.log(`[Worker] Job ${job?.id} in ${queueName} has failed with ${err.message}`);
+    });
+
+    console.log(`[JobQueueService] Worker for ${queueName} started`);
   }
 }

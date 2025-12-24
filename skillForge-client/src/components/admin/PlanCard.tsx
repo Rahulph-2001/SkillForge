@@ -89,9 +89,9 @@ const PlanCard: React.FC<PlanCardProps> = ({ plan, onEdit, onDelete }) => {
         </div>
         <div className="flex items-center gap-2 text-sm text-gray-700">
           <span className="text-lg" aria-hidden="true">👥</span>
-          {plan.communityPosts === null
-            ? 'Unlimited community posts'
-            : `${plan.communityPosts} community post${plan.communityPosts !== 1 ? 's' : ''}`}
+          {plan.createCommunity === null
+            ? 'Unlimited communities'
+            : `${plan.createCommunity} communit${plan.createCommunity !== 1 ? 'ies' : 'y'}`}
         </div>
       </div>
 

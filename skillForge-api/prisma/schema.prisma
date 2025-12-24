@@ -1,11 +1,10 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url       = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 // --- Enums ---
@@ -43,47 +42,70 @@ enum BookingStatus {
   reschedule_requested
 }
 
+// Subscription Management Enums
+enum FeatureType {
+  BOOLEAN
+  NUMERIC_LIMIT
+  TEXT
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+}
+
+enum BillingInterval {
+  MONTHLY
+  QUARTERLY
+  YEARLY
+  LIFETIME
+}
+
 // --- Models ---
 
 model Skill {
-  id              String    @id @default(uuid()) @db.Uuid
-  providerId      String    @map("provider_id") @db.Uuid
-  templateId      String?   @map("template_id") @db.Uuid
-  title           String    @db.VarChar(255)
-  description     String    @db.Text
-  category        String    @db.VarChar(100)
-  level           String    @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
-  durationHours   Int       @map("duration_hours") // Structured: 1, 2, 3, 4, 5, etc.
-  creditsPerHour  Int       @map("credits_per_hour")
-  tags            String[]  @default([])
-  imageUrl        String?   @map("image_url") @db.Text
-  status          String    @default("pending-verification") // pending-verification, verified, approved, rejected
-  
+  id             String   @id @default(uuid()) @db.Uuid
+  providerId     String   @map("provider_id") @db.Uuid
+  templateId     String?  @map("template_id") @db.Uuid
+  title          String   @db.VarChar(255)
+  description    String   @db.Text
+  category       String   @db.VarChar(100)
+  level          String   @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
+  durationHours  Int      @map("duration_hours") // Structured: 1, 2, 3, 4, 5, etc.
+  creditsPerHour Int      @map("credits_per_hour")
+  tags           String[] @default([])
+  imageUrl       String?  @map("image_url") @db.Text
+  status         String   @default("pending-verification") // pending-verification, verified, approved, rejected
+
   // Verification System
-  verificationStatus    String?   @default("not_started") @map("verification_status") // not_started, in_progress, passed, failed
-  mcqScore              Int?      @default(0) @map("mcq_score")
-  mcqTotalQuestions     Int?      @default(0) @map("mcq_total_questions")
-  mcqPassingScore       Int?      @default(70) @map("mcq_passing_score") // Percentage
-  verifiedAt            DateTime? @map("verified_at") @db.Timestamptz(6)
-  rejectionReason       String?   @map("rejection_reason") @db.Text
-  
+  verificationStatus String?   @default("not_started") @map("verification_status") // not_started, in_progress, passed, failed
+  mcqScore           Int?      @default(0) @map("mcq_score")
+  mcqTotalQuestions  Int?      @default(0) @map("mcq_total_questions")
+  mcqPassingScore    Int?      @default(70) @map("mcq_passing_score") // Percentage
+  verifiedAt         DateTime? @map("verified_at") @db.Timestamptz(6)
+  rejectionReason    String?   @map("rejection_reason") @db.Text
+
   // Stats
-  totalSessions   Int       @default(0) @map("total_sessions")
-  rating          Decimal?  @default(0) @db.Decimal(3, 2)
-  
+  totalSessions Int      @default(0) @map("total_sessions")
+  rating        Decimal? @default(0) @db.Decimal(3, 2)
+
   // Metadata
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  isDeleted       Boolean   @default(false) @map("is_deleted")
-  isBlocked       Boolean   @default(false) @map("is_blocked") // Admin can block approved skills
-  blockedReason   String?   @map("blocked_reason") @db.Text
-  blockedAt       DateTime? @map("blocked_at") @db.Timestamptz(6)
-  isAdminBlocked  Boolean   @default(false) @map("is_admin_blocked")
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isDeleted      Boolean   @default(false) @map("is_deleted")
+  isBlocked      Boolean   @default(false) @map("is_blocked") // Admin can block approved skills
+  blockedReason  String?   @map("blocked_reason") @db.Text
+  blockedAt      DateTime? @map("blocked_at") @db.Timestamptz(6)
+  isAdminBlocked Boolean   @default(false) @map("is_admin_blocked")
 
   // Relations
-  provider        User      @relation(fields: [providerId], references: [id])
+  provider             User                       @relation(fields: [providerId], references: [id])
   verificationAttempts SkillVerificationAttempt[]
-  bookings        Booking[]
+  bookings             Booking[]
 
   @@index([providerId])
   @@index([category])
@@ -92,23 +114,47 @@ model Skill {
   @@map("skills")
 }
 
-model McqImportJob {
-  id              String         @id @default(uuid()) @db.Uuid
-  templateId      String         @map("template_id") @db.Uuid
-  adminId         String         @map("admin_id") @db.Uuid
-  fileName        String         @map("file_name") @db.VarChar(255)
-  filePath        String         @map("file_path") @db.Text // S3 path to the uploaded file
-  status          String         @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, COMPLETED_WITH_ERRORS, FAILED
-  totalRows       Int            @map("total_rows") @default(0)
-  processedRows   Int            @map("processed_rows") @default(0)
-  successfulRows  Int            @map("successful_rows") @default(0)
-  failedRows      Int            @map("failed_rows") @default(0)
-  errorFilePath   String?        @map("error_file_path") @db.Text // S3 path to the error log file
+model Payment {
+  id                    String   @id @default(uuid()) @db.Uuid
+  user_id               String   @db.Uuid
+  provider              String   @db.VarChar(50)
+  provider_payment_id   String?  @unique @db.VarChar(255)
+  provider_customer_id  String?  @db.VarChar(255)
+  amount                Float
+  currency              String   @db.VarChar(10)
+  purpose               String   @db.VarChar(50)
+  status                String   @db.VarChar(50)
+  metadata              Json?
+  failure_reason        String?  @db.Text
+  refunded_amount       Float?
+  created_at            DateTime @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime @updatedAt @db.Timestamptz(6)
   
-  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  startedAt       DateTime?      @map("started_at") @db.Timestamptz(6)
-  completedAt     DateTime?      @map("completed_at") @db.Timestamptz(6)
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  
+  @@index([user_id])
+  @@index([provider_payment_id])
+  @@index([status])
+  @@map("payments")
+}
+
+model McqImportJob {
+  id             String  @id @default(uuid()) @db.Uuid
+  templateId     String  @map("template_id") @db.Uuid
+  adminId        String  @map("admin_id") @db.Uuid
+  fileName       String  @map("file_name") @db.VarChar(255)
+  filePath       String  @map("file_path") @db.Text // S3 path to the uploaded file
+  status         String  @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, COMPLETED_WITH_ERRORS, FAILED
+  totalRows      Int     @default(0) @map("total_rows")
+  processedRows  Int     @default(0) @map("processed_rows")
+  successfulRows Int     @default(0) @map("successful_rows")
+  failedRows     Int     @default(0) @map("failed_rows")
+  errorFilePath  String? @map("error_file_path") @db.Text // S3 path to the error log file
+
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  startedAt   DateTime? @map("started_at") @db.Timestamptz(6)
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
 
   @@index([templateId])
   @@index([adminId])
@@ -117,25 +163,25 @@ model McqImportJob {
 
 // Skill Template (Admin-managed)
 model SkillTemplate {
-  id              String    @id @default(uuid()) @db.Uuid
-  title           String    @db.VarChar(255)
-  category        String    @db.VarChar(100)
-  description     String    @db.Text
-  creditsMin      Int       @map("credits_min")
-  creditsMax      Int       @map("credits_max")
-  mcqCount        Int       @map("mcq_count")
-  passRange       Int       @default(70) @map("pass_range") // Percentage
-  levels          String[]  @default([]) // ["Beginner", "Intermediate", "Advanced"]
-  tags            String[]  @default([])
-  status          String    @default("Active") // Active, Inactive
-  
+  id          String   @id @default(uuid()) @db.Uuid
+  title       String   @db.VarChar(255)
+  category    String   @db.VarChar(100)
+  description String   @db.Text
+  creditsMin  Int      @map("credits_min")
+  creditsMax  Int      @map("credits_max")
+  mcqCount    Int      @map("mcq_count")
+  passRange   Int      @default(70) @map("pass_range") // Percentage
+  levels      String[] @default([]) // ["Beginner", "Intermediate", "Advanced"]
+  tags        String[] @default([])
+  status      String   @default("Active") // Active, Inactive
+
   // Metadata
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  isActive        Boolean   @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isActive  Boolean  @default(true) @map("is_active")
 
   // Relations
-  questions       TemplateQuestion[]
+  questions TemplateQuestion[]
 
   @@index([category])
   @@index([status])
@@ -145,21 +191,21 @@ model SkillTemplate {
 
 // MCQ Questions for Skill Templates
 model TemplateQuestion {
-  id              String          @id @default(uuid()) @db.Uuid
-  templateId      String          @map("template_id") @db.Uuid
-  level           String          @db.VarChar(50) // Beginner, Intermediate, Advanced
-  question        String          @db.Text
-  options         Json            // Array of options: ["Option A", "Option B", "Option C", "Option D"]
-  correctAnswer   Int             @map("correct_answer") // Index of correct option (0-3)
-  explanation     String?         @db.Text // Optional explanation for the answer
-  
+  id            String  @id @default(uuid()) @db.Uuid
+  templateId    String  @map("template_id") @db.Uuid
+  level         String  @db.VarChar(50) // Beginner, Intermediate, Advanced
+  question      String  @db.Text
+  options       Json // Array of options: ["Option A", "Option B", "Option C", "Option D"]
+  correctAnswer Int     @map("correct_answer") // Index of correct option (0-3)
+  explanation   String? @db.Text // Optional explanation for the answer
+
   // Metadata
-  isActive        Boolean         @default(true) @map("is_active")
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   // Relations
-  template        SkillTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  template SkillTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   @@index([templateId])
   @@index([level])
@@ -169,19 +215,19 @@ model TemplateQuestion {
 
 // Keep original SkillQuestion for backward compatibility
 model SkillQuestion {
-  id              String    @id @default(uuid()) @db.Uuid
-  category        String    @db.VarChar(100)
-  level           String    @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
-  question        String    @db.Text
-  options         Json      // Array of options: ["Option A", "Option B", "Option C", "Option D"]
-  correctAnswer   Int       @map("correct_answer") // Index of correct option (0-3)
-  difficulty      String    @default("medium") // easy, medium, hard
-  tags            String[]  @default([])
-  
+  id            String   @id @default(uuid()) @db.Uuid
+  category      String   @db.VarChar(100)
+  level         String   @db.VarChar(50) // Beginner, Intermediate, Advanced, Expert
+  question      String   @db.Text
+  options       Json // Array of options: ["Option A", "Option B", "Option C", "Option D"]
+  correctAnswer Int      @map("correct_answer") // Index of correct option (0-3)
+  difficulty    String   @default("medium") // easy, medium, hard
+  tags          String[] @default([])
+
   // Metadata
-  isActive        Boolean   @default(true) @map("is_active")
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   @@index([category])
   @@index([level])
@@ -192,20 +238,20 @@ model SkillQuestion {
 
 // Track verification attempts
 model SkillVerificationAttempt {
-  id              String    @id @default(uuid()) @db.Uuid
-  skillId         String    @map("skill_id") @db.Uuid
-  userId          String    @map("user_id") @db.Uuid
-  questionsAsked  Json      @map("questions_asked") // Array of question IDs
-  userAnswers     Json      @map("user_answers") // Array of user's answers
-  score           Int       // Percentage score
-  passed          Boolean   @default(false)
-  timeTaken       Int?      @map("time_taken") // Seconds
-  
+  id             String  @id @default(uuid()) @db.Uuid
+  skillId        String  @map("skill_id") @db.Uuid
+  userId         String  @map("user_id") @db.Uuid
+  questionsAsked Json    @map("questions_asked") // Array of question IDs
+  userAnswers    Json    @map("user_answers") // Array of user's answers
+  score          Int // Percentage score
+  passed         Boolean @default(false)
+  timeTaken      Int?    @map("time_taken") // Seconds
+
   // Metadata
-  attemptedAt     DateTime  @default(now()) @map("attempted_at") @db.Timestamptz(6)
+  attemptedAt DateTime @default(now()) @map("attempted_at") @db.Timestamptz(6)
 
   // Relations
-  skill           Skill     @relation(fields: [skillId], references: [id])
+  skill Skill @relation(fields: [skillId], references: [id])
 
   @@index([skillId])
   @@index([userId])
@@ -216,27 +262,27 @@ model SkillVerificationAttempt {
 // Add to schema.prisma
 
 model Community {
-  id                  String    @id @default(uuid()) @db.Uuid
-  name                String    @db.VarChar(255)
-  description         String    @db.Text
-  category            String    @db.VarChar(100)
-  imageUrl            String?   @map("image_url") @db.Text
-  videoUrl            String?   @map("video_url") @db.Text
-  adminId             String    @map("admin_id") @db.Uuid
-  creditsCost         Int       @map("credits_cost") @default(0)
-  creditsPeriod       String    @map("credits_period") @default("30 days") @db.VarChar(50)
-  membersCount        Int       @map("members_count") @default(0)
-  
-  isActive            Boolean   @default(true) @map("is_active")
-  isDeleted           Boolean   @default(false) @map("is_deleted")
-  
-  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  admin               User      @relation("CommunityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
-  members             CommunityMember[]
-  messages            CommunityMessage[]
-  
+  id            String  @id @default(uuid()) @db.Uuid
+  name          String  @db.VarChar(255)
+  description   String  @db.Text
+  category      String  @db.VarChar(100)
+  imageUrl      String? @map("image_url") @db.Text
+  videoUrl      String? @map("video_url") @db.Text
+  adminId       String  @map("admin_id") @db.Uuid
+  creditsCost   Int     @default(0) @map("credits_cost")
+  creditsPeriod String  @default("30 days") @map("credits_period") @db.VarChar(50)
+  membersCount  Int     @default(0) @map("members_count")
+
+  isActive  Boolean @default(true) @map("is_active")
+  isDeleted Boolean @default(false) @map("is_deleted")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  admin    User               @relation("CommunityAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+  members  CommunityMember[]
+  messages CommunityMessage[]
+
   @@index([adminId])
   @@index([category])
   @@index([isActive])
@@ -245,21 +291,21 @@ model Community {
 }
 
 model CommunityMember {
-  id                  String    @id @default(uuid()) @db.Uuid
-  communityId         String    @map("community_id") @db.Uuid
-  userId              String    @map("user_id") @db.Uuid
-  role                String    @default("member") @db.VarChar(50) // admin, member
-  
-  isAutoRenew         Boolean   @default(false) @map("is_auto_renew")
-  subscriptionEndsAt  DateTime? @map("subscription_ends_at") @db.Timestamptz(6)
-  
-  joinedAt            DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
-  leftAt              DateTime? @map("left_at") @db.Timestamptz(6)
-  isActive            Boolean   @default(true) @map("is_active")
-  
-  community           Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  user                User      @relation("CommunityMemberships", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id          String @id @default(uuid()) @db.Uuid
+  communityId String @map("community_id") @db.Uuid
+  userId      String @map("user_id") @db.Uuid
+  role        String @default("member") @db.VarChar(50) // admin, member
+
+  isAutoRenew        Boolean   @default(false) @map("is_auto_renew")
+  subscriptionEndsAt DateTime? @map("subscription_ends_at") @db.Timestamptz(6)
+
+  joinedAt DateTime  @default(now()) @map("joined_at") @db.Timestamptz(6)
+  leftAt   DateTime? @map("left_at") @db.Timestamptz(6)
+  isActive Boolean   @default(true) @map("is_active")
+
+  community Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user      User      @relation("CommunityMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([communityId, userId])
   @@index([communityId])
   @@index([userId])
@@ -268,34 +314,34 @@ model CommunityMember {
 }
 
 model CommunityMessage {
-  id                  String    @id @default(uuid()) @db.Uuid
-  communityId         String    @map("community_id") @db.Uuid
-  senderId            String    @map("sender_id") @db.Uuid
-  
-  content             String    @db.Text
-  type                String    @default("text") @db.VarChar(50) // text, image, video, file
-  fileUrl             String?   @map("file_url") @db.Text
-  fileName            String?   @map("file_name") @db.VarChar(255)
-  
-  isPinned            Boolean   @default(false) @map("is_pinned")
-  pinnedAt            DateTime? @map("pinned_at") @db.Timestamptz(6)
-  pinnedBy            String?   @map("pinned_by") @db.Uuid
-  
-  replyToId           String?   @map("reply_to_id") @db.Uuid
-  forwardedFromId     String?   @map("forwarded_from_id") @db.Uuid
-  
-  isDeleted           Boolean   @default(false) @map("is_deleted")
-  deletedAt           DateTime? @map("deleted_at") @db.Timestamptz(6)
-  
-  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
-  community           Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
-  sender              User      @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
-  replyTo             CommunityMessage? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
-  replies             CommunityMessage[] @relation("MessageReplies")
-  reactions           MessageReaction[]
-  
+  id          String @id @default(uuid()) @db.Uuid
+  communityId String @map("community_id") @db.Uuid
+  senderId    String @map("sender_id") @db.Uuid
+
+  content  String  @db.Text
+  type     String  @default("text") @db.VarChar(50) // text, image, video, file
+  fileUrl  String? @map("file_url") @db.Text
+  fileName String? @map("file_name") @db.VarChar(255)
+
+  isPinned Boolean   @default(false) @map("is_pinned")
+  pinnedAt DateTime? @map("pinned_at") @db.Timestamptz(6)
+  pinnedBy String?   @map("pinned_by") @db.Uuid
+
+  replyToId       String? @map("reply_to_id") @db.Uuid
+  forwardedFromId String? @map("forwarded_from_id") @db.Uuid
+
+  isDeleted Boolean   @default(false) @map("is_deleted")
+  deletedAt DateTime? @map("deleted_at") @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  community Community          @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  sender    User               @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo   CommunityMessage?  @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   CommunityMessage[] @relation("MessageReplies")
+  reactions MessageReaction[]
+
   @@index([communityId])
   @@index([senderId])
   @@index([isPinned])
@@ -305,84 +351,85 @@ model CommunityMessage {
 }
 
 model MessageReaction {
-  id                  String    @id @default(uuid()) @db.Uuid
-  messageId           String    @map("message_id") @db.Uuid
-  userId              String    @map("user_id") @db.Uuid
-  emoji               String    @db.VarChar(10)
-  
-  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  
-  message             CommunityMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
-  user                User      @relation("MessageReactions", fields: [userId], references: [id], onDelete: Cascade)
-  
+  id        String @id @default(uuid()) @db.Uuid
+  messageId String @map("message_id") @db.Uuid
+  userId    String @map("user_id") @db.Uuid
+  emoji     String @db.VarChar(10)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  message CommunityMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User             @relation("MessageReactions", fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([messageId, userId, emoji])
   @@index([messageId])
   @@index([userId])
   @@map("message_reactions")
 }
 
-
 model User {
-  id                      String           @id @default(uuid()) @db.Uuid
-  name                    String           @db.VarChar(255)
-  email                   String           @unique @db.VarChar(255)
-  passwordHash            String           @map("password_hash") @db.VarChar(255)
-  avatarUrl               String?          @map("avatar_url") @db.Text
-  bio                     String?          @db.Text
-  location                String?          @db.VarChar(255)
-  role                    UserRole         @default(user)
+  id           String   @id @default(uuid()) @db.Uuid
+  name         String   @db.VarChar(255)
+  email        String   @unique @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  avatarUrl    String?  @map("avatar_url") @db.Text
+  bio          String?  @db.Text
+  location     String?  @db.VarChar(255)
+  role         UserRole @default(user)
 
   // Credit System
-  credits                 Int              @default(0)
-  earnedCredits           Int              @default(0) @map("earned_credits")
-  bonusCredits            Int              @default(0) @map("bonus_credits")
-  purchasedCredits        Int              @default(0) @map("purchased_credits")
-  walletBalance           Decimal          @default(0) @map("wallet_balance") @db.Decimal(10, 2)
+  credits          Int     @default(0)
+  earnedCredits    Int     @default(0) @map("earned_credits")
+  bonusCredits     Int     @default(0) @map("bonus_credits")
+  purchasedCredits Int     @default(0) @map("purchased_credits")
+  walletBalance    Decimal @default(0) @map("wallet_balance") @db.Decimal(10, 2)
 
   // Profile Data
-  skillsOffered           String[]         @default([]) @map("skills_offered")
-  skillsLearning          String[]         @default([]) @map("skills_learning")
-  rating                  Decimal?         @default(0) @db.Decimal(3, 2)
-  reviewCount             Int              @default(0) @map("review_count")
-  totalSessionsCompleted  Int              @default(0) @map("total_sessions_completed")
-  memberSince             DateTime         @default(now()) @map("member_since") @db.Timestamptz(6)
+  skillsOffered          String[] @default([]) @map("skills_offered")
+  skillsLearning         String[] @default([]) @map("skills_learning")
+  rating                 Decimal? @default(0) @db.Decimal(3, 2)
+  reviewCount            Int      @default(0) @map("review_count")
+  totalSessionsCompleted Int      @default(0) @map("total_sessions_completed")
+  memberSince            DateTime @default(now()) @map("member_since") @db.Timestamptz(6)
 
   // Verification Status (JSONB) - Updated for Email-Only Verification
-  verification            Json             @default("{\"email_verified\":false,\"email_verified_at\":null,\"bank_details\":{\"account_number\":null,\"ifsc_code\":null,\"account_holder_name\":null,\"bank_name\":null,\"upi_id\":null,\"verified\":false,\"verified_at\":null,\"verification_method\":null}}")
+  verification Json @default("{\"email_verified\":false,\"email_verified_at\":null,\"bank_details\":{\"account_number\":null,\"ifsc_code\":null,\"account_holder_name\":null,\"bank_name\":null,\"upi_id\":null,\"verified\":false,\"verified_at\":null,\"verification_method\":null}}")
 
   // Anti-Fraud Tracking (JSONB) - Updated to remove device_fingerprint
-  antiFraud               Json             @default("{\"registration_ip\":null,\"last_login_ip\":null,\"account_age_days\":0,\"suspicious_activity_flags\":[],\"last_redemption_date\":null,\"redemption_count\":0,\"risk_score\":0,\"flagged_for_review\":false}") @map("anti_fraud")
+  antiFraud Json @default("{\"registration_ip\":null,\"last_login_ip\":null,\"account_age_days\":0,\"suspicious_activity_flags\":[],\"last_redemption_date\":null,\"redemption_count\":0,\"risk_score\":0,\"flagged_for_review\":false}") @map("anti_fraud")
 
   // Subscription Info
-  subscriptionPlan        SubscriptionPlanType @default(free) @map("subscription_plan")
-  subscriptionValidUntil  DateTime?        @map("subscription_valid_until") @db.Timestamptz(6)
-  subscriptionAutoRenew   Boolean          @default(false) @map("subscription_auto_renew")
-  subscriptionStartedAt   DateTime?        @map("subscription_started_at") @db.Timestamptz(6)
+  subscriptionPlan       SubscriptionPlanType @default(free) @map("subscription_plan")
+  subscriptionValidUntil DateTime?            @map("subscription_valid_until") @db.Timestamptz(6)
+  subscriptionAutoRenew  Boolean              @default(false) @map("subscription_auto_renew")
+  subscriptionStartedAt  DateTime?            @map("subscription_started_at") @db.Timestamptz(6)
 
   // Admin Permissions (JSONB, nullable - only for admin role)
-  adminPermissions        Json?            @map("admin_permissions")
+  adminPermissions Json? @map("admin_permissions")
 
   // Settings (JSONB) - Updated to remove SMS/Phone preferences
-  settings                Json             @default("{\"marketing_emails\":true,\"notification_preferences\":{\"email\":true,\"push\":true,\"booking_notifications\":true,\"message_notifications\":true,\"credit_notifications\":true,\"community_notifications\":true,\"project_notifications\":true},\"privacy_settings\":{\"profile_visibility\":\"public\",\"show_location\":true,\"show_email\":false},\"language\":\"en\",\"timezone\":\"UTC\"}")
+  settings Json @default("{\"marketing_emails\":true,\"notification_preferences\":{\"email\":true,\"push\":true,\"booking_notifications\":true,\"message_notifications\":true,\"credit_notifications\":true,\"community_notifications\":true,\"project_notifications\":true},\"privacy_settings\":{\"profile_visibility\":\"public\",\"show_location\":true,\"show_email\":false},\"language\":\"en\",\"timezone\":\"UTC\"}")
 
   // Metadata
-  createdAt               DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt               DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
-  lastLogin               DateTime?        @map("last_login") @db.Timestamptz(6)
-  lastActive              DateTime?        @map("last_active") @db.Timestamptz(6)
-  isActive                Boolean          @default(true) @map("is_active")
-  isDeleted               Boolean          @default(false) @map("is_deleted")
+  createdAt           DateTime              @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime              @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lastLogin           DateTime?             @map("last_login") @db.Timestamptz(6)
+  lastActive          DateTime?             @map("last_active") @db.Timestamptz(6)
+  isActive            Boolean               @default(true) @map("is_active")
+  isDeleted           Boolean               @default(false) @map("is_deleted")
   // Relations
-  passwordResetTokens     PasswordResetToken[]
-  skills                  Skill[]
-  bookingsAsLearner       Booking[] @relation("LearnerBookings")
-  bookingsAsProvider      Booking[] @relation("ProviderBookings")
-  availability            ProviderAvailability?
+  passwordResetTokens PasswordResetToken[]
+  skills              Skill[]
+  bookingsAsLearner   Booking[]             @relation("LearnerBookings")
+  bookingsAsProvider  Booking[]             @relation("ProviderBookings")
+  availability        ProviderAvailability?
+  payments            Payment[]
 
-  adminCommunities    Community[] @relation("CommunityAdmin")
-  communityMemberships CommunityMember[] @relation("CommunityMemberships")
-  sentMessages        CommunityMessage[] @relation("SentMessages")
-  messageReactions    MessageReaction[] @relation("MessageReactions")
+  adminCommunities     Community[]        @relation("CommunityAdmin")
+  communityMemberships CommunityMember[]  @relation("CommunityMemberships")
+  sentMessages         CommunityMessage[] @relation("SentMessages")
+  messageReactions     MessageReaction[]  @relation("MessageReactions")
+  userSubscription     UserSubscription?  @relation("UserSubscriptions")
 
   @@index([role])
   @@index([isActive])
@@ -391,18 +438,18 @@ model User {
 }
 
 model PasswordResetToken {
-  id            String    @id @default(uuid()) @db.Uuid
-  userId        String    @map("user_id") @db.Uuid
-  token         String    @unique @db.VarChar(255)
-  isUsed        Boolean   @default(false) @map("is_used")
-  ipAddress     String?   @map("ip_address") @db.VarChar(45)
-  userAgent     String?   @map("user_agent") @db.Text
-  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  expiresAt     DateTime  @map("expires_at") @db.Timestamptz(6)
-  usedAt        DateTime? @map("used_at") @db.Timestamptz(6)
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  token     String    @unique @db.VarChar(255)
+  isUsed    Boolean   @default(false) @map("is_used")
+  ipAddress String?   @map("ip_address") @db.VarChar(45)
+  userAgent String?   @map("user_agent") @db.Text
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime? @map("used_at") @db.Timestamptz(6)
 
   // Relations
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([token])
@@ -413,60 +460,171 @@ model PasswordResetToken {
 // --- Subscription Management Models ---
 
 model SubscriptionPlanModel {
-  id                String      @id @default(uuid()) @db.Uuid
-  name              String      @unique @db.VarChar(100)
-  price             Decimal     @db.Decimal(10, 2)
-  projectPosts      Int?        @map("project_posts") // null = unlimited
-  communityPosts    Int?        @map("community_posts") // null = unlimited
-  badge             PlanBadge
-  color             String      @default("blue") @db.VarChar(50)
-  isActive          Boolean     @default(true) @map("is_active")
-  
-  // Features stored as JSONB array: [{id: string, name: string}]
-  features          Json        @default("[]")
-  
+  id          String  @id @default(uuid()) @db.Uuid
+  name        String  @unique @db.VarChar(100)
+  description String? @db.Text
+
+  // Pricing
+  price           Decimal         @db.Decimal(10, 2)
+  currency        String          @default("USD") @db.VarChar(10)
+  billingInterval BillingInterval @default(MONTHLY) @map("billing_interval")
+  trialDays       Int             @default(0) @map("trial_days")
+
+  // Legacy fields (for backward compatibility)
+  projectPosts    Int? @map("project_posts") // null = unlimited
+  createCommunity Int? @map("create_community") // null = unlimited
+
+  // Display
+  badge        PlanBadge
+  color        String    @default("blue") @db.VarChar(50)
+  isPopular    Boolean   @default(false) @map("is_popular")
+  displayOrder Int       @default(0) @map("display_order")
+
+  // Status
+  isActive Boolean @default(true) @map("is_active")
+  isPublic Boolean @default(true) @map("is_public")
+
   // Metadata
-  createdAt         DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  features      Feature[]
+  subscriptions UserSubscription[]
 
   @@index([name])
   @@index([badge])
-  @@index([isActive])
+  @@index([isActive, isPublic])
   @@index([price])
+  @@index([billingInterval])
   @@map("subscription_plans")
+}
+
+// Feature Management
+model Feature {
+  id     String @id @default(uuid()) @db.Uuid
+  planId String? @map("plan_id") @db.Uuid
+
+  // Feature Details
+  name        String      @db.VarChar(255)
+  description String?     @db.Text
+  featureType FeatureType @map("feature_type")
+
+  // For NUMERIC_LIMIT type
+  limitValue Int? @map("limit_value")
+
+  // For BOOLEAN type
+  isEnabled Boolean @default(true) @map("is_enabled")
+
+  // Metadata
+  displayOrder  Int      @default(0) @map("display_order")
+  isHighlighted Boolean  @default(false) @map("is_highlighted")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  plan SubscriptionPlanModel? @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
+  @@index([featureType])
+  @@index([displayOrder])
+  @@map("features")
+}
+
+// User Subscription Management
+model UserSubscription {
+  id     String @id @default(uuid()) @db.Uuid
+  userId String @unique @map("user_id") @db.Uuid
+  planId String @map("plan_id") @db.Uuid
+
+  // Billing Information
+  status             SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart DateTime           @map("current_period_start") @db.Timestamptz(6)
+  currentPeriodEnd   DateTime           @map("current_period_end") @db.Timestamptz(6)
+  cancelAt           DateTime?          @map("cancel_at") @db.Timestamptz(6)
+  canceledAt         DateTime?          @map("canceled_at") @db.Timestamptz(6)
+  trialStart         DateTime?          @map("trial_start") @db.Timestamptz(6)
+  trialEnd           DateTime?          @map("trial_end") @db.Timestamptz(6)
+
+  // Payment Integration (Stripe ready)
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id") @db.VarChar(255)
+  stripeCustomerId     String? @map("stripe_customer_id") @db.VarChar(255)
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  user         User                  @relation("UserSubscriptions", fields: [userId], references: [id], onDelete: Cascade)
+  plan         SubscriptionPlanModel @relation(fields: [planId], references: [id])
+  usageRecords UsageRecord[]
+
+  @@index([userId])
+  @@index([planId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@index([stripeSubscriptionId])
+  @@map("user_subscriptions")
+}
+
+// Usage Tracking
+model UsageRecord {
+  id             String @id @default(uuid()) @db.Uuid
+  subscriptionId String @map("subscription_id") @db.Uuid
+
+  // Usage Details
+  featureKey String @db.VarChar(100) // e.g., "project_posts", "community_posts"
+  usageCount Int    @default(0) @map("usage_count")
+  limitValue Int?   @map("limit_value")
+
+  // Period Tracking
+  periodStart DateTime @map("period_start") @db.Timestamptz(6)
+  periodEnd   DateTime @map("period_end") @db.Timestamptz(6)
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  subscription UserSubscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriptionId, featureKey, periodStart])
+  @@index([subscriptionId, featureKey])
+  @@index([periodStart, periodEnd])
+  @@map("usage_records")
 }
 
 // --- Booking Model ---
 
 model Booking {
-  id                String         @id @default(uuid()) @db.Uuid
-  learnerId         String         @map("learner_id") @db.Uuid
-  skillId           String         @map("skill_id") @db.Uuid
-  providerId        String         @map("provider_id") @db.Uuid
-  preferredDate     DateTime       @map("preferred_date") @db.Date
-  preferredTime     String         @map("preferred_time") @db.VarChar(5)
-  message           String?        @db.Text
-  notes             String?        @db.Text
-  status            BookingStatus  @default(pending)
-  sessionCost       Int            @map("session_cost")
-  confirmedDate     DateTime?      @map("confirmed_date") @db.Timestamptz(6)
-  confirmedTime     String?        @map("confirmed_time") @db.VarChar(5)
-  rejectionReason   String?        @map("rejection_reason") @db.Text
-  cancelledReason   String?        @map("cancelled_reason") @db.Text
-  cancelledBy       String?        @map("cancelled_by") @db.Uuid
-  rescheduleInfo    Json?          @map("reschedule_info")
-  isDeleted         Boolean        @default(false) @map("is_deleted")
-  createdAt         DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
-  
+  id              String        @id @default(uuid()) @db.Uuid
+  learnerId       String        @map("learner_id") @db.Uuid
+  skillId         String        @map("skill_id") @db.Uuid
+  providerId      String        @map("provider_id") @db.Uuid
+  preferredDate   DateTime      @map("preferred_date") @db.Date
+  preferredTime   String        @map("preferred_time") @db.VarChar(5)
+  message         String?       @db.Text
+  notes           String?       @db.Text
+  status          BookingStatus @default(pending)
+  sessionCost     Int           @map("session_cost")
+  confirmedDate   DateTime?     @map("confirmed_date") @db.Timestamptz(6)
+  confirmedTime   String?       @map("confirmed_time") @db.VarChar(5)
+  rejectionReason String?       @map("rejection_reason") @db.Text
+  cancelledReason String?       @map("cancelled_reason") @db.Text
+  cancelledBy     String?       @map("cancelled_by") @db.Uuid
+  rescheduleInfo  Json?         @map("reschedule_info")
+  isDeleted       Boolean       @default(false) @map("is_deleted")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
   // Industrial Level Time Range (Exact overlap checks)
-  startAt           DateTime?      @map("start_at") @db.Timestamptz(6)
-  endAt             DateTime?      @map("end_at") @db.Timestamptz(6)
+  startAt DateTime? @map("start_at") @db.Timestamptz(6)
+  endAt   DateTime? @map("end_at") @db.Timestamptz(6)
 
   // Relations
-  learner           User           @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
-  provider          User           @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
-  skill             Skill          @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  learner  User  @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
+  provider User  @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
+  skill    Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
 
   @@index([learnerId])
   @@index([skillId])
@@ -481,31 +639,31 @@ model Booking {
 // --- Availability Model ---
 
 model ProviderAvailability {
-  id                String    @id @default(uuid()) @db.Uuid
-  providerId        String    @unique @map("provider_id") @db.Uuid
-  
+  id         String @id @default(uuid()) @db.Uuid
+  providerId String @unique @map("provider_id") @db.Uuid
+
   // Weekly Schedule (JSONB)
   // Format: { "Monday": { "enabled": true, "slots": [{ "start": "09:00", "end": "17:00" }] }, ... }
-  weeklySchedule    Json      @map("weekly_schedule")
+  weeklySchedule Json @map("weekly_schedule")
 
   // General Settings
-  timezone          String    @default("UTC") @db.VarChar(50)
-  bufferTime        Int       @default(15) @map("buffer_time") // Minutes
-  maxSessionsPerDay Int?      @map("max_sessions_per_day") // null = unlimited
-  minAdvanceBooking Int       @default(24) @map("min_advance_booking") // Hours
-  maxAdvanceBooking Int       @default(30) @map("max_advance_booking") // Days
-  autoAccept        Boolean   @default(false) @map("auto_accept")
+  timezone          String  @default("UTC") @db.VarChar(50)
+  bufferTime        Int     @default(15) @map("buffer_time") // Minutes
+  maxSessionsPerDay Int?    @map("max_sessions_per_day") // null = unlimited
+  minAdvanceBooking Int     @default(24) @map("min_advance_booking") // Hours
+  maxAdvanceBooking Int     @default(30) @map("max_advance_booking") // Days
+  autoAccept        Boolean @default(false) @map("auto_accept")
 
   // Blocked Dates (JSONB)
   // Format: [{ "date": "2025-12-25", "label": "Christmas" }]
-  blockedDates      Json      @default("[]") @map("blocked_dates")
+  blockedDates Json @default("[]") @map("blocked_dates")
 
   // Metadata
-  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
 
   // Relations
-  provider          User      @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider User @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   @@index([providerId])
   @@map("provider_availability")

@@ -1,5 +1,5 @@
 import { Database } from '../../../infrastructure/database/Database';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 export interface UpdateUserProfileDTO {
     userId: string;
     name?: string;
@@ -17,8 +17,8 @@ export interface UpdatedProfileResponse {
 }
 export declare class UpdateUserProfileUseCase {
     private prisma;
-    private s3Service;
-    constructor(database: Database, s3Service: IS3Service);
+    private storageService;
+    constructor(database: Database, storageService: IStorageService);
     execute(dto: UpdateUserProfileDTO): Promise<UpdatedProfileResponse>;
 }
 //# sourceMappingURL=UpdateUserProfileUseCase.d.ts.map

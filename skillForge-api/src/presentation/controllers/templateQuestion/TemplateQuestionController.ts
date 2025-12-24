@@ -8,6 +8,7 @@ import { DeleteTemplateQuestionUseCase } from '../../../application/useCases/tem
 import { BulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 @injectable()
 export class TemplateQuestionController {
@@ -83,10 +84,10 @@ export class TemplateQuestionController {
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const adminUserId = (req as any).user.userId;
-      const { id } = req.params;
-      const dto = { ...req.body, questionId: id };
+      const questionId = req.params.id;
+      const dto = req.body;
 
-      const question = await this.updateTemplateQuestionUseCase.execute(adminUserId, dto);
+      const question = await this.updateTemplateQuestionUseCase.execute(adminUserId, questionId, dto);
 
       const response = this.responseBuilder.success(
         question.toJSON(),
@@ -111,8 +112,8 @@ export class TemplateQuestionController {
       await this.deleteTemplateQuestionUseCase.execute(adminUserId, id);
 
       const response = this.responseBuilder.success(
-        { message: 'Question deleted successfully' },
-        'Question deleted successfully',
+        { message: SUCCESS_MESSAGES.TEMPLATE.QUESTION_DELETED },
+        SUCCESS_MESSAGES.TEMPLATE.QUESTION_DELETED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

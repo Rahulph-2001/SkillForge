@@ -18,13 +18,12 @@ const types_1 = require("../../../infrastructure/di/types");
 const Database_1 = require("../../../infrastructure/database/Database");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UpdateUserProfileUseCase = class UpdateUserProfileUseCase {
-    constructor(database, s3Service) {
+    constructor(database, storageService) {
         this.prisma = database.getClient();
-        this.s3Service = s3Service;
+        this.storageService = storageService;
     }
     async execute(dto) {
         const { userId, name, bio, location, avatarFile } = dto;
-        // Check if user exists
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
         });
@@ -32,29 +31,20 @@ let UpdateUserProfileUseCase = class UpdateUserProfileUseCase {
             throw new AppError_1.NotFoundError('User not found');
         }
         let avatarUrl = user.avatarUrl;
-        // Upload avatar to S3 if provided
         if (avatarFile) {
             try {
-                // Delete old avatar if exists and is from S3 (not Google/external URL)
-                if (user.avatarUrl && user.avatarUrl.includes(process.env.AWS_S3_BUCKET_NAME || 'skillforge')) {
-                    // Cast to string to satisfy type checker, though check ensures it's not null
-                    await this.s3Service.deleteFile(user.avatarUrl);
-                }
-                // Upload new avatar
                 const key = `avatars/${userId}/${Date.now()}-${avatarFile.originalname}`;
-                // Cast avatarFile to any to avoid type mismatch with Buffer
-                avatarUrl = await this.s3Service.uploadFile(avatarFile.buffer, key, avatarFile.mimetype);
+                avatarUrl = await this.storageService.uploadFile(avatarFile.buffer, key, avatarFile.mimetype);
             }
             catch (_error) {
                 throw new AppError_1.InternalServerError('Failed to upload avatar image');
             }
         }
-        // Update user profile
         const updateData = {
             ...(name && { name }),
             ...(bio !== undefined && { bio }),
             ...(location !== undefined && { location }),
-            ...(avatarFile && { avatarUrl }), // Only update if new file was uploaded
+            ...(avatarFile && { avatarUrl }),
         };
         const updatedUser = await this.prisma.user.update({
             where: { id: userId },
@@ -82,7 +72,7 @@ exports.UpdateUserProfileUseCase = UpdateUserProfileUseCase;
 exports.UpdateUserProfileUseCase = UpdateUserProfileUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __metadata("design:paramtypes", [Database_1.Database, Object])
 ], UpdateUserProfileUseCase);
 //# sourceMappingURL=UpdateUserProfileUseCase.js.map

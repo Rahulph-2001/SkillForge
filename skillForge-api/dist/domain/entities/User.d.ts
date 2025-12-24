@@ -122,6 +122,8 @@ export declare class User {
     get isDeleted(): boolean;
     get isActive(): boolean;
     get subscriptionPlan(): SubscriptionPlan;
+    get subscriptionValidUntil(): Date | null;
+    get subscriptionStartedAt(): Date | null;
     get settings(): UserSettings;
     verifyEmail(): void;
     updateLastLogin(ip: string): void;
@@ -152,6 +154,25 @@ export declare class User {
      * @param amount - Amount to transfer
      */
     transferCredits(amount: number): void;
+    /**
+     * Activate or update user subscription
+     * @param planType - Subscription plan type
+     * @param validUntil - Subscription validity end date
+     * @param startedAt - Subscription start date (optional, defaults to now)
+     * @param autoRenew - Enable auto-renewal (optional, defaults to false)
+     */
+    activateSubscription(planType: SubscriptionPlan, validUntil: Date, startedAt?: Date, autoRenew?: boolean): void;
+    /**
+     * Credit amount to user wallet
+     * @param amount - Amount to credit (must be positive)
+     */
+    creditWallet(amount: number): void;
+    /**
+     * Debit amount from user wallet
+     * @param amount - Amount to debit
+     * @throws Error if insufficient balance
+     */
+    debitWallet(amount: number): void;
     toJSON(): Record<string, unknown>;
     static fromDatabaseRow(row: Record<string, unknown>): User;
 }

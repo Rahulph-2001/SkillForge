@@ -21,6 +21,9 @@ class CommunityMessage {
         const now = new Date();
         this._createdAt = now;
         this._updatedAt = now;
+        // Initialize sender fields with defaults (will be populated from DB row)
+        this._senderName = 'Unknown User';
+        this._senderAvatar = null;
     }
     // Getters
     get id() { return this._id; }
@@ -39,6 +42,8 @@ class CommunityMessage {
     get deletedAt() { return this._deletedAt; }
     get createdAt() { return this._createdAt; }
     get updatedAt() { return this._updatedAt; }
+    get senderName() { return this._senderName; }
+    get senderAvatar() { return this._senderAvatar; }
     pin(userId) {
         this._isPinned = true;
         this._pinnedAt = new Date();
@@ -74,6 +79,9 @@ class CommunityMessage {
             deleted_at: this._deletedAt,
             created_at: this._createdAt,
             updated_at: this._updatedAt,
+            sender_name: this._senderName,
+            sender_avatar: this._senderAvatar,
+            reactions: this._reactions || [],
         };
     }
     static fromDatabaseRow(row) {
@@ -96,6 +104,36 @@ class CommunityMessage {
         messageAny._deletedAt = (row.deleted_at || row.deletedAt);
         messageAny._createdAt = (row.created_at || row.createdAt) || new Date();
         messageAny._updatedAt = (row.updated_at || row.updatedAt) || new Date();
+        // Extract sender details from joined user relation
+        messageAny._senderName = row.sender?.name || 'Unknown User';
+        messageAny._senderAvatar = row.sender?.avatar || row.sender?.avatarUrl || null;
+        // Map reactions if available
+        if (row.reactions && Array.isArray(row.reactions)) {
+            const reactionsArray = row.reactions;
+            const grouped = new Map();
+            reactionsArray.forEach((reaction) => {
+                const emoji = reaction.emoji;
+                if (!grouped.has(emoji)) {
+                    grouped.set(emoji, {
+                        emoji,
+                        users: [],
+                        count: 0,
+                        hasReacted: false,
+                    });
+                }
+                const group = grouped.get(emoji);
+                group.users.push({
+                    id: reaction.userId,
+                    name: reaction.user?.name || 'Unknown',
+                    avatar: reaction.user?.avatarUrl || null,
+                });
+                group.count++;
+            });
+            messageAny._reactions = Array.from(grouped.values());
+        }
+        else {
+            messageAny._reactions = [];
+        }
         return message;
     }
 }

@@ -117,7 +117,7 @@ const SubscriptionManagement: React.FC = () => {
         name: updatedPlan.name!,
         price: updatedPlan.price!,
         projectPosts: updatedPlan.projectPosts ?? null,
-        communityPosts: updatedPlan.communityPosts ?? null,
+        createCommunity: updatedPlan.createCommunity ?? null,
         features: updatedPlan.features,
         badge: updatedPlan.badge!,
         color: updatedPlan.color!,

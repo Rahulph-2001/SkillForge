@@ -8,7 +8,7 @@ export declare class WebSocketService implements IWebSocketService {
     sendToCommunity(communityId: string, message: WebSocketMessage): void;
     sendToUser(userId: string, message: WebSocketMessage): void;
     joinCommunity(userId: string, communityId: string, socketId?: string): void;
-    leaveCommunity(userId: string, communityId: string, socketId?: string): void;
+    leaveCommunity(_userId: string, communityId: string, socketId?: string): void;
     private handleDisconnect;
 }
 //# sourceMappingURL=WebSocketService.d.ts.map

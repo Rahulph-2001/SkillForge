@@ -126,6 +126,8 @@ class User {
     get isDeleted() { return this._isDeleted; }
     get isActive() { return this._isActive; }
     get subscriptionPlan() { return this._subscriptionPlan; }
+    get subscriptionValidUntil() { return this._subscriptionValidUntil; }
+    get subscriptionStartedAt() { return this._subscriptionStartedAt; }
     get settings() { return this._settings; }
     // Business Methods
     verifyEmail() {
@@ -230,6 +232,46 @@ class User {
      */
     transferCredits(amount) {
         this.deductCredits(amount); // Will throw if insufficient
+    }
+    /**
+     * Activate or update user subscription
+     * @param planType - Subscription plan type
+     * @param validUntil - Subscription validity end date
+     * @param startedAt - Subscription start date (optional, defaults to now)
+     * @param autoRenew - Enable auto-renewal (optional, defaults to false)
+     */
+    activateSubscription(planType, validUntil, startedAt, autoRenew = false) {
+        this._subscriptionPlan = planType;
+        this._subscriptionValidUntil = validUntil;
+        this._subscriptionStartedAt = startedAt || new Date();
+        this._subscriptionAutoRenew = autoRenew;
+        this._updatedAt = new Date();
+    }
+    /**
+     * Credit amount to user wallet
+     * @param amount - Amount to credit (must be positive)
+     */
+    creditWallet(amount) {
+        if (amount <= 0) {
+            throw new Error('Credit amount must be positive');
+        }
+        this._walletBalance += amount;
+        this._updatedAt = new Date();
+    }
+    /**
+     * Debit amount from user wallet
+     * @param amount - Amount to debit
+     * @throws Error if insufficient balance
+     */
+    debitWallet(amount) {
+        if (amount <= 0) {
+            throw new Error('Debit amount must be positive');
+        }
+        if (this._walletBalance < amount) {
+            throw new Error(`Insufficient wallet balance. Required: ${amount}, Available: ${this._walletBalance}`);
+        }
+        this._walletBalance -= amount;
+        this._updatedAt = new Date();
     }
     toJSON() {
         return {

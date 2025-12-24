@@ -11,7 +11,7 @@ export class SubscriptionPlanMapper implements ISubscriptionPlanMapper {
       name: plan.name,
       price: plan.price,
       projectPosts: plan.projectPosts,
-      communityPosts: plan.communityPosts,
+      createCommunity: plan.createCommunity,
       features: plan.features,
       badge: plan.badge,
       color: plan.color,

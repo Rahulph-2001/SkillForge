@@ -19,10 +19,10 @@ const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 const messages_1 = require("../../../config/messages");
 let ListMCQImportJobsUseCase = class ListMCQImportJobsUseCase {
-    constructor(userRepository, jobRepository, s3Service) {
+    constructor(userRepository, jobRepository, storageService) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
     }
     async execute(templateId, adminId) {
         // 1. Authorization Check
@@ -63,7 +63,7 @@ exports.ListMCQImportJobsUseCase = ListMCQImportJobsUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IMCQImportJobRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __metadata("design:paramtypes", [Object, Object, Object])
 ], ListMCQImportJobsUseCase);
 //# sourceMappingURL=ListMCQImportJobsUseCase.js.map

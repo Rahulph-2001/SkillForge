@@ -11,6 +11,8 @@ import { IPinMessageUseCase } from '../../../application/useCases/community/PinM
 import { IUnpinMessageUseCase } from '../../../application/useCases/community/UnpinMessageUseCase';
 import { IDeleteMessageUseCase } from '../../../application/useCases/community/DeleteMessageUseCase';
 import { IRemoveCommunityMemberUseCase } from '../../../application/useCases/community/RemoveCommunityMemberUseCase';
+import { IAddReactionUseCase } from '../../../application/useCases/community/AddReactionUseCase';
+import { IRemoveReactionUseCase } from '../../../application/useCases/community/RemoveReactionUseCase';
 import { ICommunityMapper } from '../../../application/mappers/interfaces/ICommunityMapper';
 import { ICommunityMessageMapper } from '../../../application/mappers/interfaces/ICommunityMessageMapper';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
@@ -28,11 +30,13 @@ export declare class CommunityController {
     private readonly unpinMessageUseCase;
     private readonly deleteMessageUseCase;
     private readonly removeCommunityMemberUseCase;
+    private readonly addReactionUseCase;
+    private readonly removeReactionUseCase;
     private readonly communityRepository;
     private readonly communityMapper;
     private readonly communityMessageMapper;
     private readonly responseBuilder;
-    constructor(createCommunityUseCase: ICreateCommunityUseCase, updateCommunityUseCase: IUpdateCommunityUseCase, getCommunitiesUseCase: IGetCommunitiesUseCase, getCommunityDetailsUseCase: IGetCommunityDetailsUseCase, joinCommunityUseCase: IJoinCommunityUseCase, leaveCommunityUseCase: ILeaveCommunityUseCase, sendMessageUseCase: ISendMessageUseCase, getCommunityMessagesUseCase: IGetCommunityMessagesUseCase, pinMessageUseCase: IPinMessageUseCase, unpinMessageUseCase: IUnpinMessageUseCase, deleteMessageUseCase: IDeleteMessageUseCase, removeCommunityMemberUseCase: IRemoveCommunityMemberUseCase, communityRepository: ICommunityRepository, communityMapper: ICommunityMapper, communityMessageMapper: ICommunityMessageMapper, responseBuilder: IResponseBuilder);
+    constructor(createCommunityUseCase: ICreateCommunityUseCase, updateCommunityUseCase: IUpdateCommunityUseCase, getCommunitiesUseCase: IGetCommunitiesUseCase, getCommunityDetailsUseCase: IGetCommunityDetailsUseCase, joinCommunityUseCase: IJoinCommunityUseCase, leaveCommunityUseCase: ILeaveCommunityUseCase, sendMessageUseCase: ISendMessageUseCase, getCommunityMessagesUseCase: IGetCommunityMessagesUseCase, pinMessageUseCase: IPinMessageUseCase, unpinMessageUseCase: IUnpinMessageUseCase, deleteMessageUseCase: IDeleteMessageUseCase, removeCommunityMemberUseCase: IRemoveCommunityMemberUseCase, addReactionUseCase: IAddReactionUseCase, removeReactionUseCase: IRemoveReactionUseCase, communityRepository: ICommunityRepository, communityMapper: ICommunityMapper, communityMessageMapper: ICommunityMessageMapper, responseBuilder: IResponseBuilder);
     createCommunity: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     updateCommunity: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     getCommunities: (req: Request, res: Response, next: NextFunction) => Promise<void>;
@@ -46,5 +50,7 @@ export declare class CommunityController {
     deleteMessage: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     removeMember: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     getMembers: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    addReaction: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    removeReaction: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 //# sourceMappingURL=CommunityController.d.ts.map

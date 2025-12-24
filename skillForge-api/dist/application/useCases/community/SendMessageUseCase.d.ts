@@ -1,9 +1,10 @@
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
+import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
 export interface ISendMessageUseCase {
     execute(userId: string, dto: SendMessageDTO, file?: {
         buffer: Buffer;
@@ -14,9 +15,10 @@ export interface ISendMessageUseCase {
 export declare class SendMessageUseCase implements ISendMessageUseCase {
     private readonly messageRepository;
     private readonly communityRepository;
-    private readonly s3Service;
+    private readonly storageService;
     private readonly webSocketService;
-    constructor(messageRepository: ICommunityMessageRepository, communityRepository: ICommunityRepository, s3Service: IS3Service, webSocketService: IWebSocketService);
+    private readonly messageMapper;
+    constructor(messageRepository: ICommunityMessageRepository, communityRepository: ICommunityRepository, storageService: IStorageService, webSocketService: IWebSocketService, messageMapper: ICommunityMessageMapper);
     execute(userId: string, dto: SendMessageDTO, file?: {
         buffer: Buffer;
         originalname: string;

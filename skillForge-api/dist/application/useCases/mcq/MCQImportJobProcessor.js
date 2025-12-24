@@ -59,10 +59,10 @@ const uuid_1 = require("uuid");
 const AppError_1 = require("../../../domain/errors/AppError");
 const XLSX = __importStar(require("xlsx"));
 let MCQImportJobProcessor = class MCQImportJobProcessor {
-    constructor(jobRepository, questionRepository, s3Service) {
+    constructor(jobRepository, questionRepository, storageService) {
         this.jobRepository = jobRepository;
         this.questionRepository = questionRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
         this.validLevels = ['Beginner', 'Intermediate', 'Advanced'];
         this.validAnswers = ['A', 'B', 'C', 'D'];
     }
@@ -81,7 +81,7 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
         let errorFilePath = null;
         try {
             // 1. Download file from S3
-            const fileBuffer = await this.s3Service.downloadFile(job.filePath);
+            const fileBuffer = await this.storageService.downloadFile(job.filePath);
             // 2. Determine file type and parse
             const isExcel = job.fileName.endsWith('.xlsx') || job.fileName.endsWith('.xls');
             let rowsToProcess = [];
@@ -120,7 +120,7 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
             if (errors.length > 0) {
                 const errorLog = this.createErrorCSV(errors);
                 const errorKey = `mcq-imports/${job.templateId}/errors/${job.id}-${Date.now()}.csv`;
-                errorFilePath = await this.s3Service.uploadFile(Buffer.from(errorLog), errorKey, 'text/csv');
+                errorFilePath = await this.storageService.uploadFile(Buffer.from(errorLog), errorKey, 'text/csv');
             }
             // 5. Final status update
             await this.jobRepository.updateProgress(job.id, errors.length > 0 ? MCQImportJob_1.ImportStatus.COMPLETED_WITH_ERRORS : MCQImportJob_1.ImportStatus.COMPLETED, processedRows, successfulRows, failedRows, errorFilePath, undefined, new Date());
@@ -226,7 +226,7 @@ exports.MCQImportJobProcessor = MCQImportJobProcessor = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IMCQImportJobRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ITemplateQuestionRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __metadata("design:paramtypes", [Object, Object, Object])
 ], MCQImportJobProcessor);
 //# sourceMappingURL=MCQImportJobProcessor.js.map

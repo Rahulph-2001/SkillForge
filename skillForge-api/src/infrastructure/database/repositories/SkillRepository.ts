@@ -42,26 +42,19 @@ export class SkillRepository implements ISkillRepository {
     }
 
     // Level filter
-    if (filters.level && filters.level !== 'All Levels') {
+    if (filters.level) {
       where.level = filters.level;
     }
 
-    // Price filter
-    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+    // Credits filter (changed from price)
+    if (filters.minCredits !== undefined || filters.maxCredits !== undefined) {
       where.creditsPerHour = {};
-      if (filters.minPrice !== undefined) {
-        where.creditsPerHour.gte = filters.minPrice;
+      if (filters.minCredits !== undefined) {
+        where.creditsPerHour.gte = filters.minCredits;
       }
-      if (filters.maxPrice !== undefined) {
-        where.creditsPerHour.lte = filters.maxPrice;
+      if (filters.maxCredits !== undefined) {
+        where.creditsPerHour.lte = filters.maxCredits;
       }
-    }
-
-    // Exclude user's own skills
-    if (filters.excludeProviderId) {
-      where.providerId = {
-        not: filters.excludeProviderId
-      };
     }
 
     // Get total count

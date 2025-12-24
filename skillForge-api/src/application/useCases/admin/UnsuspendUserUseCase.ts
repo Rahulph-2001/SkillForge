@@ -12,7 +12,7 @@ import { SuspendUserResponseDTO } from '../../dto/admin/SuspendUserResponseDTO';
 export class UnsuspendUserUseCase implements IUnsuspendUserUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository
-  ) {}
+  ) { }
 
   async execute(request: SuspendUserRequestDTO): Promise<SuspendUserResponseDTO> {
     // Verify admin privileges
@@ -22,7 +22,7 @@ export class UnsuspendUserUseCase implements IUnsuspendUserUseCase {
     }
 
     // Find user to unsuspend
-    const user = await this.userRepository.findById(request.userId);
+    const user = await this.userRepository.findById(request.targetUserId);
     if (!user) {
       throw new NotFoundError(ERROR_MESSAGES.ADMIN.USER_NOT_FOUND);
     }
@@ -30,7 +30,7 @@ export class UnsuspendUserUseCase implements IUnsuspendUserUseCase {
     // Unsuspend (reactivate) the user
     user.activate();
     await this.userRepository.update(user);
-    
+
     return {
       success: true,
       message: `User ${user.name} has been reactivated successfully`

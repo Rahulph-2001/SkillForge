@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { GetUserProfileUseCase } from '../../../application/useCases/user/GetUserProfileUseCase';
-import { UpdateUserProfileUseCase } from '../../../application/useCases/user/UpdateUserProfileUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
+import { PrismaClient } from '@prisma/client';
 export declare class UserProfileController {
-    private getUserProfileUseCase;
-    private updateUserProfileUseCase;
-    private responseBuilder;
-    constructor(getUserProfileUseCase: GetUserProfileUseCase, updateUserProfileUseCase: UpdateUserProfileUseCase, responseBuilder: IResponseBuilder);
+    private readonly prisma;
+    private readonly responseBuilder;
+    constructor(prisma: PrismaClient, responseBuilder: IResponseBuilder);
+    getProviderProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     getProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     updateProfile: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getProviderReviews: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }
 //# sourceMappingURL=UserProfileController.d.ts.map

@@ -3,7 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 
 export interface UpdateSkillDTO {
     description?: string;
@@ -28,7 +28,7 @@ export interface IUpdateSkillUseCase {
 export class UpdateSkillUseCase implements IUpdateSkillUseCase {
     constructor(
         @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
-        @inject(TYPES.IS3Service) private s3Service: IS3Service
+        @inject(TYPES.IStorageService) private storageService: IStorageService
     ) { }
 
     async execute(
@@ -58,7 +58,7 @@ export class UpdateSkillUseCase implements IUpdateSkillUseCase {
             // Create S3 key with skills/ prefix
             const key = `skills/${Date.now()}-${imageFile.originalname}`;
             console.log('🔍 [UpdateSkillUseCase] Uploading new image to S3:', key);
-            imageUrl = await this.s3Service.uploadFile(
+            imageUrl = await this.storageService.uploadFile(
                 imageFile.buffer,
                 key,
                 imageFile.mimetype

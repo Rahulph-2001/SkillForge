@@ -9,6 +9,7 @@ import { ToggleSkillTemplateStatusUseCase } from '../../../application/useCases/
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillTemplateDTO } from '../../../application/dto/skillTemplate/CreateSkillTemplateDTO';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 @injectable()
 export class SkillTemplateController {
@@ -19,7 +20,7 @@ export class SkillTemplateController {
     @inject(TYPES.DeleteSkillTemplateUseCase) private readonly deleteSkillTemplateUseCase: DeleteSkillTemplateUseCase,
     @inject(TYPES.ToggleSkillTemplateStatusUseCase) private readonly toggleSkillTemplateStatusUseCase: ToggleSkillTemplateStatusUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   /**
    * POST /api/v1/admin/skill-templates
@@ -29,9 +30,9 @@ export class SkillTemplateController {
     try {
       const adminUserId = (req as any).user.userId;
       const dto: CreateSkillTemplateDTO = req.body;
-      
+
       const template = await this.createSkillTemplateUseCase.execute(adminUserId, dto);
-      
+
       const response = this.responseBuilder.success(
         template.toJSON(),
         'Skill template created successfully',
@@ -50,9 +51,9 @@ export class SkillTemplateController {
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const adminUserId = (req as any).user.userId;
-      
+
       const templates = await this.listSkillTemplatesUseCase.execute(adminUserId);
-      
+
       const response = this.responseBuilder.success(
         templates.map(t => t.toJSON()),
         'Skill templates retrieved successfully',
@@ -72,10 +73,10 @@ export class SkillTemplateController {
     try {
       const adminUserId = (req as any).user.userId;
       const templateId = req.params.id;
-      const dto = { ...req.body, templateId };
-      
-      const template = await this.updateSkillTemplateUseCase.execute(adminUserId, dto);
-      
+      const dto = req.body;
+
+      const template = await this.updateSkillTemplateUseCase.execute(adminUserId, templateId, dto);
+
       const response = this.responseBuilder.success(
         template.toJSON(),
         'Skill template updated successfully',
@@ -95,12 +96,12 @@ export class SkillTemplateController {
     try {
       const adminUserId = (req as any).user.userId;
       const templateId = req.params.id;
-      
+
       await this.deleteSkillTemplateUseCase.execute(adminUserId, templateId);
-      
+
       const response = this.responseBuilder.success(
-        { message: 'Skill template deleted successfully' },
-        'Skill template deleted successfully',
+        { message: SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED },
+        SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -117,9 +118,9 @@ export class SkillTemplateController {
     try {
       const adminUserId = (req as any).user.userId;
       const templateId = req.params.id;
-      
+
       const template = await this.toggleSkillTemplateStatusUseCase.execute(adminUserId, templateId);
-      
+
       const response = this.responseBuilder.success(
         template.toJSON(),
         'Skill template status toggled successfully',
@@ -138,7 +139,7 @@ export class SkillTemplateController {
   async listActive(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const templates = await this.listSkillTemplatesUseCase.executePublic();
-      
+
       const response = this.responseBuilder.success(
         templates.map((t: any) => t.toJSON()),
         'Active skill templates retrieved successfully',

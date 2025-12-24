@@ -1,1 +1,1 @@
-{"version":3,"file":"StartMCQRequestDTO.js","sourceRoot":"","sources":["../../../../src/application/dto/mcq/StartMCQRequestDTO.ts"],"names":[],"mappings":""}
+{"version":3,"file":"StartMCQRequestDTO.js","sourceRoot":"","sources":["../../../../src/application/dto/mcq/StartMCQRequestDTO.ts"],"names":[],"mappings":";;;AAAA,6BAAwB;AAEX,QAAA,qBAAqB,GAAG,OAAC,CAAC,MAAM,CAAC;IAC5C,OAAO,EAAE,OAAC,CAAC,MAAM,EAAE,CAAC,IAAI,CAAC,kBAAkB,CAAC;IAC5C,MAAM,EAAE,OAAC,CAAC,MAAM,EAAE,CAAC,IAAI,CAAC,iBAAiB,CAAC;CAC3C,CAAC,CAAC"}

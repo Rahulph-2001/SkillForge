@@ -17,9 +17,9 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UpdateCommunityUseCase = class UpdateCommunityUseCase {
-    constructor(communityRepository, s3Service) {
+    constructor(communityRepository, storageService) {
         this.communityRepository = communityRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
     }
     async execute(communityId, userId, dto, imageFile) {
         const community = await this.communityRepository.findById(communityId);
@@ -33,11 +33,11 @@ let UpdateCommunityUseCase = class UpdateCommunityUseCase {
         if (imageFile) {
             // Delete old image if exists
             if (community.imageUrl) {
-                await this.s3Service.deleteFile(community.imageUrl);
+                await this.storageService.deleteFile(community.imageUrl);
             }
             const timestamp = Date.now();
             const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
-            imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+            imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
         }
         community.updateDetails({
             name: dto.name,
@@ -55,7 +55,7 @@ exports.UpdateCommunityUseCase = UpdateCommunityUseCase;
 exports.UpdateCommunityUseCase = UpdateCommunityUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __metadata("design:paramtypes", [Object, Object])
 ], UpdateCommunityUseCase);
 //# sourceMappingURL=UpdateCommunityUseCase.js.map

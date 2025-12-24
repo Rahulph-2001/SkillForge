@@ -27,6 +27,9 @@ export declare class CommunityMessage {
     private _deletedAt;
     private _createdAt;
     private _updatedAt;
+    private _senderName;
+    private _senderAvatar;
+    private _reactions?;
     constructor(data: CreateCommunityMessageData);
     get id(): string;
     get communityId(): string;
@@ -44,6 +47,8 @@ export declare class CommunityMessage {
     get deletedAt(): Date | null;
     get createdAt(): Date;
     get updatedAt(): Date;
+    get senderName(): string;
+    get senderAvatar(): string | null;
     pin(userId: string): void;
     unpin(): void;
     delete(): void;

@@ -15,7 +15,7 @@ export class MCQImportController {
     @inject(TYPES.ListMCQImportJobsUseCase) private listJobsUseCase: IListMCQImportJobsUseCase,
     @inject(TYPES.DownloadMCQImportErrorsUseCase) private downloadErrorsUseCase: IDownloadMCQImportErrorsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder,
-  ) {}
+  ) { }
 
   /**
    * POST /api/v1/admin/mcq/import/:templateId
@@ -31,7 +31,12 @@ export class MCQImportController {
         throw new ValidationError('CSV file is required for import');
       }
 
-      const result = await this.startImportUseCase.execute({ templateId, adminId }, file);
+      const result = await this.startImportUseCase.execute({
+        templateId,
+        adminId,
+        fileName: file.originalname,
+        filePath: '' // Will be set by the use case after upload
+      }, file);
 
       const response = this.responseBuilder.success(
         result,
@@ -67,7 +72,7 @@ export class MCQImportController {
       next(error);
     }
   };
-  
+
   /**
    * GET /api/v1/admin/mcq/import/errors/:jobId/download
    * Downloads the CSV error file for a failed job
@@ -78,12 +83,12 @@ export class MCQImportController {
       const { jobId } = req.params;
 
       const { fileStream, fileName, mimeType } = await this.downloadErrorsUseCase.execute(jobId, adminId);
-      
+
       res.setHeader('Content-Type', mimeType);
       res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
-      
+
       fileStream.pipe(res);
-      
+
     } catch (error) {
       next(error);
     }

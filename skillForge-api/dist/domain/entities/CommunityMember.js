@@ -24,6 +24,8 @@ class CommunityMember {
     get joinedAt() { return this._joinedAt; }
     get leftAt() { return this._leftAt; }
     get isActive() { return this._isActive; }
+    get userName() { return this._userName; }
+    get userAvatar() { return this._userAvatar; }
     toggleAutoRenew() {
         this._isAutoRenew = !this._isAutoRenew;
     }
@@ -37,14 +39,16 @@ class CommunityMember {
     toJSON() {
         return {
             id: this._id,
-            community_id: this._communityId,
-            user_id: this._userId,
+            communityId: this._communityId,
+            userId: this._userId,
             role: this._role,
-            is_auto_renew: this._isAutoRenew,
-            subscription_ends_at: this._subscriptionEndsAt,
-            joined_at: this._joinedAt,
-            left_at: this._leftAt,
-            is_active: this._isActive,
+            isAutoRenew: this._isAutoRenew,
+            subscriptionEndsAt: this._subscriptionEndsAt,
+            joinedAt: this._joinedAt,
+            leftAt: this._leftAt,
+            isActive: this._isActive,
+            userName: this._userName,
+            userAvatar: this._userAvatar,
         };
     }
     static fromDatabaseRow(row) {
@@ -60,6 +64,11 @@ class CommunityMember {
         memberAny._joinedAt = (row.joined_at || row.joinedAt) || new Date();
         memberAny._leftAt = (row.left_at || row.leftAt);
         memberAny._isActive = (row.is_active !== undefined ? row.is_active : row.isActive);
+        // Map user details if available
+        if (row.user) {
+            memberAny._userName = row.user.name || null;
+            memberAny._userAvatar = row.user.avatarUrl || null;
+        }
         return member;
     }
 }

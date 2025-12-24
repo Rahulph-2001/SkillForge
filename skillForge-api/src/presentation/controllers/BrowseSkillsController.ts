@@ -11,7 +11,7 @@ export class BrowseSkillsController {
   constructor(
     @inject(TYPES.BrowseSkillsUseCase) private browseSkillsUseCase: IBrowseSkillsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   public browse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -19,22 +19,24 @@ export class BrowseSkillsController {
         search,
         category,
         level,
-        minPrice,
-        maxPrice,
+        minCredits,
+        maxCredits,
         page,
         limit,
-        excludeProviderId
+        sortBy,
+        sortOrder
       } = req.query;
 
       const filters: BrowseSkillsRequestDTO = {
         search: search as string | undefined,
         category: category as string | undefined,
-        level: level as string | undefined,
-        minPrice: minPrice ? Number(minPrice) : undefined,
-        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        level: level as any,
+        minCredits: minCredits ? Number(minCredits) : undefined,
+        maxCredits: maxCredits ? Number(maxCredits) : undefined,
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 12,
-        excludeProviderId: excludeProviderId as string | undefined,
+        sortBy: sortBy as any,
+        sortOrder: sortOrder as any,
       };
 
       const result = await this.browseSkillsUseCase.execute(filters);

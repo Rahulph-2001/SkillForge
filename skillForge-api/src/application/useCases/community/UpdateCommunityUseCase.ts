@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { Community } from '../../../domain/entities/Community';
 import { UpdateCommunityDTO } from '../../dto/community/UpdateCommunityDTO';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
@@ -17,7 +17,7 @@ export interface IUpdateCommunityUseCase {
 export class UpdateCommunityUseCase implements IUpdateCommunityUseCase {
   constructor(
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
-    @inject(TYPES.IS3Service) private readonly s3Service: IS3Service
+    @inject(TYPES.IStorageService) private readonly storageService: IStorageService
   ) {}
   public async execute(
     communityId: string,
@@ -36,11 +36,11 @@ export class UpdateCommunityUseCase implements IUpdateCommunityUseCase {
     if (imageFile) {
       // Delete old image if exists
       if (community.imageUrl) {
-        await this.s3Service.deleteFile(community.imageUrl);
+        await this.storageService.deleteFile(community.imageUrl);
       }
       const timestamp = Date.now();
       const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
-      imageUrl = await this.s3Service.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+      imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
     }
     community.updateDetails({
       name: dto.name,

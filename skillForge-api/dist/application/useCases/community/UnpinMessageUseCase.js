@@ -17,10 +17,11 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UnpinMessageUseCase = class UnpinMessageUseCase {
-    constructor(messageRepository, communityRepository, webSocketService) {
+    constructor(messageRepository, communityRepository, webSocketService, messageMapper) {
         this.messageRepository = messageRepository;
         this.communityRepository = communityRepository;
         this.webSocketService = webSocketService;
+        this.messageMapper = messageMapper;
     }
     async execute(userId, messageId) {
         const message = await this.messageRepository.findById(messageId);
@@ -36,10 +37,11 @@ let UnpinMessageUseCase = class UnpinMessageUseCase {
         }
         message.unpin();
         const updatedMessage = await this.messageRepository.update(message);
+        const messageDTO = await this.messageMapper.toDTO(updatedMessage);
         this.webSocketService.sendToCommunity(message.communityId, {
             type: 'unpin',
             communityId: message.communityId,
-            data: updatedMessage.toJSON(),
+            data: messageDTO,
         });
         return updatedMessage;
     }
@@ -50,6 +52,7 @@ exports.UnpinMessageUseCase = UnpinMessageUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IWebSocketService)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ICommunityMessageMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], UnpinMessageUseCase);
 //# sourceMappingURL=UnpinMessageUseCase.js.map

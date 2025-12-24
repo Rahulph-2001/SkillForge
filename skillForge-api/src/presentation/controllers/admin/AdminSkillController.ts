@@ -9,6 +9,7 @@ import { BlockSkillUseCase } from '../../../application/useCases/admin/BlockSkil
 import { UnblockSkillUseCase } from '../../../application/useCases/admin/UnblockSkillUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
 
 @injectable()
 export class AdminSkillController {
@@ -32,7 +33,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         skills,
-        `Found ${skills.length} skills pending approval`,
+        SUCCESS_MESSAGES.SKILL.PENDING_FETCHED(skills.length),
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -54,7 +55,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         { skillId, status: 'approved' },
-        'Skill approved successfully',
+        SUCCESS_MESSAGES.SKILL.APPROVED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -77,7 +78,7 @@ export class AdminSkillController {
       if (!reason || reason.trim().length === 0) {
         const errorResponse = this.responseBuilder.error(
           'VALIDATION_ERROR',
-          'Rejection reason is required',
+          ERROR_MESSAGES.SKILL.REJECTION_REASON_REQUIRED,
           HttpStatusCode.BAD_REQUEST
         );
         res.status(errorResponse.statusCode).json(errorResponse.body);
@@ -92,7 +93,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         { skillId, status: 'rejected' },
-        'Skill rejected successfully',
+        SUCCESS_MESSAGES.SKILL.REJECTED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -111,7 +112,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         skills,
-        `Found ${skills.length} skills`,
+        SUCCESS_MESSAGES.SKILL.ALL_FETCHED(skills.length),
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -134,7 +135,7 @@ export class AdminSkillController {
       if (!reason || reason.trim().length === 0) {
         const errorResponse = this.responseBuilder.error(
           'VALIDATION_ERROR',
-          'Block reason is required',
+          ERROR_MESSAGES.SKILL.BLOCK_REASON_REQUIRED,
           HttpStatusCode.BAD_REQUEST
         );
         res.status(errorResponse.statusCode).json(errorResponse.body);
@@ -149,7 +150,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         { skillId, isBlocked: true },
-        'Skill blocked successfully',
+        SUCCESS_MESSAGES.SKILL.BLOCKED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -171,7 +172,7 @@ export class AdminSkillController {
 
       const response = this.responseBuilder.success(
         { skillId, isBlocked: false },
-        'Skill unblocked successfully',
+        SUCCESS_MESSAGES.SKILL.UNBLOCKED,
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

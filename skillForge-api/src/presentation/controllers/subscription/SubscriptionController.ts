@@ -7,6 +7,7 @@ import { ICreateSubscriptionPlanUseCase } from '../../../application/useCases/su
 import { IUpdateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/IUpdateSubscriptionPlanUseCase';
 import { DeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
+import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 
 @injectable()
@@ -18,7 +19,7 @@ export class SubscriptionController {
     @inject(TYPES.UpdateSubscriptionPlanUseCase) private readonly updatePlanUseCase: IUpdateSubscriptionPlanUseCase,
     @inject(TYPES.DeleteSubscriptionPlanUseCase) private readonly deletePlanUseCase: DeleteSubscriptionPlanUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   /**
    * GET /api/v1/admin/subscriptions/plans
@@ -27,10 +28,19 @@ export class SubscriptionController {
   async listPlans(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const adminUserId = (req as any).user.userId;
-      const result = await this.listPlansUseCase.execute({ adminUserId });
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 20;
+      const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
+
+      const result = await this.listPlansUseCase.execute({
+        adminUserId,
+        page,
+        limit,
+        isActive
+      });
       const response = this.responseBuilder.success(
         result,
-        'Subscription plans retrieved successfully'
+        SUCCESS_MESSAGES.SUBSCRIPTION.PLANS_FETCHED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
@@ -48,7 +58,7 @@ export class SubscriptionController {
       const stats = await this.getStatsUseCase.execute(adminUserId);
       const response = this.responseBuilder.success(
         stats,
-        'Subscription statistics retrieved successfully'
+        SUCCESS_MESSAGES.SUBSCRIPTION.STATS_FETCHED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
@@ -67,7 +77,7 @@ export class SubscriptionController {
       const plan = await this.createPlanUseCase.execute(adminUserId, dto);
       const response = this.responseBuilder.success(
         plan,
-        'Subscription plan created successfully'
+        SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_CREATED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
@@ -83,11 +93,11 @@ export class SubscriptionController {
     try {
       const adminUserId = (req as any).user.userId;
       const planId = req.params.id;
-      const dto = { ...req.body, planId };
-      const plan = await this.updatePlanUseCase.execute(adminUserId, dto);
+      const dto = req.body;
+      const plan = await this.updatePlanUseCase.execute(adminUserId, planId, dto);
       const response = this.responseBuilder.success(
         plan,
-        'Subscription plan updated successfully'
+        SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_UPDATED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {
@@ -105,8 +115,8 @@ export class SubscriptionController {
       const planId = req.params.id;
       await this.deletePlanUseCase.execute(adminUserId, planId);
       const response = this.responseBuilder.success(
-        { message: 'Subscription plan deleted successfully' },
-        'Subscription plan deleted successfully'
+        { message: SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_DELETED },
+        SUCCESS_MESSAGES.SUBSCRIPTION.PLAN_DELETED
       );
       res.status(response.statusCode).json(response.body);
     } catch (error) {

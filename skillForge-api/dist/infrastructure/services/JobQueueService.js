@@ -20,9 +20,10 @@ const RedisService_1 = require("./RedisService");
 const bullmq_1 = require("bullmq");
 const MCQImportJobProcessor_1 = require("../../application/useCases/mcq/MCQImportJobProcessor");
 let JobQueueService = class JobQueueService {
-    constructor(redisService, mcqImportJobProcessor) {
+    constructor(redisService, mcqImportJobProcessor, checkSubscriptionExpiryUseCase) {
         this.redisService = redisService;
         this.mcqImportJobProcessor = mcqImportJobProcessor;
+        this.checkSubscriptionExpiryUseCase = checkSubscriptionExpiryUseCase;
         this.queues = new Map();
         this.workers = new Map();
         this.initializeQueues();
@@ -32,6 +33,16 @@ let JobQueueService = class JobQueueService {
         // Initialize MCQ Import Queue
         const mcqQueue = new bullmq_1.Queue(IJobQueueService_1.JobQueueName.MCQ_IMPORT, { connection: connectionOptions });
         this.queues.set(IJobQueueService_1.JobQueueName.MCQ_IMPORT, mcqQueue);
+        // Initialize Subscription Expiry Queue
+        const expiryQueue = new bullmq_1.Queue(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, { connection: connectionOptions });
+        this.queues.set(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, expiryQueue);
+        // Schedule the daily check
+        expiryQueue.add(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, {}, {
+            repeat: {
+                pattern: '0 0 * * *', // Daily at midnight
+            },
+            removeOnComplete: true,
+        });
     }
     async addJob(queueName, data) {
         const queue = this.queues.get(queueName);
@@ -59,15 +70,34 @@ let JobQueueService = class JobQueueService {
                     throw error;
                 }
             }, { connection: connectionOptions });
-            worker.on('completed', (job) => {
-                console.log(`[Worker] Job ${job.id} has completed!`);
-            });
-            worker.on('failed', (job, err) => {
-                console.log(`[Worker] Job ${job?.id} has failed with ${err.message}`);
-            });
+            this.setupWorkerListeners(worker, IJobQueueService_1.JobQueueName.MCQ_IMPORT);
             this.workers.set(IJobQueueService_1.JobQueueName.MCQ_IMPORT, worker);
-            console.log(`[JobQueueService] Worker for ${IJobQueueService_1.JobQueueName.MCQ_IMPORT} started`);
         }
+        // Start Subscription Expiry Worker
+        if (!this.workers.has(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY)) {
+            const worker = new bullmq_1.Worker(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, async (job) => {
+                console.log(`[Worker] Processing job ${job.id} from ${IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY}`);
+                try {
+                    await this.checkSubscriptionExpiryUseCase.execute();
+                    console.log(`[Worker] Job ${job.id} completed`);
+                }
+                catch (error) {
+                    console.error(`[Worker] Job ${job.id} failed:`, error);
+                    throw error;
+                }
+            }, { connection: connectionOptions });
+            this.setupWorkerListeners(worker, IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY);
+            this.workers.set(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, worker);
+        }
+    }
+    setupWorkerListeners(worker, queueName) {
+        worker.on('completed', (job) => {
+            console.log(`[Worker] Job ${job.id} in ${queueName} has completed!`);
+        });
+        worker.on('failed', (job, err) => {
+            console.log(`[Worker] Job ${job?.id} in ${queueName} has failed with ${err.message}`);
+        });
+        console.log(`[JobQueueService] Worker for ${queueName} started`);
     }
 };
 exports.JobQueueService = JobQueueService;
@@ -75,7 +105,8 @@ exports.JobQueueService = JobQueueService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.RedisService)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.MCQImportJobProcessor)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ICheckSubscriptionExpiryUseCase)),
     __metadata("design:paramtypes", [RedisService_1.RedisService,
-        MCQImportJobProcessor_1.MCQImportJobProcessor])
+        MCQImportJobProcessor_1.MCQImportJobProcessor, Object])
 ], JobQueueService);
 //# sourceMappingURL=JobQueueService.js.map

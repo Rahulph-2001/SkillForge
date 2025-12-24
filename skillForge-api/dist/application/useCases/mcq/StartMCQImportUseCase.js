@@ -60,10 +60,10 @@ const csv_parser_1 = __importDefault(require("csv-parser"));
 const stream_1 = require("stream");
 const XLSX = __importStar(require("xlsx"));
 let StartMCQImportUseCase = class StartMCQImportUseCase {
-    constructor(userRepository, templateRepository, s3Service, jobRepository, jobQueueService) {
+    constructor(userRepository, templateRepository, storageService, jobRepository, jobQueueService) {
         this.userRepository = userRepository;
         this.templateRepository = templateRepository;
-        this.s3Service = s3Service;
+        this.storageService = storageService;
         this.jobRepository = jobRepository;
         this.jobQueueService = jobQueueService;
     }
@@ -94,7 +94,7 @@ let StartMCQImportUseCase = class StartMCQImportUseCase {
         }
         // 5. Upload File to S3
         const key = `mcq-imports/${templateId}/${Date.now()}-${file.originalname}`;
-        const filePath = await this.s3Service.uploadFile(file.buffer, key, file.mimetype);
+        const filePath = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
         // 6. Create Pending Import Job Record
         const job = new MCQImportJob_1.MCQImportJob({
             templateId,
@@ -149,7 +149,7 @@ exports.StartMCQImportUseCase = StartMCQImportUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillTemplateRepository)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IS3Service)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IMCQImportJobRepository)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IJobQueueService)),
     __metadata("design:paramtypes", [Object, Object, Object, Object, Object])

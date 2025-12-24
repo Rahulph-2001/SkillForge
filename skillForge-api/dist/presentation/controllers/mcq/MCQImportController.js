@@ -35,7 +35,12 @@ let MCQImportController = class MCQImportController {
                 if (!file) {
                     throw new AppError_1.ValidationError('CSV file is required for import');
                 }
-                const result = await this.startImportUseCase.execute({ templateId, adminId }, file);
+                const result = await this.startImportUseCase.execute({
+                    templateId,
+                    adminId,
+                    fileName: file.originalname,
+                    filePath: '' // Will be set by the use case after upload
+                }, file);
                 const response = this.responseBuilder.success(result, result.message, HttpStatusCode_1.HttpStatusCode.ACCEPTED);
                 res.status(response.statusCode).json(response.body);
             }

@@ -1,0 +1,1 @@
+{"version":3,"file":"WebhookEventDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/payment/WebhookEventDTO.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB,eAAO,MAAM,qBAAqB;;;;;;iBAMhC,CAAC;AAEH,MAAM,MAAM,eAAe,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,qBAAqB,CAAC,CAAC"}

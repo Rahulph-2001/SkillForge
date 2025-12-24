@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { Skill } from '../../../domain/entities/Skill';
 import { CreateSkillDTO } from '../../dto/skill/CreateSkillDTO';
 import { ICreateSkillUseCase } from './interfaces/ICreateSkillUseCase';
@@ -12,7 +12,7 @@ import { ISkillMapper } from '../../mappers/interfaces/ISkillMapper';
 export class CreateSkillUseCase implements ICreateSkillUseCase {
   constructor(
     @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
-    @inject(TYPES.IS3Service) private s3Service: IS3Service,
+    @inject(TYPES.IStorageService) private storageService: IStorageService,
     @inject(TYPES.ISkillMapper) private skillMapper: ISkillMapper
   ) {}
 
@@ -26,7 +26,7 @@ export class CreateSkillUseCase implements ICreateSkillUseCase {
     if (imageFile) {
       // Create S3 key with skills/ prefix
       const key = `skills/${Date.now()}-${imageFile.originalname}`;
-      imageUrl = await this.s3Service.uploadFile(
+      imageUrl = await this.storageService.uploadFile(
         imageFile.buffer, 
         key, 
         imageFile.mimetype

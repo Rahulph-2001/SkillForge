@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IDownloadMCQImportErrorsUseCase } from './interfaces/IDownloadMCQImportErrorsUseCase';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
@@ -12,7 +12,7 @@ import { ERROR_MESSAGES } from '../../../config/messages';
 export class DownloadMCQImportErrorsUseCase implements IDownloadMCQImportErrorsUseCase {
     constructor(
         @inject(TYPES.IMCQImportJobRepository) private jobRepository: IMCQImportJobRepository,
-        @inject(TYPES.IS3Service) private s3Service: IS3Service,
+        @inject(TYPES.IStorageService) private  storageSevice: IStorageService,
         @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     ) { }
 
@@ -35,7 +35,7 @@ export class DownloadMCQImportErrorsUseCase implements IDownloadMCQImportErrorsU
         }
 
         // 4. Get File Stream from S3
-        const fileStream = await this.s3Service.downloadFileAsStream(job.errorFilePath);
+        const fileStream = await this.storageSevice.downloadFileAsStream(job.errorFilePath);
         const fileName = `import-errors-${job.id}.csv`;
 
         return {

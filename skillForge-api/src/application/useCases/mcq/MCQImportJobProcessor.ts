@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
 import { IMCQRepository } from '../../../domain/repositories/IMCQRepository';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { ImportStatus } from '../../../domain/entities/MCQImportJob';
 import csv from 'csv-parser';
@@ -32,7 +32,7 @@ export class MCQImportJobProcessor {
     constructor(
         @inject(TYPES.IMCQImportJobRepository) private jobRepository: IMCQImportJobRepository,
         @inject(TYPES.ITemplateQuestionRepository) private questionRepository: ITemplateQuestionRepository,
-        @inject(TYPES.IS3Service) private s3Service: IS3Service,
+        @inject(TYPES.IStorageService) private storageService: IStorageService,
     ) { }
 
     public async execute(jobId: string): Promise<void> {
@@ -53,7 +53,7 @@ export class MCQImportJobProcessor {
 
         try {
             // 1. Download file from S3
-            const fileBuffer = await this.s3Service.downloadFile(job.filePath);
+            const fileBuffer = await this.storageService.downloadFile(job.filePath);
             
             // 2. Determine file type and parse
             const isExcel = job.fileName.endsWith('.xlsx') || job.fileName.endsWith('.xls');
@@ -116,7 +116,7 @@ export class MCQImportJobProcessor {
             if (errors.length > 0) {
                 const errorLog = this.createErrorCSV(errors);
                 const errorKey = `mcq-imports/${job.templateId}/errors/${job.id}-${Date.now()}.csv`;
-                errorFilePath = await this.s3Service.uploadFile(Buffer.from(errorLog), errorKey, 'text/csv');
+                errorFilePath = await this.storageService.uploadFile(Buffer.from(errorLog), errorKey, 'text/csv');
             }
 
             // 5. Final status update

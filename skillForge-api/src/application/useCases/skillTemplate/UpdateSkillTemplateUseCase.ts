@@ -14,16 +14,16 @@ export class UpdateSkillTemplateUseCase {
     private readonly skillTemplateRepository: ISkillTemplateRepository,
     @inject(TYPES.IUserRepository)
     private readonly userRepository: IUserRepository
-  ) {}
+  ) { }
 
-  async execute(adminUserId: string, dto: UpdateSkillTemplateDTO): Promise<SkillTemplate> {
+  async execute(adminUserId: string, templateId: string, dto: UpdateSkillTemplateDTO): Promise<SkillTemplate> {
     // Verify admin
     const admin = await this.userRepository.findById(adminUserId);
     if (!admin || admin.role !== UserRole.ADMIN) {
       throw new UnauthorizedError('Only admins can update skill templates');
     }
 
-    const existing = await this.skillTemplateRepository.findById(dto.templateId);
+    const existing = await this.skillTemplateRepository.findById(templateId);
     if (!existing) {
       throw new NotFoundError('Skill template not found');
     }
@@ -40,6 +40,6 @@ export class UpdateSkillTemplateUseCase {
     if (dto.tags) updates.tags = dto.tags;
     if (dto.status) updates.status = dto.status;
 
-    return await this.skillTemplateRepository.update(dto.templateId, updates);
+    return await this.skillTemplateRepository.update(templateId, updates);
   }
 }

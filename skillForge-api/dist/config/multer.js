@@ -56,12 +56,30 @@ exports.uploadImportFile = exports.uploadImage = void 0;
 const multer_1 = __importDefault(require("multer"));
 const AppError_1 = require("../domain/errors/AppError");
 const storage = multer_1.default.memoryStorage();
-const imageFileFilter = (_req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+const communityFileFilter = (_req, file, cb) => {
+    const allowedMimeTypes = [
+        // Images
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/gif',
+        'image/webp',
+        // Videos
+        'video/mp4',
+        'video/mpeg',
+        'video/quicktime',
+        'video/x-msvideo',
+        'video/webm',
+        // Documents
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (allowedMimeTypes.includes(file.mimetype)) {
         cb(null, true);
     }
     else {
-        cb(new AppError_1.ValidationError('Not an image ! Please upload only images'));
+        cb(new AppError_1.ValidationError('Invalid file type! Please upload images, videos, or documents (PDF, DOC, DOCX)'));
     }
 };
 const importFileFilter = (_req, file, cb) => {
@@ -86,9 +104,9 @@ const importFileFilter = (_req, file, cb) => {
 };
 exports.uploadImage = (0, multer_1.default)({
     storage: storage,
-    fileFilter: imageFileFilter,
+    fileFilter: communityFileFilter,
     limits: {
-        fileSize: 5 * 1024 * 1024
+        fileSize: 50 * 1024 * 1024 // 50MB for videos
     }
 });
 exports.uploadImportFile = (0, multer_1.default)({

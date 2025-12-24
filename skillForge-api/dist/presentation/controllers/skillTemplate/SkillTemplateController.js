@@ -21,6 +21,7 @@ const UpdateSkillTemplateUseCase_1 = require("../../../application/useCases/skil
 const DeleteSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase");
 const ToggleSkillTemplateStatusUseCase_1 = require("../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
+const messages_1 = require("../../../config/messages");
 let SkillTemplateController = class SkillTemplateController {
     constructor(createSkillTemplateUseCase, listSkillTemplatesUseCase, updateSkillTemplateUseCase, deleteSkillTemplateUseCase, toggleSkillTemplateStatusUseCase, responseBuilder) {
         this.createSkillTemplateUseCase = createSkillTemplateUseCase;
@@ -69,8 +70,8 @@ let SkillTemplateController = class SkillTemplateController {
         try {
             const adminUserId = req.user.userId;
             const templateId = req.params.id;
-            const dto = { ...req.body, templateId };
-            const template = await this.updateSkillTemplateUseCase.execute(adminUserId, dto);
+            const dto = req.body;
+            const template = await this.updateSkillTemplateUseCase.execute(adminUserId, templateId, dto);
             const response = this.responseBuilder.success(template.toJSON(), 'Skill template updated successfully', HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
@@ -87,7 +88,7 @@ let SkillTemplateController = class SkillTemplateController {
             const adminUserId = req.user.userId;
             const templateId = req.params.id;
             await this.deleteSkillTemplateUseCase.execute(adminUserId, templateId);
-            const response = this.responseBuilder.success({ message: 'Skill template deleted successfully' }, 'Skill template deleted successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            const response = this.responseBuilder.success({ message: messages_1.SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED }, messages_1.SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED, HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {

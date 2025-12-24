@@ -2,7 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IStartMCQImportUseCase } from './interfaces/IStartMCQImportUseCase';
 import { StartMCQImportRequestDTO, StartMCQImportResponseDTO } from '../../dto/mcq/StartMCQImportDTO';
-import { IS3Service } from '../../../domain/services/IS3Service';
+import { IStorageService } from '../../../domain/services/IStorageService';
 import { IJobQueueService, JobQueueName } from '../../../domain/services/IJobQueueService';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
@@ -20,7 +20,7 @@ export class StartMCQImportUseCase implements IStartMCQImportUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.ISkillTemplateRepository) private templateRepository: ISkillTemplateRepository,
-    @inject(TYPES.IS3Service) private s3Service: IS3Service,
+    @inject(TYPES.IStorageService) private storageService: IStorageService,
     @inject(TYPES.IMCQImportJobRepository) private jobRepository: IMCQImportJobRepository,
     @inject(TYPES.IJobQueueService) private jobQueueService: IJobQueueService,
   ) {}
@@ -59,7 +59,7 @@ export class StartMCQImportUseCase implements IStartMCQImportUseCase {
 
     // 5. Upload File to S3
     const key = `mcq-imports/${templateId}/${Date.now()}-${file.originalname}`;
-    const filePath = await this.s3Service.uploadFile(file.buffer, key, file.mimetype);
+    const filePath = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
 
     // 6. Create Pending Import Job Record
     const job = new MCQImportJob({

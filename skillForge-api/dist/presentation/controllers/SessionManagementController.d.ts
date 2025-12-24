@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
 import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
 import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
@@ -6,6 +6,7 @@ import { RescheduleBookingUseCase } from '../../application/useCases/booking/Res
 import { AcceptRescheduleUseCase } from '../../application/useCases/booking/AcceptRescheduleUseCase';
 import { DeclineRescheduleUseCase } from '../../application/useCases/booking/DeclineRescheduleUseCase';
 import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
+import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 export declare class SessionManagementController {
     private readonly acceptBookingUseCase;
     private readonly declineBookingUseCase;
@@ -14,33 +15,14 @@ export declare class SessionManagementController {
     private readonly acceptRescheduleUseCase;
     private readonly declineRescheduleUseCase;
     private readonly getProviderBookingsUseCase;
-    constructor(acceptBookingUseCase: AcceptBookingUseCase, declineBookingUseCase: DeclineBookingUseCase, cancelBookingUseCase: CancelBookingUseCase, rescheduleBookingUseCase: RescheduleBookingUseCase, acceptRescheduleUseCase: AcceptRescheduleUseCase, declineRescheduleUseCase: DeclineRescheduleUseCase, getProviderBookingsUseCase: GetProviderBookingsUseCase);
-    /**
-     * Get all bookings for provider with statistics
-     * GET /api/sessions/provider
-     */
-    getProviderSessions(req: Request, res: Response): Promise<Response>;
-    /**
-     * Accept a booking request
-     * POST /api/sessions/:bookingId/accept
-     */
-    acceptBooking(req: Request, res: Response): Promise<Response>;
-    declineBooking(req: Request, res: Response): Promise<Response>;
-    cancelBooking(req: Request, res: Response): Promise<Response>;
-    /**
-     * Request reschedule for a booking
-     * POST /api/sessions/:bookingId/reschedule
-     */
-    rescheduleBooking(req: Request, res: Response): Promise<Response>;
-    /**
-     * Accept a reschedule request
-     * POST /api/sessions/:bookingId/reschedule/accept
-     */
-    acceptReschedule(req: Request, res: Response): Promise<Response>;
-    /**
-     * Decline a reschedule request
-     * POST /api/sessions/:bookingId/reschedule/decline
-     */
-    declineReschedule(req: Request, res: Response): Promise<Response>;
+    private readonly responseBuilder;
+    constructor(acceptBookingUseCase: AcceptBookingUseCase, declineBookingUseCase: DeclineBookingUseCase, cancelBookingUseCase: CancelBookingUseCase, rescheduleBookingUseCase: RescheduleBookingUseCase, acceptRescheduleUseCase: AcceptRescheduleUseCase, declineRescheduleUseCase: DeclineRescheduleUseCase, getProviderBookingsUseCase: GetProviderBookingsUseCase, responseBuilder: IResponseBuilder);
+    getProviderSessions(req: Request, res: Response, next: NextFunction): Promise<void>;
+    acceptBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    declineBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    cancelBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    rescheduleBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
+    acceptReschedule(req: Request, res: Response, next: NextFunction): Promise<void>;
+    declineReschedule(req: Request, res: Response, next: NextFunction): Promise<void>;
 }
 //# sourceMappingURL=SessionManagementController.d.ts.map
