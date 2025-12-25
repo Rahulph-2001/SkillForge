@@ -143,8 +143,8 @@ class UserSubscription {
      * Reactivate canceled subscription
      */
     reactivate() {
-        if (this._status !== SubscriptionEnums_1.SubscriptionStatus.CANCELED) {
-            throw new Error('Only canceled subscriptions can be reactivated');
+        if (this._status !== SubscriptionEnums_1.SubscriptionStatus.CANCELED && !this.willCancelAtPeriodEnd()) {
+            throw new Error('Subscription is not canceled or scheduled for cancellation');
         }
         this._status = SubscriptionEnums_1.SubscriptionStatus.ACTIVE;
         this._cancelAt = undefined;

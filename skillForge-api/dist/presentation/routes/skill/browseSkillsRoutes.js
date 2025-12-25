@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const BrowseSkillsController_1 = require("../../controllers/BrowseSkillsController");
 const SkillDetailsController_1 = require("../../controllers/skill/SkillDetailsController");
+const optionalAuthMiddleware_1 = require("../../middlewares/optionalAuthMiddleware");
 let BrowseSkillsRoutes = class BrowseSkillsRoutes {
     constructor(browseSkillsController, skillDetailsController) {
         this.browseSkillsController = browseSkillsController;
@@ -26,8 +27,8 @@ let BrowseSkillsRoutes = class BrowseSkillsRoutes {
         this.configureRoutes();
     }
     configureRoutes() {
-        // Public routes - no authentication required
-        this.router.get('/browse', this.browseSkillsController.browse);
+        // Public routes - optional authentication to filter own skills
+        this.router.get('/browse', optionalAuthMiddleware_1.optionalAuthMiddleware, this.browseSkillsController.browse);
         this.router.get('/:skillId', this.skillDetailsController.getDetails);
     }
     getRouter() {

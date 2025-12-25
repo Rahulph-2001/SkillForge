@@ -91,8 +91,13 @@ export class UserProfileController {
         return;
       }
 
+      const profileData = {
+        ...user,
+        skillsOffered: user.skillsOffered.length,
+      };
+
       const response = this.responseBuilder.success(
-        user,
+        profileData,
         SUCCESS_MESSAGES.USER.PROFILE_FETCHED,
         HttpStatusCode.OK
       );

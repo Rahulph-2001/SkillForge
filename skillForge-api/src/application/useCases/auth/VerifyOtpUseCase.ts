@@ -23,19 +23,19 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService,
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
-  ) {}
+  ) { }
 
   async execute(request: VerifyOtpDTO): Promise<VerifyOtpResponseDTO> {
     const { email: rawEmail, otpCode } = request;
-    
+
     // Check if this is a new registration (pending) or existing unverified user
     let user = await this.userRepository.findByEmail(rawEmail);
     const pendingRegistration = await this.pendingRegistrationService.getPendingRegistration(rawEmail);
-    
+
     if (!user && !pendingRegistration) {
       throw new NotFoundError(ERROR_MESSAGES.AUTH.USER_NOT_FOUND);
     }
-    
+
     if (user && user.verification.email_verified) {
       throw new ConflictError(ERROR_MESSAGES.AUTH.EMAIL_ALREADY_VERIFIED);
     }
@@ -59,7 +59,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
     // Mark OTP as verified
     otpToken.verify();
     await this.otpRepository.update(otpToken);
-    
+
     // CRITICAL: Create user from pending registration if this is first-time verification
     if (pendingRegistration) {
       const newUser = new User({
@@ -71,13 +71,13 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         registration_ip: pendingRegistration.registrationIp,
         avatarUrl: pendingRegistration.avatarUrl,
       });
-      
+
       // Mark email as verified immediately
       newUser.verifyEmail();
-      
+
       // Save user to database ONLY after OTP verification
       user = await this.userRepository.save(newUser);
-      
+
       // Clean up pending registration
       await this.pendingRegistrationService.deletePendingRegistration(rawEmail);
     } else if (user) {
@@ -85,12 +85,12 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
       user.verifyEmail();
       await this.userRepository.update(user);
     }
-    
+
     // Safety check - should never happen due to earlier validation
     if (!user) {
       throw new Error('User creation or retrieval failed during OTP verification');
     }
-    
+
     try {
       await this.emailService.sendWelcomeEmail(user.email.value, user.name);
     } catch (error) {
@@ -108,7 +108,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: this.userDTOMapper.toUserResponseDTO(user),
+      user: await this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
       message: SUCCESS_MESSAGES.AUTH.VERIFY_OTP_SUCCESS

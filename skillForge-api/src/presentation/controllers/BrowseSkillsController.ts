@@ -15,6 +15,9 @@ export class BrowseSkillsController {
 
   public browse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      // Extract userId from optional auth middleware
+      const userId = (req as any).user?.userId;
+
       const {
         search,
         category,
@@ -37,6 +40,7 @@ export class BrowseSkillsController {
         limit: limit ? Number(limit) : 12,
         sortBy: sortBy as any,
         sortOrder: sortOrder as any,
+        excludeProviderId: userId, // Exclude current user's skills if authenticated
       };
 
       const result = await this.browseSkillsUseCase.execute(filters);

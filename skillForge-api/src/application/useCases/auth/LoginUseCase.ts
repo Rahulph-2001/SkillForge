@@ -17,7 +17,7 @@ export class LoginUseCase implements ILoginUseCase {
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
-  ) {}
+  ) { }
 
   async execute(request: LoginDTO, ipAddress?: string): Promise<LoginResponseDTO> {
     const { email: rawEmail, password } = request;
@@ -46,7 +46,7 @@ export class LoginUseCase implements ILoginUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: this.userDTOMapper.toUserResponseDTO(user),
+      user: await this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
     };

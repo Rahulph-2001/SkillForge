@@ -178,6 +178,7 @@ const GetUserSubscriptionUseCase_1 = require("../../application/useCases/subscri
 const CancelSubscriptionUseCase_1 = require("../../application/useCases/subscription/CancelSubscriptionUseCase");
 const UserSubscriptionController_1 = require("../../presentation/controllers/subscription/UserSubscriptionController");
 const userSubscriptionRoutes_1 = require("../../presentation/routes/subscription/userSubscriptionRoutes");
+const ReactivateSubscriptionUseCase_1 = require("../../application/useCases/subscription/ReactivateSubscriptionUseCase");
 // Mappers
 di_1.container.bind(types_1.TYPES.IAdminUserDTOMapper).to(AdminUserDTOMapper_1.AdminUserDTOMapper);
 di_1.container.bind(types_1.TYPES.IUserDTOMapper).to(UserDTOMapper_1.UserDTOMapper);
@@ -359,6 +360,7 @@ di_1.container.bind(types_1.TYPES.IGetUserSubscriptionUseCase).to(GetUserSubscri
 di_1.container.bind(types_1.TYPES.ICancelSubscriptionUseCase).to(CancelSubscriptionUseCase_1.CancelSubscriptionUseCase);
 di_1.container.bind(types_1.TYPES.UserSubscriptionController).to(UserSubscriptionController_1.UserSubscriptionController);
 di_1.container.bind(types_1.TYPES.UserSubscriptionRoutes).to(userSubscriptionRoutes_1.UserSubscriptionRoutes);
+di_1.container.bind(types_1.TYPES.IReactivateSubscriptionUseCase).to(ReactivateSubscriptionUseCase_1.ReactivateSubscriptionUseCase);
 // Community Mappers
 di_1.container.bind(types_1.TYPES.ICommunityMapper).to(CommunityMapper_1.CommunityMapper);
 di_1.container.bind(types_1.TYPES.ICommunityMessageMapper).to(CommunityMessageMapper_1.CommunityMessageMapper);

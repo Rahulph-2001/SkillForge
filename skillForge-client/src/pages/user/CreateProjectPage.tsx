@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Info, Plus, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import paymentService from '../../services/paymentService';
+import PaymentModal from '../../components/payment/PaymentModal';
+import PaymentSuccessModal from '../../components/payment/PaymentSuccessModal';
+import PaymentFailureModal from '../../components/payment/PaymentFailureModal';
 
 export default function CreateProjectPage() {
     const navigate = useNavigate();
@@ -34,11 +38,84 @@ export default function CreateProjectPage() {
         }
     };
 
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+    const [clientSecret, setClientSecret] = useState<string>('');
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
+    const [showFailureModal, setShowFailureModal] = useState(false);
+    const [paymentError, setPaymentError] = useState<string | undefined>(undefined);
+    const [lastPaymentIntentId, setLastPaymentIntentId] = useState<string | undefined>(undefined);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement API integration
-        toast.success("Project posted successfully (Demo)");
+
+        if (!formData.title || !formData.description || !formData.category || !formData.budget || !formData.duration) {
+            toast.error('Please fill in all required fields');
+            return;
+        }
+
+        if (skills.length === 0) {
+            toast.error('Please add at least one required skill');
+            return;
+        }
+
+        try {
+            setIsProcessing(true);
+
+            const budgetAmount = parseFloat(formData.budget);
+            if (isNaN(budgetAmount) || budgetAmount <= 0) {
+                toast.error('Please enter a valid budget amount');
+                setIsProcessing(false);
+                return;
+            }
+
+            // Create payment intent with project data in metadata
+            const response = await paymentService.createPaymentIntent({
+                amount: budgetAmount,
+                currency: 'INR',
+                purpose: 'PROJECT_POST',
+                metadata: {
+                    title: formData.title,
+                    description: formData.description,
+                    category: formData.category,
+                    tags: JSON.stringify(skills),
+                    budget: budgetAmount.toString(),
+                    duration: formData.duration,
+                    deadline: formData.deadline || undefined,
+                },
+            });
+
+            setClientSecret(response.clientSecret);
+            setIsPaymentModalOpen(true);
+        } catch (error: any) {
+            console.error('Error creating payment intent:', error);
+            toast.error(error.message || 'Failed to initiate payment');
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handlePaymentSuccess = (paymentIntentId: string) => {
+        // Project will be created automatically by ConfirmPaymentUseCase
+        setIsPaymentModalOpen(false);
+        setLastPaymentIntentId(paymentIntentId);
+        setShowSuccessModal(true);
+    };
+
+    const handlePaymentError = (errorMessage: string) => {
+        setIsPaymentModalOpen(false);
+        setPaymentError(errorMessage);
+        setShowFailureModal(true);
+    };
+
+    const handleContinueSuccess = () => {
+        setShowSuccessModal(false);
         navigate('/projects');
+    };
+
+    const handleCloseFailure = () => {
+        setShowFailureModal(false);
+        setPaymentError(undefined);
     };
 
     return (
@@ -246,12 +323,45 @@ export default function CreateProjectPage() {
                         </button>
                         <button
                             type="submit"
-                            className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                            disabled={isProcessing}
+                            className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Post Project & Pay to Escrow
+                            {isProcessing ? 'Processing...' : 'Post Project & Pay to Escrow'}
                         </button>
                     </div>
                 </form>
+
+                {/* Payment Modal */}
+                <PaymentModal
+                    isOpen={isPaymentModalOpen && !!clientSecret}
+                    clientSecret={clientSecret}
+                    amount={parseFloat(formData.budget) || 0}
+                    onClose={() => setIsPaymentModalOpen(false)}
+                    onSuccess={handlePaymentSuccess}
+                    onError={handlePaymentError}
+                />
+
+                {/* Success Modal */}
+                <PaymentSuccessModal
+                    isOpen={showSuccessModal}
+                    onClose={() => setShowSuccessModal(false)}
+                    planName={formData.title || 'Project'}
+                    amount={parseFloat(formData.budget) || 0}
+                    transactionId={lastPaymentIntentId}
+                    onContinue={handleContinueSuccess}
+                />
+
+                {/* Failure Modal */}
+                <PaymentFailureModal
+                    isOpen={showFailureModal}
+                    onClose={handleCloseFailure}
+                    error={paymentError}
+                    onRetry={() => {
+                        setShowFailureModal(false);
+                        setPaymentError(undefined);
+                        setIsPaymentModalOpen(true);
+                    }}
+                />
             </div>
         </div>
     );

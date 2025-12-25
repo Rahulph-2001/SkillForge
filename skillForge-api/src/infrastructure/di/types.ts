@@ -212,4 +212,11 @@ export const TYPES = {
   FeatureRoutes: Symbol.for('FeatureRoutes'),
   PaymentRoutes: Symbol.for('PaymentRoutes'),
   ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
+
+  // Project Management
+  IProjectRepository: Symbol.for('IProjectRepository'),
+  ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
+  IListProjectsUseCase: Symbol.for('IListProjectsUseCase'),
+  ProjectController: Symbol.for('ProjectController'),
+  ProjectRoutes: Symbol.for('ProjectRoutes'),
 };

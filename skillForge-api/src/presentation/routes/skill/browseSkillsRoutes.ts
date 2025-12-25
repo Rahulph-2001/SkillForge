@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { BrowseSkillsController } from '../../controllers/BrowseSkillsController';
 import { SkillDetailsController } from '../../controllers/skill/SkillDetailsController';
+import { optionalAuthMiddleware } from '../../middlewares/optionalAuthMiddleware';
 
 @injectable()
 export class BrowseSkillsRoutes {
@@ -17,8 +18,8 @@ export class BrowseSkillsRoutes {
   }
 
   private configureRoutes(): void {
-    // Public routes - no authentication required
-    this.router.get('/browse', this.browseSkillsController.browse);
+    // Public routes - optional authentication to filter own skills
+    this.router.get('/browse', optionalAuthMiddleware, this.browseSkillsController.browse);
     this.router.get('/:skillId', this.skillDetailsController.getDetails);
   }
 

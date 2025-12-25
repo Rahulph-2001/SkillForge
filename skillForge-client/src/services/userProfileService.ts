@@ -33,7 +33,7 @@ export const userProfileService = {
 
   async updateProfile(data: UpdateProfileData): Promise<UserProfile> {
     const formData = new FormData();
-    
+
     if (data.name) {
       formData.append('name', data.name);
     }

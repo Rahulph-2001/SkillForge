@@ -1,22 +1,48 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus } from 'lucide-react';
-import { Project } from '../../types/project';
 import ProjectCard from '../../components/projects/ProjectCard';
+import projectService, { Project } from '../../services/projectService';
+import { toast } from 'react-hot-toast';
 
 export default function ProjectsPage() {
     const navigate = useNavigate();
-    // @ts-ignore - TODO: Remove when API integration is implemented
     const [projects, setProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('All Status');
     const [categoryFilter, setCategoryFilter] = useState('All');
     const [sortBy, setSortBy] = useState('Recent');
+    const [total, setTotal] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    // TODO: Implement API integration
     useEffect(() => {
-        // fetchProjects();
-    }, [searchQuery, statusFilter, categoryFilter, sortBy]);
+        fetchProjects();
+    }, [searchQuery, statusFilter, categoryFilter, currentPage]);
+
+    const fetchProjects = async () => {
+        try {
+            setLoading(true);
+            const response = await projectService.listProjects({
+                search: searchQuery || undefined,
+                category: categoryFilter !== 'All' ? categoryFilter : undefined,
+                status: statusFilter !== 'All Status' ? statusFilter as 'Open' | 'In_Progress' | 'Completed' | 'Cancelled' : undefined,
+                page: currentPage,
+                limit: 20,
+            });
+
+            setProjects(response.projects);
+            setTotal(response.total);
+            setCurrentPage(response.page);
+            setTotalPages(response.totalPages);
+        } catch (error: any) {
+            console.error('Failed to fetch projects:', error);
+            toast.error(error.response?.data?.message || 'Failed to load projects');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 pt-6 pb-12">
@@ -61,10 +87,12 @@ export default function ProjectsPage() {
                                 onChange={(e) => setCategoryFilter(e.target.value)}
                             >
                                 <option value="All">All Categories</option>
-                                <option value="Technology">Technology</option>
-                                <option value="Languages">Languages</option>
-                                <option value="Creative">Creative</option>
-                                <option value="Business">Business</option>
+                                <option value="web-development">Web Development</option>
+                                <option value="mobile-app">Mobile App Development</option>
+                                <option value="design">Design & Creative</option>
+                                <option value="writing">Writing & Translation</option>
+                                <option value="digital-marketing">Digital Marketing</option>
+                                <option value="video-animation">Video & Animation</option>
                             </select>
                             <select
                                 className="border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
@@ -73,8 +101,9 @@ export default function ProjectsPage() {
                             >
                                 <option value="All Status">All Status</option>
                                 <option value="Open">Open</option>
-                                <option value="In Progress">In Progress</option>
+                                <option value="In_Progress">In Progress</option>
                                 <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
                             </select>
                         </div>
                     </div>
@@ -104,17 +133,49 @@ export default function ProjectsPage() {
 
                 {/* Listing */}
                 <div className="space-y-4">
-                    <p className="text-gray-500 text-sm mb-4">{projects.length} projects found</p>
-
-                    {projects.length === 0 ? (
-                        <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
-                            <p className="text-gray-500 mb-2">No projects found</p>
-                            <p className="text-gray-400 text-sm">Check back later or post a new project</p>
+                    {loading ? (
+                        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                            <p className="text-gray-500">Loading projects...</p>
                         </div>
                     ) : (
-                        projects.map((project) => (
-                            <ProjectCard key={project.id} project={project} />
-                        ))
+                        <>
+                            <p className="text-gray-500 text-sm mb-4">{total} projects found</p>
+
+                            {projects.length === 0 ? (
+                                <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
+                                    <p className="text-gray-500 mb-2">No projects found</p>
+                                    <p className="text-gray-400 text-sm">Check back later or post a new project</p>
+                                </div>
+                            ) : (
+                                projects.map((project) => (
+                                    <ProjectCard key={project.id} project={project} />
+                                ))
+                            )}
+
+                            {/* Pagination */}
+                            {totalPages > 1 && (
+                                <div className="flex justify-center gap-2 mt-8">
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Previous
+                                    </button>
+                                    <span className="px-4 py-2 text-gray-700">
+                                        Page {currentPage} of {totalPages}
+                                    </span>
+                                    <button
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

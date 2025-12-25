@@ -82,7 +82,11 @@ let UserProfileController = class UserProfileController {
                     res.status(response.statusCode).json(response.body);
                     return;
                 }
-                const response = this.responseBuilder.success(user, messages_1.SUCCESS_MESSAGES.USER.PROFILE_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+                const profileData = {
+                    ...user,
+                    skillsOffered: user.skillsOffered.length,
+                };
+                const response = this.responseBuilder.success(profileData, messages_1.SUCCESS_MESSAGES.USER.PROFILE_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {

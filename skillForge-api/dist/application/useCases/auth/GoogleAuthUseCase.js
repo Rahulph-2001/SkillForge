@@ -80,7 +80,7 @@ let GoogleAuthUseCase = class GoogleAuthUseCase {
         const token = this.jwtService.generateToken(tokenPayload);
         const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
         return {
-            user: this.userDTOMapper.toUserResponseDTO(user),
+            user: await this.userDTOMapper.toUserResponseDTO(user),
             token,
             refreshToken,
             isNewUser,

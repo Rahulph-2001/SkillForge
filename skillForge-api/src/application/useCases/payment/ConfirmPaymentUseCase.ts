@@ -12,8 +12,10 @@ export interface IConfirmPaymentUseCase {
 }
 
 import { IAssignSubscriptionUseCase } from '../../useCases/subscription/AssignSubscriptionUseCase';
+import { ICreateProjectUseCase } from '../project/interfaces/ICreateProjectUseCase';
 import { PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { AssignSubscriptionDTO } from '../../dto/subscription/AssignSubscriptionDTO';
+import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { BillingInterval } from '../../../domain/enums/SubscriptionEnums';
 
 @injectable()
@@ -21,7 +23,8 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
     constructor(
         @inject(TYPES.IPaymentGateway) private paymentGateway: IPaymentGateway,
         @inject(TYPES.IPaymentRepository) private paymentRepository: IPaymentRepository,
-        @inject(TYPES.IAssignSubscriptionUseCase) private assignSubscriptionUseCase: IAssignSubscriptionUseCase
+        @inject(TYPES.IAssignSubscriptionUseCase) private assignSubscriptionUseCase: IAssignSubscriptionUseCase,
+        @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase
     ) { }
 
     async execute(dto: ConfirmPaymentDTO): Promise<PaymentResponseDTO> {
@@ -63,6 +66,44 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                     }
                 } catch (error) {
                     console.error('[ConfirmPaymentUseCase] Failed to assign subscription after payment:', error);
+                    // We don't throw here to avoid failing the payment confirmation response, 
+                    // but in production we should alert or retry.
+                }
+            }
+
+            // Check if this was for a project post
+            if (updatedPayment.purpose === PaymentPurpose.PROJECT_POST) {
+                try {
+                    // Extract project data from payment metadata
+                    const metadata = paymentIntent.metadata || {};
+                    let tags: string[] = [];
+                    if (metadata.tags) {
+                        try {
+                            tags = JSON.parse(metadata.tags);
+                        } catch (error) {
+                            console.warn('[ConfirmPaymentUseCase] Failed to parse tags, using empty array');
+                            tags = [];
+                        }
+                    }
+
+                    const projectData: CreateProjectRequestDTO = {
+                        title: metadata.title,
+                        description: metadata.description,
+                        category: metadata.category,
+                        tags: tags,
+                        budget: parseFloat(metadata.budget),
+                        duration: metadata.duration,
+                        deadline: metadata.deadline || undefined,
+                    };
+
+                    if (projectData.title && projectData.description && projectData.category && projectData.budget) {
+                        await this.createProjectUseCase.execute(updatedPayment.userId, projectData, updatedPayment.id);
+                        console.log(`[ConfirmPaymentUseCase] Automatically created project for user ${updatedPayment.userId}`);
+                    } else {
+                        console.error('[ConfirmPaymentUseCase] Missing required project data in payment metadata');
+                    }
+                } catch (error) {
+                    console.error('[ConfirmPaymentUseCase] Failed to create project after payment:', error);
                     // We don't throw here to avoid failing the payment confirmation response, 
                     // but in production we should alert or retry.
                 }

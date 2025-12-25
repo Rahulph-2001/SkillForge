@@ -254,7 +254,7 @@ export default function UserProfilePage() {
               <p className="text-xs text-gray-600 font-medium">Rating</p>
             </div>
             <p className="text-2xl font-bold text-gray-900 mb-1">
-              {profile?.rating ? profile.rating.toFixed(1) : '0.0'}
+              {profile?.rating ? Number(profile.rating).toFixed(1) : '0.0'}
             </p>
             <p className="text-xs text-gray-500">{profile?.reviewCount || 0} reviews</p>
           </div>

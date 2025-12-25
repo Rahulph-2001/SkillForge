@@ -181,6 +181,7 @@ exports.TYPES = {
     ICancelSubscriptionUseCase: Symbol.for('ICancelSubscriptionUseCase'),
     UserSubscriptionController: Symbol.for('UserSubscriptionController'),
     UserSubscriptionRoutes: Symbol.for('UserSubscriptionRoutes'),
+    IReactivateSubscriptionUseCase: Symbol.for('IReactivateSubscriptionUseCase'),
     // Routes
     FeatureRoutes: Symbol.for('FeatureRoutes'),
     PaymentRoutes: Symbol.for('PaymentRoutes'),

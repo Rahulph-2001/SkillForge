@@ -22,6 +22,8 @@ let BrowseSkillsController = class BrowseSkillsController {
         this.responseBuilder = responseBuilder;
         this.browse = async (req, res, next) => {
             try {
+                // Extract userId from optional auth middleware
+                const userId = req.user?.userId;
                 const { search, category, level, minCredits, maxCredits, page, limit, sortBy, sortOrder } = req.query;
                 const filters = {
                     search: search,
@@ -33,6 +35,7 @@ let BrowseSkillsController = class BrowseSkillsController {
                     limit: limit ? Number(limit) : 12,
                     sortBy: sortBy,
                     sortOrder: sortOrder,
+                    excludeProviderId: userId, // Exclude current user's skills if authenticated
                 };
                 const result = await this.browseSkillsUseCase.execute(filters);
                 const response = this.responseBuilder.success(result, 'Skills retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);

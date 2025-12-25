@@ -42,6 +42,13 @@ enum BookingStatus {
   reschedule_requested
 }
 
+enum ProjectStatus {
+  Open
+  In_Progress
+  Completed
+  Cancelled
+}
+
 // Subscription Management Enums
 enum FeatureType {
   BOOLEAN
@@ -131,10 +138,12 @@ model Payment {
   updated_at            DateTime @updatedAt @db.Timestamptz(6)
   
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  projects Project[]
   
   @@index([user_id])
   @@index([provider_payment_id])
   @@index([status])
+  @@index([purpose])
   @@map("payments")
 }
 
@@ -424,6 +433,7 @@ model User {
   bookingsAsProvider  Booking[]             @relation("ProviderBookings")
   availability        ProviderAvailability?
   payments            Payment[]
+  projects            Project[]             @relation("ClientProjects")
 
   adminCommunities     Community[]        @relation("CommunityAdmin")
   communityMemberships CommunityMember[]  @relation("CommunityMemberships")
@@ -667,4 +677,35 @@ model ProviderAvailability {
 
   @@index([providerId])
   @@map("provider_availability")
+}
+
+// --- Project Model ---
+
+model Project {
+  id          String        @id @default(uuid()) @db.Uuid
+  clientId    String        @map("client_id") @db.Uuid
+  title       String        @db.VarChar(255)
+  description String        @db.Text
+  category    String        @db.VarChar(100)
+  tags        String[]      @default([])
+  budget      Decimal       @db.Decimal(10, 2)
+  duration    String        @db.VarChar(100)
+  deadline    DateTime?     @db.Date
+  status      ProjectStatus @default(Open)
+  paymentId   String?       @unique @map("payment_id") @db.Uuid // Link to payment for escrow (one-to-one)
+  applicationsCount Int      @default(0) @map("applications_count")
+  isDeleted   Boolean       @default(false) @map("is_deleted")
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  client User @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
+  payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([status])
+  @@index([category])
+  @@index([isDeleted])
+  @@index([createdAt])
+  @@map("projects")
 }

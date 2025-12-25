@@ -18,9 +18,10 @@ const types_1 = require("../../../infrastructure/di/types");
 const messages_1 = require("../../../config/messages");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UserSubscriptionController = class UserSubscriptionController {
-    constructor(getUserSubscriptionUseCase, cancelSubscriptionUseCase, responseBuilder) {
+    constructor(getUserSubscriptionUseCase, cancelSubscriptionUseCase, reactivateSubscriptionUseCase, responseBuilder) {
         this.getUserSubscriptionUseCase = getUserSubscriptionUseCase;
         this.cancelSubscriptionUseCase = cancelSubscriptionUseCase;
+        this.reactivateSubscriptionUseCase = reactivateSubscriptionUseCase;
         this.responseBuilder = responseBuilder;
     }
     /**
@@ -65,13 +66,29 @@ let UserSubscriptionController = class UserSubscriptionController {
             next(error);
         }
     }
+    /**
+     * POST /api/v1/subscriptions/reactivate
+     * Reactivate (Undo Cancel) subscription
+     */
+    async reactivateSubscription(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            await this.reactivateSubscriptionUseCase.execute(userId);
+            const response = this.responseBuilder.success({ reactivated: true }, 'Subscription reactivated successfully');
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 };
 exports.UserSubscriptionController = UserSubscriptionController;
 exports.UserSubscriptionController = UserSubscriptionController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IGetUserSubscriptionUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ICancelSubscriptionUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IReactivateSubscriptionUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], UserSubscriptionController);
 //# sourceMappingURL=UserSubscriptionController.js.map

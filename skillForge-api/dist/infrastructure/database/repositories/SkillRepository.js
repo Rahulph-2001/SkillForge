@@ -59,6 +59,12 @@ let SkillRepository = class SkillRepository {
                 where.creditsPerHour.lte = filters.maxCredits;
             }
         }
+        // Exclude current user's own skills (industrial-level: prevent self-booking)
+        if (filters.excludeProviderId) {
+            where.providerId = {
+                not: filters.excludeProviderId
+            };
+        }
         // Get total count
         const total = await this.prisma.skill.count({ where });
         // Get skills

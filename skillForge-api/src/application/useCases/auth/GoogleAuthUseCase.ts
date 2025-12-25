@@ -23,7 +23,7 @@ export class GoogleAuthUseCase {
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
-  ) {}
+  ) { }
 
   async execute(googleProfile: Profile): Promise<GoogleAuthResponse> {
     const googleEmail = googleProfile.emails?.[0]?.value;
@@ -37,7 +37,7 @@ export class GoogleAuthUseCase {
     // Check for existing user
     let user = await this.userRepository.findByEmail(googleEmail);
     let isNewUser = false;
-    
+
     if (!user) {
       // CRITICAL: New user from Google - create with verified email and free credits
       isNewUser = true;
@@ -61,7 +61,7 @@ export class GoogleAuthUseCase {
       if (avatarUrl && user.avatarUrl !== avatarUrl) {
         user.updateAvatar(avatarUrl);
       }
-      
+
       // If user exists but email not verified (edge case), verify it
       if (!user.verification.email_verified) {
         user.verifyEmail();
@@ -84,7 +84,7 @@ export class GoogleAuthUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: this.userDTOMapper.toUserResponseDTO(user),
+      user: await this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
       isNewUser,

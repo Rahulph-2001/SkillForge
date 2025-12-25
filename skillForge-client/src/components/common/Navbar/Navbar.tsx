@@ -121,34 +121,37 @@ export default function Navbar() {
 
                 {/* Right side - User profile and icons */}
                 <div className="flex items-center gap-4">
-                    {/* Subscription Plan Badge - Crown Icon with Pro */}
-                    {user?.subscriptionPlan && (
-                        <Link
-                            to="/plans"
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${user.subscriptionPlan === 'free'
+                    {/* Subscription Plan Badge - Crown Icon with Free/Pro */}
+                    <Link
+                        to="/plans"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free'
                                 ? 'bg-gray-100 hover:bg-gray-200 border border-gray-300'
                                 : 'bg-gradient-to-r from-orange-50 to-yellow-50 hover:from-orange-100 hover:to-yellow-100 border border-orange-200'
+                            }`}
+                    >
+                        {/* Crown Icon */}
+                        <svg
+                            className={`w-5 h-5 ${(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free'
+                                    ? 'text-gray-500'
+                                    : 'text-orange-500'
                                 }`}
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
                         >
-                            {/* Crown Icon */}
-                            <svg
-                                className={`w-5 h-5 ${user.subscriptionPlan === 'free' ? 'text-gray-500' : 'text-orange-500'}`}
-                                viewBox="0 0 24 24"
-                                fill="currentColor"
-                            >
-                                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                            </svg>
+                            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                        </svg>
 
-                            <span className={`text-sm font-semibold ${user.subscriptionPlan === 'free' ? 'text-gray-700' : 'text-orange-600'
-                                }`}>
-                                {user.subscriptionPlan === 'free' ? 'Free' : 'Pro'}
-                            </span>
+                        <span className={`text-sm font-semibold ${(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free'
+                                ? 'text-gray-700'
+                                : 'text-orange-600'
+                            }`}>
+                            {(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free' ? 'Free' : 'Pro'}
+                        </span>
 
-                            {user.subscriptionPlan === 'free' && (
-                                <span className="text-xs text-blue-600 font-semibold ml-1">Upgrade</span>
-                            )}
-                        </Link>
-                    )}
+                        {(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free' && (
+                            <span className="text-xs text-blue-600 font-semibold ml-1">Upgrade</span>
+                        )}
+                    </Link>
 
                     <div className="flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-lg">
                         <span className="text-sm font-semibold text-blue-600">{user?.credits || 0}</span>

@@ -38,6 +38,9 @@ exports.BrowseSkillsRequestSchema = zod_1.z.object({
     sortOrder: zod_1.z.enum(['asc', 'desc'], {
         message: 'Invalid sort order',
     }).optional().default('desc'),
+    excludeProviderId: zod_1.z.string()
+        .uuid('Invalid provider ID')
+        .optional(),
 }).refine((data) => {
     if (data.minCredits !== undefined && data.maxCredits !== undefined) {
         return data.minCredits <= data.maxCredits;

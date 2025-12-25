@@ -23,7 +23,7 @@ export class AdminLoginUseCase {
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
-  ) {}
+  ) { }
 
   async execute(request: AdminLoginDTO, ipAddress?: string): Promise<AdminLoginResponse> {
     const { email: rawEmail, password } = request;
@@ -60,7 +60,7 @@ export class AdminLoginUseCase {
     const token = this.jwtService.generateToken(tokenPayload);
     const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
     return {
-      user: this.userDTOMapper.toUserResponseDTO(user),
+      user: await this.userDTOMapper.toUserResponseDTO(user),
       token,
       refreshToken,
     };

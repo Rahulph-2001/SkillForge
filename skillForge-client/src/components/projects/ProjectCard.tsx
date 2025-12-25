@@ -11,12 +11,23 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         switch (status) {
             case 'Open':
                 return 'bg-blue-100 text-blue-700';
-            case 'In Progress':
+            case 'In_Progress':
                 return 'bg-gray-100 text-gray-700';
             case 'Completed':
                 return 'bg-green-100 text-green-700';
+            case 'Cancelled':
+                return 'bg-red-100 text-red-700';
             default:
                 return 'bg-gray-100 text-gray-700';
+        }
+    };
+
+    const formatStatus = (status: Project['status']) => {
+        switch (status) {
+            case 'In_Progress':
+                return 'In Progress';
+            default:
+                return status;
         }
     };
 
@@ -29,7 +40,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                             {project.title}
                         </h3>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>
-                            {project.status}
+                            {formatStatus(project.status)}
                         </span>
                     </div>
                 </div>
@@ -69,24 +80,34 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <img
-                        src={project.client.avatar}
-                        alt={project.client.name}
-                        className="w-6 h-6 rounded-full object-cover"
-                    />
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-1">
-                            <span className="text-xs font-medium text-gray-900">{project.client.name}</span>
-                            {project.client.isVerified && (
-                                <CheckCircle className="w-3 h-3 text-blue-500 fill-blue-50" />
+                {project.client && (
+                    <div className="flex items-center gap-2">
+                        {project.client.avatar ? (
+                            <img
+                                src={project.client.avatar}
+                                alt={project.client.name}
+                                className="w-6 h-6 rounded-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span className="text-xs font-semibold text-blue-600">{project.client.name.charAt(0).toUpperCase()}</span>
+                            </div>
+                        )}
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-1">
+                                <span className="text-xs font-medium text-gray-900">{project.client.name}</span>
+                                {project.client.isVerified && (
+                                    <CheckCircle className="w-3 h-3 text-blue-500 fill-blue-50" />
+                                )}
+                            </div>
+                            {project.client.rating !== undefined && (
+                                <div className="flex items-center gap-1">
+                                    <span className="text-[10px] text-gray-500">★ {project.client.rating}</span>
+                                </div>
                             )}
                         </div>
-                        <div className="flex items-center gap-1">
-                            <span className="text-[10px] text-gray-500">★ {project.client.rating}</span>
-                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );

@@ -167,6 +167,7 @@ export declare const TYPES: {
     ICancelSubscriptionUseCase: symbol;
     UserSubscriptionController: symbol;
     UserSubscriptionRoutes: symbol;
+    IReactivateSubscriptionUseCase: symbol;
     FeatureRoutes: symbol;
     PaymentRoutes: symbol;
     ICheckSubscriptionExpiryUseCase: symbol;

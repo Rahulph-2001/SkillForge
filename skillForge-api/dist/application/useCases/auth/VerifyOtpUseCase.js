@@ -105,7 +105,7 @@ let VerifyOtpUseCase = class VerifyOtpUseCase {
         const token = this.jwtService.generateToken(tokenPayload);
         const refreshToken = this.jwtService.generateRefreshToken(refreshTokenPayload);
         return {
-            user: this.userDTOMapper.toUserResponseDTO(user),
+            user: await this.userDTOMapper.toUserResponseDTO(user),
             token,
             refreshToken,
             message: messages_1.SUCCESS_MESSAGES.AUTH.VERIFY_OTP_SUCCESS

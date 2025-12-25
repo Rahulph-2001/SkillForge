@@ -1,18 +1,22 @@
 export interface Project {
     id: string;
+    clientId: string;
     title: string;
-    status: 'Open' | 'In Progress' | 'Completed';
+    status: 'Open' | 'In_Progress' | 'Completed' | 'Cancelled';
     category: string;
     description: string;
     tags: string[];
     budget: number;
     duration: string;
+    deadline?: string;
+    paymentId?: string;
     applicationsCount: number;
-    postedAt: string;
-    client: {
+    createdAt: string;
+    updatedAt: string;
+    client?: {
         name: string;
-        avatar: string; // URL
-        rating: number;
-        isVerified: boolean;
+        avatar?: string;
+        rating?: number;
+        isVerified?: boolean;
     };
 }

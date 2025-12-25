@@ -21,6 +21,7 @@ export declare const BrowseSkillsRequestSchema: z.ZodObject<{
         asc: "asc";
         desc: "desc";
     }>>>;
+    excludeProviderId: z.ZodOptional<z.ZodString>;
 }, z.core.$strip>;
 export type BrowseSkillsRequestDTO = z.infer<typeof BrowseSkillsRequestSchema>;
 //# sourceMappingURL=BrowseSkillsRequestDTO.d.ts.map

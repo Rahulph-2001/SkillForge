@@ -31,6 +31,8 @@ let UserSubscriptionRoutes = class UserSubscriptionRoutes {
         this.router.get('/me', this.controller.getCurrentSubscription.bind(this.controller));
         // POST /api/v1/subscriptions/cancel - Cancel subscription
         this.router.post('/cancel', this.controller.cancelSubscription.bind(this.controller));
+        // POST /api/v1/subscriptions/reactivate - Reactivate subscription
+        this.router.post('/reactivate', this.controller.reactivateSubscription.bind(this.controller));
     }
 };
 exports.UserSubscriptionRoutes = UserSubscriptionRoutes;

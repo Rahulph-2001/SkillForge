@@ -108,6 +108,12 @@ import { AdminSkillRoutes } from '../../presentation/routes/admin/adminSkillRout
 import { IBookingRepository } from '../../domain/repositories/IBookingRepository';
 import { BookingRepository } from '../database/repositories/BookingRepository';
 import { CreateBookingUseCase } from '../../application/useCases/booking/CreateBookingUseCase';
+import { IProjectRepository } from '../../domain/repositories/IProjectRepository';
+import { ProjectRepository } from '../database/repositories/ProjectRepository';
+import { CreateProjectUseCase } from '../../application/useCases/project/CreateProjectUseCase';
+import { ListProjectsUseCase } from '../../application/useCases/project/ListProjectsUseCase';
+import { ProjectController } from '../../presentation/controllers/ProjectController';
+import { ProjectRoutes } from '../../presentation/routes/project/projectRoutes';
 import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
 import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
 import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
@@ -350,6 +356,11 @@ container.bind<UnblockSkillUseCase>(TYPES.UnblockSkillUseCase).to(UnblockSkillUs
 // Session Management
 container.bind<IBookingRepository>(TYPES.IBookingRepository).to(BookingRepository);
 container.bind<CreateBookingUseCase>(TYPES.CreateBookingUseCase).to(CreateBookingUseCase);
+
+// Project Management
+container.bind<IProjectRepository>(TYPES.IProjectRepository).to(ProjectRepository);
+container.bind<CreateProjectUseCase>(TYPES.ICreateProjectUseCase).to(CreateProjectUseCase);
+container.bind<ListProjectsUseCase>(TYPES.IListProjectsUseCase).to(ListProjectsUseCase);
 container.bind<AcceptBookingUseCase>(TYPES.AcceptBookingUseCase).to(AcceptBookingUseCase);
 container.bind<DeclineBookingUseCase>(TYPES.DeclineBookingUseCase).to(DeclineBookingUseCase);
 container.bind<CancelBookingUseCase>(TYPES.CancelBookingUseCase).to(CancelBookingUseCase);
@@ -373,8 +384,10 @@ container.bind<MCQTestController>(TYPES.MCQTestController).to(MCQTestController)
 container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);
 container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);
 container.bind<BookingController>(TYPES.BookingController).to(BookingController);
+container.bind<ProjectController>(TYPES.ProjectController).to(ProjectController);
 
 container.bind<BookingRoutes>(TYPES.BookingRoutes).to(BookingRoutes);
+container.bind<ProjectRoutes>(TYPES.ProjectRoutes).to(ProjectRoutes);
 // Routes
 container.bind<AuthRoutes>(TYPES.AuthRoutes).to(AuthRoutes);
 container.bind<AdminRoutes>(TYPES.AdminRoutes).to(AdminRoutes);
