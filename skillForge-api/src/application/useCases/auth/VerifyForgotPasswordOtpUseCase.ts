@@ -5,21 +5,16 @@ import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { NotFoundError, UnauthorizedError } from '../../../domain/errors/AppError';
 import { VerifyForgotPasswordOtpDTO } from '../../dto/auth/VerifyForgotPasswordOtpDTO';
 import { ERROR_MESSAGES } from '../../../config/messages';
-
-export interface VerifyForgotPasswordOtpResponse {
-  success: boolean;
-  message: string;
-  verified: boolean;
-}
+import { IVerifyForgotPasswordOtpUseCase, VerifyForgotPasswordOtpResponseDTO } from './interfaces/IVerifyForgotPasswordOtpUseCase';
 
 @injectable()
-export class VerifyForgotPasswordOtpUseCase {
+export class VerifyForgotPasswordOtpUseCase implements IVerifyForgotPasswordOtpUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository
   ) {}
 
-  async execute(request: VerifyForgotPasswordOtpDTO): Promise<VerifyForgotPasswordOtpResponse> {
+  async execute(request: VerifyForgotPasswordOtpDTO): Promise<VerifyForgotPasswordOtpResponseDTO> {
     const { email: rawEmail, otpCode } = request;
     const email = rawEmail.toLowerCase().trim();
 

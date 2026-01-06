@@ -6,9 +6,10 @@ import { CreateSkillTemplateDTO } from '../../dto/skillTemplate/CreateSkillTempl
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { ICreateSkillTemplateUseCase } from './interfaces/ICreateSkillTemplateUseCase';
 
 @injectable()
-export class CreateSkillTemplateUseCase {
+export class CreateSkillTemplateUseCase implements ICreateSkillTemplateUseCase {
   constructor(
     @inject(TYPES.ISkillTemplateRepository)
     private readonly skillTemplateRepository: ISkillTemplateRepository,

@@ -9,21 +9,16 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { BookingStatus } from '../../../domain/entities/Booking';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
-
-export interface DeclineBookingRequest {
-  bookingId: string;
-  providerId: string;
-  reason?: string;
-}
+import { IDeclineBookingUseCase, DeclineBookingRequestDTO } from './interfaces/IDeclineBookingUseCase';
 
 @injectable()
-export class DeclineBookingUseCase {
+export class DeclineBookingUseCase implements IDeclineBookingUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) { }
 
-  async execute(request: DeclineBookingRequest): Promise<void> {
+  async execute(request: DeclineBookingRequestDTO): Promise<void> {
     // 1. Find the booking
     const booking = await this.bookingRepository.findById(request.bookingId);
 

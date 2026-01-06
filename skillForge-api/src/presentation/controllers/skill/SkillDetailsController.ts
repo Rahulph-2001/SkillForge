@@ -8,7 +8,7 @@ import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 @injectable()
 export class SkillDetailsController {
   constructor(
-    @inject(TYPES.GetSkillDetailsUseCase) private getSkillDetailsUseCase: IGetSkillDetailsUseCase,
+    @inject(TYPES.IGetSkillDetailsUseCase) private getSkillDetailsUseCase: IGetSkillDetailsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) {}
 

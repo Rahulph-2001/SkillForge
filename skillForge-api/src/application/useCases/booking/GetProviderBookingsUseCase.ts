@@ -2,33 +2,16 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-
-export interface GetProviderBookingsRequest {
-  providerId: string;
-  status?: string;
-}
-
-export interface GetProviderBookingsResponse {
-  success: boolean;
-  message: string;
-  bookings?: any[];
-  stats?: {
-    pending: number;
-    confirmed: number;
-    reschedule: number;
-    completed: number;
-    cancelled: number;
-  };
-}
+import { IGetProviderBookingsUseCase, GetProviderBookingsRequestDTO, GetProviderBookingsResponseDTO } from './interfaces/IGetProviderBookingsUseCase';
 
 @injectable()
-export class GetProviderBookingsUseCase {
+export class GetProviderBookingsUseCase implements IGetProviderBookingsUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) {}
 
-  async execute(request: GetProviderBookingsRequest): Promise<GetProviderBookingsResponse> {
+  async execute(request: GetProviderBookingsRequestDTO): Promise<GetProviderBookingsResponseDTO> {
     try {
       // 1. Get bookings based on filter
       let bookings;

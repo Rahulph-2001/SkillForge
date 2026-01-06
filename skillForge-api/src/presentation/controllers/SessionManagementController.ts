@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/di/types';
-import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
-import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
-import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
-import { RescheduleBookingUseCase } from '../../application/useCases/booking/RescheduleBookingUseCase';
-import { AcceptRescheduleUseCase } from '../../application/useCases/booking/AcceptRescheduleUseCase';
-import { DeclineRescheduleUseCase } from '../../application/useCases/booking/DeclineRescheduleUseCase';
-import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
+import { IAcceptBookingUseCase } from '../../application/useCases/booking/interfaces/IAcceptBookingUseCase';
+import { IDeclineBookingUseCase } from '../../application/useCases/booking/interfaces/IDeclineBookingUseCase';
+import { ICancelBookingUseCase } from '../../application/useCases/booking/interfaces/ICancelBookingUseCase';
+import { IRescheduleBookingUseCase } from '../../application/useCases/booking/interfaces/IRescheduleBookingUseCase';
+import { IAcceptRescheduleUseCase } from '../../application/useCases/booking/interfaces/IAcceptRescheduleUseCase';
+import { IDeclineRescheduleUseCase } from '../../application/useCases/booking/interfaces/IDeclineRescheduleUseCase';
+import { IGetProviderBookingsUseCase } from '../../application/useCases/booking/interfaces/IGetProviderBookingsUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../config/messages';
@@ -15,20 +15,20 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../config/messages';
 @injectable()
 export class SessionManagementController {
   constructor(
-    @inject(TYPES.AcceptBookingUseCase)
-    private readonly acceptBookingUseCase: AcceptBookingUseCase,
-    @inject(TYPES.DeclineBookingUseCase)
-    private readonly declineBookingUseCase: DeclineBookingUseCase,
-    @inject(TYPES.CancelBookingUseCase)
-    private readonly cancelBookingUseCase: CancelBookingUseCase,
-    @inject(TYPES.RescheduleBookingUseCase)
-    private readonly rescheduleBookingUseCase: RescheduleBookingUseCase,
-    @inject(TYPES.AcceptRescheduleUseCase)
-    private readonly acceptRescheduleUseCase: AcceptRescheduleUseCase,
-    @inject(TYPES.DeclineRescheduleUseCase)
-    private readonly declineRescheduleUseCase: DeclineRescheduleUseCase,
-    @inject(TYPES.GetProviderBookingsUseCase)
-    private readonly getProviderBookingsUseCase: GetProviderBookingsUseCase,
+    @inject(TYPES.IAcceptBookingUseCase)
+    private readonly acceptBookingUseCase: IAcceptBookingUseCase,
+    @inject(TYPES.IDeclineBookingUseCase)
+    private readonly declineBookingUseCase: IDeclineBookingUseCase,
+    @inject(TYPES.ICancelBookingUseCase)
+    private readonly cancelBookingUseCase: ICancelBookingUseCase,
+    @inject(TYPES.IRescheduleBookingUseCase)
+    private readonly rescheduleBookingUseCase: IRescheduleBookingUseCase,
+    @inject(TYPES.IAcceptRescheduleUseCase)
+    private readonly acceptRescheduleUseCase: IAcceptRescheduleUseCase,
+    @inject(TYPES.IDeclineRescheduleUseCase)
+    private readonly declineRescheduleUseCase: IDeclineRescheduleUseCase,
+    @inject(TYPES.IGetProviderBookingsUseCase)
+    private readonly getProviderBookingsUseCase: IGetProviderBookingsUseCase,
     @inject(TYPES.IResponseBuilder)
     private readonly responseBuilder: IResponseBuilder
   ) { }

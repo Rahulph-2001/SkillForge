@@ -1,48 +1,47 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { ICreateCommunityUseCase } from '../../../application/useCases/community/CreateCommunityUseCase';
-import { IUpdateCommunityUseCase } from '../../../application/useCases/community/UpdateCommunityUseCase';
-import { IGetCommunitiesUseCase } from '../../../application/useCases/community/GetCommunitiesUseCase';
-import { IGetCommunityDetailsUseCase } from '../../../application/useCases/community/GetCommunityDetailsUseCase';
-import { IJoinCommunityUseCase } from '../../../application/useCases/community/JoinCommunityUseCase';
-import { ILeaveCommunityUseCase } from '../../../application/useCases/community/LeaveCommunityUseCase';
-import { ISendMessageUseCase } from '../../../application/useCases/community/SendMessageUseCase';
-import { IGetCommunityMessagesUseCase } from '../../../application/useCases/community/GetCommunityMessagesUseCase';
-import { IPinMessageUseCase } from '../../../application/useCases/community/PinMessageUseCase';
-import { IUnpinMessageUseCase } from '../../../application/useCases/community/UnpinMessageUseCase';
-import { IDeleteMessageUseCase } from '../../../application/useCases/community/DeleteMessageUseCase';
-import { IRemoveCommunityMemberUseCase } from '../../../application/useCases/community/RemoveCommunityMemberUseCase';
-import { IAddReactionUseCase } from '../../../application/useCases/community/AddReactionUseCase';
-import { IRemoveReactionUseCase } from '../../../application/useCases/community/RemoveReactionUseCase';
+import { ICreateCommunityUseCase } from '../../../application/useCases/community/interfaces/ICreateCommunityUseCase';
+import { IUpdateCommunityUseCase } from '../../../application/useCases/community/interfaces/IUpdateCommunityUseCase';
+import { IGetCommunitiesUseCase } from '../../../application/useCases/community/interfaces/IGetCommunitiesUseCase';
+import { IGetCommunityDetailsUseCase } from '../../../application/useCases/community/interfaces/IGetCommunityDetailsUseCase';
+import { IJoinCommunityUseCase } from '../../../application/useCases/community/interfaces/IJoinCommunityUseCase';
+import { ILeaveCommunityUseCase } from '../../../application/useCases/community/interfaces/ILeaveCommunityUseCase';
+import { ISendMessageUseCase } from '../../../application/useCases/community/interfaces/ISendMessageUseCase';
+import { IGetCommunityMessagesUseCase } from '../../../application/useCases/community/interfaces/IGetCommunityMessagesUseCase';
+import { IPinMessageUseCase } from '../../../application/useCases/community/interfaces/IPinMessageUseCase';
+import { IUnpinMessageUseCase } from '../../../application/useCases/community/interfaces/IUnpinMessageUseCase';
+import { IDeleteMessageUseCase } from '../../../application/useCases/community/interfaces/IDeleteMessageUseCase';
+import { IRemoveCommunityMemberUseCase } from '../../../application/useCases/community/interfaces/IRemoveCommunityMemberUseCase';
+import { IAddReactionUseCase } from '../../../application/useCases/community/interfaces/IAddReactionUseCase';
+import { IRemoveReactionUseCase } from '../../../application/useCases/community/interfaces/IRemoveReactionUseCase';
+import { IGetCommunityMembersUseCase } from '../../../application/useCases/community/interfaces/IGetCommunityMembersUseCase';
 import { ICommunityMapper } from '../../../application/mappers/interfaces/ICommunityMapper';
 import { ICommunityMessageMapper } from '../../../application/mappers/interfaces/ICommunityMessageMapper';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { CreateCommunityDTO } from '../../../application/dto/community/CreateCommunityDTO';
 import { UpdateCommunityDTO } from '../../../application/dto/community/UpdateCommunityDTO';
 import { SendMessageDTO } from '../../../application/dto/community/SendMessageDTO';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
-import { CommunityMember } from '../../../domain/entities/CommunityMember';
 @injectable()
 export class CommunityController {
   constructor(
-    @inject(TYPES.CreateCommunityUseCase) private readonly createCommunityUseCase: ICreateCommunityUseCase,
-    @inject(TYPES.UpdateCommunityUseCase) private readonly updateCommunityUseCase: IUpdateCommunityUseCase,
-    @inject(TYPES.GetCommunitiesUseCase) private readonly getCommunitiesUseCase: IGetCommunitiesUseCase,
-    @inject(TYPES.GetCommunityDetailsUseCase) private readonly getCommunityDetailsUseCase: IGetCommunityDetailsUseCase,
-    @inject(TYPES.JoinCommunityUseCase) private readonly joinCommunityUseCase: IJoinCommunityUseCase,
-    @inject(TYPES.LeaveCommunityUseCase) private readonly leaveCommunityUseCase: ILeaveCommunityUseCase,
-    @inject(TYPES.SendMessageUseCase) private readonly sendMessageUseCase: ISendMessageUseCase,
-    @inject(TYPES.GetCommunityMessagesUseCase) private readonly getCommunityMessagesUseCase: IGetCommunityMessagesUseCase,
-    @inject(TYPES.PinMessageUseCase) private readonly pinMessageUseCase: IPinMessageUseCase,
-    @inject(TYPES.UnpinMessageUseCase) private readonly unpinMessageUseCase: IUnpinMessageUseCase,
-    @inject(TYPES.DeleteMessageUseCase) private readonly deleteMessageUseCase: IDeleteMessageUseCase,
-    @inject(TYPES.RemoveCommunityMemberUseCase) private readonly removeCommunityMemberUseCase: IRemoveCommunityMemberUseCase,
-    @inject(TYPES.AddReactionUseCase) private readonly addReactionUseCase: IAddReactionUseCase,
-    @inject(TYPES.RemoveReactionUseCase) private readonly removeReactionUseCase: IRemoveReactionUseCase,
-    @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
+    @inject(TYPES.ICreateCommunityUseCase) private readonly createCommunityUseCase: ICreateCommunityUseCase,
+    @inject(TYPES.IUpdateCommunityUseCase) private readonly updateCommunityUseCase: IUpdateCommunityUseCase,
+    @inject(TYPES.IGetCommunitiesUseCase) private readonly getCommunitiesUseCase: IGetCommunitiesUseCase,
+    @inject(TYPES.IGetCommunityDetailsUseCase) private readonly getCommunityDetailsUseCase: IGetCommunityDetailsUseCase,
+    @inject(TYPES.IJoinCommunityUseCase) private readonly joinCommunityUseCase: IJoinCommunityUseCase,
+    @inject(TYPES.ILeaveCommunityUseCase) private readonly leaveCommunityUseCase: ILeaveCommunityUseCase,
+    @inject(TYPES.ISendMessageUseCase) private readonly sendMessageUseCase: ISendMessageUseCase,
+    @inject(TYPES.IGetCommunityMessagesUseCase) private readonly getCommunityMessagesUseCase: IGetCommunityMessagesUseCase,
+    @inject(TYPES.IPinMessageUseCase) private readonly pinMessageUseCase: IPinMessageUseCase,
+    @inject(TYPES.IUnpinMessageUseCase) private readonly unpinMessageUseCase: IUnpinMessageUseCase,
+    @inject(TYPES.IDeleteMessageUseCase) private readonly deleteMessageUseCase: IDeleteMessageUseCase,
+    @inject(TYPES.IRemoveCommunityMemberUseCase) private readonly removeCommunityMemberUseCase: IRemoveCommunityMemberUseCase,
+    @inject(TYPES.IAddReactionUseCase) private readonly addReactionUseCase: IAddReactionUseCase,
+    @inject(TYPES.IRemoveReactionUseCase) private readonly removeReactionUseCase: IRemoveReactionUseCase,
+    @inject(TYPES.IGetCommunityMembersUseCase) private readonly getCommunityMembersUseCase: IGetCommunityMembersUseCase,
     @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper,
     @inject(TYPES.ICommunityMessageMapper) private readonly communityMessageMapper: ICommunityMessageMapper,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
@@ -298,18 +297,10 @@ export class CommunityController {
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
 
-      const members = await this.communityRepository.findMembersByCommunityId(communityId);
-
-      // Paginate manually
-      const paginatedMembers = members.slice(offset, offset + limit);
+      const result = await this.getCommunityMembersUseCase.execute(communityId, limit, offset);
 
       const response = this.responseBuilder.success(
-        {
-          members: paginatedMembers.map((m: CommunityMember) => m.toJSON()),
-          total: members.length,
-          limit,
-          offset,
-        },
+        result,
         SUCCESS_MESSAGES.COMMUNITY.MEMBERS_FETCHED,
         HttpStatusCode.OK
       );

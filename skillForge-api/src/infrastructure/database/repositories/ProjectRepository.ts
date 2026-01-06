@@ -4,13 +4,12 @@ import { injectable, inject } from 'inversify';
 import { IProjectRepository, ListProjectsFilters, ListProjectsResult } from '../../../domain/repositories/IProjectRepository';
 import { Project, ProjectStatus } from '../../../domain/entities/Project';
 import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class ProjectRepository implements IProjectRepository {
-  private prisma: PrismaClient;
-
+export class ProjectRepository extends BaseRepository<Project> implements IProjectRepository {
   constructor(@inject(TYPES.Database) db: Database) {
-    this.prisma = db.getClient();
+    super(db, 'project');
   }
 
   // --- Helper: Mapper ---
@@ -102,26 +101,20 @@ export class ProjectRepository implements IProjectRepository {
       isDeleted: false,
     };
 
-    if (filters.status) {
-      // Convert ProjectStatus enum to Prisma enum value
-      const prismaStatus = filters.status as unknown as string;
-      where.status = prismaStatus as any;
-    }
-
-    if (filters.category) {
-      where.category = filters.category;
-    }
-
-    if (filters.clientId) {
-      where.clientId = filters.clientId;
-    }
-
     if (filters.search) {
       where.OR = [
         { title: { contains: filters.search, mode: 'insensitive' } },
         { description: { contains: filters.search, mode: 'insensitive' } },
-        { tags: { hasSome: [filters.search] } },
+        { category: { contains: filters.search, mode: 'insensitive' } },
       ];
+    }
+
+    if (filters.category) {
+      where.category = { contains: filters.category, mode: 'insensitive' };
+    }
+
+    if (filters.status) {
+      where.status = filters.status;
     }
 
     // Get total count
@@ -135,129 +128,129 @@ export class ProjectRepository implements IProjectRepository {
       orderBy: { createdAt: 'desc' },
     });
 
-    const totalPages = Math.ceil(total / limit);
-
-    console.log('[ProjectRepository] Found projects:', {
-      total,
-      returned: projects.length,
-      page,
-      totalPages,
-    });
-
     return {
       projects: projects.map((p) => this.mapToDomain(p)),
       total,
       page,
       limit,
-      totalPages,
+      totalPages: Math.ceil(total / limit),
     };
   }
 
-  // --- Standard CRUD ---
+  // --- Write Operations ---
 
   async create(project: Project): Promise<Project> {
-    const projectData = project.toObject();
-
-    // Convert ProjectStatus enum to Prisma enum value (string)
-    // ProjectStatus.OPEN = 'Open', ProjectStatus.IN_PROGRESS = 'In_Progress', etc.
-    const prismaStatus = projectData.status as unknown as string;
-
-    try {
-      console.log('[ProjectRepository] Creating project:', {
-        id: projectData.id,
-        title: projectData.title,
-        clientId: projectData.clientId,
-        paymentId: projectData.paymentId,
-      });
-
-      const created = await this.prisma.project.create({
-        data: {
-          id: projectData.id!,
-          clientId: projectData.clientId,
-          title: projectData.title,
-          description: projectData.description,
-          category: projectData.category,
-          tags: projectData.tags,
-          budget: projectData.budget,
-          duration: projectData.duration,
-          deadline: projectData.deadline ? new Date(projectData.deadline) : null,
-          status: prismaStatus as any, // Cast to Prisma ProjectStatus enum type
-          paymentId: projectData.paymentId || null,
-          applicationsCount: projectData.applicationsCount || 0,
-          isDeleted: false, // Explicitly set isDeleted to false
-          createdAt: projectData.createdAt,
-          updatedAt: projectData.updatedAt,
-        },
-      });
-
-      console.log('[ProjectRepository] Project created successfully:', created.id);
-
-      // Verify project can be queried back
-      const verified = await this.prisma.project.findUnique({
-        where: { id: created.id, isDeleted: false },
-      });
-
-      if (!verified) {
-        console.error('[ProjectRepository] WARNING: Created project cannot be queried back!', created.id);
-      } else {
-        console.log('[ProjectRepository] Project verified in database with isDeleted:', verified.isDeleted);
-      }
-
-      return this.mapToDomain(created);
-    } catch (error) {
-      console.error('[ProjectRepository] Failed to create project:', {
-        error: error instanceof Error ? error.message : error,
-        projectData: {
-          id: projectData.id,
-          title: projectData.title,
-          clientId: projectData.clientId,
-        },
-      });
-      throw error;
+    const data = project.toJSON();
+    // Map ProjectStatus enum to Prisma enum value
+    let prismaStatus: string;
+    switch (project.status) {
+      case ProjectStatus.OPEN:
+        prismaStatus = 'Open';
+        break;
+      case ProjectStatus.IN_PROGRESS:
+        prismaStatus = 'In_Progress';
+        break;
+      case ProjectStatus.COMPLETED:
+        prismaStatus = 'Completed';
+        break;
+      case ProjectStatus.CANCELLED:
+        prismaStatus = 'Cancelled';
+        break;
+      default:
+        prismaStatus = 'Open';
     }
+
+    const created = await this.prisma.project.create({
+      data: {
+        id: project.id,
+        clientId: project.clientId,
+        title: project.title,
+        description: project.description,
+        category: project.category,
+        tags: project.tags,
+        budget: project.budget,
+        duration: project.duration,
+        deadline: project.deadline ? new Date(project.deadline) : null,
+        status: prismaStatus as any,
+        paymentId: project.paymentId,
+        applicationsCount: project.applicationsCount || 0,
+        createdAt: project.createdAt,
+        updatedAt: project.updatedAt,
+      },
+    });
+
+    return this.mapToDomain(created);
   }
 
   async update(project: Project): Promise<Project> {
-    const projectData = project.toObject();
-
-    // Convert ProjectStatus enum to Prisma enum value
-    const prismaStatus = projectData.status as unknown as string;
+    // Map ProjectStatus enum to Prisma enum value
+    let prismaStatus: string;
+    switch (project.status) {
+      case ProjectStatus.OPEN:
+        prismaStatus = 'Open';
+        break;
+      case ProjectStatus.IN_PROGRESS:
+        prismaStatus = 'In_Progress';
+        break;
+      case ProjectStatus.COMPLETED:
+        prismaStatus = 'Completed';
+        break;
+      case ProjectStatus.CANCELLED:
+        prismaStatus = 'Cancelled';
+        break;
+      default:
+        prismaStatus = 'Open';
+    }
 
     const updated = await this.prisma.project.update({
-      where: { id: projectData.id },
+      where: { id: project.id },
       data: {
-        title: projectData.title,
-        description: projectData.description,
-        category: projectData.category,
-        tags: projectData.tags,
-        budget: projectData.budget,
-        duration: projectData.duration,
-        deadline: projectData.deadline ? new Date(projectData.deadline) : null,
+        title: project.title,
+        description: project.description,
+        category: project.category,
+        tags: project.tags,
+        budget: project.budget,
+        duration: project.duration,
+        deadline: project.deadline ? new Date(project.deadline) : null,
         status: prismaStatus as any,
-        applicationsCount: projectData.applicationsCount,
-        updatedAt: projectData.updatedAt,
+        applicationsCount: project.applicationsCount || 0,
+        updatedAt: new Date(),
       },
     });
 
     return this.mapToDomain(updated);
   }
 
-  async delete(projectId: string): Promise<void> {
-    await this.prisma.project.update({
-      where: { id: projectId },
-      data: { isDeleted: true },
-    });
+  async delete(id: string): Promise<void> {
+    await super.delete(id);
   }
 
-  // --- Status Updates ---
-
   async updateStatus(projectId: string, status: ProjectStatus): Promise<Project> {
-    // Convert ProjectStatus enum to Prisma enum value
-    const prismaStatus = status as unknown as string;
+    // Map ProjectStatus enum to Prisma enum value
+    let prismaStatus: string;
+    switch (status) {
+      case ProjectStatus.OPEN:
+        prismaStatus = 'Open';
+        break;
+      case ProjectStatus.IN_PROGRESS:
+        prismaStatus = 'In_Progress';
+        break;
+      case ProjectStatus.COMPLETED:
+        prismaStatus = 'Completed';
+        break;
+      case ProjectStatus.CANCELLED:
+        prismaStatus = 'Cancelled';
+        break;
+      default:
+        prismaStatus = 'Open';
+    }
 
     const updated = await this.prisma.project.update({
       where: { id: projectId },
-      data: { status: prismaStatus as any, updatedAt: new Date() },
+      data: {
+        status: prismaStatus as any,
+        updatedAt: new Date(),
+      },
     });
 
     return this.mapToDomain(updated);
@@ -275,4 +268,3 @@ export class ProjectRepository implements IProjectRepository {
     return this.mapToDomain(updated);
   }
 }
-

@@ -9,15 +9,10 @@ import { ForgotPasswordDTO } from '../../dto/auth/ForgotPasswordDTO';
 import { OTPToken } from '../../../domain/entities/OTPToken';
 import { env } from '../../../config/env';
 import { ERROR_MESSAGES } from '../../../config/messages';
-
-export interface ForgotPasswordResponse {
-  success: boolean;
-  message: string;
-  expiresAt: Date;
-}
+import { IForgotPasswordUseCase, ForgotPasswordResponseDTO } from './interfaces/IForgotPasswordUseCase';
 
 @injectable()
-export class ForgotPasswordUseCase {
+export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository,
@@ -25,7 +20,7 @@ export class ForgotPasswordUseCase {
     @inject(TYPES.IEmailService) private emailService: IEmailService
   ) {}
 
-  async execute(request: ForgotPasswordDTO, ipAddress?: string): Promise<ForgotPasswordResponse> {
+  async execute(request: ForgotPasswordDTO, ipAddress?: string): Promise<ForgotPasswordResponseDTO> {
     const { email: rawEmail } = request;
     const email = rawEmail.toLowerCase().trim();
     

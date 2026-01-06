@@ -5,10 +5,11 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
+import { IDeleteSubscriptionPlanUseCase } from './interfaces/IDeleteSubscriptionPlanUseCase';
 
 
 @injectable()
-export class DeleteSubscriptionPlanUseCase {
+export class DeleteSubscriptionPlanUseCase implements IDeleteSubscriptionPlanUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.ISubscriptionPlanRepository) private subscriptionPlanRepository: ISubscriptionPlanRepository

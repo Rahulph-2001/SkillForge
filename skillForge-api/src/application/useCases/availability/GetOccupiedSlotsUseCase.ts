@@ -2,9 +2,10 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { BookingStatus } from '../../../domain/entities/Booking';
+import { IGetOccupiedSlotsUseCase } from './interfaces/IGetOccupiedSlotsUseCase';
 
 @injectable()
-export class GetOccupiedSlotsUseCase {
+export class GetOccupiedSlotsUseCase implements IGetOccupiedSlotsUseCase {
     constructor(
         @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository
     ) { }

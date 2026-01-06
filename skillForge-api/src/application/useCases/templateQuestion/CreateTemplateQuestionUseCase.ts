@@ -7,9 +7,10 @@ import { CreateTemplateQuestionDTO } from '../../dto/templateQuestion/CreateTemp
 import { UnauthorizedError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { v4 as uuidv4 } from 'uuid';
+import { ICreateTemplateQuestionUseCase } from './interfaces/ICreateTemplateQuestionUseCase';
 
 @injectable()
-export class CreateTemplateQuestionUseCase {
+export class CreateTemplateQuestionUseCase implements ICreateTemplateQuestionUseCase {
   constructor(
     @inject(TYPES.ITemplateQuestionRepository)
     private readonly templateQuestionRepository: ITemplateQuestionRepository,

@@ -4,23 +4,18 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
-import { BookingStatus } from '../../../domain/entities/Booking';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
-
-export interface AcceptBookingRequest {
-  bookingId: string;
-  providerId: string;
-}
+import { IAcceptBookingUseCase, AcceptBookingRequestDTO } from './interfaces/IAcceptBookingUseCase';
 
 @injectable()
-export class AcceptBookingUseCase {
+export class AcceptBookingUseCase implements IAcceptBookingUseCase {
   constructor(
     @inject(TYPES.IBookingRepository) private readonly bookingRepository: IBookingRepository,
     @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper
   ) { }
 
-  async execute(request: AcceptBookingRequest): Promise<BookingResponseDTO> {
+  async execute(request: AcceptBookingRequestDTO): Promise<BookingResponseDTO> {
     // 1. Find the booking
     const booking = await this.bookingRepository.findById(request.bookingId);
 

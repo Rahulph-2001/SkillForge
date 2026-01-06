@@ -3,7 +3,8 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-import { ICancelBookingUseCase, CancelBookingRequestDTO } from './interfaces/ICancelBookingUseCase';
+import { ICancelBookingUseCase } from './interfaces/ICancelBookingUseCase';
+import { CancelBookingRequestDTO } from '../../dto/booking/CancelBookingRequestDTO';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 
 

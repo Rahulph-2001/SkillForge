@@ -8,10 +8,7 @@ import { CreatePaymentIntentDTO } from '../../dto/payment/CreatePaymentIntentDTO
 import { CreatePaymentIntentResponseDTO } from '../../dto/payment/CreatePaymentIntentResponseDTO';
 import { PaymentProvider, PaymentStatus } from '../../../domain/enums/PaymentEnums';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface ICreatePaymentIntentUseCase {
-    execute(userId: string, dto: CreatePaymentIntentDTO): Promise<CreatePaymentIntentResponseDTO>;
-}
+import { ICreatePaymentIntentUseCase } from './interfaces/ICreatePaymentIntentUseCase';
 
 @injectable()
 export class CreatePaymentIntentUseCase implements ICreatePaymentIntentUseCase {

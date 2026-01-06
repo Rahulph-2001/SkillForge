@@ -2,19 +2,18 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUsageRecordRepository } from '../../../domain/repositories/IUsageRecordRepository';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
+import { IUsageRecordMapper } from '../../mappers/interfaces/IUsageRecordMapper';
 import { TrackUsageDTO } from '../../dto/usage/TrackUsageDTO';
 import { UsageRecordResponseDTO } from '../../dto/usage/UsageRecordResponseDTO';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
-
-export interface ITrackFeatureUsageUseCase {
-    execute(dto: TrackUsageDTO): Promise<UsageRecordResponseDTO>;
-}
+import { ITrackFeatureUsageUseCase } from './interfaces/ITrackFeatureUsageUseCase';
 
 @injectable()
 export class TrackFeatureUsageUseCase implements ITrackFeatureUsageUseCase {
     constructor(
         @inject(TYPES.IUsageRecordRepository) private usageRepository: IUsageRecordRepository,
-        @inject(TYPES.IUserSubscriptionRepository) private subscriptionRepository: IUserSubscriptionRepository
+        @inject(TYPES.IUserSubscriptionRepository) private subscriptionRepository: IUserSubscriptionRepository,
+        @inject(TYPES.IUsageRecordMapper) private usageRecordMapper: IUsageRecordMapper
     ) { }
 
     async execute(dto: TrackUsageDTO): Promise<UsageRecordResponseDTO> {
@@ -53,21 +52,7 @@ export class TrackFeatureUsageUseCase implements ITrackFeatureUsageUseCase {
         // Save updated record
         const updated = await this.usageRepository.update(usageRecord);
 
-        // Return DTO
-        return {
-            id: updated.id,
-            subscriptionId: updated.subscriptionId,
-            featureKey: updated.featureKey,
-            usageCount: updated.usageCount,
-            limitValue: updated.limitValue,
-            remainingUsage: updated.getRemainingUsage(),
-            usagePercentage: updated.getUsagePercentage(),
-            hasReachedLimit: updated.hasReachedLimit(),
-            periodStart: updated.periodStart,
-            periodEnd: updated.periodEnd,
-            isPeriodActive: updated.isPeriodActive(),
-            createdAt: updated.createdAt,
-            updatedAt: updated.updatedAt,
-        };
+        // Return DTO using mapper
+        return this.usageRecordMapper.toDTO(updated);
     }
 }

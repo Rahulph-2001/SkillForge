@@ -1,19 +1,17 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
-import { FeatureMapper } from '../../mappers/FeatureMapper';
+import { IFeatureMapper } from '../../mappers/interfaces/IFeatureMapper';
 import { UpdateFeatureDTO } from '../../dto/feature/UpdateFeatureDTO';
 import { FeatureResponseDTO } from '../../dto/feature/FeatureResponseDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
-
-export interface IUpdateFeatureUseCase {
-    execute(featureId: string, dto: UpdateFeatureDTO): Promise<FeatureResponseDTO>;
-}
+import { IUpdateFeatureUseCase } from './interfaces/IUpdateFeatureUseCase';
 
 @injectable()
 export class UpdateFeatureUseCase implements IUpdateFeatureUseCase {
     constructor(
-        @inject(TYPES.IFeatureRepository) private featureRepository: IFeatureRepository
+        @inject(TYPES.IFeatureRepository) private featureRepository: IFeatureRepository,
+        @inject(TYPES.IFeatureMapper) private featureMapper: IFeatureMapper
     ) { }
 
     async execute(featureId: string, dto: UpdateFeatureDTO): Promise<FeatureResponseDTO> {
@@ -62,6 +60,6 @@ export class UpdateFeatureUseCase implements IUpdateFeatureUseCase {
         const updated = await this.featureRepository.update(feature);
 
         // Map to DTO
-        return FeatureMapper.toDTO(updated);
+        return this.featureMapper.toDTO(updated);
     }
 }

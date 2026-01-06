@@ -11,9 +11,9 @@ import { ValidationError } from '../../../domain/errors/AppError';
 @injectable()
 export class MCQImportController {
   constructor(
-    @inject(TYPES.StartMCQImportUseCase) private startImportUseCase: IStartMCQImportUseCase,
-    @inject(TYPES.ListMCQImportJobsUseCase) private listJobsUseCase: IListMCQImportJobsUseCase,
-    @inject(TYPES.DownloadMCQImportErrorsUseCase) private downloadErrorsUseCase: IDownloadMCQImportErrorsUseCase,
+    @inject(TYPES.IStartMCQImportUseCase) private startImportUseCase: IStartMCQImportUseCase,
+    @inject(TYPES.IListMCQImportJobsUseCase) private listJobsUseCase: IListMCQImportJobsUseCase,
+    @inject(TYPES.IDownloadMCQImportErrorsUseCase) private downloadErrorsUseCase: IDownloadMCQImportErrorsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder,
   ) { }
 

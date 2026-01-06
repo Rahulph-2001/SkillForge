@@ -1,11 +1,14 @@
+import { injectable } from 'inversify';
 import { UserSubscriptionResponseDTO } from '../dto/subscription/UserSubscriptionResponseDTO';
 import { UserSubscription } from '../../domain/entities/UserSubscription';
+import { IUserSubscriptionMapper } from './interfaces/IUserSubscriptionMapper';
 
-export class UserSubscriptionMapper {
+@injectable()
+export class UserSubscriptionMapper implements IUserSubscriptionMapper {
     /**
      * Map UserSubscription entity to UserSubscriptionResponseDTO with computed fields
      */
-    static toDTO(subscription: UserSubscription, planName?: string): UserSubscriptionResponseDTO {
+    toDTO(subscription: UserSubscription, planName?: string): UserSubscriptionResponseDTO {
         const now = new Date();
         const daysUntilRenewal = Math.ceil(
             (subscription.currentPeriodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
@@ -37,7 +40,7 @@ export class UserSubscriptionMapper {
     /**
      * Map array of UserSubscription entities to DTOs
      */
-    static toDTOArray(subscriptions: UserSubscription[]): UserSubscriptionResponseDTO[] {
+    toDTOArray(subscriptions: UserSubscription[]): UserSubscriptionResponseDTO[] {
         return subscriptions.map((subscription) => this.toDTO(subscription));
     }
 }

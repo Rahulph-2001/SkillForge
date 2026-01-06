@@ -2,19 +2,16 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
+import { Database } from '../../../infrastructure/database/Database';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-import { PrismaClient } from '@prisma/client';
-
-export interface ILeaveCommunityUseCase {
-  execute(userId: string, communityId: string): Promise<void>;
-}
+import { ILeaveCommunityUseCase } from './interfaces/ILeaveCommunityUseCase';
 
 @injectable()
 export class LeaveCommunityUseCase implements ILeaveCommunityUseCase {
   constructor(
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService,
-    @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
+    @inject(TYPES.Database) private readonly database: Database
   ) { }
 
   public async execute(userId: string, communityId: string): Promise<void> {
@@ -33,7 +30,7 @@ export class LeaveCommunityUseCase implements ILeaveCommunityUseCase {
     }
 
     // Use transaction for atomic update
-    await this.prisma.$transaction(async (tx) => {
+    await this.database.transaction(async (tx) => {
       // Update member status
       await tx.communityMember.updateMany({
         where: { userId, communityId, isActive: true },

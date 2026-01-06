@@ -6,12 +6,8 @@ import { IPaymentRepository } from '../../../domain/repositories/IPaymentReposit
 import { PaymentResponseDTO } from '../../dto/payment/PaymentResponseDTO';
 import { ConfirmPaymentDTO } from '../../dto/payment/ConfirmPaymentDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
-
-export interface IConfirmPaymentUseCase {
-    execute(dto: ConfirmPaymentDTO): Promise<PaymentResponseDTO>;
-}
-
-import { IAssignSubscriptionUseCase } from '../../useCases/subscription/AssignSubscriptionUseCase';
+import { IConfirmPaymentUseCase } from './interfaces/IConfirmPaymentUseCase';
+import { IAssignSubscriptionUseCase } from '../subscription/interfaces/IAssignSubscriptionUseCase';
 import { ICreateProjectUseCase } from '../project/interfaces/ICreateProjectUseCase';
 import { PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { AssignSubscriptionDTO } from '../../dto/subscription/AssignSubscriptionDTO';

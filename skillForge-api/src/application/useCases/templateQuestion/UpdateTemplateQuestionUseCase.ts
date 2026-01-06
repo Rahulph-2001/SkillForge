@@ -6,9 +6,10 @@ import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { UpdateTemplateQuestionDTO } from '../../dto/templateQuestion/UpdateTemplateQuestionDTO';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IUpdateTemplateQuestionUseCase } from './interfaces/IUpdateTemplateQuestionUseCase';
 
 @injectable()
-export class UpdateTemplateQuestionUseCase {
+export class UpdateTemplateQuestionUseCase implements IUpdateTemplateQuestionUseCase {
   constructor(
     @inject(TYPES.ITemplateQuestionRepository)
     private readonly templateQuestionRepository: ITemplateQuestionRepository,

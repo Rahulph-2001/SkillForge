@@ -8,7 +8,7 @@ import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 @injectable()
 export class PublicSubscriptionController {
   constructor(
-    @inject(TYPES.ListPublicSubscriptionPlansUseCase)
+    @inject(TYPES.IListPublicSubscriptionPlansUseCase)
     private readonly listPublicPlansUseCase: IListPublicSubscriptionPlansUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) {}

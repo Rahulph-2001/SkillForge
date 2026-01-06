@@ -1,16 +1,16 @@
 import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../../infrastructure/di/types';
-import { StartMCQTestUseCase } from '../../../application/useCases/mcq/StartMCQTestUseCase';
-import { SubmitMCQTestUseCase } from '../../../application/useCases/mcq/SubmitMCQTestUseCase';
+import { IStartMCQTestUseCase } from '../../../application/useCases/mcq/interfaces/IStartMCQTestUseCase';
+import { ISubmitMCQTestUseCase } from '../../../application/useCases/mcq/interfaces/ISubmitMCQTestUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 
 @injectable()
 export class MCQTestController {
   constructor(
-    @inject(TYPES.StartMCQTestUseCase) private startMCQTestUseCase: StartMCQTestUseCase,
-    @inject(TYPES.SubmitMCQTestUseCase) private submitMCQTestUseCase: SubmitMCQTestUseCase,
+    @inject(TYPES.IStartMCQTestUseCase) private startMCQTestUseCase: IStartMCQTestUseCase,
+    @inject(TYPES.ISubmitMCQTestUseCase) private submitMCQTestUseCase: ISubmitMCQTestUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 

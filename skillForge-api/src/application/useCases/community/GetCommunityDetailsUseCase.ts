@@ -1,18 +1,19 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { Community } from '../../../domain/entities/Community';
+import { ICommunityMapper } from '../../mappers/interfaces/ICommunityMapper';
+import { CommunityResponseDTO } from '../../dto/community/CommunityResponseDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
+import { IGetCommunityDetailsUseCase } from './interfaces/IGetCommunityDetailsUseCase';
 
-export interface IGetCommunityDetailsUseCase {
-  execute(communityId: string, userId?: string): Promise<Community>;
-}
 @injectable()
 export class GetCommunityDetailsUseCase implements IGetCommunityDetailsUseCase {
   constructor(
-    @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository
+    @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
+    @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper
   ) { }
-  public async execute(communityId: string, userId?: string): Promise<Community> {
+  
+  public async execute(communityId: string, userId?: string): Promise<CommunityResponseDTO> {
     const community = await this.communityRepository.findById(communityId);
     if (!community) {
       throw new NotFoundError('Community not found');
@@ -25,6 +26,6 @@ export class GetCommunityDetailsUseCase implements IGetCommunityDetailsUseCase {
       community.isAdmin = community.adminId === userId;
     }
 
-    return community;
+    return this.communityMapper.toDTO(community, userId);
   }
 }

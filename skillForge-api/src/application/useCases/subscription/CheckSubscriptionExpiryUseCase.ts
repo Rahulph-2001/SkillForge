@@ -2,10 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
 import { SubscriptionStatus } from '../../../domain/enums/SubscriptionEnums';
-
-export interface ICheckSubscriptionExpiryUseCase {
-    execute(): Promise<void>;
-}
+import { ICheckSubscriptionExpiryUseCase } from './interfaces/ICheckSubscriptionExpiryUseCase';
 
 @injectable()
 export class CheckSubscriptionExpiryUseCase implements ICheckSubscriptionExpiryUseCase {

@@ -1,13 +1,16 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient } from '@prisma/client';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { Feature } from '../../../domain/entities/Feature';
 import { FeatureType } from '../../../domain/enums/SubscriptionEnums';
 import { TYPES } from '../../di/types';
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaFeatureRepository implements IFeatureRepository {
-    constructor(@inject(TYPES.PrismaClient) private prisma: PrismaClient) { }
+export class PrismaFeatureRepository extends BaseRepository<Feature> implements IFeatureRepository {
+    constructor(@inject(TYPES.Database) db: Database) {
+        super(db, 'feature');
+    }
 
     async create(feature: Feature): Promise<Feature> {
         const data = await this.prisma.feature.create({

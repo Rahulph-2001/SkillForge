@@ -1,78 +1,37 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { PrismaClient } from '@prisma/client';
-import { AppError, NotFoundError } from '../../../domain/errors/AppError';
-import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
-import { Database } from '../../../infrastructure/database/Database';
-
-export interface UserProfileDTO {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  bio: string | null;
-  location: string | null;
-  credits: number;
-  walletBalance: number;
-  skillsOffered: number;
-  rating: number;
-  reviewCount: number;
-  totalSessionsCompleted: number;
-  memberSince: string;
-  subscriptionPlan: string;
-  subscriptionValidUntil: string | null;
-}
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { NotFoundError } from '../../../domain/errors/AppError';
+import { IGetUserProfileUseCase, UserProfileDTO } from './interfaces/IGetUserProfileUseCase';
 
 @injectable()
-export class GetUserProfileUseCase {
+export class GetUserProfileUseCase implements IGetUserProfileUseCase {
   constructor(
-    @inject(TYPES.Database) database: Database
-  ) {
-    this.prisma = database.getClient();
-  }
-
-  private prisma: PrismaClient;
+    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
+  ) {}
 
   async execute(userId: string): Promise<UserProfileDTO> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatarUrl: true,
-        bio: true,
-        location: true,
-        credits: true,
-        walletBalance: true,
-        rating: true,
-        reviewCount: true,
-        totalSessionsCompleted: true,
-        memberSince: true,
-        subscriptionPlan: true,
-        subscriptionValidUntil: true,
-      },
-    });
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new NotFoundError('User not found');
     }
 
     // Count skills offered by this user
-    const skillsOffered = await this.prisma.skill.count({
-      where: {
-        providerId: userId,
-        status: 'approved',
-        verificationStatus: 'passed',
-        isBlocked: false,
-        isDeleted: false,
-      } as any,
-    });
+    const skills = await this.skillRepository.findByProviderId(userId);
+    const skillsOffered = skills.filter(s => 
+      s.status === 'approved' &&
+      s.verificationStatus === 'passed' && 
+      !s.isBlocked && 
+      !s.isAdminBlocked
+    ).length;
 
     return {
       id: user.id,
       name: user.name,
-      email: user.email,
+      email: user.email.value,
       avatarUrl: user.avatarUrl,
       bio: user.bio,
       location: user.location,
@@ -83,7 +42,7 @@ export class GetUserProfileUseCase {
       reviewCount: user.reviewCount,
       totalSessionsCompleted: user.totalSessionsCompleted,
       memberSince: user.memberSince.toISOString(),
-      subscriptionPlan: user.subscriptionPlan,
+      subscriptionPlan: user.subscriptionPlan || '',
       subscriptionValidUntil: user.subscriptionValidUntil?.toISOString() || null,
     };
   }

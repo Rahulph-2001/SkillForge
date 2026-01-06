@@ -2,10 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
-
-export interface IDeleteFeatureUseCase {
-    execute(featureId: string): Promise<void>;
-}
+import { IDeleteFeatureUseCase } from './interfaces/IDeleteFeatureUseCase';
 
 @injectable()
 export class DeleteFeatureUseCase implements IDeleteFeatureUseCase {

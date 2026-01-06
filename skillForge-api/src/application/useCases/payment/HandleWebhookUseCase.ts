@@ -3,13 +3,10 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { WebhookEventDTO } from '../../dto/payment/WebhookEventDTO';
 import { PaymentStatus, PaymentPurpose } from '../../../domain/enums/PaymentEnums';
-import { IActivateSubscriptionUseCase } from '../subscription/ActivateSubscriptionUseCase';
-import { ICreditAdminWalletUseCase } from '../admin/CreditAdminWalletUseCase';
+import { IHandleWebhookUseCase } from './interfaces/IHandleWebhookUseCase';
+import { IActivateSubscriptionUseCase } from '../subscription/interfaces/IActivateSubscriptionUseCase';
+import { ICreditAdminWalletUseCase } from '../admin/interfaces/ICreditAdminWalletUseCase';
 import { BillingInterval } from '../../../domain/enums/SubscriptionEnums';
-
-export interface IHandleWebhookUseCase {
-    execute(event: WebhookEventDTO): Promise<void>;
-}
 
 @injectable()
 export class HandleWebhookUseCase implements IHandleWebhookUseCase {

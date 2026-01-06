@@ -9,10 +9,7 @@ import { SubscriptionActivationResponseDTO } from '../../dto/subscription/Subscr
 import { v4 as uuidv4 } from 'uuid';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { SubscriptionStatus, BillingInterval } from '../../../domain/enums/SubscriptionEnums';
-
-export interface IActivateSubscriptionUseCase {
-    execute(dto: ActivateSubscriptionRequestDTO): Promise<SubscriptionActivationResponseDTO>;
-}
+import { IActivateSubscriptionUseCase } from './interfaces/IActivateSubscriptionUseCase';
 
 @injectable()
 export class ActivateSubscriptionUseCase implements IActivateSubscriptionUseCase {

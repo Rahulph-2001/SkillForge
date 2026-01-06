@@ -1,11 +1,14 @@
+import { injectable } from 'inversify';
 import { UsageRecordResponseDTO } from '../dto/usage/UsageRecordResponseDTO';
 import { UsageRecord } from '../../domain/entities/UsageRecord';
+import { IUsageRecordMapper } from './interfaces/IUsageRecordMapper';
 
-export class UsageRecordMapper {
+@injectable()
+export class UsageRecordMapper implements IUsageRecordMapper {
     /**
      * Map UsageRecord entity to UsageRecordResponseDTO with computed fields
      */
-    static toDTO(usageRecord: UsageRecord): UsageRecordResponseDTO {
+    toDTO(usageRecord: UsageRecord): UsageRecordResponseDTO {
         return {
             id: usageRecord.id,
             subscriptionId: usageRecord.subscriptionId,
@@ -26,7 +29,7 @@ export class UsageRecordMapper {
     /**
      * Map array of UsageRecord entities to DTOs
      */
-    static toDTOArray(usageRecords: UsageRecord[]): UsageRecordResponseDTO[] {
+    toDTOArray(usageRecords: UsageRecord[]): UsageRecordResponseDTO[] {
         return usageRecords.map((record) => this.toDTO(record));
     }
 }

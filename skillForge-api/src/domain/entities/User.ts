@@ -30,7 +30,7 @@ export interface AntiFraudData {
   last_redemption_date: string | null;
   redemption_count: number;
   risk_score: number;
-  flagged_for_review: boolean;
+  flaggedForReview: boolean;
 }
 
 export interface AdminPermissions {
@@ -75,8 +75,8 @@ export interface CreateUserData {
   email: Email | string;
   password: Password | string;
   role?: UserRole | 'user' | 'admin';
-  bonus_credits?: number;
-  registration_ip?: string;
+  bonusCredits?: number;
+  registrationIp?: string;
   avatarUrl?: string | null;
   bio?: string | null;
   location?: string | null;
@@ -127,7 +127,7 @@ export class User {
     this._bio = data.bio || null;
     this._location = data.location || null;
     this._role = (data.role as UserRole) || UserRole.USER;
-    const bonusCredits = data.bonus_credits || env.DEFAULT_BONUS_CREDITS;
+    const bonusCredits = data.bonusCredits || env.DEFAULT_BONUS_CREDITS;
     this._credits = bonusCredits;
     this._earnedCredits = 0;
     this._bonusCredits = bonusCredits;
@@ -154,14 +154,14 @@ export class User {
       },
     };
     this._antiFraud = {
-      registration_ip: data.registration_ip || null,
+      registration_ip: data.registrationIp || null,
       last_login_ip: null,
       account_age_days: 0,
       suspicious_activity_flags: [],
       last_redemption_date: null,
       redemption_count: 0,
       risk_score: 0,
-      flagged_for_review: false,
+      flaggedForReview: false,
     };
     this._subscriptionPlan = 'free';
     this._subscriptionValidUntil = null;
@@ -483,7 +483,28 @@ export class User {
     userAny._totalSessionsCompleted = (row.total_sessions_completed as number) || (row.totalSessionsCompleted as number) || 0;
     userAny._memberSince = (row.member_since as Date || row.memberSince as Date) || new Date();
     userAny._verification = row.verification as VerificationData;
-    userAny._antiFraud = (row.anti_fraud as AntiFraudData) || (row.antiFraud as AntiFraudData);
+    // Normalize antiFraud data - handle both snake_case (from DB) and camelCase formats
+    const antiFraudData = (row.anti_fraud as any) || (row.antiFraud as any);
+    if (antiFraudData) {
+      // Convert flagged_for_review (snake_case) to flaggedForReview (camelCase) if present
+      if (antiFraudData.flagged_for_review !== undefined && antiFraudData.flaggedForReview === undefined) {
+        antiFraudData.flaggedForReview = antiFraudData.flagged_for_review;
+        delete antiFraudData.flagged_for_review;
+      }
+      userAny._antiFraud = antiFraudData as AntiFraudData;
+    } else {
+      // Default antiFraud data if not present
+      userAny._antiFraud = {
+        registration_ip: null,
+        last_login_ip: null,
+        account_age_days: 0,
+        suspicious_activity_flags: [],
+        last_redemption_date: null,
+        redemption_count: 0,
+        risk_score: 0,
+        flaggedForReview: false,
+      };
+    }
     userAny._settings = row.settings as UserSettings;
     userAny._adminPermissions = (row.admin_permissions as AdminPermissions) || (row.adminPermissions as AdminPermissions);
     userAny._subscriptionPlan = (row.subscription_plan as SubscriptionPlan) || (row.subscriptionPlan as SubscriptionPlan) || 'free';

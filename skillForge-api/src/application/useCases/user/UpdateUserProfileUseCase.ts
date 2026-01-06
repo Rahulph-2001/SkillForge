@@ -1,46 +1,21 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { PrismaClient } from '@prisma/client';
-import { Database } from '../../../infrastructure/database/Database';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IStorageService } from '../../../domain/services/IStorageService';
 import { NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
-
-export interface UpdateUserProfileDTO {
-  userId: string;
-  name?: string;
-  bio?: string;
-  location?: string;
-  avatarFile?: Express.Multer.File;
-}
-
-export interface UpdatedProfileResponse {
-  id: string;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  bio: string | null;
-  location: string | null;
-}
+import { IUpdateUserProfileUseCase, UpdateUserProfileDTO, UpdatedProfileResponse } from './interfaces/IUpdateUserProfileUseCase';
 
 @injectable()
-export class UpdateUserProfileUseCase {
-  private prisma: PrismaClient;
-  private storageService: IStorageService;
-
+export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
   constructor(
-    @inject(TYPES.Database) database: Database,
-    @inject(TYPES.IStorageService) storageService: IStorageService
-  ) {
-    this.prisma = database.getClient();
-    this.storageService = storageService;
-  }
+    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.IStorageService) private readonly storageService: IStorageService
+  ) {}
 
   async execute(dto: UpdateUserProfileDTO): Promise<UpdatedProfileResponse> {
     const { userId, name, bio, location, avatarFile } = dto;
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
+    const user = await this.userRepository.findById(userId);
 
     if (!user) {
       throw new NotFoundError('User not found');
@@ -52,39 +27,29 @@ export class UpdateUserProfileUseCase {
       try {
         const key = `avatars/${userId}/${Date.now()}-${avatarFile.originalname}`;
         avatarUrl = await this.storageService.uploadFile(
-          (avatarFile as any).buffer,
+          avatarFile.buffer,
           key,
-          (avatarFile as any).mimetype
+          avatarFile.mimetype
         );
       } catch (_error) {
         throw new InternalServerError('Failed to upload avatar image');
       }
     }
 
-    const updateData = {
-      ...(name && { name }),
-      ...(bio !== undefined && { bio }),
-      ...(location !== undefined && { location }),
-      ...(avatarFile && { avatarUrl }),
-    };
-
-    const updatedUser = await this.prisma.user.update({
-      where: { id: userId },
-      data: updateData,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        avatarUrl: true,
-        bio: true,
-        location: true,
-      },
+    // Update user entity
+    user.updateProfile({
+      name,
+      bio,
+      location,
+      avatarUrl,
     });
+
+    const updatedUser = await this.userRepository.update(user);
 
     return {
       id: updatedUser.id,
       name: updatedUser.name,
-      email: updatedUser.email,
+      email: updatedUser.email.value,
       avatarUrl: updatedUser.avatarUrl,
       bio: updatedUser.bio,
       location: updatedUser.location,

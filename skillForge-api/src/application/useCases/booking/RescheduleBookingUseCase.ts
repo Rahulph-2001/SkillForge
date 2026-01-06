@@ -5,23 +5,16 @@ import { IBookingRepository } from '../../../domain/repositories/IBookingReposit
 import { RescheduleInfo } from '../../../domain/entities/Booking';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { BookingValidator } from '../../../shared/validators/BookingValidator';
-
-export interface RescheduleBookingRequest {
-  bookingId: string;
-  userId: string;
-  newDate: string;
-  newTime: string;
-  reason: string;
-}
+import { IRescheduleBookingUseCase, RescheduleBookingRequestDTO } from './interfaces/IRescheduleBookingUseCase';
 
 @injectable()
-export class RescheduleBookingUseCase {
+export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) { }
 
-  async execute(request: RescheduleBookingRequest): Promise<void> {
+  async execute(request: RescheduleBookingRequestDTO): Promise<void> {
     // 1. Validate date and time format
     const formatValidation = BookingValidator.validateDateTimeFormat(
       request.newDate,

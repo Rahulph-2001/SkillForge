@@ -3,14 +3,13 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { Database } from '../Database';
 import { TYPES } from '../../di/types';
+import { BaseRepository } from '../BaseRepository';
 import { BrowseSkillsRequestDTO } from '../../../application/dto/skill/BrowseSkillsRequestDTO';
 
 @injectable()
-export class SkillRepository implements ISkillRepository {
-  private readonly prisma;
-
+export class SkillRepository extends BaseRepository<Skill> implements ISkillRepository {
   constructor(@inject(TYPES.Database) db: Database) {
-    this.prisma = db.getClient();
+    super(db, 'skill');
   }
 
   async browse(filters: BrowseSkillsRequestDTO): Promise<{ skills: Skill[]; total: number }> {
@@ -98,56 +97,22 @@ export class SkillRepository implements ISkillRepository {
     return skills.map((s: any) => this.toDomain(s));
   }
 
-  async update(skill: Skill): Promise<Skill> {
-    const data = skill.toJSON();
-    const updated = await this.prisma.skill.update({
-      where: { id: skill.id },
-      data: {
-        title: data.title as string,
-        description: data.description as string,
-        category: data.category as string,
-        level: data.level as string,
-        durationHours: data.durationHours as number,
-        creditsPerHour: data.creditsPerHour as number,
-        tags: data.tags as string[],
-        imageUrl: data.imageUrl as string | null,
-        status: data.status as string,
-        verificationStatus: data.verificationStatus as string | null,
-        mcqScore: data.mcqScore as number | null,
-        mcqTotalQuestions: data.mcqTotalQuestions as number | null,
-        mcqPassingScore: data.mcqPassingScore as number | null,
-        verifiedAt: data.verifiedAt as Date | null,
-        totalSessions: data.totalSessions as number,
-        rating: data.rating as number,
-        isBlocked: data.isBlocked as boolean,
-        blockedReason: data.blockedReason as string | null,
-        blockedAt: data.blockedAt as Date | null,
-        isAdminBlocked: data.isAdminBlocked as boolean,
-        updatedAt: new Date()
+  async findById(id: string): Promise<Skill | null> {
+    const skill = await this.prisma.skill.findUnique({
+      where: { id, isDeleted: false },
+      include: {
+        provider: {
+          select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+            rating: true,
+            reviewCount: true,
+          }
+        }
       }
     });
-    return this.toDomain(updated);
-  }
-
-  async create(skill: Skill): Promise<Skill> {
-    const data = skill.toJSON();
-    const created = await this.prisma.skill.create({
-      data: {
-        id: data.id as string,
-        providerId: data.providerId as string,
-        templateId: data.templateId as string | null,
-        title: data.title as string,
-        description: data.description as string,
-        category: data.category as string,
-        level: data.level as string,
-        durationHours: data.durationHours as number,
-        creditsPerHour: data.creditsPerHour as number,
-        tags: data.tags as string[],
-        imageUrl: data.imageUrl as string | null,
-        status: data.status as string,
-      }
-    });
-    return this.toDomain(created);
+    return skill ? this.toDomain(skill) : null;
   }
 
   async findByProviderId(providerId: string): Promise<Skill[]> {
@@ -155,55 +120,116 @@ export class SkillRepository implements ISkillRepository {
       where: {
         providerId,
         isDeleted: false,
-        verificationStatus: {
-          not: 'failed' // Exclude failed MCQ skills (blocked skills are shown)
-        }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
     return skills.map((s: any) => this.toDomain(s));
   }
 
-  async findById(id: string): Promise<Skill | null> {
-    const skill = await this.prisma.skill.findUnique({
-      where: { id }
+  async findByProviderIdAndStatus(providerId: string, status: string): Promise<Skill[]> {
+    const skills = await this.prisma.skill.findMany({
+      where: {
+        providerId,
+        status,
+        isDeleted: false,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
-    return skill ? this.toDomain(skill) : null;
+    return skills.map((s: any) => this.toDomain(s));
   }
 
   async findAll(): Promise<Skill[]> {
-    const skills = await this.prisma.skill.findMany({
-      where: { isDeleted: false }
-    });
-    return skills.map((s: any) => this.toDomain(s));
+    const skills = await super.findAll();
+    return skills
+      .filter((s: any) => !s.isDeleted)
+      .map((s: any) => this.toDomain(s));
   }
 
-  private toDomain(ormEntity: any): Skill {
+  async create(skill: Skill): Promise<Skill> {
+    const created = await this.prisma.skill.create({
+      data: {
+        id: skill.id,
+        providerId: skill.providerId,
+        templateId: skill.templateId,
+        title: skill.title,
+        description: skill.description,
+        category: skill.category,
+        level: skill.level,
+        creditsPerHour: skill.creditsPerHour,
+        durationHours: skill.durationHours,
+        tags: skill.tags,
+        status: skill.status,
+        verificationStatus: skill.verificationStatus,
+        isBlocked: skill.isBlocked,
+        isAdminBlocked: skill.isAdminBlocked,
+        blockedReason: skill.blockedReason,
+        imageUrl: skill.imageUrl,
+        rating: skill.rating,
+        createdAt: skill.createdAt,
+        updatedAt: skill.updatedAt,
+      },
+    });
+    return this.toDomain(created);
+  }
+
+  async update(skill: Skill): Promise<Skill> {
+    const updated = await this.prisma.skill.update({
+      where: { id: skill.id },
+      data: {
+        title: skill.title,
+        description: skill.description,
+        category: skill.category,
+        level: skill.level,
+        creditsPerHour: skill.creditsPerHour,
+        durationHours: skill.durationHours,
+        tags: skill.tags,
+        status: skill.status,
+        verificationStatus: skill.verificationStatus,
+        isBlocked: skill.isBlocked,
+        isAdminBlocked: skill.isAdminBlocked,
+        blockedReason: skill.blockedReason,
+        imageUrl: skill.imageUrl,
+        updatedAt: new Date(),
+      },
+    });
+    return this.toDomain(updated);
+  }
+
+  async delete(id: string): Promise<void> {
+    await super.delete(id);
+  }
+
+  private toDomain(data: any): Skill {
     return new Skill({
-      id: ormEntity.id,
-      providerId: ormEntity.providerId,
-      templateId: ormEntity.templateId,
-      title: ormEntity.title,
-      description: ormEntity.description,
-      category: ormEntity.category,
-      level: ormEntity.level,
-      durationHours: ormEntity.durationHours,
-      creditsPerHour: ormEntity.creditsPerHour,
-      tags: ormEntity.tags,
-      imageUrl: ormEntity.imageUrl,
-      status: ormEntity.status as any,
-      verificationStatus: ormEntity.verificationStatus,
-      mcqScore: ormEntity.mcqScore,
-      mcqTotalQuestions: ormEntity.mcqTotalQuestions,
-      mcqPassingScore: ormEntity.mcqPassingScore,
-      totalSessions: ormEntity.totalSessions,
-      rating: Number(ormEntity.rating),
-      isBlocked: ormEntity.isBlocked || false,
-      blockedReason: ormEntity.blockedReason || null,
-      blockedAt: ormEntity.blockedAt || null,
-      isAdminBlocked: ormEntity.isAdminBlocked || false,
-      createdAt: ormEntity.createdAt,
-      updatedAt: ormEntity.updatedAt
+      id: data.id,
+      providerId: data.providerId,
+      title: data.title,
+      description: data.description,
+      category: data.category,
+      level: data.level,
+      durationHours: data.durationHours,
+      creditsPerHour: Number(data.creditsPerHour),
+      tags: data.tags || [],
+      imageUrl: data.imageUrl,
+      templateId: data.templateId,
+      status: data.status as any,
+      verificationStatus: data.verificationStatus,
+      mcqScore: data.mcqScore,
+      mcqTotalQuestions: data.mcqTotalQuestions,
+      mcqPassingScore: data.mcqPassingScore,
+      verifiedAt: data.verifiedAt,
+      totalSessions: data.totalSessions || 0,
+      rating: data.rating || 0,
+      isBlocked: data.isBlocked || false,
+      blockedReason: data.blockingReason,
+      blockedAt: data.blockedAt,
+      isAdminBlocked: data.isAdminBlocked || false,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     });
   }
 }

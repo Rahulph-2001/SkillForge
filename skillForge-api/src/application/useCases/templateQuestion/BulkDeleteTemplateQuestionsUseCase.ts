@@ -2,9 +2,10 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
+import { IBulkDeleteTemplateQuestionsUseCase } from './interfaces/IBulkDeleteTemplateQuestionsUseCase';
 
 @injectable()
-export class BulkDeleteTemplateQuestionsUseCase {
+export class BulkDeleteTemplateQuestionsUseCase implements IBulkDeleteTemplateQuestionsUseCase {
     constructor(
         @inject(TYPES.ITemplateQuestionRepository)
         private questionRepository: ITemplateQuestionRepository

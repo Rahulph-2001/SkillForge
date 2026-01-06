@@ -1,23 +1,21 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
-import { UserSubscriptionMapper } from '../../mappers/UserSubscriptionMapper';
+import { IUserSubscriptionMapper } from '../../mappers/interfaces/IUserSubscriptionMapper';
 import { UserSubscriptionResponseDTO } from '../../dto/subscription/UserSubscriptionResponseDTO';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-
-export interface ICancelSubscriptionUseCase {
-    execute(userId: string, immediate?: boolean): Promise<UserSubscriptionResponseDTO>;
-}
+import { ICancelSubscriptionUseCase } from './interfaces/ICancelSubscriptionUseCase';
 
 @injectable()
 export class CancelSubscriptionUseCase implements ICancelSubscriptionUseCase {
     constructor(
         @inject(TYPES.IUserSubscriptionRepository) private subscriptionRepository: IUserSubscriptionRepository,
         @inject(TYPES.ISubscriptionPlanRepository) private planRepository: ISubscriptionPlanRepository,
-        @inject(TYPES.IUserRepository) private userRepository: IUserRepository
+        @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+        @inject(TYPES.IUserSubscriptionMapper) private userSubscriptionMapper: IUserSubscriptionMapper
     ) { }
 
     async execute(userId: string, immediate: boolean = false): Promise<UserSubscriptionResponseDTO> {
@@ -79,6 +77,6 @@ export class CancelSubscriptionUseCase implements ICancelSubscriptionUseCase {
         const plan = await this.planRepository.findById(updated.planId);
 
         // Map to DTO
-        return UserSubscriptionMapper.toDTO(updated, plan?.name);
+        return this.userSubscriptionMapper.toDTO(updated, plan?.name);
     }
 }

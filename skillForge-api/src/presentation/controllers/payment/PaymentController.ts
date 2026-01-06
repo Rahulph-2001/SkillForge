@@ -3,9 +3,9 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder'
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
-import { ICreatePaymentIntentUseCase } from '../../../application/useCases/payment/CreatePaymentIntentUseCase';
-import { IConfirmPaymentUseCase } from '../../../application/useCases/payment/ConfirmPaymentUseCase';
-import { IHandleWebhookUseCase } from '../../../application/useCases/payment/HandleWebhookUseCase';
+import { ICreatePaymentIntentUseCase } from '../../../application/useCases/payment/interfaces/ICreatePaymentIntentUseCase';
+import { IConfirmPaymentUseCase } from '../../../application/useCases/payment/interfaces/IConfirmPaymentUseCase';
+import { IHandleWebhookUseCase } from '../../../application/useCases/payment/interfaces/IHandleWebhookUseCase';
 import { CreatePaymentIntentDTOSchema } from '../../../application/dto/payment/CreatePaymentIntentDTO';
 import { ConfirmPaymentDTOSchema } from '../../../application/dto/payment/ConfirmPaymentDTO';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';

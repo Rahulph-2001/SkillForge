@@ -8,24 +8,17 @@ import { env } from '../../../config/env';
 import { Profile } from 'passport-google-oauth20';
 import crypto from 'crypto';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
-import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
-
-export interface GoogleAuthResponse {
-  user: UserResponseDTO;
-  token: string;
-  refreshToken: string;
-  isNewUser: boolean;
-}
+import { IGoogleAuthUseCase, GoogleAuthResponseDTO } from './interfaces/IGoogleAuthUseCase';
 
 @injectable()
-export class GoogleAuthUseCase {
+export class GoogleAuthUseCase implements IGoogleAuthUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) { }
 
-  async execute(googleProfile: Profile): Promise<GoogleAuthResponse> {
+  async execute(googleProfile: Profile): Promise<GoogleAuthResponseDTO> {
     const googleEmail = googleProfile.emails?.[0]?.value;
 
     if (!googleEmail) {
@@ -46,8 +39,8 @@ export class GoogleAuthUseCase {
         email: new Email(googleEmail),
         password: this.generateSecurePasswordHash(), // Secure random password for OAuth users
         role: 'user',
-        bonus_credits: env.DEFAULT_BONUS_CREDITS, // Ensure free credits are given
-        registration_ip: 'Google OAuth',
+        bonusCredits: env.DEFAULT_BONUS_CREDITS, // Ensure free credits are given
+        registrationIp: 'Google OAuth',
         avatarUrl: avatarUrl,
       });
 

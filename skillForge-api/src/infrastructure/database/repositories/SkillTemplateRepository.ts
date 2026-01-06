@@ -3,13 +3,12 @@ import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTem
 import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { Database } from '../Database';
 import { TYPES } from '../../di/types';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class SkillTemplateRepository implements ISkillTemplateRepository {
-  private readonly prisma;
-
+export class SkillTemplateRepository extends BaseRepository<SkillTemplate> implements ISkillTemplateRepository {
   constructor(@inject(TYPES.Database) db: Database) {
-    this.prisma = db.getClient();
+    super(db, 'skillTemplate');
   }
 
   async create(template: SkillTemplate): Promise<SkillTemplate> {
@@ -79,6 +78,7 @@ export class SkillTemplateRepository implements ISkillTemplateRepository {
     if (updates.levels) updateData.levels = updates.levels;
     if (updates.tags) updateData.tags = updates.tags;
     if (updates.status) updateData.status = updates.status;
+    if (updates.isActive !== undefined) updateData.isActive = updates.isActive;
     
     updateData.updatedAt = new Date();
 
@@ -86,14 +86,12 @@ export class SkillTemplateRepository implements ISkillTemplateRepository {
       where: { id },
       data: updateData,
     });
+    
     return this.toDomain(updated);
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.skillTemplate.update({
-      where: { id },
-      data: { isActive: false },
-    });
+    await super.delete(id);
   }
 
   async toggleStatus(id: string): Promise<SkillTemplate> {
@@ -102,35 +100,36 @@ export class SkillTemplateRepository implements ISkillTemplateRepository {
     });
 
     if (!template) {
-      throw new Error('Template not found');
+      throw new Error('Skill template not found');
     }
 
-    const newStatus = template.status === 'Active' ? 'Inactive' : 'Active';
-    
     const updated = await this.prisma.skillTemplate.update({
       where: { id },
-      data: { status: newStatus, updatedAt: new Date() },
+      data: {
+        isActive: !template.isActive,
+        updatedAt: new Date(),
+      },
     });
 
     return this.toDomain(updated);
   }
 
-  private toDomain(ormEntity: any): SkillTemplate {
+  private toDomain(data: any): SkillTemplate {
     return new SkillTemplate({
-      id: ormEntity.id,
-      title: ormEntity.title,
-      category: ormEntity.category,
-      description: ormEntity.description,
-      creditsMin: ormEntity.creditsMin,
-      creditsMax: ormEntity.creditsMax,
-      mcqCount: ormEntity.mcqCount,
-      passRange: ormEntity.passRange,
-      levels: ormEntity.levels,
-      tags: ormEntity.tags,
-      status: ormEntity.status,
-      isActive: ormEntity.isActive,
-      createdAt: ormEntity.createdAt,
-      updatedAt: ormEntity.updatedAt,
+      id: data.id,
+      title: data.title,
+      category: data.category,
+      description: data.description,
+      creditsMin: data.creditsMin,
+      creditsMax: data.creditsMax,
+      mcqCount: data.mcqCount,
+      passRange: data.passRange,
+      levels: data.levels || [],
+      tags: data.tags || [],
+      status: data.status,
+      isActive: data.isActive,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
     });
   }
 }

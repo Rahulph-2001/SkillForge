@@ -4,21 +4,16 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
-
-export interface DeclineRescheduleRequest {
-  bookingId: string;
-  userId: string; // Can be either provider or learner
-  reason: string;
-}
+import { IDeclineRescheduleUseCase, DeclineRescheduleRequestDTO } from './interfaces/IDeclineRescheduleUseCase';
 
 @injectable()
-export class DeclineRescheduleUseCase {
+export class DeclineRescheduleUseCase implements IDeclineRescheduleUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
   ) { }
 
-  async execute(request: DeclineRescheduleRequest): Promise<void> {
+  async execute(request: DeclineRescheduleRequestDTO): Promise<void> {
     // 1. Get the booking
     const booking = await this.bookingRepository.findById(request.bookingId);
 

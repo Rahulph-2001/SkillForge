@@ -67,8 +67,8 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
         email: new Email(pendingRegistration.email),
         password: pendingRegistration.passwordHash,
         role: 'user',
-        bonus_credits: pendingRegistration.bonusCredits,
-        registration_ip: pendingRegistration.registrationIp,
+        bonusCredits: pendingRegistration.bonusCredits,
+        registrationIp: pendingRegistration.registrationIp,
         avatarUrl: pendingRegistration.avatarUrl,
       });
 

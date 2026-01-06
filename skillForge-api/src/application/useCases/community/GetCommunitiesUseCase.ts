@@ -2,11 +2,8 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { Community } from '../../../domain/entities/Community';
+import { IGetCommunitiesUseCase } from './interfaces/IGetCommunitiesUseCase';
 
-
-export interface IGetCommunitiesUseCase {
-  execute(filters?: { category?: string }, userId?: string): Promise<Community[]>;
-}
 @injectable()
 export class GetCommunitiesUseCase implements IGetCommunitiesUseCase {
   constructor(

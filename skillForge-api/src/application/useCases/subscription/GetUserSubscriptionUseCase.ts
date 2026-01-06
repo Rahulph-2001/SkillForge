@@ -1,20 +1,18 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
-import { UserSubscriptionMapper } from '../../mappers/UserSubscriptionMapper';
+import { IUserSubscriptionMapper } from '../../mappers/interfaces/IUserSubscriptionMapper';
 import { UserSubscriptionResponseDTO } from '../../dto/subscription/UserSubscriptionResponseDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
-
-export interface IGetUserSubscriptionUseCase {
-    execute(userId: string): Promise<UserSubscriptionResponseDTO>;
-}
+import { IGetUserSubscriptionUseCase } from './interfaces/IGetUserSubscriptionUseCase';
 
 @injectable()
 export class GetUserSubscriptionUseCase implements IGetUserSubscriptionUseCase {
     constructor(
         @inject(TYPES.IUserSubscriptionRepository) private subscriptionRepository: IUserSubscriptionRepository,
-        @inject(TYPES.ISubscriptionPlanRepository) private planRepository: ISubscriptionPlanRepository
+        @inject(TYPES.ISubscriptionPlanRepository) private planRepository: ISubscriptionPlanRepository,
+        @inject(TYPES.IUserSubscriptionMapper) private userSubscriptionMapper: IUserSubscriptionMapper
     ) { }
 
     async execute(userId: string): Promise<UserSubscriptionResponseDTO> {
@@ -33,6 +31,6 @@ export class GetUserSubscriptionUseCase implements IGetUserSubscriptionUseCase {
         }
 
         // Map to DTO with plan name
-        return UserSubscriptionMapper.toDTO(subscription, plan.name);
+        return this.userSubscriptionMapper.toDTO(subscription, plan.name);
     }
 }

@@ -5,10 +5,7 @@ import { CreditAdminWalletRequestDTO } from '../../dto/admin/CreditAdminWalletDT
 import { WalletCreditResponseDTO } from '../../dto/admin/WalletCreditResponseDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
-
-export interface ICreditAdminWalletUseCase {
-    execute(dto: CreditAdminWalletRequestDTO): Promise<WalletCreditResponseDTO>;
-}
+import { ICreditAdminWalletUseCase } from './interfaces/ICreditAdminWalletUseCase';
 
 @injectable()
 export class CreditAdminWalletUseCase implements ICreditAdminWalletUseCase {

@@ -10,9 +10,9 @@ import { SUCCESS_MESSAGES } from '../../../config/messages';
 @injectable()
 export class AdminController {
   constructor(
-    @inject(TYPES.ListUsersUseCase) private readonly listUsersUseCase: IListUsersUseCase,
-    @inject(TYPES.SuspendUserUseCase) private readonly suspendUserUseCase: ISuspendUserUseCase,
-    @inject(TYPES.UnsuspendUserUseCase) private readonly unsuspendUserUseCase: IUnsuspendUserUseCase,
+    @inject(TYPES.IListUsersUseCase) private readonly listUsersUseCase: IListUsersUseCase,
+    @inject(TYPES.ISuspendUserUseCase) private readonly suspendUserUseCase: ISuspendUserUseCase,
+    @inject(TYPES.IUnsuspendUserUseCase) private readonly unsuspendUserUseCase: IUnsuspendUserUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) { }
 

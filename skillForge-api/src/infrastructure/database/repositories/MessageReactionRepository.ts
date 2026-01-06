@@ -3,12 +3,24 @@ import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { IMessageReactionRepository } from '../../../domain/repositories/IMessageReactionRepository';
 import { MessageReaction } from '../../../domain/entities/MessageReaction';
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class MessageReactionRepository implements IMessageReactionRepository {
+export class MessageReactionRepository extends BaseRepository<MessageReaction> implements IMessageReactionRepository {
     constructor(
-        @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
-    ) { }
+        @inject(TYPES.Database) db: Database
+    ) {
+        super(db, 'messageReaction');
+    }
+
+    // Override delete with composite key signature (special case for MessageReaction)
+    // @ts-expect-error - Different signature required by interface for composite key deletion
+    public async delete(messageId: string, userId: string, emoji: string): Promise<void> {
+        await this.prisma.messageReaction.deleteMany({
+            where: { messageId, userId, emoji },
+        });
+    }
 
     public async create(reaction: MessageReaction): Promise<MessageReaction> {
         const data = reaction.toJSON();
@@ -36,12 +48,6 @@ export class MessageReactionRepository implements IMessageReactionRepository {
         });
 
         return MessageReaction.fromDatabaseRow(created);
-    }
-
-    public async delete(messageId: string, userId: string, emoji: string): Promise<void> {
-        await this.prisma.messageReaction.deleteMany({
-            where: { messageId, userId, emoji },
-        });
     }
 
     public async findByMessageId(messageId: string): Promise<MessageReaction[]> {

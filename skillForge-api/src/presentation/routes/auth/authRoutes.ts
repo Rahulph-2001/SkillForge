@@ -3,7 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { AuthController } from '../../controllers/auth/AuthController';
 import { validate } from '../../validators/authValidator';
-import { authLimiter, otpLimiter } from '../../middlewares/rateLimitMiddileWare';
+import { authLimiter, otpLimiter } from '../../middlewares/rateLimitMiddleware';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { RegisterSchema } from '../../../application/dto/auth/RegisterDTO';
 import { LoginSchema } from '../../../application/dto/auth/LoginDTO';

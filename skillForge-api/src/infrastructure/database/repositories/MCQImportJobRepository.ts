@@ -1,17 +1,16 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient, McqImportJob as ORMMcqImportJob } from '@prisma/client';
+import { McqImportJob as ORMMcqImportJob } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { Database } from '../Database';
 import { MCQImportJob, ImportStatus } from '../../../domain/entities/MCQImportJob';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
 import { NotFoundError } from '../../../domain/errors/AppError';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class MCQImportJobRepository implements IMCQImportJobRepository {
-  private prisma: PrismaClient;
-
+export class MCQImportJobRepository extends BaseRepository<MCQImportJob> implements IMCQImportJobRepository {
   constructor(@inject(TYPES.Database) db: Database) {
-    this.prisma = db.getClient();
+    super(db, 'mcqImportJob');
   }
 
   private toDomain(orm: ORMMcqImportJob): MCQImportJob {

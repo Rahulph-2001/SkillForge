@@ -6,21 +6,17 @@ import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { NotFoundError, UnauthorizedError } from '../../../domain/errors/AppError';
 import { ResetPasswordDTO } from '../../dto/auth/ResetPasswordDTO';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../config/messages';
-
-export interface ResetPasswordResponse {
-  success: boolean;
-  message: string;
-}
+import { IResetPasswordUseCase, ResetPasswordResponseDTO } from './interfaces/IResetPasswordUseCase';
 
 @injectable()
-export class ResetPasswordUseCase {
+export class ResetPasswordUseCase implements IResetPasswordUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository,
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService
   ) {}
 
-  async execute(request: ResetPasswordDTO): Promise<ResetPasswordResponse> {
+  async execute(request: ResetPasswordDTO): Promise<ResetPasswordResponseDTO> {
     const { email: rawEmail, otpCode, newPassword } = request;
     const email = rawEmail.toLowerCase().trim();
 

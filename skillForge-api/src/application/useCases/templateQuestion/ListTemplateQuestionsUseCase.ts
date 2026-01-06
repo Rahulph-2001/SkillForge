@@ -5,9 +5,10 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IListTemplateQuestionsUseCase } from './interfaces/IListTemplateQuestionsUseCase';
 
 @injectable()
-export class ListTemplateQuestionsUseCase {
+export class ListTemplateQuestionsUseCase implements IListTemplateQuestionsUseCase {
   constructor(
     @inject(TYPES.ITemplateQuestionRepository)
     private readonly templateQuestionRepository: ITemplateQuestionRepository,

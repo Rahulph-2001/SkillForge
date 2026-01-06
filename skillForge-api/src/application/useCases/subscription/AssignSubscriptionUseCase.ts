@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
+import { IUserSubscriptionMapper } from '../../mappers/interfaces/IUserSubscriptionMapper';
 import { UserSubscription } from '../../../domain/entities/UserSubscription';
 import { AssignSubscriptionDTO } from '../../dto/subscription/AssignSubscriptionDTO';
 import { UserSubscriptionResponseDTO } from '../../dto/subscription/UserSubscriptionResponseDTO';
@@ -11,17 +12,15 @@ import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubsc
 
 
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-
-export interface IAssignSubscriptionUseCase {
-    execute(dto: AssignSubscriptionDTO): Promise<UserSubscriptionResponseDTO>;
-}
+import { IAssignSubscriptionUseCase } from './interfaces/IAssignSubscriptionUseCase';
 
 @injectable()
 export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
     constructor(
         @inject(TYPES.IUserSubscriptionRepository) private subscriptionRepository: IUserSubscriptionRepository,
         @inject(TYPES.ISubscriptionPlanRepository) private planRepository: ISubscriptionPlanRepository,
-        @inject(TYPES.IUserRepository) private userRepository: IUserRepository
+        @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+        @inject(TYPES.IUserSubscriptionMapper) private userSubscriptionMapper: IUserSubscriptionMapper
     ) { }
 
     async execute(dto: AssignSubscriptionDTO): Promise<UserSubscriptionResponseDTO> {
@@ -150,32 +149,7 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
             console.error('[AssignSubscriptionUseCase] Failed to sync user entity:', error);
         }
 
-        // Calculate days until renewal
-        const daysUntilRenewal = Math.ceil(
-            (subscription.currentPeriodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-        );
-
-        // Return DTO
-        return {
-            id: subscription.id,
-            userId: subscription.userId,
-            planId: subscription.planId,
-            planName: plan.name,
-            status: subscription.status,
-            currentPeriodStart: subscription.currentPeriodStart,
-            currentPeriodEnd: subscription.currentPeriodEnd,
-            cancelAt: subscription.cancelAt,
-            canceledAt: subscription.canceledAt,
-            trialStart: subscription.trialStart,
-            trialEnd: subscription.trialEnd,
-            isInTrial: subscription.isInTrial(),
-            hasExpired: subscription.hasExpired(),
-            willCancelAtPeriodEnd: subscription.willCancelAtPeriodEnd(),
-            daysUntilRenewal,
-            stripeSubscriptionId: subscription.stripeSubscriptionId,
-            stripeCustomerId: subscription.stripeCustomerId,
-            createdAt: subscription.createdAt,
-            updatedAt: subscription.updatedAt,
-        };
+        // Return DTO using mapper
+        return this.userSubscriptionMapper.toDTO(subscription, plan.name);
     }
 }

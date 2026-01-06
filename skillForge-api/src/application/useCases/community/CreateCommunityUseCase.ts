@@ -2,98 +2,77 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IStorageService } from '../../../domain/services/IStorageService';
+import { ICommunityMapper } from '../../mappers/interfaces/ICommunityMapper';
+import { Database } from '../../../infrastructure/database/Database';
 import { Community } from '../../../domain/entities/Community';
 import { CommunityMember } from '../../../domain/entities/CommunityMember';
 import { CreateCommunityDTO } from '../../dto/community/CreateCommunityDTO';
+import { CommunityResponseDTO } from '../../dto/community/CommunityResponseDTO';
 import { ValidationError } from '../../../domain/errors/AppError';
-import { PrismaClient } from '@prisma/client';
-
-export interface ICreateCommunityUseCase {
-  execute(
-    userId: string,
-    dto: CreateCommunityDTO,
-    imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
-  ): Promise<Community>;
-}
+import { ICreateCommunityUseCase } from './interfaces/ICreateCommunityUseCase';
 
 @injectable()
 export class CreateCommunityUseCase implements ICreateCommunityUseCase {
   constructor(
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IStorageService) private readonly storageService: IStorageService,
-    @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
+    @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper,
+    @inject(TYPES.Database) private readonly database: Database
   ) { }
 
   public async execute(
     userId: string,
     dto: CreateCommunityDTO,
     imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
-  ): Promise<Community> {
-    console.log('🏗️  CreateCommunityUseCase - START');
-    console.log('📝 Received DTO:', { name: dto.name, category: dto.category, creditsCost: dto.creditsCost });
-    console.log('👤 User ID:', userId);
-    console.log('🖼️  Has image file:', !!imageFile);
-
+  ): Promise<CommunityResponseDTO> {
+    // Validation
     if (!dto.name || dto.name.trim().length === 0) {
-      console.error('❌ Validation failed: name is required');
       throw new ValidationError('Community name is required');
     }
     if (!dto.description || dto.description.trim().length === 0) {
-      console.error('❌ Validation failed: description is required');
       throw new ValidationError('Community description is required');
     }
     if (!dto.category || dto.category.trim().length === 0) {
-      console.error('❌ Validation failed: category is required');
       throw new ValidationError('Community category is required');
     }
 
-    console.log('✅ Basic validation passed');
-
+    // Handle image upload
     let imageUrl: string | null = null;
     if (imageFile) {
-      console.log('📸 Processing image upload...');
       // Validate file size (max 5MB)
       if (imageFile.buffer.length > 5 * 1024 * 1024) {
-        console.error('❌ Image too large:', imageFile.buffer.length);
         throw new ValidationError('Image size must be less than 5MB');
       }
       // Validate file type
       if (!imageFile.mimetype.startsWith('image/')) {
-        console.error('❌ Invalid file type:', imageFile.mimetype);
         throw new ValidationError('Only image files are allowed');
       }
 
       try {
         const timestamp = Date.now();
         const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
-        console.log('☁️  Uploading to S3 with key:', key);
         imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
-        console.log('✅ Image uploaded successfully:', imageUrl);
       } catch (error) {
-        console.error('❌ S3 upload failed:', error);
         throw new Error('Failed to upload image. Please try again.');
       }
     }
 
-    console.log('🔄 Starting database transaction...');
+    // Create community entity
+    const community = new Community({
+      name: dto.name,
+      description: dto.description,
+      category: dto.category,
+      imageUrl,
+      adminId: userId,
+      creditsCost: dto.creditsCost,
+      creditsPeriod: dto.creditsPeriod,
+    });
+
     // Use transaction to ensure community and admin member are created atomically
-    return await this.prisma.$transaction(async (tx) => {
-      console.log('🏛️  Creating Community entity...');
-      const community = new Community({
-        name: dto.name,
-        description: dto.description,
-        category: dto.category,
-        imageUrl,
-        adminId: userId,
-        creditsCost: dto.creditsCost,
-        creditsPeriod: dto.creditsPeriod,
-      });
-
-      console.log('📦 Community entity created:', community.id);
-
+    const createdCommunity = await this.database.transaction(async (tx) => {
+      // Create community using transaction client
       const communityData = community.toJSON();
-      console.log('💾 Inserting community to database...');
-      await tx.community.create({
+      const created = await tx.community.create({
         data: {
           id: communityData.id as string,
           name: communityData.name as string,
@@ -112,10 +91,7 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
         },
       });
 
-      console.log('✅ Community inserted to database');
-
-      // Add creator as admin member
-      console.log('👑 Creating admin member record...');
+      // Add creator as admin member using transaction client
       const adminMember = new CommunityMember({
         communityId: community.id,
         userId,
@@ -136,10 +112,11 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
         },
       });
 
-      console.log('✅ Admin member created');
-      console.log('🎉 Transaction completed successfully!');
-
-      return community;
+      // Return domain entity created from database row
+      return Community.fromDatabaseRow(created);
     });
+
+    // Return DTO using mapper
+    return this.communityMapper.toDTO(community, userId);
   }
 }

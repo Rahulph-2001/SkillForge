@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { CreateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase';
-import { ListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase';
-import { UpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase';
-import { DeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
-import { BulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
+import { ICreateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/ICreateTemplateQuestionUseCase';
+import { IListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/interfaces/IListTemplateQuestionsUseCase';
+import { IUpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/IUpdateTemplateQuestionUseCase';
+import { IDeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/IDeleteTemplateQuestionUseCase';
+import { IBulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/interfaces/IBulkDeleteTemplateQuestionsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
@@ -13,16 +13,16 @@ import { SUCCESS_MESSAGES } from '../../../config/messages';
 @injectable()
 export class TemplateQuestionController {
   constructor(
-    @inject(TYPES.CreateTemplateQuestionUseCase)
-    private readonly createTemplateQuestionUseCase: CreateTemplateQuestionUseCase,
-    @inject(TYPES.ListTemplateQuestionsUseCase)
-    private readonly listTemplateQuestionsUseCase: ListTemplateQuestionsUseCase,
-    @inject(TYPES.UpdateTemplateQuestionUseCase)
-    private readonly updateTemplateQuestionUseCase: UpdateTemplateQuestionUseCase,
-    @inject(TYPES.DeleteTemplateQuestionUseCase)
-    private readonly deleteTemplateQuestionUseCase: DeleteTemplateQuestionUseCase,
-    @inject(TYPES.BulkDeleteTemplateQuestionsUseCase)
-    private readonly bulkDeleteTemplateQuestionsUseCase: BulkDeleteTemplateQuestionsUseCase,
+    @inject(TYPES.ICreateTemplateQuestionUseCase)
+    private readonly createTemplateQuestionUseCase: ICreateTemplateQuestionUseCase,
+    @inject(TYPES.IListTemplateQuestionsUseCase)
+    private readonly listTemplateQuestionsUseCase: IListTemplateQuestionsUseCase,
+    @inject(TYPES.IUpdateTemplateQuestionUseCase)
+    private readonly updateTemplateQuestionUseCase: IUpdateTemplateQuestionUseCase,
+    @inject(TYPES.IDeleteTemplateQuestionUseCase)
+    private readonly deleteTemplateQuestionUseCase: IDeleteTemplateQuestionUseCase,
+    @inject(TYPES.IBulkDeleteTemplateQuestionsUseCase)
+    private readonly bulkDeleteTemplateQuestionsUseCase: IBulkDeleteTemplateQuestionsUseCase,
     @inject(TYPES.IResponseBuilder)
     private readonly responseBuilder: IResponseBuilder
   ) { }

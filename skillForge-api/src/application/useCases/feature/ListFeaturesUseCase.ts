@@ -1,17 +1,15 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
-import { FeatureMapper } from '../../mappers/FeatureMapper';
+import { IFeatureMapper } from '../../mappers/interfaces/IFeatureMapper';
 import { FeatureResponseDTO } from '../../dto/feature/FeatureResponseDTO';
-
-export interface IListFeaturesUseCase {
-    execute(planId?: string, highlightedOnly?: boolean): Promise<FeatureResponseDTO[]>;
-}
+import { IListFeaturesUseCase } from './interfaces/IListFeaturesUseCase';
 
 @injectable()
 export class ListFeaturesUseCase implements IListFeaturesUseCase {
     constructor(
-        @inject(TYPES.IFeatureRepository) private featureRepository: IFeatureRepository
+        @inject(TYPES.IFeatureRepository) private featureRepository: IFeatureRepository,
+        @inject(TYPES.IFeatureMapper) private featureMapper: IFeatureMapper
     ) { }
 
     async execute(planId?: string, highlightedOnly: boolean = false): Promise<FeatureResponseDTO[]> {
@@ -28,6 +26,6 @@ export class ListFeaturesUseCase implements IListFeaturesUseCase {
             features = await this.featureRepository.findLibraryFeatures();
         }
 
-        return FeatureMapper.toDTOArray(features);
+        return this.featureMapper.toDTOArray(features);
     }
 }

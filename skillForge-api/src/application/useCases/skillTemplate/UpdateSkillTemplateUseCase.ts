@@ -6,9 +6,10 @@ import { UpdateSkillTemplateDTO } from '../../dto/skillTemplate/UpdateSkillTempl
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IUpdateSkillTemplateUseCase } from './interfaces/IUpdateSkillTemplateUseCase';
 
 @injectable()
-export class UpdateSkillTemplateUseCase {
+export class UpdateSkillTemplateUseCase implements IUpdateSkillTemplateUseCase {
   constructor(
     @inject(TYPES.ISkillTemplateRepository)
     private readonly skillTemplateRepository: ISkillTemplateRepository,

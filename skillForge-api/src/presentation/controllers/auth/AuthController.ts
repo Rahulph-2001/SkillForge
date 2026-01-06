@@ -5,14 +5,14 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { IRegisterUseCase } from '../../../application/useCases/auth/interfaces/IRegisterUseCase';
 import { ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
 import { IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
-import { GoogleAuthUseCase } from '../../../application/useCases/auth/GoogleAuthUseCase';
+import { IGoogleAuthUseCase } from '../../../application/useCases/auth/interfaces/IGoogleAuthUseCase';
 import { PassportService } from '../../../infrastructure/services/PassportService';
-import { ResendOtpUseCase } from '../../../application/useCases/auth/ResendOtpUseCase';
-import { AdminLoginUseCase } from '../../../application/useCases/auth/AdminLoginUseCase';
-import { ForgotPasswordUseCase } from '../../../application/useCases/auth/ForgotPasswordUseCase';
-import { VerifyForgotPasswordOtpUseCase } from '../../../application/useCases/auth/VerifyForgotPasswordOtpUseCase';
-import { ResetPasswordUseCase } from '../../../application/useCases/auth/ResetPasswordUseCase';
-import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IResendOtpUseCase } from '../../../application/useCases/auth/interfaces/IResendOtpUseCase';
+import { IAdminLoginUseCase } from '../../../application/useCases/auth/interfaces/IAdminLoginUseCase';
+import { IForgotPasswordUseCase } from '../../../application/useCases/auth/interfaces/IForgotPasswordUseCase';
+import { IVerifyForgotPasswordOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyForgotPasswordOtpUseCase';
+import { IResetPasswordUseCase } from '../../../application/useCases/auth/interfaces/IResetPasswordUseCase';
+import { IGetUserByIdUseCase } from '../../../application/useCases/user/interfaces/IGetUserByIdUseCase';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { env } from '../../../config/env';
 import { IAuthResponseMapper } from './interfaces/IAuthResponseMapper';
@@ -30,16 +30,16 @@ const getClientIp = (req: Request): string | undefined => {
 export class AuthController {
   constructor(
     @inject(TYPES.PassportService) public readonly passportService: PassportService,
-    @inject(TYPES.RegisterUseCase) private readonly registerUseCase: IRegisterUseCase,
-    @inject(TYPES.LoginUseCase) private readonly loginUseCase: ILoginUseCase,
-    @inject(TYPES.VerifyOtpUseCase) private readonly verifyOtpUseCase: IVerifyOtpUseCase,
-    @inject(TYPES.ResendOtpUseCase) private readonly resendOtpUseCase: ResendOtpUseCase,
-    @inject(TYPES.AdminLoginUseCase) private readonly adminLoginUseCase: AdminLoginUseCase,
-    @inject(TYPES.GoogleAuthUseCase) private readonly googleAuthUseCase: GoogleAuthUseCase,
-    @inject(TYPES.ForgotPasswordUseCase) private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
-    @inject(TYPES.VerifyForgotPasswordOtpUseCase) private readonly verifyForgotPasswordOtpUseCase: VerifyForgotPasswordOtpUseCase,
-    @inject(TYPES.ResetPasswordUseCase) private readonly resetPasswordUseCase: ResetPasswordUseCase,
-    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.IRegisterUseCase) private readonly registerUseCase: IRegisterUseCase,
+    @inject(TYPES.ILoginUseCase) private readonly loginUseCase: ILoginUseCase,
+    @inject(TYPES.IVerifyOtpUseCase) private readonly verifyOtpUseCase: IVerifyOtpUseCase,
+    @inject(TYPES.IResendOtpUseCase) private readonly resendOtpUseCase: IResendOtpUseCase,
+    @inject(TYPES.IAdminLoginUseCase) private readonly adminLoginUseCase: IAdminLoginUseCase,
+    @inject(TYPES.IGoogleAuthUseCase) private readonly googleAuthUseCase: IGoogleAuthUseCase,
+    @inject(TYPES.IForgotPasswordUseCase) private readonly forgotPasswordUseCase: IForgotPasswordUseCase,
+    @inject(TYPES.IVerifyForgotPasswordOtpUseCase) private readonly verifyForgotPasswordOtpUseCase: IVerifyForgotPasswordOtpUseCase,
+    @inject(TYPES.IResetPasswordUseCase) private readonly resetPasswordUseCase: IResetPasswordUseCase,
+    @inject(TYPES.IGetUserByIdUseCase) private readonly getUserByIdUseCase: IGetUserByIdUseCase,
     @inject(TYPES.IAuthResponseMapper) private readonly authResponseMapper: IAuthResponseMapper
   ) {
     this.googleLogin = this.passportService.authenticateGoogle();
@@ -151,14 +151,7 @@ export class AuthController {
       }
 
       // Fetch full user data from database to get name, credits, etc.
-      const user = await this.userRepository.findById(tokenPayload.userId);
-      if (!user) {
-        res.status(HttpStatusCode.UNAUTHORIZED).json({
-          success: false,
-          error: 'User not found',
-        });
-        return;
-      }
+      const user = await this.getUserByIdUseCase.execute(tokenPayload.userId);
 
       res.status(HttpStatusCode.OK).json({
         success: true,
@@ -329,15 +322,7 @@ export class AuthController {
         return;
       }
 
-      const user = await this.userRepository.findById(userId);
-
-      if (!user) {
-        res.status(HttpStatusCode.NOT_FOUND).json({
-          success: false,
-          error: 'User not found',
-        });
-        return;
-      }
+      const user = await this.getUserByIdUseCase.execute(userId);
 
       // Check if user is suspended or deleted
       if (!user.isActive || user.isDeleted) {

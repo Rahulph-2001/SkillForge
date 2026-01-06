@@ -1,18 +1,17 @@
 import { Request, Response } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { GetProviderAvailabilityUseCase } from '../../../application/useCases/availability/GetProviderAvailabilityUseCase';
-import { UpdateProviderAvailabilityUseCase } from '../../../application/useCases/availability/UpdateProviderAvailabilityUseCase';
+import { IGetProviderAvailabilityUseCase } from '../../../application/useCases/availability/interfaces/IGetProviderAvailabilityUseCase';
+import { IUpdateProviderAvailabilityUseCase } from '../../../application/useCases/availability/interfaces/IUpdateProviderAvailabilityUseCase';
+import { IGetOccupiedSlotsUseCase } from '../../../application/useCases/availability/interfaces/IGetOccupiedSlotsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-
-import { GetOccupiedSlotsUseCase } from '../../../application/useCases/availability/GetOccupiedSlotsUseCase';
 
 @injectable()
 export class AvailabilityController {
     constructor(
-        @inject(TYPES.GetProviderAvailabilityUseCase) private readonly getUseCase: GetProviderAvailabilityUseCase,
-        @inject(TYPES.UpdateProviderAvailabilityUseCase) private readonly updateUseCase: UpdateProviderAvailabilityUseCase,
-        @inject(TYPES.GetOccupiedSlotsUseCase) private readonly getOccupiedSlotsUseCase: GetOccupiedSlotsUseCase,
+        @inject(TYPES.IGetProviderAvailabilityUseCase) private readonly getUseCase: IGetProviderAvailabilityUseCase,
+        @inject(TYPES.IUpdateProviderAvailabilityUseCase) private readonly updateUseCase: IUpdateProviderAvailabilityUseCase,
+        @inject(TYPES.IGetOccupiedSlotsUseCase) private readonly getOccupiedSlotsUseCase: IGetOccupiedSlotsUseCase,
         @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
     ) { }
 

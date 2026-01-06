@@ -3,8 +3,8 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICreateSkillUseCase } from '../../../application/useCases/skill/interfaces/ICreateSkillUseCase';
 import { IListUserSkillsUseCase } from '../../../application/useCases/skill/interfaces/IListUserSkillsUseCase';
-import { IUpdateSkillUseCase } from '../../../application/useCases/skill/UpdateSkillUseCase';
-import { IToggleSkillBlockUseCase } from '../../../application/useCases/skill/ToggleSkillBlockUseCase';
+import { IUpdateSkillUseCase } from '../../../application/useCases/skill/interfaces/IUpdateSkillUseCase';
+import { IToggleSkillBlockUseCase } from '../../../application/useCases/skill/interfaces/IToggleSkillBlockUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillDTO } from '../../../application/dto/skill/CreateSkillDTO';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
@@ -13,10 +13,10 @@ import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 @injectable()
 export class SkillController {
   constructor(
-    @inject(TYPES.CreateSkillUseCase) private readonly createSkillUseCase: ICreateSkillUseCase,
-    @inject(TYPES.ListUserSkillsUseCase) private readonly listUserSkillsUseCase: IListUserSkillsUseCase,
-    @inject(TYPES.UpdateSkillUseCase) private readonly updateSkillUseCase: IUpdateSkillUseCase,
-    @inject(TYPES.ToggleSkillBlockUseCase) private readonly toggleSkillBlockUseCase: IToggleSkillBlockUseCase,
+    @inject(TYPES.ICreateSkillUseCase) private readonly createSkillUseCase: ICreateSkillUseCase,
+    @inject(TYPES.IListUserSkillsUseCase) private readonly listUserSkillsUseCase: IListUserSkillsUseCase,
+    @inject(TYPES.IUpdateSkillUseCase) private readonly updateSkillUseCase: IUpdateSkillUseCase,
+    @inject(TYPES.IToggleSkillBlockUseCase) private readonly toggleSkillBlockUseCase: IToggleSkillBlockUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) { }
 

@@ -4,9 +4,10 @@ import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTem
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IDeleteSkillTemplateUseCase } from './interfaces/IDeleteSkillTemplateUseCase';
 
 @injectable()
-export class DeleteSkillTemplateUseCase {
+export class DeleteSkillTemplateUseCase implements IDeleteSkillTemplateUseCase {
   constructor(
     @inject(TYPES.ISkillTemplateRepository)
     private readonly skillTemplateRepository: ISkillTemplateRepository,

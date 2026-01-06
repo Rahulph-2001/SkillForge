@@ -3,14 +3,11 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
+import { Database } from '../../../infrastructure/database/Database';
 import { CommunityMember } from '../../../domain/entities/CommunityMember';
+import { CommunityMemberResponseDTO } from '../../dto/community/CommunityMemberResponseDTO';
 import { NotFoundError, ConflictError, ValidationError } from '../../../domain/errors/AppError';
-import { PrismaClient } from '@prisma/client';
-
-
-export interface IJoinCommunityUseCase {
-  execute(userId: string, communityId: string): Promise<CommunityMember>;
-}
+import { IJoinCommunityUseCase } from './interfaces/IJoinCommunityUseCase';
 
 @injectable()
 export class JoinCommunityUseCase implements IJoinCommunityUseCase {
@@ -18,12 +15,12 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService,
-    @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
+    @inject(TYPES.Database) private readonly database: Database
   ) { }
 
-  public async execute(userId: string, communityId: string): Promise<CommunityMember> {
-    // Use Prisma transaction to ensure atomicity
-    return await this.prisma.$transaction(async (tx) => {
+  public async execute(userId: string, communityId: string): Promise<CommunityMemberResponseDTO> {
+    // Use Database transaction to ensure atomicity
+    const member = await this.database.transaction(async (tx) => {
       // 1. Find community
       const community = await this.communityRepository.findById(communityId);
       if (!community) {
@@ -117,7 +114,28 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
         });
       });
 
-      return member;
+      return CommunityMember.fromDatabaseRow(await tx.communityMember.findUnique({
+        where: {
+          communityId_userId: {
+            communityId,
+            userId,
+          },
+        },
+      }) as any);
     });
+
+    // Return DTO
+    const memberData = member.toJSON();
+    return {
+      id: memberData.id as string,
+      userId: memberData.userId as string,
+      communityId: memberData.communityId as string,
+      role: memberData.role as string,
+      isAutoRenew: memberData.isAutoRenew as boolean,
+      subscriptionEndsAt: memberData.subscriptionEndsAt as Date | null,
+      joinedAt: memberData.joinedAt as Date,
+      leftAt: memberData.leftAt as Date | null,
+      isActive: memberData.isActive as boolean,
+    };
   }
 }

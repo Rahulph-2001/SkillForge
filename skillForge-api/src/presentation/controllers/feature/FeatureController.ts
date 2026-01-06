@@ -3,20 +3,20 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
-import { CreateFeatureUseCase } from '../../../application/useCases/feature/CreateFeatureUseCase';
-import { ListFeaturesUseCase } from '../../../application/useCases/feature/ListFeaturesUseCase';
-import { GetFeatureByIdUseCase } from '../../../application/useCases/feature/GetFeatureByIdUseCase';
-import { UpdateFeatureUseCase } from '../../../application/useCases/feature/UpdateFeatureUseCase';
-import { DeleteFeatureUseCase } from '../../../application/useCases/feature/DeleteFeatureUseCase';
+import { ICreateFeatureUseCase } from '../../../application/useCases/feature/interfaces/ICreateFeatureUseCase';
+import { IListFeaturesUseCase } from '../../../application/useCases/feature/interfaces/IListFeaturesUseCase';
+import { IGetFeatureByIdUseCase } from '../../../application/useCases/feature/interfaces/IGetFeatureByIdUseCase';
+import { IUpdateFeatureUseCase } from '../../../application/useCases/feature/interfaces/IUpdateFeatureUseCase';
+import { IDeleteFeatureUseCase } from '../../../application/useCases/feature/interfaces/IDeleteFeatureUseCase';
 
 @injectable()
 export class FeatureController {
     constructor(
-        @inject(TYPES.ICreateFeatureUseCase) private readonly createFeatureUseCase: CreateFeatureUseCase,
-        @inject(TYPES.IListFeaturesUseCase) private readonly listFeaturesUseCase: ListFeaturesUseCase,
-        @inject(TYPES.IGetFeatureByIdUseCase) private readonly getFeatureByIdUseCase: GetFeatureByIdUseCase,
-        @inject(TYPES.IUpdateFeatureUseCase) private readonly updateFeatureUseCase: UpdateFeatureUseCase,
-        @inject(TYPES.IDeleteFeatureUseCase) private readonly deleteFeatureUseCase: DeleteFeatureUseCase,
+        @inject(TYPES.ICreateFeatureUseCase) private readonly createFeatureUseCase: ICreateFeatureUseCase,
+        @inject(TYPES.IListFeaturesUseCase) private readonly listFeaturesUseCase: IListFeaturesUseCase,
+        @inject(TYPES.IGetFeatureByIdUseCase) private readonly getFeatureByIdUseCase: IGetFeatureByIdUseCase,
+        @inject(TYPES.IUpdateFeatureUseCase) private readonly updateFeatureUseCase: IUpdateFeatureUseCase,
+        @inject(TYPES.IDeleteFeatureUseCase) private readonly deleteFeatureUseCase: IDeleteFeatureUseCase,
         @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
     ) { }
 

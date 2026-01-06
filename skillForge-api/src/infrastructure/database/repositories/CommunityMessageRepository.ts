@@ -1,15 +1,18 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
-
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class CommunityMessageRepository implements ICommunityMessageRepository {
+export class CommunityMessageRepository extends BaseRepository<CommunityMessage> implements ICommunityMessageRepository {
   constructor(
-    @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
-  ) { }
+    @inject(TYPES.Database) db: Database
+  ) {
+    super(db, 'communityMessage');
+  }
+
   public async create(message: CommunityMessage): Promise<CommunityMessage> {
     const data = message.toJSON();
     const created = await this.prisma.communityMessage.create({
@@ -31,12 +34,14 @@ export class CommunityMessageRepository implements ICommunityMessageRepository {
     });
     return CommunityMessage.fromDatabaseRow(created);
   }
+
   public async findById(id: string): Promise<CommunityMessage | null> {
     const message = await this.prisma.communityMessage.findUnique({
       where: { id },
     });
     return message ? CommunityMessage.fromDatabaseRow(message) : null;
   }
+
   public async findByCommunityId(communityId: string, limit = 50, offset = 0): Promise<CommunityMessage[]> {
     const messages = await this.prisma.communityMessage.findMany({
       where: { communityId, isDeleted: false },
@@ -52,6 +57,7 @@ export class CommunityMessageRepository implements ICommunityMessageRepository {
     });
     return messages.map(m => CommunityMessage.fromDatabaseRow(m));
   }
+
   public async findPinnedMessages(communityId: string): Promise<CommunityMessage[]> {
     const messages = await this.prisma.communityMessage.findMany({
       where: { communityId, isPinned: true, isDeleted: false },
@@ -59,6 +65,7 @@ export class CommunityMessageRepository implements ICommunityMessageRepository {
     });
     return messages.map(m => CommunityMessage.fromDatabaseRow(m));
   }
+
   public async update(message: CommunityMessage): Promise<CommunityMessage> {
     const data = message.toJSON();
     const updated = await this.prisma.communityMessage.update({
@@ -74,10 +81,8 @@ export class CommunityMessageRepository implements ICommunityMessageRepository {
     });
     return CommunityMessage.fromDatabaseRow(updated);
   }
+
   public async delete(id: string): Promise<void> {
-    await this.prisma.communityMessage.update({
-      where: { id },
-      data: { isDeleted: true, deletedAt: new Date(), updatedAt: new Date() },
-    });
+    await super.delete(id);
   }
 }

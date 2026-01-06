@@ -10,15 +10,10 @@ import { ResendOtpDTO } from '../../dto/auth/ResendOtpDTO';
 import { OTPToken } from '../../../domain/entities/OTPToken';
 import { env } from '../../../config/env';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
-
-export interface ResendOtpResponse {
-  success: boolean;
-  message: string;
-  expiresAt?: Date | null;
-}
+import { IResendOtpUseCase, ResendOtpResponseDTO } from './interfaces/IResendOtpUseCase';
 
 @injectable()
-export class ResendOtpUseCase {
+export class ResendOtpUseCase implements IResendOtpUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IOTPRepository) private otpRepository: IOTPRepository,
@@ -27,7 +22,7 @@ export class ResendOtpUseCase {
     @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService
   ) {}
 
-  async execute(request: ResendOtpDTO, ipAddress?: string): Promise<ResendOtpResponse> {
+  async execute(request: ResendOtpDTO, ipAddress?: string): Promise<ResendOtpResponseDTO> {
     const { email: rawEmail } = request;
     
     // Normalize email to lowercase for consistent lookup

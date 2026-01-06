@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { CreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/CreateSkillTemplateUseCase';
-import { ListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/ListSkillTemplatesUseCase';
-import { UpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/UpdateSkillTemplateUseCase';
-import { DeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase';
-import { ToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase';
+import { ICreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/ICreateSkillTemplateUseCase';
+import { IListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/interfaces/IListSkillTemplatesUseCase';
+import { IUpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IUpdateSkillTemplateUseCase';
+import { IDeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IDeleteSkillTemplateUseCase';
+import { IToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/interfaces/IToggleSkillTemplateStatusUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillTemplateDTO } from '../../../application/dto/skillTemplate/CreateSkillTemplateDTO';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
@@ -14,11 +14,11 @@ import { SUCCESS_MESSAGES } from '../../../config/messages';
 @injectable()
 export class SkillTemplateController {
   constructor(
-    @inject(TYPES.CreateSkillTemplateUseCase) private readonly createSkillTemplateUseCase: CreateSkillTemplateUseCase,
-    @inject(TYPES.ListSkillTemplatesUseCase) private readonly listSkillTemplatesUseCase: ListSkillTemplatesUseCase,
-    @inject(TYPES.UpdateSkillTemplateUseCase) private readonly updateSkillTemplateUseCase: UpdateSkillTemplateUseCase,
-    @inject(TYPES.DeleteSkillTemplateUseCase) private readonly deleteSkillTemplateUseCase: DeleteSkillTemplateUseCase,
-    @inject(TYPES.ToggleSkillTemplateStatusUseCase) private readonly toggleSkillTemplateStatusUseCase: ToggleSkillTemplateStatusUseCase,
+    @inject(TYPES.ICreateSkillTemplateUseCase) private readonly createSkillTemplateUseCase: ICreateSkillTemplateUseCase,
+    @inject(TYPES.IListSkillTemplatesUseCase) private readonly listSkillTemplatesUseCase: IListSkillTemplatesUseCase,
+    @inject(TYPES.IUpdateSkillTemplateUseCase) private readonly updateSkillTemplateUseCase: IUpdateSkillTemplateUseCase,
+    @inject(TYPES.IDeleteSkillTemplateUseCase) private readonly deleteSkillTemplateUseCase: IDeleteSkillTemplateUseCase,
+    @inject(TYPES.IToggleSkillTemplateStatusUseCase) private readonly toggleSkillTemplateStatusUseCase: IToggleSkillTemplateStatusUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) { }
 

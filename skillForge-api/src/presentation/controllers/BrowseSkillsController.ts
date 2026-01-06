@@ -9,7 +9,7 @@ import { BrowseSkillsRequestDTO } from '../../application/dto/skill/BrowseSkills
 @injectable()
 export class BrowseSkillsController {
   constructor(
-    @inject(TYPES.BrowseSkillsUseCase) private browseSkillsUseCase: IBrowseSkillsUseCase,
+    @inject(TYPES.IBrowseSkillsUseCase) private browseSkillsUseCase: IBrowseSkillsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 

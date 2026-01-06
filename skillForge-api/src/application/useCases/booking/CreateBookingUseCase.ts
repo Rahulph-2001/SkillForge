@@ -11,9 +11,10 @@ import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 import { BookingValidator } from '../../../shared/validators/BookingValidator';
 import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
+import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
 
 @injectable()
-export class CreateBookingUseCase {
+export class CreateBookingUseCase implements ICreateBookingUseCase {
     constructor(
         @inject(TYPES.IBookingRepository) private readonly bookingRepository: IBookingRepository,
         @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,

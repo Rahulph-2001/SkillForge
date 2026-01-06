@@ -21,7 +21,7 @@ import { BookingRoutes } from './routes/bookingRoutes';
 import { UserProfileRoutes } from './routes/user/userProfileRoutes';
 import userProfileRoutesLegacy from './routes/userProfileRoutes';
 import sessionManagementRoutes from './routes/sessionManagementRoutes';
-import { generalLimiter } from './middlewares/rateLimitMiddileWare';
+import { generalLimiter } from './middlewares/rateLimitMiddleware';
 import { PassportService } from '../infrastructure/services/PassportService';
 import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
 import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';

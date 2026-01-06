@@ -1,13 +1,16 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { Payment } from '../../../domain/entities/Payment';
 import { PaymentStatus, PaymentPurpose } from '../../../domain/enums/PaymentEnums';
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaPaymentRepository implements IPaymentRepository {
-    constructor(@inject(TYPES.PrismaClient) private prisma: PrismaClient) {}
+export class PrismaPaymentRepository extends BaseRepository<Payment> implements IPaymentRepository {
+    constructor(@inject(TYPES.Database) db: Database) {
+        super(db, 'payment');
+    }
 
     async create(payment: Payment): Promise<Payment> {
         const data = await this.prisma.payment.create({

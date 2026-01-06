@@ -2,11 +2,11 @@ import { injectable, inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IListPendingSkillsUseCase } from '../../../application/useCases/admin/interfaces/IListPendingSkillsUseCase';
-import { ApproveSkillUseCase } from '../../../application/useCases/admin/ApproveSkillUseCase';
-import { RejectSkillUseCase } from '../../../application/useCases/admin/RejectSkillUseCase';
-import { GetAllSkillsUseCase } from '../../../application/useCases/admin/GetAllSkillsUseCase';
-import { BlockSkillUseCase } from '../../../application/useCases/admin/BlockSkillUseCase';
-import { UnblockSkillUseCase } from '../../../application/useCases/admin/UnblockSkillUseCase';
+import { IApproveSkillUseCase } from '../../../application/useCases/admin/interfaces/IApproveSkillUseCase';
+import { IRejectSkillUseCase } from '../../../application/useCases/admin/interfaces/IRejectSkillUseCase';
+import { IGetAllSkillsUseCase } from '../../../application/useCases/admin/interfaces/IGetAllSkillsUseCase';
+import { IBlockSkillUseCase } from '../../../application/useCases/admin/interfaces/IBlockSkillUseCase';
+import { IUnblockSkillUseCase } from '../../../application/useCases/admin/interfaces/IUnblockSkillUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
@@ -14,12 +14,12 @@ import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
 @injectable()
 export class AdminSkillController {
   constructor(
-    @inject(TYPES.ListPendingSkillsUseCase) private listPendingSkillsUseCase: IListPendingSkillsUseCase,
-    @inject(TYPES.ApproveSkillUseCase) private approveSkillUseCase: ApproveSkillUseCase,
-    @inject(TYPES.RejectSkillUseCase) private rejectSkillUseCase: RejectSkillUseCase,
-    @inject(TYPES.GetAllSkillsUseCase) private getAllSkillsUseCase: GetAllSkillsUseCase,
-    @inject(TYPES.BlockSkillUseCase) private blockSkillUseCase: BlockSkillUseCase,
-    @inject(TYPES.UnblockSkillUseCase) private unblockSkillUseCase: UnblockSkillUseCase,
+    @inject(TYPES.IListPendingSkillsUseCase) private listPendingSkillsUseCase: IListPendingSkillsUseCase,
+    @inject(TYPES.IApproveSkillUseCase) private approveSkillUseCase: IApproveSkillUseCase,
+    @inject(TYPES.IRejectSkillUseCase) private rejectSkillUseCase: IRejectSkillUseCase,
+    @inject(TYPES.IGetAllSkillsUseCase) private getAllSkillsUseCase: IGetAllSkillsUseCase,
+    @inject(TYPES.IBlockSkillUseCase) private blockSkillUseCase: IBlockSkillUseCase,
+    @inject(TYPES.IUnblockSkillUseCase) private unblockSkillUseCase: IUnblockSkillUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 

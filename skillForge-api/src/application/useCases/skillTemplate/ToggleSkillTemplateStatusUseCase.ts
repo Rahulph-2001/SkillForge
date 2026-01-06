@@ -5,9 +5,10 @@ import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IToggleSkillTemplateStatusUseCase } from './interfaces/IToggleSkillTemplateStatusUseCase';
 
 @injectable()
-export class ToggleSkillTemplateStatusUseCase {
+export class ToggleSkillTemplateStatusUseCase implements IToggleSkillTemplateStatusUseCase {
   constructor(
     @inject(TYPES.ISkillTemplateRepository)
     private readonly skillTemplateRepository: ISkillTemplateRepository,

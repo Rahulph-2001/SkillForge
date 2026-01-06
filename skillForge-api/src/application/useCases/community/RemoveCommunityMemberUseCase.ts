@@ -1,18 +1,15 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
+import { Database } from '../../../infrastructure/database/Database';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-import { PrismaClient } from '@prisma/client';
-
-export interface IRemoveCommunityMemberUseCase {
-  execute(adminId: string, communityId: string, memberId: string): Promise<void>;
-}
+import { IRemoveCommunityMemberUseCase } from './interfaces/IRemoveCommunityMemberUseCase';
 
 @injectable()
 export class RemoveCommunityMemberUseCase implements IRemoveCommunityMemberUseCase {
   constructor(
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
-    @inject(TYPES.PrismaClient) private readonly prisma: PrismaClient
+    @inject(TYPES.Database) private readonly database: Database
   ) { }
 
   public async execute(adminId: string, communityId: string, memberId: string): Promise<void> {
@@ -31,7 +28,7 @@ export class RemoveCommunityMemberUseCase implements IRemoveCommunityMemberUseCa
     }
 
     // Use transaction for atomic removal
-    await this.prisma.$transaction(async (tx) => {
+    await this.database.transaction(async (tx) => {
       // Remove member
       await tx.communityMember.updateMany({
         where: { userId: memberId, communityId, isActive: true },

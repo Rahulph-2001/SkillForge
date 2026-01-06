@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IListSubscriptionPlansUseCase } from '../../../application/useCases/subscription/interfaces/IListSubscriptionPlansUseCase';
-import { GetSubscriptionStatsUseCase } from '../../../application/useCases/subscription/GetSubscriptionStatsUseCase';
+import { IGetSubscriptionStatsUseCase } from '../../../application/useCases/subscription/interfaces/IGetSubscriptionStatsUseCase';
 import { ICreateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/ICreateSubscriptionPlanUseCase';
 import { IUpdateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/IUpdateSubscriptionPlanUseCase';
-import { DeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase';
+import { IDeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/IDeleteSubscriptionPlanUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
 
@@ -13,11 +13,11 @@ import { SUCCESS_MESSAGES } from '../../../config/messages';
 @injectable()
 export class SubscriptionController {
   constructor(
-    @inject(TYPES.ListSubscriptionPlansUseCase) private readonly listPlansUseCase: IListSubscriptionPlansUseCase,
-    @inject(TYPES.GetSubscriptionStatsUseCase) private readonly getStatsUseCase: GetSubscriptionStatsUseCase,
-    @inject(TYPES.CreateSubscriptionPlanUseCase) private readonly createPlanUseCase: ICreateSubscriptionPlanUseCase,
-    @inject(TYPES.UpdateSubscriptionPlanUseCase) private readonly updatePlanUseCase: IUpdateSubscriptionPlanUseCase,
-    @inject(TYPES.DeleteSubscriptionPlanUseCase) private readonly deletePlanUseCase: DeleteSubscriptionPlanUseCase,
+    @inject(TYPES.IListSubscriptionPlansUseCase) private readonly listPlansUseCase: IListSubscriptionPlansUseCase,
+    @inject(TYPES.IGetSubscriptionStatsUseCase) private readonly getStatsUseCase: IGetSubscriptionStatsUseCase,
+    @inject(TYPES.ICreateSubscriptionPlanUseCase) private readonly createPlanUseCase: ICreateSubscriptionPlanUseCase,
+    @inject(TYPES.IUpdateSubscriptionPlanUseCase) private readonly updatePlanUseCase: IUpdateSubscriptionPlanUseCase,
+    @inject(TYPES.IDeleteSubscriptionPlanUseCase) private readonly deletePlanUseCase: IDeleteSubscriptionPlanUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) { }
 

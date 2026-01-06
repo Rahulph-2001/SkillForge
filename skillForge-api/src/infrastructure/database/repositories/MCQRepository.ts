@@ -1,14 +1,17 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { IMCQRepository } from '../../../domain/repositories/IMCQRepository';
 import { MCQAttempt, MCQQuestion } from '../../../domain/entities/MCQAttempt';
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class MCQRepository implements IMCQRepository {
+export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRepository {
   constructor(
-    @inject(TYPES.PrismaClient) private prisma: PrismaClient
-  ) { }
+    @inject(TYPES.Database) db: Database
+  ) {
+    super(db, 'skillVerificationAttempt');
+  }
 
   async getQuestionsByTemplate(
     templateId: string,

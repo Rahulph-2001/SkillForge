@@ -91,3 +91,13 @@ export const notFoundHandler = (req: Request, res: Response): void => {
   
   res.status(HttpStatusCode.NOT_FOUND).json(response);
 };
+
+/**
+ * Async error handler wrapper for route handlers
+ * Catches async errors and passes them to the error handler
+ */
+export const asyncHandler = (fn: Function) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};

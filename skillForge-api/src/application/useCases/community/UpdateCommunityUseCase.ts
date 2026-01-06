@@ -5,14 +5,7 @@ import { IStorageService } from '../../../domain/services/IStorageService';
 import { Community } from '../../../domain/entities/Community';
 import { UpdateCommunityDTO } from '../../dto/community/UpdateCommunityDTO';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
-export interface IUpdateCommunityUseCase {
-  execute(
-    communityId: string,
-    userId: string,
-    dto: UpdateCommunityDTO,
-    imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
-  ): Promise<Community>;
-}
+import { IUpdateCommunityUseCase } from './interfaces/IUpdateCommunityUseCase';
 @injectable()
 export class UpdateCommunityUseCase implements IUpdateCommunityUseCase {
   constructor(

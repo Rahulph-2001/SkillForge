@@ -4,9 +4,10 @@ import { ITemplateQuestionRepository } from '../../../domain/repositories/ITempl
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+import { IDeleteTemplateQuestionUseCase } from './interfaces/IDeleteTemplateQuestionUseCase';
 
 @injectable()
-export class DeleteTemplateQuestionUseCase {
+export class DeleteTemplateQuestionUseCase implements IDeleteTemplateQuestionUseCase {
   constructor(
     @inject(TYPES.ITemplateQuestionRepository)
     private readonly templateQuestionRepository: ITemplateQuestionRepository,

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
-import { IGetUserSubscriptionUseCase } from '../../../application/useCases/subscription/GetUserSubscriptionUseCase';
-import { ICancelSubscriptionUseCase } from '../../../application/useCases/subscription/CancelSubscriptionUseCase';
-import { IReactivateSubscriptionUseCase } from '../../../application/useCases/subscription/ReactivateSubscriptionUseCase';
+import { IGetUserSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/IGetUserSubscriptionUseCase';
+import { ICancelSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/ICancelSubscriptionUseCase';
+import { IReactivateSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/IReactivateSubscriptionUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';

@@ -4,10 +4,7 @@ import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserS
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { SubscriptionStatus } from '../../../domain/enums/SubscriptionEnums';
-
-export interface IReactivateSubscriptionUseCase {
-    execute(userId: string): Promise<void>;
-}
+import { IReactivateSubscriptionUseCase } from './interfaces/IReactivateSubscriptionUseCase';
 
 @injectable()
 export class ReactivateSubscriptionUseCase implements IReactivateSubscriptionUseCase {

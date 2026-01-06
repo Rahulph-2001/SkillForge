@@ -8,13 +8,8 @@ import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
-export interface ISendMessageUseCase {
-  execute(
-    userId: string,
-    dto: SendMessageDTO,
-    file?: { buffer: Buffer; originalname: string; mimetype: string }
-  ): Promise<CommunityMessage>;
-}
+import { ISendMessageUseCase } from './interfaces/ISendMessageUseCase';
+
 @injectable()
 export class SendMessageUseCase implements ISendMessageUseCase {
   constructor(

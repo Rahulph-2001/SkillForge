@@ -7,17 +7,11 @@ import { UnauthorizedError, NotFoundError, ForbiddenError } from '../../../domai
 import { UserRole } from '../../../domain/enums/UserRole';
 import { AdminLoginDTO } from '../../dto/auth/AdminLoginDTO';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
-import { UserResponseDTO } from '../../dto/auth/UserResponseDTO';
 import { ERROR_MESSAGES } from '../../../config/messages';
-
-export interface AdminLoginResponse {
-  user: UserResponseDTO;
-  token: string;
-  refreshToken: string;
-}
+import { IAdminLoginUseCase, AdminLoginResponseDTO } from './interfaces/IAdminLoginUseCase';
 
 @injectable()
-export class AdminLoginUseCase {
+export class AdminLoginUseCase implements IAdminLoginUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
     @inject(TYPES.IPasswordService) private passwordService: IPasswordService,
@@ -25,7 +19,7 @@ export class AdminLoginUseCase {
     @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
   ) { }
 
-  async execute(request: AdminLoginDTO, ipAddress?: string): Promise<AdminLoginResponse> {
+  async execute(request: AdminLoginDTO, ipAddress?: string): Promise<AdminLoginResponseDTO> {
     const { email: rawEmail, password } = request;
 
     const user = await this.userRepository.findByEmail(rawEmail);
