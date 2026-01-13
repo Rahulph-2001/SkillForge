@@ -15,11 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TemplateQuestionController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const CreateTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase");
-const ListTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase");
-const UpdateTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase");
-const DeleteTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase");
-const BulkDeleteTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let TemplateQuestionController = class TemplateQuestionController {
@@ -123,16 +118,12 @@ let TemplateQuestionController = class TemplateQuestionController {
 exports.TemplateQuestionController = TemplateQuestionController;
 exports.TemplateQuestionController = TemplateQuestionController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.CreateTemplateQuestionUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.ListTemplateQuestionsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.UpdateTemplateQuestionUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.DeleteTemplateQuestionUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.BulkDeleteTemplateQuestionsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ICreateTemplateQuestionUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IListTemplateQuestionsUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUpdateTemplateQuestionUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IDeleteTemplateQuestionUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IBulkDeleteTemplateQuestionsUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [CreateTemplateQuestionUseCase_1.CreateTemplateQuestionUseCase,
-        ListTemplateQuestionsUseCase_1.ListTemplateQuestionsUseCase,
-        UpdateTemplateQuestionUseCase_1.UpdateTemplateQuestionUseCase,
-        DeleteTemplateQuestionUseCase_1.DeleteTemplateQuestionUseCase,
-        BulkDeleteTemplateQuestionsUseCase_1.BulkDeleteTemplateQuestionsUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], TemplateQuestionController);
 //# sourceMappingURL=TemplateQuestionController.js.map

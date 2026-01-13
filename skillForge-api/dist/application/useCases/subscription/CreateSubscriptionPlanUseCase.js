@@ -104,7 +104,7 @@ let CreateSubscriptionPlanUseCase = class CreateSubscriptionPlanUseCase {
         // Fetch the complete plan with features to return
         const completePlan = await this.subscriptionPlanRepository.findById(createdPlan.id);
         if (!completePlan) {
-            throw new Error('Failed to retrieve created plan');
+            throw new AppError_1.InternalServerError('Failed to retrieve created plan');
         }
         return this.subscriptionPlanMapper.toDTO(completePlan);
     }

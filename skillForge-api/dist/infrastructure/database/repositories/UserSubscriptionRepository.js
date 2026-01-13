@@ -17,9 +17,10 @@ const inversify_1 = require("inversify");
 const Database_1 = require("../Database");
 const UserSubscription_1 = require("../../../domain/entities/UserSubscription");
 const types_1 = require("../../di/types");
-let PrismaUserSubscriptionRepository = class PrismaUserSubscriptionRepository {
+const BaseRepository_1 = require("../BaseRepository");
+let PrismaUserSubscriptionRepository = class PrismaUserSubscriptionRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
-        this.prisma = db.getClient();
+        super(db, 'userSubscription');
     }
     async create(subscription) {
         const data = await this.prisma.userSubscription.create({

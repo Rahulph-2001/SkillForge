@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubmitMCQTestUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const AppError_1 = require("../../../domain/errors/AppError");
 let SubmitMCQTestUseCase = class SubmitMCQTestUseCase {
     constructor(mcqRepository, skillRepository) {
         this.mcqRepository = mcqRepository;
@@ -25,24 +26,24 @@ let SubmitMCQTestUseCase = class SubmitMCQTestUseCase {
         // Get skill details
         const skill = await this.skillRepository.findById(skillId);
         if (!skill) {
-            throw new Error('Skill not found');
+            throw new AppError_1.NotFoundError('Skill not found');
         }
         // Verify skill belongs to user
         if (skill.providerId !== userId) {
-            throw new Error('Unauthorized: This skill does not belong to you');
+            throw new AppError_1.ForbiddenError('Unauthorized: This skill does not belong to you');
         }
         // Validate question IDs are provided
         if (!questionIds || questionIds.length === 0) {
-            throw new Error('Question IDs are required');
+            throw new AppError_1.ValidationError('Question IDs are required');
         }
         // Get the EXACT questions that were asked (by their IDs)
         const questions = await this.mcqRepository.getQuestionsByIds(questionIds);
         if (questions.length === 0) {
-            throw new Error('No questions found');
+            throw new AppError_1.NotFoundError('No questions found');
         }
         // Validate answers length matches questions
         if (answers.length !== questions.length) {
-            throw new Error(`Invalid number of answers. Expected ${questions.length}, got ${answers.length}`);
+            throw new AppError_1.ValidationError(`Invalid number of answers. Expected ${questions.length}, got ${answers.length}`);
         }
         // Grade the test
         let correctAnswers = 0;

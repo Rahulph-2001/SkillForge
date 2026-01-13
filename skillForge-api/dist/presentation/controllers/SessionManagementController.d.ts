@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { AcceptBookingUseCase } from '../../application/useCases/booking/AcceptBookingUseCase';
-import { DeclineBookingUseCase } from '../../application/useCases/booking/DeclineBookingUseCase';
-import { CancelBookingUseCase } from '../../application/useCases/booking/CancelBookingUseCase';
-import { RescheduleBookingUseCase } from '../../application/useCases/booking/RescheduleBookingUseCase';
-import { AcceptRescheduleUseCase } from '../../application/useCases/booking/AcceptRescheduleUseCase';
-import { DeclineRescheduleUseCase } from '../../application/useCases/booking/DeclineRescheduleUseCase';
-import { GetProviderBookingsUseCase } from '../../application/useCases/booking/GetProviderBookingsUseCase';
+import { IAcceptBookingUseCase } from '../../application/useCases/booking/interfaces/IAcceptBookingUseCase';
+import { IDeclineBookingUseCase } from '../../application/useCases/booking/interfaces/IDeclineBookingUseCase';
+import { ICancelBookingUseCase } from '../../application/useCases/booking/interfaces/ICancelBookingUseCase';
+import { IRescheduleBookingUseCase } from '../../application/useCases/booking/interfaces/IRescheduleBookingUseCase';
+import { IAcceptRescheduleUseCase } from '../../application/useCases/booking/interfaces/IAcceptRescheduleUseCase';
+import { IDeclineRescheduleUseCase } from '../../application/useCases/booking/interfaces/IDeclineRescheduleUseCase';
+import { IGetProviderBookingsUseCase } from '../../application/useCases/booking/interfaces/IGetProviderBookingsUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 export declare class SessionManagementController {
     private readonly acceptBookingUseCase;
@@ -16,7 +16,7 @@ export declare class SessionManagementController {
     private readonly declineRescheduleUseCase;
     private readonly getProviderBookingsUseCase;
     private readonly responseBuilder;
-    constructor(acceptBookingUseCase: AcceptBookingUseCase, declineBookingUseCase: DeclineBookingUseCase, cancelBookingUseCase: CancelBookingUseCase, rescheduleBookingUseCase: RescheduleBookingUseCase, acceptRescheduleUseCase: AcceptRescheduleUseCase, declineRescheduleUseCase: DeclineRescheduleUseCase, getProviderBookingsUseCase: GetProviderBookingsUseCase, responseBuilder: IResponseBuilder);
+    constructor(acceptBookingUseCase: IAcceptBookingUseCase, declineBookingUseCase: IDeclineBookingUseCase, cancelBookingUseCase: ICancelBookingUseCase, rescheduleBookingUseCase: IRescheduleBookingUseCase, acceptRescheduleUseCase: IAcceptRescheduleUseCase, declineRescheduleUseCase: IDeclineRescheduleUseCase, getProviderBookingsUseCase: IGetProviderBookingsUseCase, responseBuilder: IResponseBuilder);
     getProviderSessions(req: Request, res: Response, next: NextFunction): Promise<void>;
     acceptBooking(req: Request, res: Response, next: NextFunction): Promise<void>;
     declineBooking(req: Request, res: Response, next: NextFunction): Promise<void>;

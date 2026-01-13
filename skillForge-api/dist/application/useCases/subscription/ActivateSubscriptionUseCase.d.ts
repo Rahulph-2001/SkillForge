@@ -3,9 +3,7 @@ import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserS
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { ActivateSubscriptionRequestDTO } from '../../dto/subscription/ActivateSubscriptionDTO';
 import { SubscriptionActivationResponseDTO } from '../../dto/subscription/SubscriptionActivationResponseDTO';
-export interface IActivateSubscriptionUseCase {
-    execute(dto: ActivateSubscriptionRequestDTO): Promise<SubscriptionActivationResponseDTO>;
-}
+import { IActivateSubscriptionUseCase } from './interfaces/IActivateSubscriptionUseCase';
 export declare class ActivateSubscriptionUseCase implements IActivateSubscriptionUseCase {
     private userRepository;
     private subscriptionRepository;

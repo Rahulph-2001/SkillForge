@@ -5,6 +5,7 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { ISubmitMCQTestUseCase } from './interfaces/ISubmitMCQTestUseCase';
 import { SubmitMCQRequestDTO } from '../../dto/mcq/SubmitMCQRequestDTO';
 import { SubmitMCQResponseDTO } from '../../dto/mcq/SubmitMCQResponseDTO';
+import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
@@ -19,29 +20,29 @@ export class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
     // Get skill details
     const skill = await this.skillRepository.findById(skillId);
     if (!skill) {
-      throw new Error('Skill not found');
+      throw new NotFoundError('Skill not found');
     }
 
     // Verify skill belongs to user
     if (skill.providerId !== userId) {
-      throw new Error('Unauthorized: This skill does not belong to you');
+      throw new ForbiddenError('Unauthorized: This skill does not belong to you');
     }
 
     // Validate question IDs are provided
     if (!questionIds || questionIds.length === 0) {
-      throw new Error('Question IDs are required');
+      throw new ValidationError('Question IDs are required');
     }
 
     // Get the EXACT questions that were asked (by their IDs)
     const questions = await this.mcqRepository.getQuestionsByIds(questionIds);
 
     if (questions.length === 0) {
-      throw new Error('No questions found');
+      throw new NotFoundError('No questions found');
     }
 
     // Validate answers length matches questions
     if (answers.length !== questions.length) {
-      throw new Error(`Invalid number of answers. Expected ${questions.length}, got ${answers.length}`);
+      throw new ValidationError(`Invalid number of answers. Expected ${questions.length}, got ${answers.length}`);
     }
 
     // Grade the test

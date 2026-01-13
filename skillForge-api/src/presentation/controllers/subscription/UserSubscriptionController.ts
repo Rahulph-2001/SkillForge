@@ -24,7 +24,7 @@ export class UserSubscriptionController {
      */
     async getCurrentSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = (req as any).user.userId;
+            const userId = req.user!.userId;
 
             try {
                 const subscription = await this.getUserSubscriptionUseCase.execute(userId);
@@ -56,7 +56,7 @@ export class UserSubscriptionController {
      */
     async cancelSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = (req as any).user.userId;
+            const userId = req.user!.userId;
             const { immediately = false } = req.body;
 
             await this.cancelSubscriptionUseCase.execute(userId, immediately);
@@ -77,7 +77,7 @@ export class UserSubscriptionController {
      */
     async reactivateSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = (req as any).user.userId;
+            const userId = req.user!.userId;
 
             await this.reactivateSubscriptionUseCase.execute(userId);
 

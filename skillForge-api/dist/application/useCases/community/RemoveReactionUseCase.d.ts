@@ -1,9 +1,7 @@
 import { IMessageReactionRepository } from '../../../domain/repositories/IMessageReactionRepository';
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
-export interface IRemoveReactionUseCase {
-    execute(userId: string, messageId: string, emoji: string): Promise<void>;
-}
+import { IRemoveReactionUseCase } from './interfaces/IRemoveReactionUseCase';
 export declare class RemoveReactionUseCase implements IRemoveReactionUseCase {
     private readonly reactionRepository;
     private readonly messageRepository;

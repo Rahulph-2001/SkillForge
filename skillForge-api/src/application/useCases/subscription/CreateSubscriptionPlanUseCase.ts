@@ -5,7 +5,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { SubscriptionPlan } from '../../../domain/entities/SubscriptionPlan';
 import { CreateSubscriptionPlanDTO } from '../../dto/subscription/CreateSubscriptionPlanDTO';
-import { ForbiddenError, ConflictError, NotFoundError } from '../../../domain/errors/AppError';
+import { ForbiddenError, ConflictError, NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { ICreateSubscriptionPlanUseCase } from './interfaces/ICreateSubscriptionPlanUseCase';
@@ -83,7 +83,7 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
     // Fetch the complete plan with features to return
     const completePlan = await this.subscriptionPlanRepository.findById(createdPlan.id);
     if (!completePlan) {
-      throw new Error('Failed to retrieve created plan');
+      throw new InternalServerError('Failed to retrieve created plan');
     }
 
     return this.subscriptionPlanMapper.toDTO(completePlan);

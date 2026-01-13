@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { Feature } from '../../../domain/entities/Feature';
-export declare class PrismaFeatureRepository implements IFeatureRepository {
-    private prisma;
-    constructor(prisma: PrismaClient);
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
+export declare class PrismaFeatureRepository extends BaseRepository<Feature> implements IFeatureRepository {
+    constructor(db: Database);
     create(feature: Feature): Promise<Feature>;
     findById(id: string): Promise<Feature | null>;
     findByPlanId(planId: string): Promise<Feature[]>;

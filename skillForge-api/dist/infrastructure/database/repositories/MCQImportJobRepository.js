@@ -18,9 +18,10 @@ const types_1 = require("../../di/types");
 const Database_1 = require("../Database");
 const MCQImportJob_1 = require("../../../domain/entities/MCQImportJob");
 const AppError_1 = require("../../../domain/errors/AppError");
-let MCQImportJobRepository = class MCQImportJobRepository {
+const BaseRepository_1 = require("../BaseRepository");
+let MCQImportJobRepository = class MCQImportJobRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
-        this.prisma = db.getClient();
+        super(db, 'mcqImportJob');
     }
     toDomain(orm) {
         return new MCQImportJob_1.MCQImportJob({

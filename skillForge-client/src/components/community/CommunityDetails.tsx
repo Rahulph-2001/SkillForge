@@ -27,6 +27,7 @@ import {
     sendMessage,
     leaveCommunity,
     getCommunityMembers,
+    removeCommunityMember,
     pinMessage,
     unpinMessage,
     deleteMessage,
@@ -103,6 +104,10 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
     const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
     const [emojiPickerMessageId, setEmojiPickerMessageId] = useState<string | null>(null);
 
+    // Kick Member State
+    const [kickMemberConfirm, setKickMemberConfirm] = useState<{ userId: string; userName: string } | null>(null);
+    const [kickingMember, setKickingMember] = useState(false);
+
     useEffect(() => {
         if (!id) return;
         loadCommunityData();
@@ -150,6 +155,21 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
         socket.on('reaction_removed', (data: { messageId: string; reactions: any[] }) => {
             console.log('=== WEBSOCKET: reaction_removed ===', data);
             setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, reactions: data.reactions } : m));
+        });
+
+        socket.on('member_removed', (data: { userId: string; userName: string; removedBy: string; timestamp: string }) => {
+            console.log('=== WEBSOCKET: member_removed ===', data);
+            // Remove member from list
+            setMembers(prev => prev.filter(m => m.userId !== data.userId));
+            // Update member count
+            if (community) {
+                setCommunity({ ...community, membersCount: community.membersCount - 1 });
+            }
+            // If current user was removed, redirect
+            if (data.userId === user?.id) {
+                setError(`You have been removed from this community`);
+                setTimeout(() => navigate('/communities'), 2000);
+            }
         });
 
         socketRef.current = socket;
@@ -373,6 +393,27 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             return () => document.removeEventListener('click', handleClick);
         }
     }, [contextMenu]);
+
+    const handleKickMember = async () => {
+        if (!id || !kickMemberConfirm) return;
+
+        try {
+            setKickingMember(true);
+            await removeCommunityMember(id, kickMemberConfirm.userId);
+            setMembers(prev => prev.filter(m => m.userId !== kickMemberConfirm.userId));
+            if (community) {
+                setCommunity({ ...community, membersCount: community.membersCount - 1 });
+            }
+            setSuccessMessage(`${kickMemberConfirm.userName} has been removed from the community`);
+            setShowSuccess(true);
+            setKickMemberConfirm(null);
+        } catch (err: any) {
+            setError(err.response?.data?.message || 'Failed to remove member');
+            setKickMemberConfirm(null);
+        } finally {
+            setKickingMember(false);
+        }
+    };
 
     const handleLeave = async () => {
         if (!id) return;
@@ -851,9 +892,13 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                         ) : (
                                             <span className="text-xs text-gray-500 px-2">Member</span>
                                         )}
-                                        {community.isAdmin && member.userId !== user?.id && (
-                                            <button className="text-gray-400 hover:text-red-500 p-1">
-                                                <MoreVertical className="w-4 h-4" />
+                                        {community.isAdmin && member.userId !== user?.id && member.role !== 'admin' && (
+                                            <button
+                                                onClick={() => setKickMemberConfirm({ userId: member.userId, userName: member.userName || 'this member' })}
+                                                className="px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200 hover:border-red-300"
+                                                title="Remove member"
+                                            >
+                                                Remove
                                             </button>
                                         )}
                                     </div>
@@ -972,6 +1017,42 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                             >
                                 Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Kick Member Confirmation Modal */}
+            {kickMemberConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
+                        <h3 className="text-lg font-bold text-gray-900 mb-2">Remove Member?</h3>
+                        <p className="text-sm text-gray-600 mb-6">
+                            Are you sure you want to remove <span className="font-semibold">{kickMemberConfirm.userName}</span> from this community? 
+                            They will be notified and will need to rejoin if they want to come back.
+                        </p>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => setKickMemberConfirm(null)}
+                                disabled={kickingMember}
+                                className="flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleKickMember}
+                                disabled={kickingMember}
+                                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {kickingMember ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                        Removing...
+                                    </>
+                                ) : (
+                                    'Remove Member'
+                                )}
                             </button>
                         </div>
                     </div>

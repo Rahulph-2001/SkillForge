@@ -2,7 +2,8 @@ import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTem
 import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { UpdateSkillTemplateDTO } from '../../dto/skillTemplate/UpdateSkillTemplateDTO';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-export declare class UpdateSkillTemplateUseCase {
+import { IUpdateSkillTemplateUseCase } from './interfaces/IUpdateSkillTemplateUseCase';
+export declare class UpdateSkillTemplateUseCase implements IUpdateSkillTemplateUseCase {
     private readonly skillTemplateRepository;
     private readonly userRepository;
     constructor(skillTemplateRepository: ISkillTemplateRepository, userRepository: IUserRepository);

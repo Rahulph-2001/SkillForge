@@ -1,18 +1,29 @@
 import { injectable } from 'inversify';
 import { Skill } from '../../domain/entities/Skill';
 import { User } from '../../domain/entities/User';
+import { ProviderAvailability } from '../../domain/entities/ProviderAvailability';
 import { BrowseSkillDTO } from '../dto/skill/BrowseSkillsResponseDTO';
 import { IBrowseSkillMapper } from './interfaces/IBrowseSkillMapper';
 
+interface ScheduleSlot {
+  start: string;
+  end: string;
+}
+
+interface DaySchedule {
+  enabled: boolean;
+  slots?: ScheduleSlot[];
+}
+
 @injectable()
 export class BrowseSkillMapper implements IBrowseSkillMapper {
-  public toDTO(skill: Skill, provider: User, availability?: any): BrowseSkillDTO {
+  public toDTO(skill: Skill, provider: User, availability?: ProviderAvailability): BrowseSkillDTO {
     let availableDays: string[] = [];
 
     if (availability && availability.weeklySchedule) {
       availableDays = Object.entries(availability.weeklySchedule)
-        .filter(([_, schedule]: [string, any]) => schedule.enabled)
-        .map(([day, schedule]: [string, any]) => {
+        .filter(([_, schedule]: [string, DaySchedule]) => schedule.enabled)
+        .map(([day, schedule]: [string, DaySchedule]) => {
           if (schedule.slots && schedule.slots.length > 0) {
             const slot = schedule.slots[0];
             const formatTime = (time: string) => {

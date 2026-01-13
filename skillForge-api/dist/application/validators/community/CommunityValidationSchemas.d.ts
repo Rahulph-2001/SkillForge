@@ -19,9 +19,9 @@ export declare const sendMessageSchema: z.ZodObject<{
     communityId: z.ZodString;
     content: z.ZodString;
     type: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
-        text: "text";
         file: "file";
         image: "image";
+        text: "text";
         video: "video";
     }>>>;
     replyToId: z.ZodOptional<z.ZodNullable<z.ZodString>>;

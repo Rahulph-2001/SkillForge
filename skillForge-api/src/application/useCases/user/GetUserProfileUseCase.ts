@@ -41,7 +41,7 @@ export class GetUserProfileUseCase implements IGetUserProfileUseCase {
       rating: user.rating ? Number(user.rating) : 0,
       reviewCount: user.reviewCount,
       totalSessionsCompleted: user.totalSessionsCompleted,
-      memberSince: user.memberSince.toISOString(),
+      memberSince: user.memberSince ? user.memberSince.toISOString() : new Date().toISOString(),
       subscriptionPlan: user.subscriptionPlan || '',
       subscriptionValidUntil: user.subscriptionValidUntil?.toISOString() || null,
     };

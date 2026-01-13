@@ -4,6 +4,7 @@ import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { Database } from '../Database';
 import { TYPES } from '../../di/types';
 import { BaseRepository } from '../BaseRepository';
+import { NotFoundError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class SkillTemplateRepository extends BaseRepository<SkillTemplate> implements ISkillTemplateRepository {
@@ -100,7 +101,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     });
 
     if (!template) {
-      throw new Error('Skill template not found');
+      throw new NotFoundError('Skill template not found');
     }
 
     const updated = await this.prisma.skillTemplate.update({

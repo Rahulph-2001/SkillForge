@@ -1,24 +1,10 @@
-import { Database } from '../../../infrastructure/database/Database';
-export interface UserProfileDTO {
-    id: string;
-    name: string;
-    email: string;
-    avatarUrl: string | null;
-    bio: string | null;
-    location: string | null;
-    credits: number;
-    walletBalance: number;
-    skillsOffered: number;
-    rating: number;
-    reviewCount: number;
-    totalSessionsCompleted: number;
-    memberSince: string;
-    subscriptionPlan: string;
-    subscriptionValidUntil: string | null;
-}
-export declare class GetUserProfileUseCase {
-    constructor(database: Database);
-    private prisma;
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IGetUserProfileUseCase, UserProfileDTO } from './interfaces/IGetUserProfileUseCase';
+export declare class GetUserProfileUseCase implements IGetUserProfileUseCase {
+    private readonly userRepository;
+    private readonly skillRepository;
+    constructor(userRepository: IUserRepository, skillRepository: ISkillRepository);
     execute(userId: string): Promise<UserProfileDTO>;
 }
 //# sourceMappingURL=GetUserProfileUseCase.d.ts.map

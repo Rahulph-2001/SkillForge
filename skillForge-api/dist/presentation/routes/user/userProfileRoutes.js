@@ -48,9 +48,9 @@ let UserProfileRoutes = class UserProfileRoutes {
         // Apply auth middleware to all routes
         this.router.use(authMiddleware_1.authMiddleware);
         // GET /api/v1/profile - Get current user profile
-        this.router.get('/', this.userProfileController.getProfile);
+        this.router.get('/', this.userProfileController.getProfile.bind(this.userProfileController));
         // PUT /api/v1/profile - Update current user profile
-        this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile);
+        this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
     }
     getRouter() {
         return this.router;

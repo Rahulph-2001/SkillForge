@@ -4,3 +4,5 @@ export interface IGetSubscriptionStatsUseCase {
   execute(adminUserId: string): Promise<SubscriptionStats>;
 }
 
+export type { SubscriptionStats };
+

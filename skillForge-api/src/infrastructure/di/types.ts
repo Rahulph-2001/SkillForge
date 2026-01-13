@@ -1,3 +1,5 @@
+import { ProjectRepository } from "../database/repositories/ProjectRepository";
+
 export const TYPES = {
   Database: Symbol.for('Database'),
   RedisService: Symbol.for('RedisService'),
@@ -234,6 +236,7 @@ export const TYPES = {
   IMessageReactionRepository: Symbol.for('IMessageReactionRepository'),
   CommunityController: Symbol.for('CommunityController'),
   CommunityRoutes: Symbol.for('CommunityRoutes'),
+  ITransactionService: Symbol.for('ITransactionService'),
 
   // Industrial Subscription System
   IFeatureRepository: Symbol.for('IFeatureRepository'),
@@ -271,6 +274,7 @@ export const TYPES = {
   FeatureRoutes: Symbol.for('FeatureRoutes'),
   PaymentRoutes: Symbol.for('PaymentRoutes'),
   ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
+  ICheckCommunityMembershipExpiryUseCase: Symbol.for('ICheckCommunityMembershipExpiryUseCase'),
 
   // Project Management
   IProjectRepository: Symbol.for('IProjectRepository'),
@@ -278,6 +282,7 @@ export const TYPES = {
   IListProjectsUseCase: Symbol.for('IListProjectsUseCase'),
   ProjectController: Symbol.for('ProjectController'),
   ProjectRoutes: Symbol.for('ProjectRoutes'),
+  ProjectRepository: Symbol.for('ProjectRepository'),
 
   // Booking Use Cases
   ICancelBookingUseCase: Symbol.for('ICancelBookingUseCase'),
@@ -313,4 +318,15 @@ export const TYPES = {
   IGetProviderAvailabilityUseCase: Symbol.for('IGetProviderAvailabilityUseCase'),
   IUpdateProviderAvailabilityUseCase: Symbol.for('IUpdateProviderAvailabilityUseCase'),
   IGetOccupiedSlotsUseCase: Symbol.for('IGetOccupiedSlotsUseCase'),
+
+  // Pagination Service
+  IPaginationService: Symbol.for('IPaginationService'),
+  
+  // Admin Wallet
+  IGetAdminWalletStatsUseCase: Symbol.for('IGetAdminWalletStatsUseCase'),
+  IGetWalletTransactionsUseCase: Symbol.for('IGetWalletTransactionsUseCase'),
+  AdminWalletController: Symbol.for('AdminWalletController'),
+  AdminWalletRoutes: Symbol.for('AdminWalletRoutes'),
+
+  
 };

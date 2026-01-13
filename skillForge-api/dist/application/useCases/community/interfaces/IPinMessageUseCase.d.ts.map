@@ -1,0 +1,1 @@
+{"version":3,"file":"IPinMessageUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/community/interfaces/IPinMessageUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,8CAA8C,CAAC;AAEhF,MAAM,WAAW,kBAAkB;IACjC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,gBAAgB,CAAC,CAAC;CACvE"}

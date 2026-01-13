@@ -5,13 +5,7 @@ import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
 import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
-export interface ISendMessageUseCase {
-    execute(userId: string, dto: SendMessageDTO, file?: {
-        buffer: Buffer;
-        originalname: string;
-        mimetype: string;
-    }): Promise<CommunityMessage>;
-}
+import { ISendMessageUseCase } from './interfaces/ISendMessageUseCase';
 export declare class SendMessageUseCase implements ISendMessageUseCase {
     private readonly messageRepository;
     private readonly communityRepository;

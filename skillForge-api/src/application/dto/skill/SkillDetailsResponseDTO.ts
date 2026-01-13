@@ -19,6 +19,7 @@ export const SkillDetailsDTOSchema = z.object({
     id: z.string().uuid('Invalid provider ID'),
     name: z.string().min(1, 'Provider name is required'),
     email: z.string().email('Invalid email address'),
+    avatarUrl: z.string().url('Invalid avatar URL').nullable(),
     rating: z.number().min(0).max(5, 'Rating must be between 0 and 5'),
     reviewCount: z.number().int().min(0, 'Review count must be non-negative'),
   }),

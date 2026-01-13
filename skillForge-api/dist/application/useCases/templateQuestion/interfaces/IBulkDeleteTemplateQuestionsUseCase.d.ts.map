@@ -1,0 +1,1 @@
+{"version":3,"file":"IBulkDeleteTemplateQuestionsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/templateQuestion/interfaces/IBulkDeleteTemplateQuestionsUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,mCAAmC;IAClD,OAAO,CAAC,UAAU,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM,EAAE,GAAG,OAAO,CAAC;QAAE,YAAY,EAAE,MAAM,CAAA;KAAE,CAAC,CAAC;CACvF"}

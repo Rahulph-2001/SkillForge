@@ -16,7 +16,7 @@ class User {
         this._bio = data.bio || null;
         this._location = data.location || null;
         this._role = data.role || UserRole_1.UserRole.USER;
-        const bonusCredits = data.bonus_credits || env_1.env.DEFAULT_BONUS_CREDITS;
+        const bonusCredits = data.bonusCredits || env_1.env.DEFAULT_BONUS_CREDITS;
         this._credits = bonusCredits;
         this._earnedCredits = 0;
         this._bonusCredits = bonusCredits;
@@ -43,14 +43,14 @@ class User {
             },
         };
         this._antiFraud = {
-            registration_ip: data.registration_ip || null,
+            registration_ip: data.registrationIp || null,
             last_login_ip: null,
             account_age_days: 0,
             suspicious_activity_flags: [],
             last_redemption_date: null,
             redemption_count: 0,
             risk_score: 0,
-            flagged_for_review: false,
+            flaggedForReview: false,
         };
         this._subscriptionPlan = 'free';
         this._subscriptionValidUntil = null;
@@ -119,8 +119,15 @@ class User {
     get email() { return this._email; }
     get passwordHash() { return this._passwordHash; }
     get avatarUrl() { return this._avatarUrl; }
+    get bio() { return this._bio; }
+    get location() { return this._location; }
     get role() { return this._role; }
     get credits() { return this._credits; }
+    get walletBalance() { return this._walletBalance; }
+    get rating() { return this._rating; }
+    get reviewCount() { return this._reviewCount; }
+    get totalSessionsCompleted() { return this._totalSessionsCompleted; }
+    get memberSince() { return this._memberSince; }
     get verification() { return this._verification; }
     get antiFraud() { return this._antiFraud; }
     get isDeleted() { return this._isDeleted; }
@@ -248,6 +255,15 @@ class User {
         this._updatedAt = new Date();
     }
     /**
+     * Deactivate/expire subscription (called when subscription period ends)
+     */
+    deactivateSubscription() {
+        this._subscriptionPlan = 'free';
+        this._subscriptionValidUntil = null;
+        this._subscriptionAutoRenew = false;
+        this._updatedAt = new Date();
+    }
+    /**
      * Credit amount to user wallet
      * @param amount - Amount to credit (must be positive)
      */
@@ -336,7 +352,29 @@ class User {
         userAny._totalSessionsCompleted = row.total_sessions_completed || row.totalSessionsCompleted || 0;
         userAny._memberSince = (row.member_since || row.memberSince) || new Date();
         userAny._verification = row.verification;
-        userAny._antiFraud = row.anti_fraud || row.antiFraud;
+        // Normalize antiFraud data - handle both snake_case (from DB) and camelCase formats
+        const antiFraudData = row.anti_fraud || row.antiFraud;
+        if (antiFraudData) {
+            // Convert flagged_for_review (snake_case) to flaggedForReview (camelCase) if present
+            if (antiFraudData.flagged_for_review !== undefined && antiFraudData.flaggedForReview === undefined) {
+                antiFraudData.flaggedForReview = antiFraudData.flagged_for_review;
+                delete antiFraudData.flagged_for_review;
+            }
+            userAny._antiFraud = antiFraudData;
+        }
+        else {
+            // Default antiFraud data if not present
+            userAny._antiFraud = {
+                registration_ip: null,
+                last_login_ip: null,
+                account_age_days: 0,
+                suspicious_activity_flags: [],
+                last_redemption_date: null,
+                redemption_count: 0,
+                risk_score: 0,
+                flaggedForReview: false,
+            };
+        }
         userAny._settings = row.settings;
         userAny._adminPermissions = row.admin_permissions || row.adminPermissions;
         userAny._subscriptionPlan = row.subscription_plan || row.subscriptionPlan || 'free';

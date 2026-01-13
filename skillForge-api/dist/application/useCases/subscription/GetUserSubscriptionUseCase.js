@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetUserSubscriptionUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const UserSubscriptionMapper_1 = require("../../mappers/UserSubscriptionMapper");
 const AppError_1 = require("../../../domain/errors/AppError");
 let GetUserSubscriptionUseCase = class GetUserSubscriptionUseCase {
-    constructor(subscriptionRepository, planRepository) {
+    constructor(subscriptionRepository, planRepository, userSubscriptionMapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
+        this.userSubscriptionMapper = userSubscriptionMapper;
     }
     async execute(userId) {
         // Find user's subscription
@@ -34,7 +34,7 @@ let GetUserSubscriptionUseCase = class GetUserSubscriptionUseCase {
             throw new AppError_1.NotFoundError('Subscription plan not found');
         }
         // Map to DTO with plan name
-        return UserSubscriptionMapper_1.UserSubscriptionMapper.toDTO(subscription, plan.name);
+        return this.userSubscriptionMapper.toDTO(subscription, plan.name);
     }
 };
 exports.GetUserSubscriptionUseCase = GetUserSubscriptionUseCase;
@@ -42,6 +42,7 @@ exports.GetUserSubscriptionUseCase = GetUserSubscriptionUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISubscriptionPlanRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], GetUserSubscriptionUseCase);
 //# sourceMappingURL=GetUserSubscriptionUseCase.js.map

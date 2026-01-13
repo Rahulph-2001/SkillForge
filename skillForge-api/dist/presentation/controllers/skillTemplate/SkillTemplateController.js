@@ -15,11 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SkillTemplateController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const CreateSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/CreateSkillTemplateUseCase");
-const ListSkillTemplatesUseCase_1 = require("../../../application/useCases/skillTemplate/ListSkillTemplatesUseCase");
-const UpdateSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/UpdateSkillTemplateUseCase");
-const DeleteSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase");
-const ToggleSkillTemplateStatusUseCase_1 = require("../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let SkillTemplateController = class SkillTemplateController {
@@ -129,16 +124,12 @@ let SkillTemplateController = class SkillTemplateController {
 exports.SkillTemplateController = SkillTemplateController;
 exports.SkillTemplateController = SkillTemplateController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.CreateSkillTemplateUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.ListSkillTemplatesUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.UpdateSkillTemplateUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.DeleteSkillTemplateUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.ToggleSkillTemplateStatusUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ICreateSkillTemplateUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IListSkillTemplatesUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUpdateSkillTemplateUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IDeleteSkillTemplateUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IToggleSkillTemplateStatusUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [CreateSkillTemplateUseCase_1.CreateSkillTemplateUseCase,
-        ListSkillTemplatesUseCase_1.ListSkillTemplatesUseCase,
-        UpdateSkillTemplateUseCase_1.UpdateSkillTemplateUseCase,
-        DeleteSkillTemplateUseCase_1.DeleteSkillTemplateUseCase,
-        ToggleSkillTemplateStatusUseCase_1.ToggleSkillTemplateStatusUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], SkillTemplateController);
 //# sourceMappingURL=SkillTemplateController.js.map

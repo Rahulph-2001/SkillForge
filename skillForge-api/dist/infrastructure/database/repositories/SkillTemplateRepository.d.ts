@@ -1,8 +1,8 @@
 import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTemplateRepository';
 import { SkillTemplate } from '../../../domain/entities/SkillTemplate';
 import { Database } from '../Database';
-export declare class SkillTemplateRepository implements ISkillTemplateRepository {
-    private readonly prisma;
+import { BaseRepository } from '../BaseRepository';
+export declare class SkillTemplateRepository extends BaseRepository<SkillTemplate> implements ISkillTemplateRepository {
     constructor(db: Database);
     create(template: SkillTemplate): Promise<SkillTemplate>;
     findById(id: string): Promise<SkillTemplate | null>;

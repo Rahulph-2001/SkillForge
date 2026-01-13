@@ -1,9 +1,7 @@
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
-export interface IDeleteMessageUseCase {
-    execute(userId: string, messageId: string): Promise<void>;
-}
+import { IDeleteMessageUseCase } from './interfaces/IDeleteMessageUseCase';
 export declare class DeleteMessageUseCase implements IDeleteMessageUseCase {
     private readonly messageRepository;
     private readonly communityRepository;

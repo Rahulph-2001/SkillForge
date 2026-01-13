@@ -10,6 +10,8 @@ export declare const CommunityResponseDTOSchema: z.ZodObject<{
     imageUrl: z.ZodNullable<z.ZodString>;
     videoUrl: z.ZodNullable<z.ZodString>;
     adminId: z.ZodString;
+    adminName: z.ZodOptional<z.ZodString>;
+    adminAvatar: z.ZodOptional<z.ZodNullable<z.ZodString>>;
     creditsCost: z.ZodNumber;
     creditsPeriod: z.ZodString;
     membersCount: z.ZodNumber;

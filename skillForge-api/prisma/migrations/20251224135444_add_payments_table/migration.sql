@@ -1,19 +1,19 @@
 -- CreateTable
 CREATE TABLE "payments" (
-    "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "provider" TEXT NOT NULL,
-    "provider_payment_id" TEXT,
-    "provider_customer_id" TEXT,
+    "id" UUID NOT NULL,
+    "user_id" UUID NOT NULL,
+    "provider" VARCHAR(50) NOT NULL,
+    "provider_payment_id" VARCHAR(255),
+    "provider_customer_id" VARCHAR(255),
     "amount" DOUBLE PRECISION NOT NULL,
-    "currency" TEXT NOT NULL,
-    "purpose" TEXT NOT NULL,
-    "status" TEXT NOT NULL,
+    "currency" VARCHAR(10) NOT NULL,
+    "purpose" VARCHAR(50) NOT NULL,
+    "status" VARCHAR(50) NOT NULL,
     "metadata" JSONB,
     "failure_reason" TEXT,
     "refunded_amount" DOUBLE PRECISION,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMPTZ(6) NOT NULL,
 
     CONSTRAINT "payments_pkey" PRIMARY KEY ("id")
 );
@@ -31,4 +31,4 @@ CREATE INDEX "payments_provider_payment_id_idx" ON "payments"("provider_payment_
 CREATE INDEX "payments_status_idx" ON "payments"("status");
 
 -- AddForeignKey
-ALTER TABLE "payments" ADD CONSTRAINT "payments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "payments" ADD CONSTRAINT "payments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;

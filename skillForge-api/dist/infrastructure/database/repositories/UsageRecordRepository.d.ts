@@ -1,8 +1,8 @@
 import { Database } from '../Database';
 import { IUsageRecordRepository } from '../../../domain/repositories/IUsageRecordRepository';
 import { UsageRecord } from '../../../domain/entities/UsageRecord';
-export declare class PrismaUsageRecordRepository implements IUsageRecordRepository {
-    private readonly prisma;
+import { BaseRepository } from '../BaseRepository';
+export declare class UsageRecordRepository extends BaseRepository<UsageRecord> implements IUsageRecordRepository {
     constructor(db: Database);
     create(usageRecord: UsageRecord): Promise<UsageRecord>;
     findById(id: string): Promise<UsageRecord | null>;
@@ -13,5 +13,6 @@ export declare class PrismaUsageRecordRepository implements IUsageRecordReposito
     delete(id: string): Promise<void>;
     resetUsageForSubscription(subscriptionId: string, newPeriodStart: Date, newPeriodEnd: Date): Promise<void>;
     getOrCreate(subscriptionId: string, featureKey: string, limitValue: number | undefined, periodStart: Date, periodEnd: Date): Promise<UsageRecord>;
+    upsert(record: UsageRecord): Promise<UsageRecord>;
 }
 //# sourceMappingURL=UsageRecordRepository.d.ts.map

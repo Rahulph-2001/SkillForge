@@ -15,9 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AvailabilityController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const GetProviderAvailabilityUseCase_1 = require("../../../application/useCases/availability/GetProviderAvailabilityUseCase");
-const UpdateProviderAvailabilityUseCase_1 = require("../../../application/useCases/availability/UpdateProviderAvailabilityUseCase");
-const GetOccupiedSlotsUseCase_1 = require("../../../application/useCases/availability/GetOccupiedSlotsUseCase");
 let AvailabilityController = class AvailabilityController {
     constructor(getUseCase, updateUseCase, getOccupiedSlotsUseCase, responseBuilder) {
         this.getUseCase = getUseCase;
@@ -27,15 +24,12 @@ let AvailabilityController = class AvailabilityController {
     }
     async getAvailability(req, res) {
         try {
-            const providerId = req.user.userId; // Assumes auth middleware populates user
-            console.log('[AvailabilityController] GET /availability for provider', providerId);
+            const providerId = req.user.userId;
             const availability = await this.getUseCase.execute(providerId);
-            console.log('[AvailabilityController] GET result schedule keys', Object.keys(availability.weeklySchedule || {}));
             const response = this.responseBuilder.success(availability);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Error getting availability:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve availability');
             res.status(response.statusCode).json(response.body);
         }
@@ -44,20 +38,11 @@ let AvailabilityController = class AvailabilityController {
         try {
             const providerId = req.user.userId;
             const data = req.body;
-            console.log(`[AvailabilityController] PUT /availability for provider ${providerId}`, {
-                timezone: data?.timezone,
-                bufferTime: data?.bufferTime,
-                minAdvanceBooking: data?.minAdvanceBooking,
-                maxAdvanceBooking: data?.maxAdvanceBooking,
-                weeklyScheduleKeys: data?.weeklySchedule ? Object.keys(data.weeklySchedule) : [],
-            });
             const updated = await this.updateUseCase.execute(providerId, data);
-            console.log('[AvailabilityController] PUT result schedule keys', Object.keys(updated.weeklySchedule || {}));
             const response = this.responseBuilder.success(updated, 'Availability settings updated successfully');
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Error updating availability:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to update availability');
             res.status(response.statusCode).json(response.body);
         }
@@ -76,7 +61,6 @@ let AvailabilityController = class AvailabilityController {
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
-            console.error('Error getting occupied slots:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve occupied slots');
             res.status(response.statusCode).json(response.body);
         }
@@ -85,12 +69,10 @@ let AvailabilityController = class AvailabilityController {
 exports.AvailabilityController = AvailabilityController;
 exports.AvailabilityController = AvailabilityController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.GetProviderAvailabilityUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.UpdateProviderAvailabilityUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.GetOccupiedSlotsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IGetProviderAvailabilityUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUpdateProviderAvailabilityUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetOccupiedSlotsUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [GetProviderAvailabilityUseCase_1.GetProviderAvailabilityUseCase,
-        UpdateProviderAvailabilityUseCase_1.UpdateProviderAvailabilityUseCase,
-        GetOccupiedSlotsUseCase_1.GetOccupiedSlotsUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], AvailabilityController);
 //# sourceMappingURL=AvailabilityController.js.map

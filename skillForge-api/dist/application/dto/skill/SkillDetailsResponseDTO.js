@@ -21,6 +21,7 @@ exports.SkillDetailsDTOSchema = zod_1.z.object({
         id: zod_1.z.string().uuid('Invalid provider ID'),
         name: zod_1.z.string().min(1, 'Provider name is required'),
         email: zod_1.z.string().email('Invalid email address'),
+        avatarUrl: zod_1.z.string().url('Invalid avatar URL').nullable(),
         rating: zod_1.z.number().min(0).max(5, 'Rating must be between 0 and 5'),
         reviewCount: zod_1.z.number().int().min(0, 'Review count must be non-negative'),
     }),

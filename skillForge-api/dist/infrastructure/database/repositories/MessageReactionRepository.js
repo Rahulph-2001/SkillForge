@@ -14,12 +14,20 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessageReactionRepository = void 0;
 const inversify_1 = require("inversify");
-const client_1 = require("@prisma/client");
 const types_1 = require("../../di/types");
 const MessageReaction_1 = require("../../../domain/entities/MessageReaction");
-let MessageReactionRepository = class MessageReactionRepository {
-    constructor(prisma) {
-        this.prisma = prisma;
+const Database_1 = require("../Database");
+const BaseRepository_1 = require("../BaseRepository");
+let MessageReactionRepository = class MessageReactionRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'messageReaction');
+    }
+    // Override delete with composite key signature (special case for MessageReaction)
+    // @ts-expect-error - Different signature required by interface for composite key deletion
+    async delete(messageId, userId, emoji) {
+        await this.prisma.messageReaction.deleteMany({
+            where: { messageId, userId, emoji },
+        });
     }
     async create(reaction) {
         const data = reaction.toJSON();
@@ -46,11 +54,6 @@ let MessageReactionRepository = class MessageReactionRepository {
         });
         return MessageReaction_1.MessageReaction.fromDatabaseRow(created);
     }
-    async delete(messageId, userId, emoji) {
-        await this.prisma.messageReaction.deleteMany({
-            where: { messageId, userId, emoji },
-        });
-    }
     async findByMessageId(messageId) {
         const reactions = await this.prisma.messageReaction.findMany({
             where: { messageId },
@@ -76,7 +79,7 @@ let MessageReactionRepository = class MessageReactionRepository {
 exports.MessageReactionRepository = MessageReactionRepository;
 exports.MessageReactionRepository = MessageReactionRepository = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [client_1.PrismaClient])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Database_1.Database])
 ], MessageReactionRepository);
 //# sourceMappingURL=MessageReactionRepository.js.map

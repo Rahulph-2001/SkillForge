@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notFoundHandler = exports.errorHandler = void 0;
+exports.asyncHandler = exports.notFoundHandler = exports.errorHandler = void 0;
 const AppError_1 = require("../../domain/errors/AppError");
 const HttpStatusCode_1 = require("../../domain/enums/HttpStatusCode");
 const env_1 = require("../../config/env");
@@ -67,4 +67,14 @@ const notFoundHandler = (req, res) => {
     res.status(HttpStatusCode_1.HttpStatusCode.NOT_FOUND).json(response);
 };
 exports.notFoundHandler = notFoundHandler;
+/**
+ * Async error handler wrapper for route handlers
+ * Catches async errors and passes them to the error handler
+ */
+const asyncHandler = (fn) => {
+    return (req, res, next) => {
+        Promise.resolve(fn(req, res, next)).catch(next);
+    };
+};
+exports.asyncHandler = asyncHandler;
 //# sourceMappingURL=errorHandler.js.map

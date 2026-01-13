@@ -16,6 +16,7 @@ exports.EmailService = void 0;
 const inversify_1 = require("inversify");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const env_1 = require("../../config/env");
+const AppError_1 = require("../../domain/errors/AppError");
 let EmailService = class EmailService {
     constructor() {
         this.transporter = nodemailer_1.default.createTransport({
@@ -62,7 +63,7 @@ let EmailService = class EmailService {
         }
         catch (error) {
             console.error('Error sending email:', error);
-            throw new Error('Failed to send email');
+            throw new AppError_1.InternalServerError('Failed to send email');
         }
     }
     async sendWelcomeEmail(email, userName) {
@@ -136,7 +137,7 @@ let EmailService = class EmailService {
         }
         catch (error) {
             console.error('Error sending password reset email:', error);
-            throw new Error('Failed to send email');
+            throw new AppError_1.InternalServerError('Failed to send email');
         }
     }
 };

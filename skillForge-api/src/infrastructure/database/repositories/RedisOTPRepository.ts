@@ -3,14 +3,22 @@ import { RedisService } from '../../services/RedisService';
 import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { OTPToken } from '../../../domain/entities/OTPToken';
 import { TYPES } from '../../di/types';
+import { NotFoundError } from '../../../domain/errors/AppError';
+import { BaseRedisRepository } from '../BaseRedisRepository';
 
 @injectable()
-export class RedisOTPRepository implements IOTPRepository {
+export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepository {
   private readonly OTP_PREFIX = 'otp:';
   private readonly OTP_USER_PREFIX = 'otp:user:';
   private readonly OTP_CODE_PREFIX = 'otp:code:';
 
-  constructor(@inject(TYPES.RedisService) private redisService: RedisService) {}
+  constructor(@inject(TYPES.RedisService) private redisService: RedisService) {
+    super();
+  }
+
+  protected getKeyPrefix(): string {
+    return this.OTP_PREFIX;
+  }
 
   private getKey(userId: string, otpType: 'email' | 'password_reset'): string {
     return `${this.OTP_USER_PREFIX}${userId}:${otpType}`;
@@ -132,7 +140,7 @@ export class RedisOTPRepository implements IOTPRepository {
     const otpKey = this.getOTPKey(otpData.id as string);
     const ttl = await redis.ttl(otpKey);
     if (ttl <= 0) {
-      throw new Error('OTP has expired');
+      throw new NotFoundError('OTP has expired');
     }
     const createdAt = otpData.created_at instanceof Date
       ? otpData.created_at

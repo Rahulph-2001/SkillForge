@@ -104,11 +104,23 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     preferredDate: string,
     preferredTime: string
   ): Promise<Booking | null> {
+    // Convert date string to Date object at start of day for Prisma
+    const dateObj = new Date(preferredDate);
+    dateObj.setHours(0, 0, 0, 0);
+    
+    // Use date range to match the entire day
+    const startOfDay = dateObj.toISOString();
+    const endOfDay = new Date(dateObj);
+    endOfDay.setHours(23, 59, 59, 999);
+    
     const booking = await this.prisma.booking.findFirst({
       where: {
         learnerId,
         skillId,
-        preferredDate,
+        preferredDate: {
+          gte: startOfDay,
+          lte: endOfDay.toISOString(),
+        },
         preferredTime,
         status: { in: ['pending', 'confirmed'] },
         isDeleted: false,
@@ -127,13 +139,16 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
 
   async create(booking: Booking): Promise<Booking> {
     const domainBooking = booking.toObject();
+    // Convert preferredDate string to Date object for Prisma
+    const preferredDateObj = new Date(domainBooking.preferredDate);
+    
     const created = await this.prisma.booking.create({
       data: {
         id: domainBooking.id,
         skillId: domainBooking.skillId,
         providerId: domainBooking.providerId,
         learnerId: domainBooking.learnerId,
-        preferredDate: domainBooking.preferredDate,
+        preferredDate: preferredDateObj,
         preferredTime: domainBooking.preferredTime,
         startAt: domainBooking.startAt,
         endAt: domainBooking.endAt,
@@ -198,13 +213,16 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       });
 
       // 4. Create Booking
+      // Convert preferredDate string to Date object for Prisma
+      const preferredDateObj = new Date(domainBooking.preferredDate);
+      
       const created = await tx.booking.create({
         data: {
           id: domainBooking.id,
           skillId: domainBooking.skillId,
           providerId: domainBooking.providerId,
           learnerId: domainBooking.learnerId,
-          preferredDate: domainBooking.preferredDate,
+          preferredDate: preferredDateObj,
           preferredTime: domainBooking.preferredTime,
           startAt: startAt,
           endAt: endAt,
@@ -354,11 +372,20 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
   }
 
   async findOverlapping(providerId: string, date: Date, startTime: string, endTime: string): Promise<Booking[]> {
+    // Convert date to start and end of day for Prisma
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
     const dateString = date.toISOString().split('T')[0];
     const bookings = await this.prisma.booking.findMany({
       where: {
         providerId,
-        preferredDate: dateString,
+        preferredDate: {
+          gte: startOfDay.toISOString(),
+          lte: endOfDay.toISOString(),
+        },
         status: { in: ['pending', 'confirmed'] },
         isDeleted: false,
         OR: [
@@ -381,12 +408,20 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
   }
 
   async findInDateRange(providerId: string, startDate: Date, endDate: Date): Promise<Booking[]> {
+    // Set startDate to beginning of day (00:00:00)
+    const startOfDay = new Date(startDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    
+    // Set endDate to end of day (23:59:59.999)
+    const endOfDay = new Date(endDate);
+    endOfDay.setHours(23, 59, 59, 999);
+    
     const bookings = await this.prisma.booking.findMany({
       where: {
         providerId,
         preferredDate: {
-          gte: startDate.toISOString().split('T')[0],
-          lte: endDate.toISOString().split('T')[0],
+          gte: startOfDay.toISOString(),
+          lte: endOfDay.toISOString(),
         },
         isDeleted: false,
       },
@@ -407,6 +442,12 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     endTime: string,
     bufferMinutes: number
   ): Promise<Booking[]> {
+    // Convert date to start and end of day for Prisma
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
     const dateString = date.toISOString().split('T')[0];
     const bufferMs = bufferMinutes * 60 * 1000;
     const startDateTime = new Date(`${dateString}T${startTime}`);
@@ -417,7 +458,10 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     const bookings = await this.prisma.booking.findMany({
       where: {
         providerId,
-        preferredDate: dateString,
+        preferredDate: {
+          gte: startOfDay.toISOString(),
+          lte: endOfDay.toISOString(),
+        },
         status: { in: ['pending', 'confirmed'] },
         isDeleted: false,
         AND: [
@@ -435,10 +479,22 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
   }
 
   async countActiveBookingsByProviderAndDate(providerId: string, dateString: string): Promise<number> {
+    // Convert date string to Date object at start of day for Prisma
+    const dateObj = new Date(dateString);
+    dateObj.setHours(0, 0, 0, 0);
+    
+    // Use date range to match the entire day
+    const startOfDay = dateObj.toISOString();
+    const endOfDay = new Date(dateObj);
+    endOfDay.setHours(23, 59, 59, 999);
+    
     return await this.prisma.booking.count({
       where: {
         providerId,
-        preferredDate: dateString,
+        preferredDate: {
+          gte: startOfDay,
+          lte: endOfDay.toISOString(),
+        },
         status: { in: ['pending', 'confirmed'] },
         isDeleted: false,
       },
@@ -480,11 +536,14 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     }
 
     const rescheduleInfo = booking.rescheduleInfo as any;
+    // Convert preferredDate string to Date object for Prisma
+    const preferredDateObj = new Date(newDate);
+    
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {
         status: 'confirmed',
-        preferredDate: newDate,
+        preferredDate: preferredDateObj,
         preferredTime: newTime,
         startAt: rescheduleInfo.newStartAt ? new Date(rescheduleInfo.newStartAt) : null,
         endAt: rescheduleInfo.newEndAt ? new Date(rescheduleInfo.newEndAt) : null,

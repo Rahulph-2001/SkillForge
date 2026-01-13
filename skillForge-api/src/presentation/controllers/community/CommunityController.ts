@@ -48,22 +48,18 @@ export class CommunityController {
   ) { }
   public createCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('🎯 CommunityController.createCommunity - START');
-      const userId = (req as any).user.userId;
-      console.log('👤 User ID from auth:', userId);
+      const userId = req.user!.userId;
 
       // Parse FormData fields - FormData sends everything as strings
       const dto: CreateCommunityDTO = {
         ...req.body,
         creditsCost: req.body.creditsCost ? parseInt(req.body.creditsCost, 10) : undefined
       };
-      console.log('📝 DTO received:', dto);
 
       const file = req.file;
-      console.log('📎 File received:', file ? { name: file.originalname, size: file.size, type: file.mimetype } : 'No file');
 
-      console.log('🚀 Calling createCommunityUseCase.execute...');
-      const community = await this.createCommunityUseCase.execute(
+      // Use case already returns a CommunityResponseDTO (mapped DTO)
+      const communityDTO = await this.createCommunityUseCase.execute(
         userId,
         dto,
         file ? {
@@ -73,27 +69,20 @@ export class CommunityController {
         } : undefined
       );
 
-      console.log('✅ Use case completed, community created:', community.id);
-      console.log('🗺️  Mapping to DTO...');
-      const communityDTO = this.communityMapper.toDTO(community, userId);
-
-      console.log('📤 Building response...');
       const response = this.responseBuilder.success(
         communityDTO,
         SUCCESS_MESSAGES.COMMUNITY.CREATED,
         HttpStatusCode.CREATED
       );
 
-      console.log('✅ Sending response with status:', response.statusCode);
       res.status(response.statusCode).json(response.body);
     } catch (error) {
-      console.error('❌ ERROR in createCommunity controller:', error);
       next(error);
     }
   };
   public updateCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
 
       // Parse FormData fields - FormData sends everything as strings
@@ -112,8 +101,9 @@ export class CommunityController {
           mimetype: file.mimetype
         } : undefined
       );
+      const communityDTO = await this.communityMapper.toDTO(community, userId);
       const response = this.responseBuilder.success(
-        this.communityMapper.toDTO(community, userId),
+        communityDTO,
         SUCCESS_MESSAGES.COMMUNITY.UPDATED,
         HttpStatusCode.OK
       );
@@ -124,13 +114,18 @@ export class CommunityController {
   };
   public getCommunities = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.userId;
+      const userId = req.user?.userId;
       const { category } = req.query;
-      const communities = await this.getCommunitiesUseCase.execute({
-        category: category as string
-      }, userId);
+      const communities = await this.getCommunitiesUseCase.execute(
+        {
+          category: category as string
+        },
+        userId
+      );
+      // communityMapper.toDTOList is async; ensure we await it so we return actual data (not a Promise)
+      const communitiesDto = await this.communityMapper.toDTOList(communities, userId);
       const response = this.responseBuilder.success(
-        this.communityMapper.toDTOList(communities, userId),
+        communitiesDto,
         SUCCESS_MESSAGES.COMMUNITY.FETCHED,
         HttpStatusCode.OK
       );
@@ -141,11 +136,12 @@ export class CommunityController {
   };
   public getCommunityDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.userId;
+      const userId = req.user?.userId;
       const { id } = req.params;
-      const community = await this.getCommunityDetailsUseCase.execute(id, userId);
+      // Use case already returns CommunityResponseDTO with imageUrl and flags
+      const communityDTO = await this.getCommunityDetailsUseCase.execute(id, userId);
       const response = this.responseBuilder.success(
-        this.communityMapper.toDTO(community, userId),
+        communityDTO,
         SUCCESS_MESSAGES.COMMUNITY.DETAILS_FETCHED,
         HttpStatusCode.OK
       );
@@ -156,7 +152,7 @@ export class CommunityController {
   };
   public joinCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
       await this.joinCommunityUseCase.execute(userId, id);
       const response = this.responseBuilder.success(
@@ -171,7 +167,7 @@ export class CommunityController {
   };
   public leaveCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
       await this.leaveCommunityUseCase.execute(userId, id);
       const response = this.responseBuilder.success(
@@ -186,7 +182,7 @@ export class CommunityController {
   };
   public sendMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const dto: SendMessageDTO = req.body;
       const file = req.file;
       const message = await this.sendMessageUseCase.execute(
@@ -211,7 +207,7 @@ export class CommunityController {
   };
   public getMessages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
@@ -229,7 +225,7 @@ export class CommunityController {
   };
   public pinMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { messageId } = req.params;
       const message = await this.pinMessageUseCase.execute(userId, messageId);
       const messageDTO = await this.communityMessageMapper.toDTO(message);
@@ -245,7 +241,7 @@ export class CommunityController {
   };
   public unpinMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { messageId } = req.params;
       const message = await this.unpinMessageUseCase.execute(userId, messageId);
       const messageDTO = await this.communityMessageMapper.toDTO(message);
@@ -261,7 +257,7 @@ export class CommunityController {
   };
   public deleteMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { messageId } = req.params;
       await this.deleteMessageUseCase.execute(userId, messageId);
       const response = this.responseBuilder.success(
@@ -277,7 +273,7 @@ export class CommunityController {
 
   public removeMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id: communityId, memberId } = req.params;
       await this.removeCommunityMemberUseCase.execute(userId, communityId, memberId);
       const response = this.responseBuilder.success(
@@ -312,7 +308,7 @@ export class CommunityController {
 
   public addReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { messageId } = req.params;
       const { emoji } = req.body;
 
@@ -331,7 +327,7 @@ export class CommunityController {
 
   public removeReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { messageId, emoji } = req.params;
 
       await this.removeReactionUseCase.execute(userId, messageId, emoji);

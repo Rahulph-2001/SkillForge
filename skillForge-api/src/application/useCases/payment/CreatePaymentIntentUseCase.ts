@@ -33,8 +33,6 @@ export class CreatePaymentIntentUseCase implements ICreatePaymentIntentUseCase {
 
         const savedPayment = await this.paymentRepository.create(payment);
 
-        console.log('[CreatePaymentIntentUseCase] Creating payment intent for user:', userId, 'with metadata:', dto.metadata);
-
         const paymentIntent = await this.paymentGateway.createPaymentIntent({
             amount: dto.amount,
             currency: dto.currency,
@@ -45,8 +43,6 @@ export class CreatePaymentIntentUseCase implements ICreatePaymentIntentUseCase {
                 paymentId: savedPayment.id,
             },
         });
-
-        console.log('[CreatePaymentIntentUseCase] Payment intent created:', paymentIntent.paymentIntentId);
 
         // CRITICAL FIX: Update the payment record with the Stripe payment intent ID
         // This is needed so ConfirmPaymentUseCase can find the payment later

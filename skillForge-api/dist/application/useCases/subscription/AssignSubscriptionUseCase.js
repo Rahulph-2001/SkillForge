@@ -20,13 +20,13 @@ const uuid_1 = require("uuid");
 const AppError_1 = require("../../../domain/errors/AppError");
 const SubscriptionEnums_1 = require("../../../domain/enums/SubscriptionEnums");
 let AssignSubscriptionUseCase = class AssignSubscriptionUseCase {
-    constructor(subscriptionRepository, planRepository, userRepository) {
+    constructor(subscriptionRepository, planRepository, userRepository, userSubscriptionMapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
         this.userRepository = userRepository;
+        this.userSubscriptionMapper = userSubscriptionMapper;
     }
     async execute(dto) {
-        console.log('[AssignSubscriptionUseCase] Executing with DTO:', dto);
         // Verify plan exists
         const plan = await this.planRepository.findById(dto.planId);
         if (!plan) {
@@ -42,14 +42,12 @@ let AssignSubscriptionUseCase = class AssignSubscriptionUseCase {
         if (existingSubscription && existingSubscription.isActive()) {
             if (existingSubscription.planId === dto.planId) {
                 // CASE: Extend
-                console.log('[AssignSubscriptionUseCase] Extending existing subscription (Admin Override)');
                 periodStart = existingSubscription.currentPeriodStart;
                 const currentEnd = existingSubscription.currentPeriodEnd > now ? existingSubscription.currentPeriodEnd : now;
                 periodEnd = new Date(currentEnd);
             }
             else {
                 // CASE: Upgrade/Downgrade (Immediate)
-                console.log('[AssignSubscriptionUseCase] Switching plan (Admin Override)');
                 // Defaults to now
             }
         }
@@ -131,39 +129,15 @@ let AssignSubscriptionUseCase = class AssignSubscriptionUseCase {
                 user.activateSubscription(planName, periodEnd, periodStart, true // autoRenew
                 );
                 await this.userRepository.update(user);
-                console.log('[AssignSubscriptionUseCase] Synced user entity subscription data');
-            }
-            else {
-                console.error('[AssignSubscriptionUseCase] User not found for sync:', dto.userId);
+                // User entity subscription data synced
             }
         }
         catch (error) {
-            console.error('[AssignSubscriptionUseCase] Failed to sync user entity:', error);
+            // Failed to sync user entity - non-critical, subscription still created
+            // TODO: Add proper logging service for error tracking
         }
-        // Calculate days until renewal
-        const daysUntilRenewal = Math.ceil((subscription.currentPeriodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-        // Return DTO
-        return {
-            id: subscription.id,
-            userId: subscription.userId,
-            planId: subscription.planId,
-            planName: plan.name,
-            status: subscription.status,
-            currentPeriodStart: subscription.currentPeriodStart,
-            currentPeriodEnd: subscription.currentPeriodEnd,
-            cancelAt: subscription.cancelAt,
-            canceledAt: subscription.canceledAt,
-            trialStart: subscription.trialStart,
-            trialEnd: subscription.trialEnd,
-            isInTrial: subscription.isInTrial(),
-            hasExpired: subscription.hasExpired(),
-            willCancelAtPeriodEnd: subscription.willCancelAtPeriodEnd(),
-            daysUntilRenewal,
-            stripeSubscriptionId: subscription.stripeSubscriptionId,
-            stripeCustomerId: subscription.stripeCustomerId,
-            createdAt: subscription.createdAt,
-            updatedAt: subscription.updatedAt,
-        };
+        // Return DTO using mapper
+        return this.userSubscriptionMapper.toDTO(subscription, plan.name);
     }
 };
 exports.AssignSubscriptionUseCase = AssignSubscriptionUseCase;
@@ -172,6 +146,7 @@ exports.AssignSubscriptionUseCase = AssignSubscriptionUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISubscriptionPlanRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], AssignSubscriptionUseCase);
 //# sourceMappingURL=AssignSubscriptionUseCase.js.map

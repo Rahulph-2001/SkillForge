@@ -19,6 +19,7 @@ const IJobQueueService_1 = require("../../domain/services/IJobQueueService");
 const RedisService_1 = require("./RedisService");
 const bullmq_1 = require("bullmq");
 const MCQImportJobProcessor_1 = require("../../application/useCases/mcq/MCQImportJobProcessor");
+const AppError_1 = require("../../domain/errors/AppError");
 let JobQueueService = class JobQueueService {
     constructor(redisService, mcqImportJobProcessor, checkSubscriptionExpiryUseCase) {
         this.redisService = redisService;
@@ -47,7 +48,7 @@ let JobQueueService = class JobQueueService {
     async addJob(queueName, data) {
         const queue = this.queues.get(queueName);
         if (!queue) {
-            throw new Error(`Queue ${queueName} not initialized`);
+            throw new AppError_1.InternalServerError(`Queue ${queueName} not initialized`);
         }
         await queue.add(queueName, data, {
             removeOnComplete: true,

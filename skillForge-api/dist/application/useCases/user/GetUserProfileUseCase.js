@@ -16,48 +16,26 @@ exports.GetUserProfileUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
-const Database_1 = require("../../../infrastructure/database/Database");
 let GetUserProfileUseCase = class GetUserProfileUseCase {
-    constructor(database) {
-        this.prisma = database.getClient();
+    constructor(userRepository, skillRepository) {
+        this.userRepository = userRepository;
+        this.skillRepository = skillRepository;
     }
     async execute(userId) {
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                avatarUrl: true,
-                bio: true,
-                location: true,
-                credits: true,
-                walletBalance: true,
-                rating: true,
-                reviewCount: true,
-                totalSessionsCompleted: true,
-                memberSince: true,
-                subscriptionPlan: true,
-                subscriptionValidUntil: true,
-            },
-        });
+        const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new AppError_1.NotFoundError('User not found');
         }
         // Count skills offered by this user
-        const skillsOffered = await this.prisma.skill.count({
-            where: {
-                providerId: userId,
-                status: 'approved',
-                verificationStatus: 'passed',
-                isBlocked: false,
-                isDeleted: false,
-            },
-        });
+        const skills = await this.skillRepository.findByProviderId(userId);
+        const skillsOffered = skills.filter(s => s.status === 'approved' &&
+            s.verificationStatus === 'passed' &&
+            !s.isBlocked &&
+            !s.isAdminBlocked).length;
         return {
             id: user.id,
             name: user.name,
-            email: user.email,
+            email: user.email.value,
             avatarUrl: user.avatarUrl,
             bio: user.bio,
             location: user.location,
@@ -67,8 +45,8 @@ let GetUserProfileUseCase = class GetUserProfileUseCase {
             rating: user.rating ? Number(user.rating) : 0,
             reviewCount: user.reviewCount,
             totalSessionsCompleted: user.totalSessionsCompleted,
-            memberSince: user.memberSince.toISOString(),
-            subscriptionPlan: user.subscriptionPlan,
+            memberSince: user.memberSince ? user.memberSince.toISOString() : new Date().toISOString(),
+            subscriptionPlan: user.subscriptionPlan || '',
             subscriptionValidUntil: user.subscriptionValidUntil?.toISOString() || null,
         };
     }
@@ -76,7 +54,8 @@ let GetUserProfileUseCase = class GetUserProfileUseCase {
 exports.GetUserProfileUseCase = GetUserProfileUseCase;
 exports.GetUserProfileUseCase = GetUserProfileUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Database_1.Database])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], GetUserProfileUseCase);
 //# sourceMappingURL=GetUserProfileUseCase.js.map

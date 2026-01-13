@@ -1,12 +1,8 @@
-import { Database } from '../../../infrastructure/database/Database';
-export interface BlockSkillDTO {
-    skillId: string;
-    adminId: string;
-    reason: string;
-}
-export declare class BlockSkillUseCase {
-    private prisma;
-    constructor(database: Database);
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IBlockSkillUseCase, BlockSkillDTO } from './interfaces/IBlockSkillUseCase';
+export declare class BlockSkillUseCase implements IBlockSkillUseCase {
+    private readonly skillRepository;
+    constructor(skillRepository: ISkillRepository);
     execute(data: BlockSkillDTO): Promise<void>;
 }
 //# sourceMappingURL=BlockSkillUseCase.d.ts.map

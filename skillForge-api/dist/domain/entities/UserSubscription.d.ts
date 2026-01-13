@@ -94,6 +94,10 @@ export declare class UserSubscription {
      */
     markAsUnpaid(): void;
     /**
+     * Expire subscription (automatically called when period ends)
+     */
+    expire(): void;
+    /**
      * Convert to JSON for API responses
      */
     toJSON(): Record<string, unknown>;

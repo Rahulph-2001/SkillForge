@@ -52,6 +52,12 @@ export class CommunityMember {
     this._isActive = false;
     this._leftAt = new Date();
   }
+  
+  public expireMembership(): void {
+    this._isActive = false;
+    this._leftAt = new Date();
+  }
+  
   public updateSubscription(endsAt: Date): void {
     this._subscriptionEndsAt = endsAt;
   }
@@ -70,6 +76,15 @@ export class CommunityMember {
       userAvatar: this._userAvatar,
     };
   }
+ public renewSubscription(days: number): void {
+  const newEndsAt = new Date();
+  newEndsAt.setDate(newEndsAt.getDate() + days);
+  this._subscriptionEndsAt = newEndsAt;
+}
+public hasAutoRenewEnabled(): boolean {
+  return this._isAutoRenew;
+}
+
   public static fromDatabaseRow(row: Record<string, any>): CommunityMember {
     const member = new CommunityMember({
       id: row.id as string,

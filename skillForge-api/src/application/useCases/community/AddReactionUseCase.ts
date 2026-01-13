@@ -5,10 +5,7 @@ import { ICommunityMessageRepository } from '../../../domain/repositories/ICommu
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { MessageReaction } from '../../../domain/entities/MessageReaction';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
-
-export interface IAddReactionUseCase {
-    execute(userId: string, messageId: string, emoji: string): Promise<MessageReaction>;
-}
+import { IAddReactionUseCase } from './interfaces/IAddReactionUseCase';
 
 @injectable()
 export class AddReactionUseCase implements IAddReactionUseCase {
@@ -57,7 +54,12 @@ export class AddReactionUseCase implements IAddReactionUseCase {
     }
 
     private groupReactionsByEmoji(reactions: MessageReaction[], currentUserId: string) {
-        const grouped = new Map<string, { emoji: string; users: any[]; count: number; hasReacted: boolean }>();
+        interface ReactionUser {
+            id: string;
+            name: string;
+            avatar?: string;
+        }
+        const grouped = new Map<string, { emoji: string; users: ReactionUser[]; count: number; hasReacted: boolean }>();
 
         reactions.forEach(reaction => {
             const emoji = reaction.emoji;

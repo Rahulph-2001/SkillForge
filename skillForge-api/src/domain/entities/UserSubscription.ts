@@ -272,6 +272,18 @@ export class UserSubscription {
     }
 
     /**
+     * Expire subscription (automatically called when period ends)
+     */
+    public expire(): void {
+        if (this._status === SubscriptionStatus.EXPIRED || this._status === SubscriptionStatus.CANCELED) {
+            return; // Already expired or canceled
+        }
+        this._status = SubscriptionStatus.EXPIRED;
+        this._canceledAt = new Date();
+        this._updatedAt = new Date();
+    }
+
+    /**
      * Convert to JSON for API responses
      */
     public toJSON(): Record<string, unknown> {

@@ -18,6 +18,7 @@ export declare const SkillDetailsDTOSchema: z.ZodObject<{
         id: z.ZodString;
         name: z.ZodString;
         email: z.ZodString;
+        avatarUrl: z.ZodNullable<z.ZodString>;
         rating: z.ZodNumber;
         reviewCount: z.ZodNumber;
     }, z.core.$strip>;

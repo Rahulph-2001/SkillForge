@@ -35,7 +35,7 @@ let PublicSubscriptionController = class PublicSubscriptionController {
 exports.PublicSubscriptionController = PublicSubscriptionController;
 exports.PublicSubscriptionController = PublicSubscriptionController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.ListPublicSubscriptionPlansUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IListPublicSubscriptionPlansUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object])
 ], PublicSubscriptionController);

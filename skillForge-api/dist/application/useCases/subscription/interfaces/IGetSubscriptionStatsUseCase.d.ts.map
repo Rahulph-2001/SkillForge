@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetSubscriptionStatsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/subscription/interfaces/IGetSubscriptionStatsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,6DAA6D,CAAC;AAEhG,MAAM,WAAW,4BAA4B;IAC3C,OAAO,CAAC,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,iBAAiB,CAAC,CAAC;CAC1D;AAED,YAAY,EAAE,iBAAiB,EAAE,CAAC"}

@@ -3,13 +3,20 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IStorageService } from '../../../domain/services/IStorageService';
 import { ICommunityMapper } from '../../mappers/interfaces/ICommunityMapper';
-import { Database } from '../../../infrastructure/database/Database';
 import { Community } from '../../../domain/entities/Community';
 import { CommunityMember } from '../../../domain/entities/CommunityMember';
 import { CreateCommunityDTO } from '../../dto/community/CreateCommunityDTO';
 import { CommunityResponseDTO } from '../../dto/community/CommunityResponseDTO';
-import { ValidationError } from '../../../domain/errors/AppError';
+import { ValidationError, InternalServerError, ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
 import { ICreateCommunityUseCase } from './interfaces/ICreateCommunityUseCase';
+import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
+import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
+import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
+import { IUsageRecordRepository } from '../../../domain/repositories/IUsageRecordRepository';
+import { ITransactionService } from '../../../domain/services/ITransactionService';
+import { FeatureType } from '../../../domain/enums/SubscriptionEnums';
+import { UsageRecord } from '../../../domain/entities/UsageRecord';
+import { v4 as uuidv4 } from 'uuid';
 
 @injectable()
 export class CreateCommunityUseCase implements ICreateCommunityUseCase {
@@ -17,7 +24,11 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IStorageService) private readonly storageService: IStorageService,
     @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper,
-    @inject(TYPES.Database) private readonly database: Database
+    @inject(TYPES.IUserSubscriptionRepository) private readonly subscriptionRepository: IUserSubscriptionRepository,
+    @inject(TYPES.ISubscriptionPlanRepository) private readonly planRepository: ISubscriptionPlanRepository,
+    @inject(TYPES.IFeatureRepository) private readonly featureRepository: IFeatureRepository,
+    @inject(TYPES.IUsageRecordRepository) private readonly usageRecordRepository: IUsageRecordRepository,
+    @inject(TYPES.ITransactionService) private readonly transactionService: ITransactionService
   ) { }
 
   public async execute(
@@ -36,28 +47,119 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
       throw new ValidationError('Community category is required');
     }
 
-    // Handle image upload
+    // ============================================
+    // SUBSCRIPTION AND FEATURE CHECK - INDUSTRIAL LEVEL
+    // ============================================
+    
+    // 1. Check if user has an active subscription
+    const subscription = await this.subscriptionRepository.findByUserId(userId);
+    
+    if (!subscription) {
+      throw new ForbiddenError('You need an active subscription to create communities. Please subscribe to a plan first.');
+    }
+
+    // 2. Verify subscription is active
+    if (!subscription.isActive()) {
+      throw new ForbiddenError('Your subscription is not active. Please renew your subscription to create communities.');
+    }
+
+    // 3. Get subscription plan with features
+    const plan = await this.planRepository.findById(subscription.planId);
+    if (!plan) {
+      throw new NotFoundError('Subscription plan not found');
+    }
+
+    // 4. Check limits (legacy or feature model)
+    let limitValue: number | null | undefined = undefined;
+    let featureKey: string = 'create_community';
+    let createCommunityFeature: any = null;
+
+    const legacyLimit = plan.createCommunity;
+    
+    if (legacyLimit !== null && legacyLimit !== undefined) {
+      limitValue = legacyLimit;
+      featureKey = 'create_community';
+    } else {
+      const features = await this.featureRepository.findByPlanId(plan.id);
+      createCommunityFeature = features.find(
+        f => f.name.toLowerCase() === 'create_community' || 
+             f.name.toLowerCase() === 'create community' ||
+             f.name.toLowerCase() === 'community_creation' ||
+             f.name.toLowerCase() === 'communities'
+      );
+
+      if (!createCommunityFeature) {
+        throw new ForbiddenError('Your subscription plan does not include community creation feature.');
+      }
+
+      if (!createCommunityFeature.isEnabled) {
+        throw new ForbiddenError('Community creation feature is disabled for your plan.');
+      }
+
+      if (createCommunityFeature.featureType === FeatureType.NUMERIC_LIMIT) {
+        limitValue = createCommunityFeature.limitValue;
+        featureKey = createCommunityFeature.name;
+        
+        if (limitValue === null || limitValue === undefined) {
+          throw new ForbiddenError('Community creation limit is not configured for your plan.');
+        }
+      } else if (createCommunityFeature.featureType === FeatureType.BOOLEAN) {
+        if (!createCommunityFeature.isEnabled) {
+          throw new ForbiddenError('Community creation is not available in your plan.');
+        }
+        limitValue = -1; // Unlimited
+        featureKey = createCommunityFeature.name;
+      } else {
+        throw new ForbiddenError('Invalid feature type for community creation.');
+      }
+    }
+
+    // 5. Check current usage
+    let currentUsage = 0;
+    
+    if (limitValue !== null && limitValue !== undefined && limitValue !== -1) {
+      const currentUsageRecords = await this.usageRecordRepository.findBySubscriptionId(subscription.id);
+      const featureUsageRecord = currentUsageRecords.find(
+        record => 
+          record.featureKey === featureKey &&
+          record.periodStart <= subscription.currentPeriodEnd &&
+          record.periodEnd >= subscription.currentPeriodStart
+      );
+
+      currentUsage = featureUsageRecord ? featureUsageRecord.usageCount : 0;
+
+      if (currentUsage >= limitValue) {
+        throw new ForbiddenError(
+          `You have reached your community creation limit (${limitValue}). Please upgrade your plan or wait for your billing period to reset.`
+        );
+      }
+    }
+
+    // 6. Handle image upload
     let imageUrl: string | null = null;
     if (imageFile) {
-      // Validate file size (max 5MB)
       if (imageFile.buffer.length > 5 * 1024 * 1024) {
         throw new ValidationError('Image size must be less than 5MB');
       }
-      // Validate file type
       if (!imageFile.mimetype.startsWith('image/')) {
         throw new ValidationError('Only image files are allowed');
       }
 
       try {
         const timestamp = Date.now();
-        const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
+        // Sanitize filename: replace spaces with hyphens and remove special characters
+        const sanitizedFilename = imageFile.originalname
+          .replace(/\s+/g, '-') // Replace spaces with hyphens
+          .replace(/[^a-zA-Z0-9.-]/g, '') // Remove special characters except dots and hyphens
+          .toLowerCase(); // Convert to lowercase for consistency
+        const key = `communities/${userId}/${timestamp}-${sanitizedFilename}`;
         imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
       } catch (error) {
-        throw new Error('Failed to upload image. Please try again.');
+        throw new InternalServerError('Failed to upload image. Please try again.');
       }
     }
 
-    // Create community entity
+    // 7. Create community entity
     const community = new Community({
       name: dto.name,
       description: dto.description,
@@ -68,55 +170,55 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
       creditsPeriod: dto.creditsPeriod,
     });
 
-    // Use transaction to ensure community and admin member are created atomically
-    const createdCommunity = await this.database.transaction(async (tx) => {
-      // Create community using transaction client
-      const communityData = community.toJSON();
-      const created = await tx.community.create({
-        data: {
-          id: communityData.id as string,
-          name: communityData.name as string,
-          description: communityData.description as string,
-          category: communityData.category as string,
-          imageUrl: communityData.image_url as string | null,
-          videoUrl: communityData.video_url as string | null,
-          adminId: communityData.admin_id as string,
-          creditsCost: communityData.credits_cost as number,
-          creditsPeriod: communityData.credits_period as string,
-          membersCount: 1, // Admin is first member
-          isActive: communityData.is_active as boolean,
-          isDeleted: communityData.is_deleted as boolean,
-          createdAt: communityData.created_at as Date,
-          updatedAt: communityData.updated_at as Date,
-        },
-      });
+    // 8. Use transaction service for atomic operations
+    const createdCommunity = await this.transactionService.execute(async (repos) => {
+      // Create community using repository
+      const created = await repos.communityRepository.create(community);
 
-      // Add creator as admin member using transaction client
+      // Create admin member
       const adminMember = new CommunityMember({
         communityId: community.id,
         userId,
         role: 'admin',
       });
+      await repos.communityRepository.addMember(adminMember);
 
-      const memberData = adminMember.toJSON();
-      await tx.communityMember.create({
-        data: {
-          id: memberData.id as string,
-          communityId: memberData.communityId as string,
-          userId: memberData.userId as string,
-          role: memberData.role as string,
-          isAutoRenew: memberData.isAutoRenew as boolean,
-          subscriptionEndsAt: memberData.subscriptionEndsAt as Date | null,
-          joinedAt: memberData.joinedAt as Date,
-          isActive: memberData.isActive as boolean,
-        },
-      });
+      // Track feature usage if needed
+      if (limitValue !== null && limitValue !== undefined && limitValue !== -1) {
+        try {
+          const existingUsageRecord = await repos.usageRecordRepository.findBySubscriptionAndFeature(
+            subscription.id,
+            featureKey,
+            subscription.currentPeriodStart,
+            subscription.currentPeriodEnd
+          );
 
-      // Return domain entity created from database row
-      return Community.fromDatabaseRow(created);
+          if (existingUsageRecord) {
+            existingUsageRecord.incrementUsage(1);
+            await repos.usageRecordRepository.update(existingUsageRecord);
+          } else {
+            const newUsageRecord = new UsageRecord({
+              id: uuidv4(),
+              subscriptionId: subscription.id,
+              featureKey: featureKey,
+              usageCount: 1,
+              limitValue: limitValue,
+              periodStart: subscription.currentPeriodStart,
+              periodEnd: subscription.currentPeriodEnd,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            });
+            await repos.usageRecordRepository.create(newUsageRecord);
+          }
+        } catch (usageError) {
+          console.error('[CreateCommunityUseCase] Failed to track feature usage:', usageError);
+        }
+      }
+
+      return created;
     });
 
-    // Return DTO using mapper
-    return this.communityMapper.toDTO(community, userId);
+    // 9. Return DTO using mapper
+    return await this.communityMapper.toDTO(createdCommunity, userId);
   }
 }

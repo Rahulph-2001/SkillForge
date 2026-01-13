@@ -6,9 +6,7 @@ import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-export interface IPinMessageUseCase {
-  execute(userId: string, messageId: string): Promise<CommunityMessage>;
-}
+import { IPinMessageUseCase } from './interfaces/IPinMessageUseCase';
 @injectable()
 export class PinMessageUseCase implements IPinMessageUseCase {
   constructor(

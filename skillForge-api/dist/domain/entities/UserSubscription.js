@@ -209,6 +209,17 @@ class UserSubscription {
         this._updatedAt = new Date();
     }
     /**
+     * Expire subscription (automatically called when period ends)
+     */
+    expire() {
+        if (this._status === SubscriptionEnums_1.SubscriptionStatus.EXPIRED || this._status === SubscriptionEnums_1.SubscriptionStatus.CANCELED) {
+            return; // Already expired or canceled
+        }
+        this._status = SubscriptionEnums_1.SubscriptionStatus.EXPIRED;
+        this._canceledAt = new Date();
+        this._updatedAt = new Date();
+    }
+    /**
      * Convert to JSON for API responses
      */
     toJSON() {

@@ -17,12 +17,18 @@ const inversify_1 = require("inversify");
 const RedisService_1 = require("../../services/RedisService");
 const OTPToken_1 = require("../../../domain/entities/OTPToken");
 const types_1 = require("../../di/types");
-let RedisOTPRepository = class RedisOTPRepository {
+const AppError_1 = require("../../../domain/errors/AppError");
+const BaseRedisRepository_1 = require("../BaseRedisRepository");
+let RedisOTPRepository = class RedisOTPRepository extends BaseRedisRepository_1.BaseRedisRepository {
     constructor(redisService) {
+        super();
         this.redisService = redisService;
         this.OTP_PREFIX = 'otp:';
         this.OTP_USER_PREFIX = 'otp:user:';
         this.OTP_CODE_PREFIX = 'otp:code:';
+    }
+    getKeyPrefix() {
+        return this.OTP_PREFIX;
     }
     getKey(userId, otpType) {
         return `${this.OTP_USER_PREFIX}${userId}:${otpType}`;
@@ -118,7 +124,7 @@ let RedisOTPRepository = class RedisOTPRepository {
         const otpKey = this.getOTPKey(otpData.id);
         const ttl = await redis.ttl(otpKey);
         if (ttl <= 0) {
-            throw new Error('OTP has expired');
+            throw new AppError_1.NotFoundError('OTP has expired');
         }
         const createdAt = otpData.created_at instanceof Date
             ? otpData.created_at

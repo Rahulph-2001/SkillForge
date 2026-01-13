@@ -1,7 +1,5 @@
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
-export interface IDeleteFeatureUseCase {
-    execute(featureId: string): Promise<void>;
-}
+import { IDeleteFeatureUseCase } from './interfaces/IDeleteFeatureUseCase';
 export declare class DeleteFeatureUseCase implements IDeleteFeatureUseCase {
     private featureRepository;
     constructor(featureRepository: IFeatureRepository);

@@ -24,7 +24,7 @@ export class BookingController {
 
   public createBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
@@ -61,7 +61,7 @@ export class BookingController {
 
   public getMyBookings = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
@@ -79,7 +79,7 @@ export class BookingController {
 
   public getUpcomingSessions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode.UNAUTHORIZED);
@@ -97,7 +97,7 @@ export class BookingController {
 
   public getBookingById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.userId;
       const { id } = req.params;
 
       if (!userId) {
@@ -116,7 +116,7 @@ export class BookingController {
 
   public cancelBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user?.id;
+      const userId = req.user?.userId;
       const { id } = req.params;
       const { reason } = req.body;
 

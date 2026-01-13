@@ -1,12 +1,8 @@
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-export interface DeclineRescheduleRequest {
-    bookingId: string;
-    userId: string;
-    reason: string;
-}
-export declare class DeclineRescheduleUseCase {
+import { IDeclineRescheduleUseCase, DeclineRescheduleRequestDTO } from './interfaces/IDeclineRescheduleUseCase';
+export declare class DeclineRescheduleUseCase implements IDeclineRescheduleUseCase {
     private readonly bookingRepository;
     constructor(bookingRepository: IBookingRepository);
-    execute(request: DeclineRescheduleRequest): Promise<void>;
+    execute(request: DeclineRescheduleRequestDTO): Promise<void>;
 }
 //# sourceMappingURL=DeclineRescheduleUseCase.d.ts.map

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/CreateSkillTemplateUseCase';
-import { ListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/ListSkillTemplatesUseCase';
-import { UpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/UpdateSkillTemplateUseCase';
-import { DeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase';
-import { ToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase';
+import { ICreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/ICreateSkillTemplateUseCase';
+import { IListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/interfaces/IListSkillTemplatesUseCase';
+import { IUpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IUpdateSkillTemplateUseCase';
+import { IDeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IDeleteSkillTemplateUseCase';
+import { IToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/interfaces/IToggleSkillTemplateStatusUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class SkillTemplateController {
     private readonly createSkillTemplateUseCase;
@@ -12,7 +12,7 @@ export declare class SkillTemplateController {
     private readonly deleteSkillTemplateUseCase;
     private readonly toggleSkillTemplateStatusUseCase;
     private readonly responseBuilder;
-    constructor(createSkillTemplateUseCase: CreateSkillTemplateUseCase, listSkillTemplatesUseCase: ListSkillTemplatesUseCase, updateSkillTemplateUseCase: UpdateSkillTemplateUseCase, deleteSkillTemplateUseCase: DeleteSkillTemplateUseCase, toggleSkillTemplateStatusUseCase: ToggleSkillTemplateStatusUseCase, responseBuilder: IResponseBuilder);
+    constructor(createSkillTemplateUseCase: ICreateSkillTemplateUseCase, listSkillTemplatesUseCase: IListSkillTemplatesUseCase, updateSkillTemplateUseCase: IUpdateSkillTemplateUseCase, deleteSkillTemplateUseCase: IDeleteSkillTemplateUseCase, toggleSkillTemplateStatusUseCase: IToggleSkillTemplateStatusUseCase, responseBuilder: IResponseBuilder);
     /**
      * POST /api/v1/admin/skill-templates
      * Create a new skill template

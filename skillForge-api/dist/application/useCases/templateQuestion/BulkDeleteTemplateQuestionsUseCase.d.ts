@@ -1,5 +1,6 @@
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
-export declare class BulkDeleteTemplateQuestionsUseCase {
+import { IBulkDeleteTemplateQuestionsUseCase } from './interfaces/IBulkDeleteTemplateQuestionsUseCase';
+export declare class BulkDeleteTemplateQuestionsUseCase implements IBulkDeleteTemplateQuestionsUseCase {
     private questionRepository;
     constructor(questionRepository: ITemplateQuestionRepository);
     execute(templateId: string, questionIds: string[]): Promise<{

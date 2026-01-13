@@ -7,6 +7,7 @@ import App from './App.tsx'
 import { store, persistor } from './store/store.ts'
 import { repairStorage, checkStorageHealth } from './utils/storageUtils'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
+import { WebSocketProvider } from './contexts/WebSocketContext'
 import './index.css'
 
 // Check and repair storage before app loads
@@ -59,9 +60,11 @@ function AppWrapper() {
   if (persistError) {
     // If there was an error, render app without PersistGate
     return (
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <WebSocketProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WebSocketProvider>
     );
   }
 
@@ -82,9 +85,11 @@ function AppWrapper() {
         console.log('[PersistGate] Rehydration complete');
       }}
     >
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <WebSocketProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </WebSocketProvider>
     </PersistGate>
   );
 }

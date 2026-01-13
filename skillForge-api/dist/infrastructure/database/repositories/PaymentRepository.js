@@ -14,12 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PrismaPaymentRepository = void 0;
 const inversify_1 = require("inversify");
-const client_1 = require("@prisma/client");
 const types_1 = require("../../di/types");
 const Payment_1 = require("../../../domain/entities/Payment");
-let PrismaPaymentRepository = class PrismaPaymentRepository {
-    constructor(prisma) {
-        this.prisma = prisma;
+const Database_1 = require("../Database");
+const BaseRepository_1 = require("../BaseRepository");
+let PrismaPaymentRepository = class PrismaPaymentRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'payment');
     }
     async create(payment) {
         const data = await this.prisma.payment.create({
@@ -43,7 +44,7 @@ let PrismaPaymentRepository = class PrismaPaymentRepository {
         return Payment_1.Payment.fromJSON(data);
     }
     async findById(id) {
-        const data = await this.prisma.payment.findUnique({ where: { id } });
+        const data = await super.findById(id);
         return data ? Payment_1.Payment.fromJSON(data) : null;
     }
     async findByProviderPaymentId(providerPaymentId) {
@@ -93,11 +94,48 @@ let PrismaPaymentRepository = class PrismaPaymentRepository {
             data: { status, updated_at: new Date() },
         });
     }
+    async findWithPagination(paginationParams, filters) {
+        const where = {};
+        if (filters?.userId) {
+            where.user_id = filters.userId;
+        }
+        if (filters?.purpose) {
+            where.purpose = filters.purpose;
+        }
+        if (filters?.status) {
+            where.status = filters.status;
+        }
+        if (filters?.search) {
+            where.OR = [
+                { id: { contains: filters.search, mode: 'insensitive' } },
+                { provider_payment_id: { contains: filters.search, mode: 'insensitive' } },
+            ];
+        }
+        const [data, total] = await Promise.all([
+            this.prisma.payment.findMany({
+                where,
+                skip: paginationParams.skip,
+                take: paginationParams.take,
+                orderBy: { created_at: 'desc' },
+            }),
+            this.prisma.payment.count({ where }),
+        ]);
+        const totalPages = Math.ceil(total / paginationParams.limit);
+        return {
+            data: data.map(Payment_1.Payment.fromJSON),
+            total,
+            page: paginationParams.page,
+            limit: paginationParams.limit,
+            totalPages,
+            hasNextPage: paginationParams.page < totalPages,
+            hasPreviousPage: paginationParams.page > 1,
+        };
+    }
 };
 exports.PrismaPaymentRepository = PrismaPaymentRepository;
 exports.PrismaPaymentRepository = PrismaPaymentRepository = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [client_1.PrismaClient])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Database_1.Database])
 ], PrismaPaymentRepository);
 //# sourceMappingURL=PaymentRepository.js.map

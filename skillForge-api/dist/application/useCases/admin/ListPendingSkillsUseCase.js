@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListPendingSkillsUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const AppError_1 = require("../../../domain/errors/AppError");
 let ListPendingSkillsUseCase = class ListPendingSkillsUseCase {
     constructor(skillRepository, userRepository, pendingSkillMapper) {
         this.skillRepository = skillRepository;
@@ -28,7 +29,7 @@ let ListPendingSkillsUseCase = class ListPendingSkillsUseCase {
             const provider = await this.userRepository.findById(skill.providerId);
             if (!provider) {
                 // Log error or handle gracefully. For strictness, we assume provider exists.
-                throw new Error(`Provider ${skill.providerId} not found for skill ${skill.id}`);
+                throw new AppError_1.NotFoundError(`Provider ${skill.providerId} not found for skill ${skill.id}`);
             }
             return this.pendingSkillMapper.toDTO(skill, provider);
         }));

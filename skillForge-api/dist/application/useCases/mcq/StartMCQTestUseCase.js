@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StartMCQTestUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const AppError_1 = require("../../../domain/errors/AppError");
 let StartMCQTestUseCase = class StartMCQTestUseCase {
     constructor(mcqRepository, skillRepository) {
         this.mcqRepository = mcqRepository;
@@ -25,25 +26,25 @@ let StartMCQTestUseCase = class StartMCQTestUseCase {
         // Get skill details
         const skill = await this.skillRepository.findById(skillId);
         if (!skill) {
-            throw new Error('Skill not found');
+            throw new AppError_1.NotFoundError('Skill not found');
         }
         // Verify skill belongs to user
         if (skill.providerId !== userId) {
-            throw new Error('Unauthorized: This skill does not belong to you');
+            throw new AppError_1.ForbiddenError('Unauthorized: This skill does not belong to you');
         }
         // Check if skill is in pending status
         if (skill.status !== 'pending') {
-            throw new Error('Skill is not in pending status');
+            throw new AppError_1.ValidationError('Skill is not in pending status');
         }
         // Check if template exists
         if (!skill.templateId) {
-            throw new Error('Skill template not found');
+            throw new AppError_1.NotFoundError('Skill template not found');
         }
         // Get random questions for the skill's level from template
         const questionsNeeded = skill.mcqTotalQuestions || 7;
         const questions = await this.mcqRepository.getQuestionsByTemplate(skill.templateId, skill.level, questionsNeeded);
         if (questions.length === 0) {
-            throw new Error(`No questions available for level: ${skill.level}`);
+            throw new AppError_1.NotFoundError(`No questions available for level: ${skill.level}`);
         }
         // Remove correct answers from questions sent to frontend
         const questionsWithoutAnswers = questions.map(q => ({

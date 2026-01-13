@@ -15,43 +15,61 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BlockSkillUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const Database_1 = require("../../../infrastructure/database/Database");
+const Skill_1 = require("../../../domain/entities/Skill");
+const AppError_1 = require("../../../domain/errors/AppError");
 let BlockSkillUseCase = class BlockSkillUseCase {
-    constructor(database) {
-        this.prisma = database.getClient();
+    constructor(skillRepository) {
+        this.skillRepository = skillRepository;
     }
     async execute(data) {
         // Verify skill exists
-        const skill = await this.prisma.skill.findUnique({
-            where: { id: data.skillId },
-        });
+        const skill = await this.skillRepository.findById(data.skillId);
         if (!skill) {
-            throw new Error('Skill not found');
+            throw new AppError_1.NotFoundError('Skill not found');
         }
         // Only approved skills can be blocked
         if (skill.status !== 'approved') {
-            throw new Error('Only approved skills can be blocked');
+            throw new AppError_1.ValidationError('Only approved skills can be blocked');
         }
         if (skill.isBlocked) {
-            throw new Error('Skill is already blocked');
+            throw new AppError_1.ValidationError('Skill is already blocked');
         }
-        // Block the skill
-        await this.prisma.skill.update({
-            where: { id: data.skillId },
-            data: {
-                isBlocked: true,
-                isAdminBlocked: true,
-                blockedReason: data.reason,
-                blockedAt: new Date(),
-                updatedAt: new Date(),
-            },
+        // Create updated skill with blocked status
+        const skillData = skill.toJSON();
+        const updatedSkill = new Skill_1.Skill({
+            id: skillData.id,
+            providerId: skillData.providerId,
+            title: skillData.title,
+            description: skillData.description,
+            category: skillData.category,
+            level: skillData.level,
+            durationHours: skillData.durationHours,
+            creditsPerHour: skillData.creditsPerHour,
+            tags: skillData.tags,
+            imageUrl: skillData.imageUrl,
+            templateId: skillData.templateId,
+            status: skillData.status,
+            verificationStatus: skillData.verificationStatus,
+            mcqScore: skillData.mcqScore,
+            mcqTotalQuestions: skillData.mcqTotalQuestions,
+            mcqPassingScore: skillData.mcqPassingScore,
+            verifiedAt: skillData.verifiedAt,
+            totalSessions: skillData.totalSessions,
+            rating: skillData.rating,
+            isBlocked: true,
+            blockedReason: data.reason,
+            blockedAt: new Date(),
+            isAdminBlocked: true,
+            createdAt: skillData.createdAt,
+            updatedAt: new Date(),
         });
+        await this.skillRepository.update(updatedSkill);
     }
 };
 exports.BlockSkillUseCase = BlockSkillUseCase;
 exports.BlockSkillUseCase = BlockSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Database_1.Database])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object])
 ], BlockSkillUseCase);
 //# sourceMappingURL=BlockSkillUseCase.js.map

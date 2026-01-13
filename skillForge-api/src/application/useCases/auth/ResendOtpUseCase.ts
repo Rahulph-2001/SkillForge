@@ -5,7 +5,7 @@ import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { IOTPService } from '../../../domain/services/IOTPService';
 import { IEmailService } from '../../../domain/services/IEmailService';
 import { IPendingRegistrationService } from '../../../domain/services/IPendingRegistrationService';
-import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
+import { NotFoundError, ConflictError, InternalServerError } from '../../../domain/errors/AppError';
 import { ResendOtpDTO } from '../../dto/auth/ResendOtpDTO';
 import { OTPToken } from '../../../domain/entities/OTPToken';
 import { env } from '../../../config/env';
@@ -58,7 +58,7 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
         );
       } catch (error) {
         console.error('Failed to send OTP email:', error);
-        throw new Error(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
+        throw new InternalServerError(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
       }
       
       return {
@@ -110,7 +110,7 @@ export class ResendOtpUseCase implements IResendOtpUseCase {
       );
     } catch (error) {
       console.error('Failed to send OTP email:', error);
-      throw new Error(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
+      throw new InternalServerError(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
     }
     
     return {

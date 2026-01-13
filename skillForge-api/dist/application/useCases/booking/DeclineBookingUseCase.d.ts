@@ -4,14 +4,10 @@
  * Following Single Responsibility Principle and Clean Architecture
  */
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-export interface DeclineBookingRequest {
-    bookingId: string;
-    providerId: string;
-    reason?: string;
-}
-export declare class DeclineBookingUseCase {
+import { IDeclineBookingUseCase, DeclineBookingRequestDTO } from './interfaces/IDeclineBookingUseCase';
+export declare class DeclineBookingUseCase implements IDeclineBookingUseCase {
     private readonly bookingRepository;
     constructor(bookingRepository: IBookingRepository);
-    execute(request: DeclineBookingRequest): Promise<void>;
+    execute(request: DeclineBookingRequestDTO): Promise<void>;
 }
 //# sourceMappingURL=DeclineBookingUseCase.d.ts.map

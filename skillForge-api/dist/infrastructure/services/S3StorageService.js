@@ -34,7 +34,9 @@ let S3StorageService = class S3StorageService {
         });
         try {
             await this.s3Client.send(command);
-            const url = `https://${this.bucketName}.s3.${env_1.env.AWS_REGION}.amazonaws.com/${key}`;
+            // Properly encode the key in the URL to handle special characters
+            const encodedKey = encodeURIComponent(key).replace(/%2F/g, '/'); // Keep slashes unencoded
+            const url = `https://${this.bucketName}.s3.${env_1.env.AWS_REGION}.amazonaws.com/${encodedKey}`;
             return url;
         }
         catch (error) {

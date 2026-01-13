@@ -490,7 +490,7 @@ export default function AdminSkillVerificationPage() {
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
-                itemsPerPage={itemsPerPage}
+                limit={itemsPerPage}
                 totalItems={filteredSkills.length}
               />
             </>

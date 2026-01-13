@@ -18,10 +18,12 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const PaymentEnums_1 = require("../../../domain/enums/PaymentEnums");
 let ConfirmPaymentUseCase = class ConfirmPaymentUseCase {
-    constructor(paymentGateway, paymentRepository, assignSubscriptionUseCase) {
+    constructor(paymentGateway, paymentRepository, assignSubscriptionUseCase, createProjectUseCase, creditAdminWalletUseCase) {
         this.paymentGateway = paymentGateway;
         this.paymentRepository = paymentRepository;
         this.assignSubscriptionUseCase = assignSubscriptionUseCase;
+        this.createProjectUseCase = createProjectUseCase;
+        this.creditAdminWalletUseCase = creditAdminWalletUseCase;
     }
     async execute(dto) {
         // Retrieve intent from Stripe to get metadata
@@ -40,6 +42,7 @@ let ConfirmPaymentUseCase = class ConfirmPaymentUseCase {
                     // Extract metadata from payment intent (Stripe)
                     const metadata = paymentIntent.metadata || {};
                     const planId = metadata.planId;
+                    const planName = metadata.planName;
                     const billingInterval = metadata.billingInterval;
                     if (planId && billingInterval) {
                         const assignDto = {
@@ -50,21 +53,70 @@ let ConfirmPaymentUseCase = class ConfirmPaymentUseCase {
                             stripeCustomerId: paymentIntent.customer
                         };
                         await this.assignSubscriptionUseCase.execute(assignDto);
-                        console.log(`[ConfirmPaymentUseCase] Automatically assigned subscription for user ${updatedPayment.userId}`);
-                    }
-                    else {
-                        console.error('[ConfirmPaymentUseCase] Missing planId or billingInterval in payment metadata');
+                        // Credit admin wallet for subscription payment
+                        try {
+                            await this.creditAdminWalletUseCase.execute({
+                                amount: updatedPayment.amount,
+                                currency: updatedPayment.currency,
+                                source: 'SUBSCRIPTION_PAYMENT',
+                                referenceId: updatedPayment.id,
+                                metadata: {
+                                    planId,
+                                    planName,
+                                    userId: updatedPayment.userId
+                                }
+                            });
+                        }
+                        catch (walletError) {
+                            // Log error but don't throw - payment confirmation should still succeed
+                            // TODO: Add proper logging service for error tracking
+                        }
                     }
                 }
                 catch (error) {
-                    console.error('[ConfirmPaymentUseCase] Failed to assign subscription after payment:', error);
+                    // Failed to assign subscription after payment
+                    // We don't throw here to avoid failing the payment confirmation response
+                    // TODO: Add proper logging service and retry mechanism
                     // We don't throw here to avoid failing the payment confirmation response, 
                     // but in production we should alert or retry.
                 }
             }
+            // Check if this was for a project post
+            if (updatedPayment.purpose === PaymentEnums_1.PaymentPurpose.PROJECT_POST) {
+                try {
+                    // Extract project data from payment metadata
+                    const metadata = paymentIntent.metadata || {};
+                    let tags = [];
+                    if (metadata.tags) {
+                        try {
+                            tags = JSON.parse(metadata.tags);
+                        }
+                        catch {
+                            tags = [];
+                        }
+                    }
+                    const projectData = {
+                        title: metadata.title,
+                        description: metadata.description,
+                        category: metadata.category,
+                        tags: tags,
+                        budget: parseFloat(metadata.budget),
+                        duration: metadata.duration,
+                        deadline: metadata.deadline || undefined,
+                    };
+                    if (projectData.title && projectData.description && projectData.category && projectData.budget) {
+                        await this.createProjectUseCase.execute(updatedPayment.userId, projectData, updatedPayment.id);
+                    }
+                }
+                catch (error) {
+                    // Failed to create project after payment
+                    // We don't throw here to avoid failing the payment confirmation response
+                    // TODO: Add proper logging service and retry mechanism
+                }
+            }
             return updatedPayment.toJSON();
         }
-        throw new Error('Payment confirmation failed');
+        throw new AppError_1.InternalServerError('Payment confirmation failed');
     }
 };
 exports.ConfirmPaymentUseCase = ConfirmPaymentUseCase;
@@ -73,6 +125,8 @@ exports.ConfirmPaymentUseCase = ConfirmPaymentUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IPaymentGateway)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IPaymentRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IAssignSubscriptionUseCase)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ICreateProjectUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.ICreditAdminWalletUseCase)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], ConfirmPaymentUseCase);
 //# sourceMappingURL=ConfirmPaymentUseCase.js.map

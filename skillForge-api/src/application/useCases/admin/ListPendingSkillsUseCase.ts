@@ -5,6 +5,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IListPendingSkillsUseCase } from './interfaces/IListPendingSkillsUseCase';
 import { ListPendingSkillsResponseDTO } from '../../dto/admin/ListPendingSkillsResponseDTO';
 import { IPendingSkillMapper } from '../../mappers/interfaces/IPendingSkillMapper';
+import { NotFoundError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class ListPendingSkillsUseCase implements IListPendingSkillsUseCase {
@@ -22,7 +23,7 @@ export class ListPendingSkillsUseCase implements IListPendingSkillsUseCase {
       const provider = await this.userRepository.findById(skill.providerId);
       if (!provider) {
         // Log error or handle gracefully. For strictness, we assume provider exists.
-        throw new Error(`Provider ${skill.providerId} not found for skill ${skill.id}`);
+        throw new NotFoundError(`Provider ${skill.providerId} not found for skill ${skill.id}`);
       }
       return this.pendingSkillMapper.toDTO(skill, provider);
     }));

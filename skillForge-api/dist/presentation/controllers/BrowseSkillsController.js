@@ -50,7 +50,7 @@ let BrowseSkillsController = class BrowseSkillsController {
 exports.BrowseSkillsController = BrowseSkillsController;
 exports.BrowseSkillsController = BrowseSkillsController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.BrowseSkillsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IBrowseSkillsUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object])
 ], BrowseSkillsController);

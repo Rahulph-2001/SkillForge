@@ -2,6 +2,7 @@ import { injectable } from 'inversify';
 import nodemailer from 'nodemailer';
 import { IEmailService } from '../../domain/services/IEmailService';
 import { env } from '../../config/env';
+import { InternalServerError } from '../../domain/errors/AppError';
 
 @injectable()
 export class EmailService implements IEmailService {
@@ -52,7 +53,7 @@ export class EmailService implements IEmailService {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending email:', error);
-      throw new Error('Failed to send email');
+      throw new InternalServerError('Failed to send email');
     }
   }
 
@@ -126,7 +127,7 @@ export class EmailService implements IEmailService {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending password reset email:', error);
-      throw new Error('Failed to send email');
+      throw new InternalServerError('Failed to send email');
     }
   }
 }

@@ -4,7 +4,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { IOTPService } from '../../../domain/services/IOTPService';
 import { IEmailService } from '../../../domain/services/IEmailService';
-import { NotFoundError } from '../../../domain/errors/AppError';
+import { NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 import { ForgotPasswordDTO } from '../../dto/auth/ForgotPasswordDTO';
 import { OTPToken } from '../../../domain/entities/OTPToken';
 import { env } from '../../../config/env';
@@ -60,7 +60,7 @@ export class ForgotPasswordUseCase implements IForgotPasswordUseCase {
       );
     } catch (error) {
       console.error('Failed to send password reset OTP email:', error);
-      throw new Error(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
+      throw new InternalServerError(ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
     }
 
     return {

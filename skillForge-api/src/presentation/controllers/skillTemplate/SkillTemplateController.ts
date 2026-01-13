@@ -28,7 +28,7 @@ export class SkillTemplateController {
    */
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const dto: CreateSkillTemplateDTO = req.body;
 
       const template = await this.createSkillTemplateUseCase.execute(adminUserId, dto);
@@ -50,7 +50,7 @@ export class SkillTemplateController {
    */
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
 
       const templates = await this.listSkillTemplatesUseCase.execute(adminUserId);
 
@@ -71,7 +71,7 @@ export class SkillTemplateController {
    */
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const templateId = req.params.id;
       const dto = req.body;
 
@@ -94,7 +94,7 @@ export class SkillTemplateController {
    */
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const templateId = req.params.id;
 
       await this.deleteSkillTemplateUseCase.execute(adminUserId, templateId);
@@ -116,7 +116,7 @@ export class SkillTemplateController {
    */
   async toggleStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const templateId = req.params.id;
 
       const template = await this.toggleSkillTemplateStatusUseCase.execute(adminUserId, templateId);
@@ -141,7 +141,7 @@ export class SkillTemplateController {
       const templates = await this.listSkillTemplatesUseCase.executePublic();
 
       const response = this.responseBuilder.success(
-        templates.map((t: any) => t.toJSON()),
+        templates.map((t) => t.toJSON()),
         'Active skill templates retrieved successfully',
         HttpStatusCode.OK
       );

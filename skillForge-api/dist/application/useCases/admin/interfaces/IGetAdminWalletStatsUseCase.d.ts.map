@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetAdminWalletStatsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IGetAdminWalletStatsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,8BAA8B,EAAE,MAAM,2CAA2C,CAAC;AAE3F,MAAM,WAAW,2BAA2B;IACxC,OAAO,IAAI,OAAO,CAAC,8BAA8B,CAAC,CAAA;CACrD"}

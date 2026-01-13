@@ -3,9 +3,7 @@ import { ICommunityRepository } from '../../../domain/repositories/ICommunityRep
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
-export interface IPinMessageUseCase {
-    execute(userId: string, messageId: string): Promise<CommunityMessage>;
-}
+import { IPinMessageUseCase } from './interfaces/IPinMessageUseCase';
 export declare class PinMessageUseCase implements IPinMessageUseCase {
     private readonly messageRepository;
     private readonly communityRepository;

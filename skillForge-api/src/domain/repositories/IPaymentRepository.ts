@@ -1,5 +1,6 @@
 import { Payment } from '../entities/Payment';
 import { PaymentStatus, PaymentPurpose } from '../enums/PaymentEnums';
+import { IPaginationParams, IPaginationResult } from '../types/IPaginationParams';
 
 export interface IPaymentRepository {
     create(payment: Payment): Promise<Payment>;
@@ -9,4 +10,13 @@ export interface IPaymentRepository {
     findByUserIdAndPurpose(userId: string, purpose: PaymentPurpose): Promise<Payment[]>;
     update(payment: Payment): Promise<Payment>;
     updateStatus(id: string, status: PaymentStatus): Promise<void>;
+    findWithPagination(
+        paginationParams: IPaginationParams,
+        filters?: {
+            userId?: string;
+            purpose?: PaymentPurpose;
+            status?: PaymentStatus;
+            search?: string;
+        }
+    ): Promise<IPaginationResult<Payment>>;
 }

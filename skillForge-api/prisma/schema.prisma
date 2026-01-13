@@ -61,6 +61,7 @@ enum SubscriptionStatus {
   TRIALING
   PAST_DUE
   CANCELED
+  EXPIRED
   UNPAID
   INCOMPLETE
 }

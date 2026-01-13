@@ -1,5 +1,6 @@
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-export declare class GetOccupiedSlotsUseCase {
+import { IGetOccupiedSlotsUseCase } from './interfaces/IGetOccupiedSlotsUseCase';
+export declare class GetOccupiedSlotsUseCase implements IGetOccupiedSlotsUseCase {
     private bookingRepository;
     constructor(bookingRepository: IBookingRepository);
     execute(providerId: string, startDate: string, endDate: string): Promise<{

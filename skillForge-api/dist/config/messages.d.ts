@@ -98,6 +98,11 @@ export declare const SUCCESS_MESSAGES: {
         readonly REACTION_ADDED: "Reaction added successfully";
         readonly REACTION_REMOVED: "Reaction removed successfully";
     };
+    readonly WALLET: {
+        readonly STATS_FETCHED: "Wallet statistics retrieved successfully";
+        readonly TRANSACTIONS_FETCHED: "Wallet transactions retrieved successfully";
+        readonly WALLET_CREDITED: "Admin wallet credited successfully";
+    };
 };
 export declare const ERROR_MESSAGES: {
     readonly AUTH: {
@@ -192,6 +197,12 @@ export declare const ERROR_MESSAGES: {
         readonly ONLY_ADMIN_CAN_UPDATE: "Only admin can update community";
         readonly ONLY_ADMIN_CAN_PIN: "Only admin can pin messages";
         readonly MESSAGE_NOT_FOUND: "Message not found";
+    };
+    readonly WALLET: {
+        readonly STATS_FETCH_FAILED: "Failed to fetch wallet statistics";
+        readonly TRANSACTIONS_FETCH_FAILED: "Failed to fetch wallet transactions";
+        readonly ADMIN_NOT_FOUND: "No admin user found in the system";
+        readonly CREDIT_FAILED: "Failed to credit admin wallet";
     };
     readonly VALIDATION: {
         readonly VALIDATION_ERROR: "VALIDATION_ERROR";

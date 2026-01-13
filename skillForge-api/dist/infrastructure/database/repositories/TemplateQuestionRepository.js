@@ -17,12 +17,13 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../di/types");
 const Database_1 = require("../Database");
 const TemplateQuestion_1 = require("../../../domain/entities/TemplateQuestion");
-let TemplateQuestionRepository = class TemplateQuestionRepository {
-    constructor(database) {
-        this.database = database;
+const BaseRepository_1 = require("../BaseRepository");
+let TemplateQuestionRepository = class TemplateQuestionRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'templateQuestion');
     }
     async create(question) {
-        const created = await this.database.getClient().templateQuestion.create({
+        const created = await this.prisma.templateQuestion.create({
             data: {
                 id: question.id,
                 templateId: question.templateId,
@@ -37,7 +38,7 @@ let TemplateQuestionRepository = class TemplateQuestionRepository {
         return TemplateQuestion_1.TemplateQuestion.create(created.id, created.templateId, created.level, created.question, created.options, created.correctAnswer, created.explanation, created.isActive, created.createdAt, created.updatedAt);
     }
     async findById(id) {
-        const found = await this.database.getClient().templateQuestion.findUnique({
+        const found = await this.prisma.templateQuestion.findUnique({
             where: { id },
         });
         if (!found)
@@ -45,34 +46,34 @@ let TemplateQuestionRepository = class TemplateQuestionRepository {
         return TemplateQuestion_1.TemplateQuestion.create(found.id, found.templateId, found.level, found.question, found.options, found.correctAnswer, found.explanation, found.isActive, found.createdAt, found.updatedAt);
     }
     async findByTemplateId(templateId) {
-        const questions = await this.database.getClient().templateQuestion.findMany({
+        const questions = await this.prisma.templateQuestion.findMany({
             where: { templateId, isActive: true },
             orderBy: { createdAt: 'desc' },
         });
         return questions.map((q) => TemplateQuestion_1.TemplateQuestion.create(q.id, q.templateId, q.level, q.question, q.options, q.correctAnswer, q.explanation, q.isActive, q.createdAt, q.updatedAt));
     }
     async findByTemplateIdAndLevel(templateId, level) {
-        const questions = await this.database.getClient().templateQuestion.findMany({
+        const questions = await this.prisma.templateQuestion.findMany({
             where: { templateId, level, isActive: true },
             orderBy: { createdAt: 'desc' },
         });
         return questions.map((q) => TemplateQuestion_1.TemplateQuestion.create(q.id, q.templateId, q.level, q.question, q.options, q.correctAnswer, q.explanation, q.isActive, q.createdAt, q.updatedAt));
     }
     async update(id, data) {
-        const updated = await this.database.getClient().templateQuestion.update({
+        const updated = await this.prisma.templateQuestion.update({
             where: { id },
             data,
         });
         return TemplateQuestion_1.TemplateQuestion.create(updated.id, updated.templateId, updated.level, updated.question, updated.options, updated.correctAnswer, updated.explanation, updated.isActive, updated.createdAt, updated.updatedAt);
     }
     async delete(id) {
-        await this.database.getClient().templateQuestion.update({
+        await this.prisma.templateQuestion.update({
             where: { id },
             data: { isActive: false },
         });
     }
     async bulkDelete(ids) {
-        const result = await this.database.getClient().templateQuestion.updateMany({
+        const result = await this.prisma.templateQuestion.updateMany({
             where: {
                 id: { in: ids },
                 isActive: true
@@ -82,17 +83,17 @@ let TemplateQuestionRepository = class TemplateQuestionRepository {
         return result.count;
     }
     async countByTemplateId(templateId) {
-        return this.database.getClient().templateQuestion.count({
+        return this.prisma.templateQuestion.count({
             where: { templateId, isActive: true },
         });
     }
     async countByTemplateIdAndLevel(templateId, level) {
-        return this.database.getClient().templateQuestion.count({
+        return this.prisma.templateQuestion.count({
             where: { templateId, level, isActive: true },
         });
     }
     async getRandomQuestions(templateId, level, count) {
-        const questions = await this.database.getClient().templateQuestion.findMany({
+        const questions = await this.prisma.templateQuestion.findMany({
             where: { templateId, level, isActive: true },
         });
         // Shuffle and take 'count' questions
@@ -101,7 +102,7 @@ let TemplateQuestionRepository = class TemplateQuestionRepository {
         return selected.map((q) => TemplateQuestion_1.TemplateQuestion.create(q.id, q.templateId, q.level, q.question, q.options, q.correctAnswer, q.explanation, q.isActive, q.createdAt, q.updatedAt));
     }
     async createMany(questions) {
-        const result = await this.database.getClient().templateQuestion.createMany({
+        const result = await this.prisma.templateQuestion.createMany({
             data: questions.map(q => ({
                 id: q.id,
                 templateId: q.templateId,

@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
+
 export type MessageType = 'text' | 'image' | 'video' | 'file';
+
 export interface CreateCommunityMessageData {
   id?: string;
   communityId: string;
@@ -11,6 +13,26 @@ export interface CreateCommunityMessageData {
   replyToId?: string | null;
   forwardedFromId?: string | null;
 }
+
+export interface ReactionData {
+  emoji: string;
+  userId: string;
+  userName?: string;
+  userAvatar?: string;
+  user?: {
+    id: string;
+    name: string;
+    avatar?: string;
+    avatarUrl?: string;
+  };
+}
+
+export interface ReactionUser {
+  id: string;
+  name: string;
+  avatar?: string | null;
+}
+
 export class CommunityMessage {
   private _id: string;
   private _communityId: string;
@@ -23,14 +45,14 @@ export class CommunityMessage {
   private _pinnedAt: Date | null;
   private _pinnedBy: string | null;
   private _replyToId: string | null;
-  private _forwardedFromId: string | null;
+  private _sourceMessageId: string | null;
   private _isDeleted: boolean;
   private _deletedAt: Date | null;
   private _createdAt: Date;
   private _updatedAt: Date;
   private _senderName: string;
   private _senderAvatar: string | null;
-  private _reactions?: any[];
+  private _reactions?: ReactionData[];
   constructor(data: CreateCommunityMessageData) {
     this._id = data.id || uuidv4();
     this._communityId = data.communityId;
@@ -43,7 +65,7 @@ export class CommunityMessage {
     this._pinnedAt = null;
     this._pinnedBy = null;
     this._replyToId = data.replyToId || null;
-    this._forwardedFromId = data.forwardedFromId || null;
+    this._sourceMessageId = data.forwardedFromId || null;
     this._isDeleted = false;
     this._deletedAt = null;
     const now = new Date();
@@ -65,7 +87,7 @@ export class CommunityMessage {
   get pinnedAt(): Date | null { return this._pinnedAt; }
   get pinnedBy(): string | null { return this._pinnedBy; }
   get replyToId(): string | null { return this._replyToId; }
-  get forwardedFromId(): string | null { return this._forwardedFromId; }
+  get forwardedFromId(): string | null { return this._sourceMessageId; }
   get isDeleted(): boolean { return this._isDeleted; }
   get deletedAt(): Date | null { return this._deletedAt; }
   get createdAt(): Date { return this._createdAt; }
@@ -102,7 +124,7 @@ export class CommunityMessage {
       pinned_at: this._pinnedAt,
       pinned_by: this._pinnedBy,
       reply_to_id: this._replyToId,
-      forwarded_from_id: this._forwardedFromId,
+      forwarded_from_id: this._sourceMessageId,
       is_deleted: this._isDeleted,
       deleted_at: this._deletedAt,
       created_at: this._createdAt,
@@ -138,10 +160,10 @@ export class CommunityMessage {
 
     // Map reactions if available
     if (row.reactions && Array.isArray(row.reactions)) {
-      const reactionsArray = row.reactions as any[];
-      const grouped = new Map<string, { emoji: string; users: any[]; count: number; hasReacted: boolean }>();
+      const reactionsArray = row.reactions as ReactionData[];
+      const grouped = new Map<string, { emoji: string; users: ReactionUser[]; count: number; hasReacted: boolean }>();
 
-      reactionsArray.forEach((reaction: any) => {
+      reactionsArray.forEach((reaction: ReactionData) => {
         const emoji = reaction.emoji;
         if (!grouped.has(emoji)) {
           grouped.set(emoji, {

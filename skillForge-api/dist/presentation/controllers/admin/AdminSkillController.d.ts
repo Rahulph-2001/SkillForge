@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { IListPendingSkillsUseCase } from '../../../application/useCases/admin/interfaces/IListPendingSkillsUseCase';
-import { ApproveSkillUseCase } from '../../../application/useCases/admin/ApproveSkillUseCase';
-import { RejectSkillUseCase } from '../../../application/useCases/admin/RejectSkillUseCase';
-import { GetAllSkillsUseCase } from '../../../application/useCases/admin/GetAllSkillsUseCase';
-import { BlockSkillUseCase } from '../../../application/useCases/admin/BlockSkillUseCase';
-import { UnblockSkillUseCase } from '../../../application/useCases/admin/UnblockSkillUseCase';
+import { IApproveSkillUseCase } from '../../../application/useCases/admin/interfaces/IApproveSkillUseCase';
+import { IRejectSkillUseCase } from '../../../application/useCases/admin/interfaces/IRejectSkillUseCase';
+import { IGetAllSkillsUseCase } from '../../../application/useCases/admin/interfaces/IGetAllSkillsUseCase';
+import { IBlockSkillUseCase } from '../../../application/useCases/admin/interfaces/IBlockSkillUseCase';
+import { IUnblockSkillUseCase } from '../../../application/useCases/admin/interfaces/IUnblockSkillUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class AdminSkillController {
     private listPendingSkillsUseCase;
@@ -14,7 +14,7 @@ export declare class AdminSkillController {
     private blockSkillUseCase;
     private unblockSkillUseCase;
     private responseBuilder;
-    constructor(listPendingSkillsUseCase: IListPendingSkillsUseCase, approveSkillUseCase: ApproveSkillUseCase, rejectSkillUseCase: RejectSkillUseCase, getAllSkillsUseCase: GetAllSkillsUseCase, blockSkillUseCase: BlockSkillUseCase, unblockSkillUseCase: UnblockSkillUseCase, responseBuilder: IResponseBuilder);
+    constructor(listPendingSkillsUseCase: IListPendingSkillsUseCase, approveSkillUseCase: IApproveSkillUseCase, rejectSkillUseCase: IRejectSkillUseCase, getAllSkillsUseCase: IGetAllSkillsUseCase, blockSkillUseCase: IBlockSkillUseCase, unblockSkillUseCase: IUnblockSkillUseCase, responseBuilder: IResponseBuilder);
     /**
      * List all pending skills (passed MCQ, waiting for admin approval)
      * GET /api/v1/admin/skills/pending

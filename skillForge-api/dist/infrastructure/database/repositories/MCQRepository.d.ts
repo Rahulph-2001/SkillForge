@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import { IMCQRepository } from '../../../domain/repositories/IMCQRepository';
 import { MCQAttempt, MCQQuestion } from '../../../domain/entities/MCQAttempt';
-export declare class MCQRepository implements IMCQRepository {
-    private prisma;
-    constructor(prisma: PrismaClient);
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
+export declare class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRepository {
+    constructor(db: Database);
     getQuestionsByTemplate(templateId: string, level: string, limit: number): Promise<MCQQuestion[]>;
     private shuffleArray;
     getQuestionById(id: string): Promise<MCQQuestion | null>;

@@ -13,6 +13,7 @@ var SubscriptionStatus;
     SubscriptionStatus["TRIALING"] = "TRIALING";
     SubscriptionStatus["PAST_DUE"] = "PAST_DUE";
     SubscriptionStatus["CANCELED"] = "CANCELED";
+    SubscriptionStatus["EXPIRED"] = "EXPIRED";
     SubscriptionStatus["UNPAID"] = "UNPAID";
     SubscriptionStatus["INCOMPLETE"] = "INCOMPLETE";
 })(SubscriptionStatus || (exports.SubscriptionStatus = SubscriptionStatus = {}));

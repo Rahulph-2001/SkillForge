@@ -1,0 +1,1 @@
+{"version":3,"file":"PaginationRequestDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/common/PaginationRequestDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,CAAC,EAAC,MAAM,KAAK,CAAA;AAErB,eAAO,MAAM,uBAAuB;;;iBAGlC,CAAA;AAEF,MAAM,MAAM,oBAAoB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,uBAAuB,CAAC,CAAA"}

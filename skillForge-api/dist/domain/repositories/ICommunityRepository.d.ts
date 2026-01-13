@@ -16,5 +16,7 @@ export interface ICommunityRepository {
     findMemberByUserAndCommunity(userId: string, communityId: string): Promise<CommunityMember | null>;
     findMembershipsByUserId(userId: string): Promise<CommunityMember[]>;
     updateMember(member: CommunityMember): Promise<CommunityMember>;
+    upsertMember(member: CommunityMember): Promise<CommunityMember>;
+    incrementMembersCount(communityId: string): Promise<void>;
 }
 //# sourceMappingURL=ICommunityRepository.d.ts.map

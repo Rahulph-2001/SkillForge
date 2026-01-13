@@ -14,11 +14,12 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MCQRepository = void 0;
 const inversify_1 = require("inversify");
-const client_1 = require("@prisma/client");
 const types_1 = require("../../di/types");
-let MCQRepository = class MCQRepository {
-    constructor(prisma) {
-        this.prisma = prisma;
+const Database_1 = require("../Database");
+const BaseRepository_1 = require("../BaseRepository");
+let MCQRepository = class MCQRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'skillVerificationAttempt');
     }
     async getQuestionsByTemplate(templateId, level, limit) {
         // Fetch all available questions for the template and level
@@ -133,7 +134,7 @@ let MCQRepository = class MCQRepository {
 exports.MCQRepository = MCQRepository;
 exports.MCQRepository = MCQRepository = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [client_1.PrismaClient])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Database_1.Database])
 ], MCQRepository);
 //# sourceMappingURL=MCQRepository.js.map

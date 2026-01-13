@@ -1,10 +1,10 @@
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
-export interface ICheckSubscriptionExpiryUseCase {
-    execute(): Promise<void>;
-}
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ICheckSubscriptionExpiryUseCase } from './interfaces/ICheckSubscriptionExpiryUseCase';
 export declare class CheckSubscriptionExpiryUseCase implements ICheckSubscriptionExpiryUseCase {
     private subscriptionRepository;
-    constructor(subscriptionRepository: IUserSubscriptionRepository);
+    private userRepository;
+    constructor(subscriptionRepository: IUserSubscriptionRepository, userRepository: IUserRepository);
     execute(): Promise<void>;
 }
 //# sourceMappingURL=CheckSubscriptionExpiryUseCase.d.ts.map

@@ -1,3 +1,10 @@
+export interface SkillSummary {
+  id: string;
+  title: string;
+  category: string;
+  level: string;
+}
+
 export interface ProviderProfileResponseDTO {
   id: string;
   name: string;
@@ -9,7 +16,11 @@ export interface ProviderProfileResponseDTO {
   reviewCount: number;
   totalSessionsCompleted: number;
   memberSince: Date;
-  verification: boolean;
-  skillsOffered: any[];
+  verification: {
+    isEmailVerified: boolean;
+    isPhoneVerified: boolean;
+    isIdentityVerified: boolean;
+  };
+  skillsOffered: SkillSummary[];
 }
 

@@ -1,6 +1,7 @@
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-export declare class DeleteSubscriptionPlanUseCase {
+import { IDeleteSubscriptionPlanUseCase } from './interfaces/IDeleteSubscriptionPlanUseCase';
+export declare class DeleteSubscriptionPlanUseCase implements IDeleteSubscriptionPlanUseCase {
     private userRepository;
     private subscriptionPlanRepository;
     constructor(userRepository: IUserRepository, subscriptionPlanRepository: ISubscriptionPlanRepository);

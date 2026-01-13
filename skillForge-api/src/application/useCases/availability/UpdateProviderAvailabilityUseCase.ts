@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
-import { ProviderAvailability } from '../../../domain/entities/ProviderAvailability';
+import { ProviderAvailability, WeeklySchedule } from '../../../domain/entities/ProviderAvailability';
 import { IUpdateProviderAvailabilityUseCase } from './interfaces/IUpdateProviderAvailabilityUseCase';
 
 @injectable()
@@ -36,13 +36,23 @@ export class UpdateProviderAvailabilityUseCase implements IUpdateProviderAvailab
         return this.availabilityRepository.update(providerId, data);
     }
 
-    private validateAndMergeSchedule(schedule: any): any {
-        const result = { ...schedule };
+    private validateAndMergeSchedule(schedule: Record<string, { enabled: boolean; slots?: { start: string; end: string }[] }>): WeeklySchedule {
+        const result: WeeklySchedule = {};
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
         for (const day of days) {
-            if (result[day] && result[day].enabled && result[day].slots && result[day].slots.length > 0) {
-                result[day].slots = this.mergeSlots(result[day].slots);
+            if (schedule[day]) {
+                result[day] = {
+                    enabled: schedule[day].enabled,
+                    slots: schedule[day].slots && schedule[day].slots.length > 0 
+                        ? this.mergeSlots(schedule[day].slots) 
+                        : []
+                };
+            } else {
+                result[day] = {
+                    enabled: false,
+                    slots: []
+                };
             }
         }
         return result;

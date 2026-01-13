@@ -1,14 +1,8 @@
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-export interface RescheduleBookingRequest {
-    bookingId: string;
-    userId: string;
-    newDate: string;
-    newTime: string;
-    reason: string;
-}
-export declare class RescheduleBookingUseCase {
+import { IRescheduleBookingUseCase, RescheduleBookingRequestDTO } from './interfaces/IRescheduleBookingUseCase';
+export declare class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
     private readonly bookingRepository;
     constructor(bookingRepository: IBookingRepository);
-    execute(request: RescheduleBookingRequest): Promise<void>;
+    execute(request: RescheduleBookingRequestDTO): Promise<void>;
 }
 //# sourceMappingURL=RescheduleBookingUseCase.d.ts.map

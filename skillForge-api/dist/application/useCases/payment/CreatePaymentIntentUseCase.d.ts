@@ -2,9 +2,7 @@ import { IPaymentGateway } from '../../../domain/services/IPaymentGateway';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { CreatePaymentIntentDTO } from '../../dto/payment/CreatePaymentIntentDTO';
 import { CreatePaymentIntentResponseDTO } from '../../dto/payment/CreatePaymentIntentResponseDTO';
-export interface ICreatePaymentIntentUseCase {
-    execute(userId: string, dto: CreatePaymentIntentDTO): Promise<CreatePaymentIntentResponseDTO>;
-}
+import { ICreatePaymentIntentUseCase } from './interfaces/ICreatePaymentIntentUseCase';
 export declare class CreatePaymentIntentUseCase implements ICreatePaymentIntentUseCase {
     private paymentGateway;
     private paymentRepository;

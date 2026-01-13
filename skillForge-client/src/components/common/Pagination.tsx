@@ -1,38 +1,87 @@
 import React from 'react';
 
-interface PaginationProps {
+export interface PaginationProps {
   currentPage: number;
   totalPages: number;
+  totalItems: number;
+  limit: number;
   onPageChange: (page: number) => void;
-  itemsPerPage?: number;
-  totalItems?: number;
+  onLimitChange?: (limit: number) => void;
+  showLimitSelector?: boolean;
+  limitOptions?: number[];
+  showInfo?: boolean;
+  className?: string;
+  disabled?: boolean;
 }
+
+const Icons = {
+  ChevronLeft: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  ),
+  ChevronRight: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  ),
+  ChevronsLeft: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="11 18 5 12 11 6"></polyline>
+      <polyline points="18 18 12 12 18 6"></polyline>
+    </svg>
+  ),
+  ChevronsRight: () => (
+    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <polyline points="13 18 19 12 13 6"></polyline>
+      <polyline points="6 18 12 12 6 6"></polyline>
+    </svg>
+  ),
+};
 
 export const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
-  onPageChange,
-  itemsPerPage,
   totalItems,
+  limit,
+  onPageChange,
+  onLimitChange,
+  showLimitSelector = false,
+  limitOptions = [10, 20, 50, 100],
+  showInfo = true,
+  className = '',
+  disabled = false,
 }) => {
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisiblePages = 7;
+  const startIndex = totalItems === 0 ? 0 : (currentPage - 1) * limit + 1;
+  const endIndex = Math.min(currentPage * limit, totalItems);
 
-    if (totalPages <= maxVisiblePages) {
-      // Show all pages if total is less than max visible
+  const handlePageChange = (page: number) => {
+    if (!disabled && page >= 1 && page <= totalPages) {
+      onPageChange(page);
+    }
+  };
+
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (!disabled && onLimitChange) {
+      onLimitChange(Number(e.target.value));
+    }
+  };
+
+  const renderPageNumbers = () => {
+    const pages: (number | string)[] = [];
+    const maxVisible = 7;
+
+    if (totalPages <= maxVisible) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i);
       }
     } else {
-      // Always show first page
       pages.push(1);
 
       if (currentPage > 3) {
         pages.push('...');
       }
 
-      // Show pages around current page
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
 
@@ -44,90 +93,120 @@ export const Pagination: React.FC<PaginationProps> = ({
         pages.push('...');
       }
 
-      // Always show last page
       pages.push(totalPages);
     }
 
     return pages;
   };
 
-  const handlePrevious = () => {
-    if (currentPage > 1) {
-      onPageChange(currentPage - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) {
-      onPageChange(currentPage + 1);
-    }
-  };
-
-  const handlePageClick = (page: number | string) => {
-    if (typeof page === 'number') {
-      onPageChange(page);
-    }
-  };
-
-  if (totalPages <= 1) {
-    return null; // Don't show pagination if there's only one page
+  if (totalPages === 0) {
+    return null;
   }
 
-  const startItem = (currentPage - 1) * (itemsPerPage || 10) + 1;
-  const endItem = Math.min(currentPage * (itemsPerPage || 10), totalItems || 0);
-
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-200 bg-white">
-      {/* Items info */}
-      {totalItems && itemsPerPage && (
-        <div className="text-sm text-gray-600">
-          Showing <span className="font-medium">{startItem}</span> to{' '}
-          <span className="font-medium">{endItem}</span> of{' '}
+    <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}>
+      {showInfo && (
+        <div className="text-sm text-gray-700">
+          Showing <span className="font-medium">{startIndex}</span> to{' '}
+          <span className="font-medium">{endIndex}</span> of{' '}
           <span className="font-medium">{totalItems}</span> results
         </div>
       )}
 
-      {/* Pagination controls */}
       <div className="flex items-center gap-2">
-        {/* Previous button */}
-        <button
-          onClick={handlePrevious}
-          disabled={currentPage === 1}
-          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-        >
-          ← Previous
-        </button>
+        {showLimitSelector && onLimitChange && (
+          <div className="flex items-center gap-2">
+            <label htmlFor="limit-select" className="text-sm text-gray-700">
+              Show:
+            </label>
+            <select
+              id="limit-select"
+              value={limit}
+              onChange={handleLimitChange}
+              disabled={disabled}
+              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {limitOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
 
-        {/* Page numbers */}
         <div className="flex items-center gap-1">
-          {getPageNumbers().map((page, index) => (
-            <React.Fragment key={index}>
-              {page === '...' ? (
-                <span className="px-3 py-2 text-gray-500">...</span>
-              ) : (
-                <button
-                  onClick={() => handlePageClick(page)}
-                  className={`min-w-[40px] h-10 px-3 rounded-lg text-sm font-medium transition ${
-                    currentPage === page
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                  }`}
-                >
-                  {page}
-                </button>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
+          <button
+            onClick={() => handlePageChange(1)}
+            disabled={disabled || currentPage === 1}
+            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="First page"
+          >
+            <Icons.ChevronsLeft />
+          </button>
 
-        {/* Next button */}
-        <button
-          onClick={handleNext}
-          disabled={currentPage === totalPages}
-          className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
-        >
-          Next →
-        </button>
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={disabled || currentPage === 1}
+            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Previous page"
+          >
+            <Icons.ChevronLeft />
+          </button>
+
+          <div className="flex items-center gap-1">
+            {renderPageNumbers().map((page, index) => {
+              if (page === '...') {
+                return (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="px-3 py-2 text-gray-500"
+                  >
+                    ...
+                  </span>
+                );
+              }
+
+              const pageNum = page as number;
+              const isActive = pageNum === currentPage;
+
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  disabled={disabled}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${
+                    isActive
+                      ? 'bg-blue-600 text-white border-blue-600'
+                      : 'border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
+                  }`}
+                  aria-label={`Page ${pageNum}`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={disabled || currentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Next page"
+          >
+            <Icons.ChevronRight />
+          </button>
+
+          <button
+            onClick={() => handlePageChange(totalPages)}
+            disabled={disabled || currentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            aria-label="Last page"
+          >
+            <Icons.ChevronsRight />
+          </button>
+        </div>
       </div>
     </div>
   );

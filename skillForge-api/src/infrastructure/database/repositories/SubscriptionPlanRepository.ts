@@ -7,14 +7,12 @@ import {
 } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { NotFoundError } from '../../../domain/errors/AppError';
 import { TYPES } from '../../di/types';
-
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanRepository {
-  private readonly prisma;
-
+export class PrismaSubscriptionPlanRepository extends BaseRepository<SubscriptionPlan> implements ISubscriptionPlanRepository {
   constructor(@inject(TYPES.Database) db: Database) {
-    this.prisma = db.getClient();
+    super(db, 'subscriptionPlanModel');
   }
 
   async findAll(): Promise<SubscriptionPlan[]> {
@@ -64,8 +62,6 @@ export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanReposi
   async create(plan: SubscriptionPlan): Promise<SubscriptionPlan> {
     const planData = plan.toJSON();
 
-    // Note: features is now a relation, not a JSON field
-    // Use the new Feature model for proper feature management
     const createdPlan = await this.prisma.subscriptionPlanModel.create({
       data: {
         name: planData.name as string,
@@ -81,10 +77,9 @@ export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanReposi
         displayOrder: (planData.displayOrder as number) || 0,
         isActive: planData.isActive as boolean,
         isPublic: planData.isPublic !== undefined ? (planData.isPublic as boolean) : true,
-        // Link features if provided
       },
       include: {
-        features: true // Include features in response
+        features: true
       }
     });
 
@@ -114,7 +109,7 @@ export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanReposi
           updatedAt: new Date(),
         },
         include: {
-          features: true // Include features in response
+          features: true
         }
       });
 
@@ -140,13 +135,10 @@ export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanReposi
   }
 
   async getStats(): Promise<SubscriptionStats> {
-    // Get all active plans
     const plans = await this.prisma.subscriptionPlanModel.findMany({
       where: { isActive: true },
     });
 
-    // For now, return mock statistics
-    // In a real app, you would query actual user subscriptions
     const totalRevenue = plans.reduce((sum, plan) => sum + Number(plan.price), 0);
     const monthlyRecurring = totalRevenue;
     const activeSubscriptions = plans.length;
@@ -177,9 +169,6 @@ export class PrismaSubscriptionPlanRepository implements ISubscriptionPlanReposi
     return plan !== null;
   }
 
-  /**
-   * Convert Prisma model to Domain entity
-   */
   private toDomain(prismaModel: any): SubscriptionPlan {
     return SubscriptionPlan.fromJSON({
       id: prismaModel.id,

@@ -19,19 +19,24 @@ export class GetProviderProfileUseCase implements IGetProviderProfileUseCase {
     }
 
     const userData = user.toJSON();
+    const verificationData = user.verification;
 
     return {
       id: user.id,
       name: user.name,
-      email: user.email,
-      avatarUrl: userData.avatarUrl as string | null,
+      email: user.email.value,
+      avatarUrl: user.avatarUrl || (userData.avatarUrl as string | null) || (userData.avatar_url as string | null) || null,
       bio: userData.bio as string | null,
       location: userData.location as string | null,
       rating: userData.rating as number | null,
       reviewCount: userData.reviewCount as number || 0,
       totalSessionsCompleted: userData.totalSessionsCompleted as number || 0,
       memberSince: userData.memberSince as Date,
-      verification: userData.verification as boolean || false,
+      verification: {
+        isEmailVerified: verificationData.email_verified || false,
+        isPhoneVerified: false, // Phone verification not implemented yet
+        isIdentityVerified: verificationData.bank_details?.verified || false,
+      },
       skillsOffered: [], // TODO: Fetch from skill repository when needed
     };
   }

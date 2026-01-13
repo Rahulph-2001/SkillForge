@@ -15,18 +15,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateUserProfileUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const Database_1 = require("../../../infrastructure/database/Database");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UpdateUserProfileUseCase = class UpdateUserProfileUseCase {
-    constructor(database, storageService) {
-        this.prisma = database.getClient();
+    constructor(userRepository, storageService) {
+        this.userRepository = userRepository;
         this.storageService = storageService;
     }
     async execute(dto) {
         const { userId, name, bio, location, avatarFile } = dto;
-        const user = await this.prisma.user.findUnique({
-            where: { id: userId },
-        });
+        const user = await this.userRepository.findById(userId);
         if (!user) {
             throw new AppError_1.NotFoundError('User not found');
         }
@@ -40,28 +37,18 @@ let UpdateUserProfileUseCase = class UpdateUserProfileUseCase {
                 throw new AppError_1.InternalServerError('Failed to upload avatar image');
             }
         }
-        const updateData = {
-            ...(name && { name }),
-            ...(bio !== undefined && { bio }),
-            ...(location !== undefined && { location }),
-            ...(avatarFile && { avatarUrl }),
-        };
-        const updatedUser = await this.prisma.user.update({
-            where: { id: userId },
-            data: updateData,
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                avatarUrl: true,
-                bio: true,
-                location: true,
-            },
+        // Update user entity
+        user.updateProfile({
+            name,
+            bio,
+            location,
+            avatarUrl,
         });
+        const updatedUser = await this.userRepository.update(user);
         return {
             id: updatedUser.id,
             name: updatedUser.name,
-            email: updatedUser.email,
+            email: updatedUser.email.value,
             avatarUrl: updatedUser.avatarUrl,
             bio: updatedUser.bio,
             location: updatedUser.location,
@@ -71,8 +58,8 @@ let UpdateUserProfileUseCase = class UpdateUserProfileUseCase {
 exports.UpdateUserProfileUseCase = UpdateUserProfileUseCase;
 exports.UpdateUserProfileUseCase = UpdateUserProfileUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
-    __metadata("design:paramtypes", [Database_1.Database, Object])
+    __metadata("design:paramtypes", [Object, Object])
 ], UpdateUserProfileUseCase);
 //# sourceMappingURL=UpdateUserProfileUseCase.js.map

@@ -4,7 +4,9 @@ import { IJobQueueService, JobQueueName } from '../../domain/services/IJobQueueS
 import { RedisService } from './RedisService';
 import { Queue, Worker, Job } from 'bullmq';
 import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
-import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/CheckSubscriptionExpiryUseCase';
+import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/interfaces/ICheckSubscriptionExpiryUseCase';
+import { ICheckCommunityMembershipExpiryUseCase } from '../../application/useCases/community/interfaces/ICheckCommunityMembershipExpiryUseCase';
+import { InternalServerError } from '../../domain/errors/AppError';
 
 @injectable()
 export class JobQueueService implements IJobQueueService {
@@ -14,7 +16,8 @@ export class JobQueueService implements IJobQueueService {
   constructor(
     @inject(TYPES.RedisService) private redisService: RedisService,
     @inject(TYPES.MCQImportJobProcessor) private mcqImportJobProcessor: MCQImportJobProcessor,
-    @inject(TYPES.ICheckSubscriptionExpiryUseCase) private checkSubscriptionExpiryUseCase: ICheckSubscriptionExpiryUseCase
+    @inject(TYPES.ICheckSubscriptionExpiryUseCase) private checkSubscriptionExpiryUseCase: ICheckSubscriptionExpiryUseCase,
+    @inject(TYPES.ICheckCommunityMembershipExpiryUseCase) private checkCommunityMembershipExpiryUseCase: ICheckCommunityMembershipExpiryUseCase
   ) {
     this.initializeQueues();
   }
@@ -37,12 +40,24 @@ export class JobQueueService implements IJobQueueService {
       },
       removeOnComplete: true,
     });
+
+    // Initialize Community Membership Expiry Queue
+    const membershipExpiryQueue = new Queue(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, { connection: connectionOptions });
+    this.queues.set(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, membershipExpiryQueue);
+
+    // Schedule the daily check at 1 AM (offset from subscription check)
+    membershipExpiryQueue.add(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, {}, {
+      repeat: {
+        pattern: '0 1 * * *', // Daily at 1 AM
+      },
+      removeOnComplete: true,
+    });
   }
 
   async addJob<T extends Record<string, unknown>>(queueName: JobQueueName, data: T): Promise<void> {
     const queue = this.queues.get(queueName);
     if (!queue) {
-      throw new Error(`Queue ${queueName} not initialized`);
+      throw new InternalServerError(`Queue ${queueName} not initialized`);
     }
 
     await queue.add(queueName, data, {
@@ -96,6 +111,27 @@ export class JobQueueService implements IJobQueueService {
 
       this.setupWorkerListeners(worker, JobQueueName.SUBSCRIPTION_EXPIRY);
       this.workers.set(JobQueueName.SUBSCRIPTION_EXPIRY, worker);
+    }
+
+    // Start Community Membership Expiry Worker
+    if (!this.workers.has(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY)) {
+      const worker = new Worker(
+        JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY,
+        async (job: Job) => {
+          console.log(`[Worker] Processing job ${job.id} from ${JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY}`);
+          try {
+            await this.checkCommunityMembershipExpiryUseCase.execute();
+            console.log(`[Worker] Job ${job.id} completed`);
+          } catch (error) {
+            console.error(`[Worker] Job ${job.id} failed:`, error);
+            throw error;
+          }
+        },
+        { connection: connectionOptions }
+      );
+
+      this.setupWorkerListeners(worker, JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY);
+      this.workers.set(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, worker);
     }
   }
 

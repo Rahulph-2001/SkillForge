@@ -2,8 +2,8 @@ import { Database } from '../Database';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
 import { UserSubscription } from '../../../domain/entities/UserSubscription';
 import { SubscriptionStatus } from '../../../domain/enums/SubscriptionEnums';
-export declare class PrismaUserSubscriptionRepository implements IUserSubscriptionRepository {
-    private readonly prisma;
+import { BaseRepository } from '../BaseRepository';
+export declare class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscription> implements IUserSubscriptionRepository {
     constructor(db: Database);
     create(subscription: UserSubscription): Promise<UserSubscription>;
     findById(id: string): Promise<UserSubscription | null>;

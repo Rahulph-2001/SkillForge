@@ -39,15 +39,17 @@ const bookingRoutes_1 = require("./routes/bookingRoutes");
 const userProfileRoutes_1 = require("./routes/user/userProfileRoutes");
 const userProfileRoutes_2 = __importDefault(require("./routes/userProfileRoutes"));
 const sessionManagementRoutes_1 = __importDefault(require("./routes/sessionManagementRoutes"));
-const rateLimitMiddileWare_1 = require("./middlewares/rateLimitMiddileWare");
+const rateLimitMiddleware_1 = require("./middlewares/rateLimitMiddleware");
 const PassportService_1 = require("../infrastructure/services/PassportService");
 const MCQImportRoutes_1 = require("./routes/mcq/MCQImportRoutes");
 const availabilityRoutes_1 = require("./routes/availability/availabilityRoutes");
 const communityRoutes_1 = require("./routes/community/communityRoutes");
 const paymentRoutes_1 = require("./routes/payment/paymentRoutes");
 const userSubscriptionRoutes_1 = require("./routes/subscription/userSubscriptionRoutes");
+const projectRoutes_1 = require("./routes/project/projectRoutes");
+const AdminWalletRoutes_1 = require("./routes/admin/AdminWalletRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, passportService) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, passportService) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -65,6 +67,8 @@ let App = class App {
         this.communityRoutes = communityRoutes;
         this.paymentRoutes = paymentRoutes;
         this.userSubscriptionRoutes = userSubscriptionRoutes;
+        this.projectRoutes = projectRoutes;
+        this.adminWalletRoutes = adminWalletRoutes;
         this.passportService = passportService;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
@@ -101,7 +105,7 @@ let App = class App {
         this.app.get('/api/v1/health', (_req, res) => {
             res.status(HttpStatusCode_1.HttpStatusCode.OK).json({ status: 'UP', service: 'SkillSwap API' });
         });
-        this.app.use('/api/v1', rateLimitMiddileWare_1.generalLimiter);
+        this.app.use('/api/v1', rateLimitMiddleware_1.generalLimiter);
     }
     setupRoutes() {
         this.app.use('/api/v1/auth', this.authRoutes.router);
@@ -125,6 +129,8 @@ let App = class App {
         this.app.use('/api/v1/communities', this.communityRoutes.getRouter());
         this.app.use('/api/v1/payments', this.paymentRoutes.getRouter());
         this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
+        this.app.use('/api/v1/projects', this.projectRoutes.router);
+        this.app.use('/api/v1/admin/wallet', this.adminWalletRoutes.router);
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
     setupErrorHandlers() {
@@ -154,7 +160,9 @@ exports.App = App = __decorate([
     __param(14, (0, inversify_1.inject)(types_1.TYPES.CommunityRoutes)),
     __param(15, (0, inversify_1.inject)(types_1.TYPES.PaymentRoutes)),
     __param(16, (0, inversify_1.inject)(types_1.TYPES.UserSubscriptionRoutes)),
-    __param(17, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
+    __param(17, (0, inversify_1.inject)(types_1.TYPES.ProjectRoutes)),
+    __param(18, (0, inversify_1.inject)(types_1.TYPES.AdminWalletRoutes)),
+    __param(19, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -172,6 +180,8 @@ exports.App = App = __decorate([
         communityRoutes_1.CommunityRoutes,
         paymentRoutes_1.PaymentRoutes,
         userSubscriptionRoutes_1.UserSubscriptionRoutes,
+        projectRoutes_1.ProjectRoutes,
+        AdminWalletRoutes_1.AdminWalletRoutes,
         PassportService_1.PassportService])
 ], App);
 //# sourceMappingURL=server.js.map

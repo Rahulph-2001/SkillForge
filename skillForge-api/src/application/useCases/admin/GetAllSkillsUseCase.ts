@@ -45,7 +45,7 @@ export class GetAllSkillsUseCase implements IGetAllSkillsUseCase {
     // Get all non-deleted skills that haven't failed verification
     const skills = await this.skillRepository.findAll();
     const filteredSkills = skills.filter(
-      skill => !skill.isDeleted && skill.verificationStatus !== 'failed'
+      skill => skill.verificationStatus !== 'failed'
     );
 
     // Get unique provider IDs

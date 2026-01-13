@@ -72,9 +72,9 @@ export class PaymentController {
             await this.handleWebhookUseCase.execute(event);
 
             res.status(HttpStatusCode.OK).json({ received: true });
-        } catch (error: any) {
-            console.error('Webhook error:', error.message);
-            res.status(HttpStatusCode.BAD_REQUEST).send(`Webhook Error: ${error.message}`);
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            res.status(HttpStatusCode.BAD_REQUEST).send(`Webhook Error: ${errorMessage}`);
         }
     }
 }

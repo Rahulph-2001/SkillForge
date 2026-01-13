@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import { ICommunityMessageRepository } from '../../../domain/repositories/ICommunityMessageRepository';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
-export declare class CommunityMessageRepository implements ICommunityMessageRepository {
-    private readonly prisma;
-    constructor(prisma: PrismaClient);
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
+export declare class CommunityMessageRepository extends BaseRepository<CommunityMessage> implements ICommunityMessageRepository {
+    constructor(db: Database);
     create(message: CommunityMessage): Promise<CommunityMessage>;
     findById(id: string): Promise<CommunityMessage | null>;
     findByCommunityId(communityId: string, limit?: number, offset?: number): Promise<CommunityMessage[]>;

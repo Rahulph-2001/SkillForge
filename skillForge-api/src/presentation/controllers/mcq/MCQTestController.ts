@@ -18,7 +18,7 @@ export class MCQTestController {
   public startTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
 
       const testSession = await this.startMCQTestUseCase.execute({ skillId, userId });
 
@@ -28,7 +28,7 @@ export class MCQTestController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -39,7 +39,7 @@ export class MCQTestController {
    */
   public submitTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { skillId, questionIds, answers, timeTaken } = req.body;
 
       // Validate input
@@ -77,7 +77,7 @@ export class MCQTestController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };

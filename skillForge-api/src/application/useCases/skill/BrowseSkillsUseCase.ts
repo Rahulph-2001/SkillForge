@@ -7,6 +7,7 @@ import { IBrowseSkillsUseCase } from './interfaces/IBrowseSkillsUseCase';
 import { BrowseSkillsRequestDTO } from '../../dto/skill/BrowseSkillsRequestDTO';
 import { BrowseSkillsResponseDTO } from '../../dto/skill/BrowseSkillsResponseDTO';
 import { IBrowseSkillMapper } from '../../mappers/interfaces/IBrowseSkillMapper';
+import { NotFoundError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class BrowseSkillsUseCase implements IBrowseSkillsUseCase {
@@ -34,7 +35,7 @@ export class BrowseSkillsUseCase implements IBrowseSkillsUseCase {
     const skillDTOs = skills.map(skill => {
       const provider = providersMap.get(skill.providerId);
       if (!provider) {
-        throw new Error(`Provider not found for skill ${skill.id}`);
+        throw new NotFoundError(`Provider not found for skill ${skill.id}`);
       }
       const availability = availabilityMap.get(skill.providerId);
       return this.browseSkillMapper.toDTO(skill, provider, availability);

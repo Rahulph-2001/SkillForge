@@ -8,6 +8,7 @@ export declare enum SubscriptionStatus {
     TRIALING = "TRIALING",
     PAST_DUE = "PAST_DUE",
     CANCELED = "CANCELED",
+    EXPIRED = "EXPIRED",
     UNPAID = "UNPAID",
     INCOMPLETE = "INCOMPLETE"
 }

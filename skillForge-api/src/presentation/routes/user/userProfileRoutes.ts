@@ -37,10 +37,10 @@ export class UserProfileRoutes {
     this.router.use(authMiddleware);
 
     // GET /api/v1/profile - Get current user profile
-    this.router.get('/', this.userProfileController.getProfile);
+    this.router.get('/', this.userProfileController.getProfile.bind(this.userProfileController));
 
     // PUT /api/v1/profile - Update current user profile
-    this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile);
+    this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
   }
 
   public getRouter(): Router {

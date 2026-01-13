@@ -46,7 +46,6 @@ let ActivateSubscriptionUseCase = class ActivateSubscriptionUseCase {
         if (existingSubscription && existingSubscription.isActive()) {
             if (existingSubscription.planId === dto.planId) {
                 // CASE: RE-SUBSCRIBE / EXTEND (Same Plan) -> Industrial Standard: Extend from current end date
-                console.log('[ActivateSubscriptionUseCase] Extending existing subscription');
                 periodStart = existingSubscription.currentPeriodStart; // Keep original start
                 // If already expired (but marked active?), use now. But isActive() checks expiry usually. 
                 // Let's ensure we extend from currentPeriodEnd if it's in the future, else from now.
@@ -55,7 +54,6 @@ let ActivateSubscriptionUseCase = class ActivateSubscriptionUseCase {
             }
             else {
                 // CASE: UPGRADE / DOWNGRADE -> Industrial Standard: Immediate switch
-                console.log('[ActivateSubscriptionUseCase] Switching plan (Immediate)');
                 // Period starts now.
                 // NOTE: In a real Stripe integration, we'd handle proration here. 
                 // For now, we just reset the cycle.

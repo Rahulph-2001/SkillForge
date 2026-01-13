@@ -221,6 +221,13 @@ const authSlice = createSlice({
         state.user.subscriptionPlan = action.payload
       }
     },
+    // Update user balance (credits and wallet) from WebSocket events
+    updateUserBalance: (state, action: PayloadAction<{ credits: number; walletBalance?: number }>) => {
+      if (state.user) {
+        state.user.credits = action.payload.credits
+        console.log('[Redux] User balance updated:', action.payload)
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -401,5 +408,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized, updateUserAvatar, updateSubscription } = authSlice.actions
+export const { clearError, clearSuccessMessage, resetAuth, resetTransientStates, handleUnauthorized, updateUserAvatar, updateSubscription, updateUserBalance } = authSlice.actions
 export default authSlice.reducer

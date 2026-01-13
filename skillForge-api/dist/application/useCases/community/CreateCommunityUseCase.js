@@ -18,115 +18,174 @@ const types_1 = require("../../../infrastructure/di/types");
 const Community_1 = require("../../../domain/entities/Community");
 const CommunityMember_1 = require("../../../domain/entities/CommunityMember");
 const AppError_1 = require("../../../domain/errors/AppError");
-const client_1 = require("@prisma/client");
+const SubscriptionEnums_1 = require("../../../domain/enums/SubscriptionEnums");
+const UsageRecord_1 = require("../../../domain/entities/UsageRecord");
+const uuid_1 = require("uuid");
 let CreateCommunityUseCase = class CreateCommunityUseCase {
-    constructor(communityRepository, storageService, prisma) {
+    constructor(communityRepository, storageService, communityMapper, subscriptionRepository, planRepository, featureRepository, usageRecordRepository, transactionService) {
         this.communityRepository = communityRepository;
         this.storageService = storageService;
-        this.prisma = prisma;
+        this.communityMapper = communityMapper;
+        this.subscriptionRepository = subscriptionRepository;
+        this.planRepository = planRepository;
+        this.featureRepository = featureRepository;
+        this.usageRecordRepository = usageRecordRepository;
+        this.transactionService = transactionService;
     }
     async execute(userId, dto, imageFile) {
-        console.log('🏗️  CreateCommunityUseCase - START');
-        console.log('📝 Received DTO:', { name: dto.name, category: dto.category, creditsCost: dto.creditsCost });
-        console.log('👤 User ID:', userId);
-        console.log('🖼️  Has image file:', !!imageFile);
+        // Validation
         if (!dto.name || dto.name.trim().length === 0) {
-            console.error('❌ Validation failed: name is required');
             throw new AppError_1.ValidationError('Community name is required');
         }
         if (!dto.description || dto.description.trim().length === 0) {
-            console.error('❌ Validation failed: description is required');
             throw new AppError_1.ValidationError('Community description is required');
         }
         if (!dto.category || dto.category.trim().length === 0) {
-            console.error('❌ Validation failed: category is required');
             throw new AppError_1.ValidationError('Community category is required');
         }
-        console.log('✅ Basic validation passed');
+        // ============================================
+        // SUBSCRIPTION AND FEATURE CHECK - INDUSTRIAL LEVEL
+        // ============================================
+        // 1. Check if user has an active subscription
+        const subscription = await this.subscriptionRepository.findByUserId(userId);
+        if (!subscription) {
+            throw new AppError_1.ForbiddenError('You need an active subscription to create communities. Please subscribe to a plan first.');
+        }
+        // 2. Verify subscription is active
+        if (!subscription.isActive()) {
+            throw new AppError_1.ForbiddenError('Your subscription is not active. Please renew your subscription to create communities.');
+        }
+        // 3. Get subscription plan with features
+        const plan = await this.planRepository.findById(subscription.planId);
+        if (!plan) {
+            throw new AppError_1.NotFoundError('Subscription plan not found');
+        }
+        // 4. Check limits (legacy or feature model)
+        let limitValue = undefined;
+        let featureKey = 'create_community';
+        let createCommunityFeature = null;
+        const legacyLimit = plan.createCommunity;
+        if (legacyLimit !== null && legacyLimit !== undefined) {
+            limitValue = legacyLimit;
+            featureKey = 'create_community';
+        }
+        else {
+            const features = await this.featureRepository.findByPlanId(plan.id);
+            createCommunityFeature = features.find(f => f.name.toLowerCase() === 'create_community' ||
+                f.name.toLowerCase() === 'create community' ||
+                f.name.toLowerCase() === 'community_creation' ||
+                f.name.toLowerCase() === 'communities');
+            if (!createCommunityFeature) {
+                throw new AppError_1.ForbiddenError('Your subscription plan does not include community creation feature.');
+            }
+            if (!createCommunityFeature.isEnabled) {
+                throw new AppError_1.ForbiddenError('Community creation feature is disabled for your plan.');
+            }
+            if (createCommunityFeature.featureType === SubscriptionEnums_1.FeatureType.NUMERIC_LIMIT) {
+                limitValue = createCommunityFeature.limitValue;
+                featureKey = createCommunityFeature.name;
+                if (limitValue === null || limitValue === undefined) {
+                    throw new AppError_1.ForbiddenError('Community creation limit is not configured for your plan.');
+                }
+            }
+            else if (createCommunityFeature.featureType === SubscriptionEnums_1.FeatureType.BOOLEAN) {
+                if (!createCommunityFeature.isEnabled) {
+                    throw new AppError_1.ForbiddenError('Community creation is not available in your plan.');
+                }
+                limitValue = -1; // Unlimited
+                featureKey = createCommunityFeature.name;
+            }
+            else {
+                throw new AppError_1.ForbiddenError('Invalid feature type for community creation.');
+            }
+        }
+        // 5. Check current usage
+        let currentUsage = 0;
+        if (limitValue !== null && limitValue !== undefined && limitValue !== -1) {
+            const currentUsageRecords = await this.usageRecordRepository.findBySubscriptionId(subscription.id);
+            const featureUsageRecord = currentUsageRecords.find(record => record.featureKey === featureKey &&
+                record.periodStart <= subscription.currentPeriodEnd &&
+                record.periodEnd >= subscription.currentPeriodStart);
+            currentUsage = featureUsageRecord ? featureUsageRecord.usageCount : 0;
+            if (currentUsage >= limitValue) {
+                throw new AppError_1.ForbiddenError(`You have reached your community creation limit (${limitValue}). Please upgrade your plan or wait for your billing period to reset.`);
+            }
+        }
+        // 6. Handle image upload
         let imageUrl = null;
         if (imageFile) {
-            console.log('📸 Processing image upload...');
-            // Validate file size (max 5MB)
             if (imageFile.buffer.length > 5 * 1024 * 1024) {
-                console.error('❌ Image too large:', imageFile.buffer.length);
                 throw new AppError_1.ValidationError('Image size must be less than 5MB');
             }
-            // Validate file type
             if (!imageFile.mimetype.startsWith('image/')) {
-                console.error('❌ Invalid file type:', imageFile.mimetype);
                 throw new AppError_1.ValidationError('Only image files are allowed');
             }
             try {
                 const timestamp = Date.now();
-                const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
-                console.log('☁️  Uploading to S3 with key:', key);
+                // Sanitize filename: replace spaces with hyphens and remove special characters
+                const sanitizedFilename = imageFile.originalname
+                    .replace(/\s+/g, '-') // Replace spaces with hyphens
+                    .replace(/[^a-zA-Z0-9.-]/g, '') // Remove special characters except dots and hyphens
+                    .toLowerCase(); // Convert to lowercase for consistency
+                const key = `communities/${userId}/${timestamp}-${sanitizedFilename}`;
                 imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
-                console.log('✅ Image uploaded successfully:', imageUrl);
             }
             catch (error) {
-                console.error('❌ S3 upload failed:', error);
-                throw new Error('Failed to upload image. Please try again.');
+                throw new AppError_1.InternalServerError('Failed to upload image. Please try again.');
             }
         }
-        console.log('🔄 Starting database transaction...');
-        // Use transaction to ensure community and admin member are created atomically
-        return await this.prisma.$transaction(async (tx) => {
-            console.log('🏛️  Creating Community entity...');
-            const community = new Community_1.Community({
-                name: dto.name,
-                description: dto.description,
-                category: dto.category,
-                imageUrl,
-                adminId: userId,
-                creditsCost: dto.creditsCost,
-                creditsPeriod: dto.creditsPeriod,
-            });
-            console.log('📦 Community entity created:', community.id);
-            const communityData = community.toJSON();
-            console.log('💾 Inserting community to database...');
-            await tx.community.create({
-                data: {
-                    id: communityData.id,
-                    name: communityData.name,
-                    description: communityData.description,
-                    category: communityData.category,
-                    imageUrl: communityData.image_url,
-                    videoUrl: communityData.video_url,
-                    adminId: communityData.admin_id,
-                    creditsCost: communityData.credits_cost,
-                    creditsPeriod: communityData.credits_period,
-                    membersCount: 1, // Admin is first member
-                    isActive: communityData.is_active,
-                    isDeleted: communityData.is_deleted,
-                    createdAt: communityData.created_at,
-                    updatedAt: communityData.updated_at,
-                },
-            });
-            console.log('✅ Community inserted to database');
-            // Add creator as admin member
-            console.log('👑 Creating admin member record...');
+        // 7. Create community entity
+        const community = new Community_1.Community({
+            name: dto.name,
+            description: dto.description,
+            category: dto.category,
+            imageUrl,
+            adminId: userId,
+            creditsCost: dto.creditsCost,
+            creditsPeriod: dto.creditsPeriod,
+        });
+        // 8. Use transaction service for atomic operations
+        const createdCommunity = await this.transactionService.execute(async (repos) => {
+            // Create community using repository
+            const created = await repos.communityRepository.create(community);
+            // Create admin member
             const adminMember = new CommunityMember_1.CommunityMember({
                 communityId: community.id,
                 userId,
                 role: 'admin',
             });
-            const memberData = adminMember.toJSON();
-            await tx.communityMember.create({
-                data: {
-                    id: memberData.id,
-                    communityId: memberData.communityId,
-                    userId: memberData.userId,
-                    role: memberData.role,
-                    isAutoRenew: memberData.isAutoRenew,
-                    subscriptionEndsAt: memberData.subscriptionEndsAt,
-                    joinedAt: memberData.joinedAt,
-                    isActive: memberData.isActive,
-                },
-            });
-            console.log('✅ Admin member created');
-            console.log('🎉 Transaction completed successfully!');
-            return community;
+            await repos.communityRepository.addMember(adminMember);
+            // Track feature usage if needed
+            if (limitValue !== null && limitValue !== undefined && limitValue !== -1) {
+                try {
+                    const existingUsageRecord = await repos.usageRecordRepository.findBySubscriptionAndFeature(subscription.id, featureKey, subscription.currentPeriodStart, subscription.currentPeriodEnd);
+                    if (existingUsageRecord) {
+                        existingUsageRecord.incrementUsage(1);
+                        await repos.usageRecordRepository.update(existingUsageRecord);
+                    }
+                    else {
+                        const newUsageRecord = new UsageRecord_1.UsageRecord({
+                            id: (0, uuid_1.v4)(),
+                            subscriptionId: subscription.id,
+                            featureKey: featureKey,
+                            usageCount: 1,
+                            limitValue: limitValue,
+                            periodStart: subscription.currentPeriodStart,
+                            periodEnd: subscription.currentPeriodEnd,
+                            createdAt: new Date(),
+                            updatedAt: new Date(),
+                        });
+                        await repos.usageRecordRepository.create(newUsageRecord);
+                    }
+                }
+                catch (usageError) {
+                    console.error('[CreateCommunityUseCase] Failed to track feature usage:', usageError);
+                }
+            }
+            return created;
         });
+        // 9. Return DTO using mapper
+        return await this.communityMapper.toDTO(createdCommunity, userId);
     }
 };
 exports.CreateCommunityUseCase = CreateCommunityUseCase;
@@ -134,7 +193,12 @@ exports.CreateCommunityUseCase = CreateCommunityUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [Object, Object, client_1.PrismaClient])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ICommunityMapper)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionRepository)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.ISubscriptionPlanRepository)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IUsageRecordRepository)),
+    __param(7, (0, inversify_1.inject)(types_1.TYPES.ITransactionService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object])
 ], CreateCommunityUseCase);
 //# sourceMappingURL=CreateCommunityUseCase.js.map

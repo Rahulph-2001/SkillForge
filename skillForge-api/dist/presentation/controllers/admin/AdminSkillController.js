@@ -15,11 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AdminSkillController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const ApproveSkillUseCase_1 = require("../../../application/useCases/admin/ApproveSkillUseCase");
-const RejectSkillUseCase_1 = require("../../../application/useCases/admin/RejectSkillUseCase");
-const GetAllSkillsUseCase_1 = require("../../../application/useCases/admin/GetAllSkillsUseCase");
-const BlockSkillUseCase_1 = require("../../../application/useCases/admin/BlockSkillUseCase");
-const UnblockSkillUseCase_1 = require("../../../application/useCases/admin/UnblockSkillUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let AdminSkillController = class AdminSkillController {
@@ -150,17 +145,13 @@ let AdminSkillController = class AdminSkillController {
 exports.AdminSkillController = AdminSkillController;
 exports.AdminSkillController = AdminSkillController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.ListPendingSkillsUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.ApproveSkillUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.RejectSkillUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.GetAllSkillsUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.BlockSkillUseCase)),
-    __param(5, (0, inversify_1.inject)(types_1.TYPES.UnblockSkillUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IListPendingSkillsUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IApproveSkillUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IRejectSkillUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IGetAllSkillsUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IBlockSkillUseCase)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IUnblockSkillUseCase)),
     __param(6, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, ApproveSkillUseCase_1.ApproveSkillUseCase,
-        RejectSkillUseCase_1.RejectSkillUseCase,
-        GetAllSkillsUseCase_1.GetAllSkillsUseCase,
-        BlockSkillUseCase_1.BlockSkillUseCase,
-        UnblockSkillUseCase_1.UnblockSkillUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], AdminSkillController);
 //# sourceMappingURL=AdminSkillController.js.map

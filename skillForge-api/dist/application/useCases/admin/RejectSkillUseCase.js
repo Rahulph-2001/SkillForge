@@ -15,37 +15,57 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RejectSkillUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const Database_1 = require("../../../infrastructure/database/Database");
+const Skill_1 = require("../../../domain/entities/Skill");
+const AppError_1 = require("../../../domain/errors/AppError");
 let RejectSkillUseCase = class RejectSkillUseCase {
-    constructor(database) {
-        this.prisma = database.getClient();
+    constructor(skillRepository) {
+        this.skillRepository = skillRepository;
     }
     async execute(data) {
         // Verify skill exists and is in review
-        const skill = await this.prisma.skill.findUnique({
-            where: { id: data.skillId },
-        });
+        const skill = await this.skillRepository.findById(data.skillId);
         if (!skill) {
-            throw new Error('Skill not found');
+            throw new AppError_1.NotFoundError('Skill not found');
         }
         if (skill.status !== 'in-review') {
-            throw new Error('Skill is not in review status');
+            throw new AppError_1.ValidationError('Skill is not in review status');
         }
-        // Update skill status to rejected
-        await this.prisma.skill.update({
-            where: { id: data.skillId },
-            data: {
-                status: 'rejected',
-                rejectionReason: data.reason,
-                updatedAt: new Date(),
-            },
+        // Create updated skill with rejected status
+        const skillData = skill.toJSON();
+        const updatedSkill = new Skill_1.Skill({
+            id: skillData.id,
+            providerId: skillData.providerId,
+            title: skillData.title,
+            description: skillData.description,
+            category: skillData.category,
+            level: skillData.level,
+            durationHours: skillData.durationHours,
+            creditsPerHour: skillData.creditsPerHour,
+            tags: skillData.tags,
+            imageUrl: skillData.imageUrl,
+            templateId: skillData.templateId,
+            status: 'rejected',
+            verificationStatus: skillData.verificationStatus,
+            mcqScore: skillData.mcqScore,
+            mcqTotalQuestions: skillData.mcqTotalQuestions,
+            mcqPassingScore: skillData.mcqPassingScore,
+            verifiedAt: skillData.verifiedAt,
+            totalSessions: skillData.totalSessions,
+            rating: skillData.rating,
+            isBlocked: skillData.isBlocked,
+            blockedReason: skillData.blockedReason,
+            blockedAt: skillData.blockedAt,
+            isAdminBlocked: skillData.isAdminBlocked,
+            createdAt: skillData.createdAt,
+            updatedAt: new Date(),
         });
+        await this.skillRepository.update(updatedSkill);
     }
 };
 exports.RejectSkillUseCase = RejectSkillUseCase;
 exports.RejectSkillUseCase = RejectSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Database_1.Database])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object])
 ], RejectSkillUseCase);
 //# sourceMappingURL=RejectSkillUseCase.js.map

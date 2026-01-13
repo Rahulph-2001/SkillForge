@@ -37,6 +37,8 @@ import { useAppSelector } from '../store/hooks';
 import { isAdmin } from '../config/userRole';
 import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
+import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
+
 
 const AppRoutes = () => {
     const { user } = useAppSelector((state) => state.auth);
@@ -156,18 +158,7 @@ const AppRoutes = () => {
                     path="/communities/:id/settings"
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
-                            {/* Reuse Details page or Create a standalone settings page if needed. 
-                                For now, let's assume Settings is a modal or separate page. 
-                                Since I haven't implemented a specific settings page wrapper, 
-                                I'll map standard details or a placeholder. 
-                                Actually, checking my previous task, I saw CommunityDetails handles settings via modal or separate view.
-                                CommunityDetails.tsx has a navigate to /settings.
-                                I'll leave this for now or map to details if settings is inside details.
-                                CommunityDetails has: <button onClick={() => navigate(`/communities/${id}/settings`)} ...
-                                I'll add a route for it if I have EditCommunityModal used as a page?
-                                No, let's just add the details page for now. 
-                                Wait, I have EditCommunityModal.tsx in components.
-                            */}
+                           
                             <CommunityDetailsPage />
                         </ProtectedRoute>
                     }
@@ -269,6 +260,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminSkillVerificationPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/wallet"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminWalletManagement />
                         </ProtectedRoute>
                     }
                 />

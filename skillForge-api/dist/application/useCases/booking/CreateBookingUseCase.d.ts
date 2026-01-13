@@ -5,7 +5,8 @@ import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabil
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
-export declare class CreateBookingUseCase {
+import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
+export declare class CreateBookingUseCase implements ICreateBookingUseCase {
     private readonly bookingRepository;
     private readonly skillRepository;
     private readonly userRepository;

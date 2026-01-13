@@ -1,0 +1,1 @@
+{"version":3,"file":"IFeatureMapper.d.ts","sourceRoot":"","sources":["../../../../src/application/mappers/interfaces/IFeatureMapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,kCAAkC,CAAC;AAC3D,OAAO,EAAE,kBAAkB,EAAE,MAAM,sCAAsC,CAAC;AAE1E,MAAM,WAAW,cAAc;IAC7B,KAAK,CAAC,OAAO,EAAE,OAAO,GAAG,kBAAkB,CAAC;IAC5C,UAAU,CAAC,QAAQ,EAAE,OAAO,EAAE,GAAG,kBAAkB,EAAE,CAAC;CACvD"}

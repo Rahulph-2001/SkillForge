@@ -1,3 +1,4 @@
+// skillForge-api/src/domain/repositories/ICommunityRepository.ts
 import { Community } from '../entities/Community';
 import { CommunityMember } from '../entities/CommunityMember';
 
@@ -14,4 +15,9 @@ export interface ICommunityRepository {
   findMemberByUserAndCommunity(userId: string, communityId: string): Promise<CommunityMember | null>;
   findMembershipsByUserId(userId: string): Promise<CommunityMember[]>;
   updateMember(member: CommunityMember): Promise<CommunityMember>;
+  upsertMember(member: CommunityMember): Promise<CommunityMember>;
+  incrementMembersCount(communityId: string): Promise<void>;
+  findExpiredMemberships(currentDate: Date): Promise<CommunityMember[]>;
+  findExpiredMembershipsWithAutoRenew(currentDate: Date): Promise<CommunityMember[]>;
+  decrementMembersCount(communityId: string): Promise<void>;
 }

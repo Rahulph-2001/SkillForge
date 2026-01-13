@@ -67,8 +67,8 @@ let VerifyOtpUseCase = class VerifyOtpUseCase {
                 email: new Email_1.Email(pendingRegistration.email),
                 password: pendingRegistration.passwordHash,
                 role: 'user',
-                bonus_credits: pendingRegistration.bonusCredits,
-                registration_ip: pendingRegistration.registrationIp,
+                bonusCredits: pendingRegistration.bonusCredits,
+                registrationIp: pendingRegistration.registrationIp,
                 avatarUrl: pendingRegistration.avatarUrl,
             });
             // Mark email as verified immediately
@@ -85,7 +85,7 @@ let VerifyOtpUseCase = class VerifyOtpUseCase {
         }
         // Safety check - should never happen due to earlier validation
         if (!user) {
-            throw new Error('User creation or retrieval failed during OTP verification');
+            throw new AppError_1.InternalServerError('User creation or retrieval failed during OTP verification');
         }
         try {
             await this.emailService.sendWelcomeEmail(user.email.value, user.name);

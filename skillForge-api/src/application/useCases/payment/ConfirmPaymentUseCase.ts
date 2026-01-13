@@ -5,10 +5,11 @@ import { IPaymentGateway } from '../../../domain/services/IPaymentGateway';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { PaymentResponseDTO } from '../../dto/payment/PaymentResponseDTO';
 import { ConfirmPaymentDTO } from '../../dto/payment/ConfirmPaymentDTO';
-import { NotFoundError } from '../../../domain/errors/AppError';
+import { NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 import { IConfirmPaymentUseCase } from './interfaces/IConfirmPaymentUseCase';
 import { IAssignSubscriptionUseCase } from '../subscription/interfaces/IAssignSubscriptionUseCase';
 import { ICreateProjectUseCase } from '../project/interfaces/ICreateProjectUseCase';
+import { ICreditAdminWalletUseCase } from '../admin/interfaces/ICreditAdminWalletUseCase';
 import { PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { AssignSubscriptionDTO } from '../../dto/subscription/AssignSubscriptionDTO';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
@@ -20,7 +21,8 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
         @inject(TYPES.IPaymentGateway) private paymentGateway: IPaymentGateway,
         @inject(TYPES.IPaymentRepository) private paymentRepository: IPaymentRepository,
         @inject(TYPES.IAssignSubscriptionUseCase) private assignSubscriptionUseCase: IAssignSubscriptionUseCase,
-        @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase
+        @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase,
+        @inject(TYPES.ICreditAdminWalletUseCase) private creditAdminWalletUseCase: ICreditAdminWalletUseCase
     ) { }
 
     async execute(dto: ConfirmPaymentDTO): Promise<PaymentResponseDTO> {
@@ -44,6 +46,7 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                     // Extract metadata from payment intent (Stripe)
                     const metadata = paymentIntent.metadata || {};
                     const planId = metadata.planId;
+                    const planName = metadata.planName;
                     const billingInterval = metadata.billingInterval as BillingInterval;
 
                     if (planId && billingInterval) {
@@ -56,12 +59,29 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                         };
 
                         await this.assignSubscriptionUseCase.execute(assignDto);
-                        console.log(`[ConfirmPaymentUseCase] Automatically assigned subscription for user ${updatedPayment.userId}`);
-                    } else {
-                        console.error('[ConfirmPaymentUseCase] Missing planId or billingInterval in payment metadata');
+
+                        // Credit admin wallet for subscription payment
+                        try {
+                            await this.creditAdminWalletUseCase.execute({
+                                amount: updatedPayment.amount,
+                                currency: updatedPayment.currency,
+                                source: 'SUBSCRIPTION_PAYMENT',
+                                referenceId: updatedPayment.id,
+                                metadata: {
+                                    planId,
+                                    planName,
+                                    userId: updatedPayment.userId
+                                }
+                            });
+                        } catch (walletError) {
+                            // Log error but don't throw - payment confirmation should still succeed
+                            // TODO: Add proper logging service for error tracking
+                        }
                     }
                 } catch (error) {
-                    console.error('[ConfirmPaymentUseCase] Failed to assign subscription after payment:', error);
+                    // Failed to assign subscription after payment
+                    // We don't throw here to avoid failing the payment confirmation response
+                    // TODO: Add proper logging service and retry mechanism
                     // We don't throw here to avoid failing the payment confirmation response, 
                     // but in production we should alert or retry.
                 }
@@ -76,8 +96,7 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                     if (metadata.tags) {
                         try {
                             tags = JSON.parse(metadata.tags);
-                        } catch (error) {
-                            console.warn('[ConfirmPaymentUseCase] Failed to parse tags, using empty array');
+                        } catch {
                             tags = [];
                         }
                     }
@@ -94,20 +113,17 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
 
                     if (projectData.title && projectData.description && projectData.category && projectData.budget) {
                         await this.createProjectUseCase.execute(updatedPayment.userId, projectData, updatedPayment.id);
-                        console.log(`[ConfirmPaymentUseCase] Automatically created project for user ${updatedPayment.userId}`);
-                    } else {
-                        console.error('[ConfirmPaymentUseCase] Missing required project data in payment metadata');
                     }
                 } catch (error) {
-                    console.error('[ConfirmPaymentUseCase] Failed to create project after payment:', error);
-                    // We don't throw here to avoid failing the payment confirmation response, 
-                    // but in production we should alert or retry.
+                    // Failed to create project after payment
+                    // We don't throw here to avoid failing the payment confirmation response
+                    // TODO: Add proper logging service and retry mechanism
                 }
             }
 
             return updatedPayment.toJSON() as PaymentResponseDTO;
         }
 
-        throw new Error('Payment confirmation failed');
+        throw new InternalServerError('Payment confirmation failed');
     }
 }

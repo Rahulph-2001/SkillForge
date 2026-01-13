@@ -15,11 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UpdateFeatureUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const FeatureMapper_1 = require("../../mappers/FeatureMapper");
 const AppError_1 = require("../../../domain/errors/AppError");
 let UpdateFeatureUseCase = class UpdateFeatureUseCase {
-    constructor(featureRepository) {
+    constructor(featureRepository, featureMapper) {
         this.featureRepository = featureRepository;
+        this.featureMapper = featureMapper;
     }
     async execute(featureId, dto) {
         // Find existing feature
@@ -61,13 +61,14 @@ let UpdateFeatureUseCase = class UpdateFeatureUseCase {
         // Save updated feature
         const updated = await this.featureRepository.update(feature);
         // Map to DTO
-        return FeatureMapper_1.FeatureMapper.toDTO(updated);
+        return this.featureMapper.toDTO(updated);
     }
 };
 exports.UpdateFeatureUseCase = UpdateFeatureUseCase;
 exports.UpdateFeatureUseCase = UpdateFeatureUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IFeatureMapper)),
+    __metadata("design:paramtypes", [Object, Object])
 ], UpdateFeatureUseCase);
 //# sourceMappingURL=UpdateFeatureUseCase.js.map

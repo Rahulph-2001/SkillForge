@@ -65,8 +65,12 @@ let CreateBookingUseCase = class CreateBookingUseCase {
         if (duplicate) {
             throw new AppError_1.ValidationError('You already have a booking for this skill at this time');
         }
-        // 7. Get provider availability settings
+        // 7. Get provider availability settings - REQUIRED for booking
         const availability = await this.availabilityRepository.findByProviderId(request.providerId);
+        if (!availability) {
+            throw new AppError_1.ValidationError('Provider has not set their availability. Please contact the provider or try another skill.');
+        }
+        // 8. Validate availability settings
         if (availability) {
             // Validate booking is not in the past
             const pastValidation = BookingValidator_1.BookingValidator.validateDateNotInPast(request.preferredDate, request.preferredTime, availability.timezone);

@@ -23,7 +23,6 @@ let UpdateSkillUseCase = class UpdateSkillUseCase {
         this.storageService = storageService;
     }
     async execute(skillId, providerId, updates, imageFile) {
-        console.log('🔍 [UpdateSkillUseCase] Executing update for skill:', skillId);
         const skill = await this.skillRepository.findById(skillId);
         if (!skill) {
             throw new AppError_1.NotFoundError('Skill not found');
@@ -38,9 +37,7 @@ let UpdateSkillUseCase = class UpdateSkillUseCase {
         if (imageFile) {
             // Create S3 key with skills/ prefix
             const key = `skills/${Date.now()}-${imageFile.originalname}`;
-            console.log('🔍 [UpdateSkillUseCase] Uploading new image to S3:', key);
             imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
-            console.log('✅ [UpdateSkillUseCase] Image uploaded successfully. URL:', imageUrl);
         }
         // Create a new Skill instance with updated properties
         // We do NOT allow updating the title

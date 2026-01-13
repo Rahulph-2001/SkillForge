@@ -1,0 +1,1 @@
+{"version":3,"file":"IBlockSkillUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IBlockSkillUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,aAAa;IAC5B,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;IAChB,MAAM,EAAE,MAAM,CAAC;CAChB;AAED,MAAM,WAAW,kBAAkB;IACjC,OAAO,CAAC,IAAI,EAAE,aAAa,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC7C"}

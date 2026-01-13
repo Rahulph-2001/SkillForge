@@ -4,6 +4,7 @@ export interface SkillProvider {
   id: string;
   name: string;
   email: string;
+  avatarUrl: string | null;
   rating: number;
   reviewCount: number;
 }

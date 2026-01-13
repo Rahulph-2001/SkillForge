@@ -58,7 +58,7 @@ let ForgotPasswordUseCase = class ForgotPasswordUseCase {
         }
         catch (error) {
             console.error('Failed to send password reset OTP email:', error);
-            throw new Error(messages_1.ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
+            throw new AppError_1.InternalServerError(messages_1.ERROR_MESSAGES.GENERAL.EMAIL_SEND_FAILED);
         }
         return {
             success: true,

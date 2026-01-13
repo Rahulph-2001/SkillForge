@@ -31,7 +31,7 @@ export class UpdateTemplateQuestionUseCase implements IUpdateTemplateQuestionUse
     }
 
     // Prepare update data
-    const updateData: any = {};
+    const updateData: Partial<{ level: string; question: string; options: string[]; correctAnswer: number; explanation: string; isActive: boolean }> = {};
     if (dto.level !== undefined) updateData.level = dto.level;
     if (dto.question !== undefined) updateData.question = dto.question;
     if (dto.options !== undefined) updateData.options = dto.options;

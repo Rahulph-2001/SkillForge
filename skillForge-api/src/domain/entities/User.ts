@@ -234,8 +234,15 @@ export class User {
   get email(): Email { return this._email; }
   get passwordHash(): string { return this._passwordHash; }
   get avatarUrl(): string | null { return this._avatarUrl; }
+  get bio(): string | null { return this._bio; }
+  get location(): string | null { return this._location; }
   get role(): UserRole { return this._role; }
   get credits(): number { return this._credits; }
+  get walletBalance(): number { return this._walletBalance; }
+  get rating(): number { return this._rating; }
+  get reviewCount(): number { return this._reviewCount; }
+  get totalSessionsCompleted(): number { return this._totalSessionsCompleted; }
+  get memberSince(): Date { return this._memberSince; }
   get verification(): VerificationData { return this._verification; }
   get antiFraud(): AntiFraudData { return this._antiFraud; }
   get isDeleted(): boolean { return this._isDeleted; }
@@ -383,6 +390,16 @@ export class User {
     this._subscriptionValidUntil = validUntil;
     this._subscriptionStartedAt = startedAt || new Date();
     this._subscriptionAutoRenew = autoRenew;
+    this._updatedAt = new Date();
+  }
+
+  /**
+   * Deactivate/expire subscription (called when subscription period ends)
+   */
+  public deactivateSubscription(): void {
+    this._subscriptionPlan = 'free';
+    this._subscriptionValidUntil = null;
+    this._subscriptionAutoRenew = false;
     this._updatedAt = new Date();
   }
 

@@ -33,7 +33,7 @@ export class TemplateQuestionController {
    */
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const { templateId } = req.params;
       const dto = { ...req.body, templateId };
 
@@ -56,7 +56,7 @@ export class TemplateQuestionController {
    */
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const { templateId } = req.params;
       const { level } = req.query;
 
@@ -83,7 +83,7 @@ export class TemplateQuestionController {
    */
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const questionId = req.params.id;
       const dto = req.body;
 
@@ -106,7 +106,7 @@ export class TemplateQuestionController {
    */
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const { id } = req.params;
 
       await this.deleteTemplateQuestionUseCase.execute(adminUserId, id);

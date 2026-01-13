@@ -1,11 +1,11 @@
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
-import { Community } from '../../../domain/entities/Community';
-export interface IGetCommunityDetailsUseCase {
-    execute(communityId: string, userId?: string): Promise<Community>;
-}
+import { ICommunityMapper } from '../../mappers/interfaces/ICommunityMapper';
+import { CommunityResponseDTO } from '../../dto/community/CommunityResponseDTO';
+import { IGetCommunityDetailsUseCase } from './interfaces/IGetCommunityDetailsUseCase';
 export declare class GetCommunityDetailsUseCase implements IGetCommunityDetailsUseCase {
     private readonly communityRepository;
-    constructor(communityRepository: ICommunityRepository);
-    execute(communityId: string, userId?: string): Promise<Community>;
+    private readonly communityMapper;
+    constructor(communityRepository: ICommunityRepository, communityMapper: ICommunityMapper);
+    execute(communityId: string, userId?: string): Promise<CommunityResponseDTO>;
 }
 //# sourceMappingURL=GetCommunityDetailsUseCase.d.ts.map

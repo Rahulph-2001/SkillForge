@@ -23,7 +23,7 @@ export class MCQImportController {
    */
   public startImport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
       const { templateId } = req.params;
       const file = req.file;
 
@@ -56,7 +56,7 @@ export class MCQImportController {
    */
   public listJobs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
       const { templateId } = req.params;
 
       const result = await this.listJobsUseCase.execute(templateId, adminId);
@@ -79,7 +79,7 @@ export class MCQImportController {
    */
   public downloadErrors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
       const { jobId } = req.params;
 
       const { fileStream, fileName, mimeType } = await this.downloadErrorsUseCase.execute(jobId, adminId);

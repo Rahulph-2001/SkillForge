@@ -1,0 +1,1 @@
+{"version":3,"file":"IDeleteTemplateQuestionUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/templateQuestion/interfaces/IDeleteTemplateQuestionUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,8BAA8B;IAC7C,OAAO,CAAC,WAAW,EAAE,MAAM,EAAE,UAAU,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CACjE"}

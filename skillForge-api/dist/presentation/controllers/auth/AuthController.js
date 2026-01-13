@@ -15,13 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const GoogleAuthUseCase_1 = require("../../../application/useCases/auth/GoogleAuthUseCase");
 const PassportService_1 = require("../../../infrastructure/services/PassportService");
-const ResendOtpUseCase_1 = require("../../../application/useCases/auth/ResendOtpUseCase");
-const AdminLoginUseCase_1 = require("../../../application/useCases/auth/AdminLoginUseCase");
-const ForgotPasswordUseCase_1 = require("../../../application/useCases/auth/ForgotPasswordUseCase");
-const VerifyForgotPasswordOtpUseCase_1 = require("../../../application/useCases/auth/VerifyForgotPasswordOtpUseCase");
-const ResetPasswordUseCase_1 = require("../../../application/useCases/auth/ResetPasswordUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const env_1 = require("../../../config/env");
 const messages_1 = require("../../../config/messages");
@@ -31,7 +25,7 @@ const getClientIp = (req) => {
         req.socket.remoteAddress);
 };
 let AuthController = class AuthController {
-    constructor(passportService, registerUseCase, loginUseCase, verifyOtpUseCase, resendOtpUseCase, adminLoginUseCase, googleAuthUseCase, forgotPasswordUseCase, verifyForgotPasswordOtpUseCase, resetPasswordUseCase, userRepository, authResponseMapper) {
+    constructor(passportService, registerUseCase, loginUseCase, verifyOtpUseCase, resendOtpUseCase, adminLoginUseCase, googleAuthUseCase, forgotPasswordUseCase, verifyForgotPasswordOtpUseCase, resetPasswordUseCase, getUserByIdUseCase, authResponseMapper) {
         this.passportService = passportService;
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
@@ -42,7 +36,7 @@ let AuthController = class AuthController {
         this.forgotPasswordUseCase = forgotPasswordUseCase;
         this.verifyForgotPasswordOtpUseCase = verifyForgotPasswordOtpUseCase;
         this.resetPasswordUseCase = resetPasswordUseCase;
-        this.userRepository = userRepository;
+        this.getUserByIdUseCase = getUserByIdUseCase;
         this.authResponseMapper = authResponseMapper;
         this.googleLogin = this.passportService.authenticateGoogle();
     }
@@ -141,14 +135,7 @@ let AuthController = class AuthController {
                 return;
             }
             // Fetch full user data from database to get name, credits, etc.
-            const user = await this.userRepository.findById(tokenPayload.userId);
-            if (!user) {
-                res.status(HttpStatusCode_1.HttpStatusCode.UNAUTHORIZED).json({
-                    success: false,
-                    error: 'User not found',
-                });
-                return;
-            }
+            const user = await this.getUserByIdUseCase.execute(tokenPayload.userId);
             res.status(HttpStatusCode_1.HttpStatusCode.OK).json({
                 success: true,
                 data: {
@@ -307,14 +294,7 @@ let AuthController = class AuthController {
                 });
                 return;
             }
-            const user = await this.userRepository.findById(userId);
-            if (!user) {
-                res.status(HttpStatusCode_1.HttpStatusCode.NOT_FOUND).json({
-                    success: false,
-                    error: 'User not found',
-                });
-                return;
-            }
+            const user = await this.getUserByIdUseCase.execute(userId);
             // Check if user is suspended or deleted
             if (!user.isActive || user.isDeleted) {
                 res.status(HttpStatusCode_1.HttpStatusCode.FORBIDDEN).json({
@@ -342,22 +322,17 @@ exports.AuthController = AuthController;
 exports.AuthController = AuthController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.RegisterUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.LoginUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.VerifyOtpUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.ResendOtpUseCase)),
-    __param(5, (0, inversify_1.inject)(types_1.TYPES.AdminLoginUseCase)),
-    __param(6, (0, inversify_1.inject)(types_1.TYPES.GoogleAuthUseCase)),
-    __param(7, (0, inversify_1.inject)(types_1.TYPES.ForgotPasswordUseCase)),
-    __param(8, (0, inversify_1.inject)(types_1.TYPES.VerifyForgotPasswordOtpUseCase)),
-    __param(9, (0, inversify_1.inject)(types_1.TYPES.ResetPasswordUseCase)),
-    __param(10, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IRegisterUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ILoginUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IVerifyOtpUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IResendOtpUseCase)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IAdminLoginUseCase)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IGoogleAuthUseCase)),
+    __param(7, (0, inversify_1.inject)(types_1.TYPES.IForgotPasswordUseCase)),
+    __param(8, (0, inversify_1.inject)(types_1.TYPES.IVerifyForgotPasswordOtpUseCase)),
+    __param(9, (0, inversify_1.inject)(types_1.TYPES.IResetPasswordUseCase)),
+    __param(10, (0, inversify_1.inject)(types_1.TYPES.IGetUserByIdUseCase)),
     __param(11, (0, inversify_1.inject)(types_1.TYPES.IAuthResponseMapper)),
-    __metadata("design:paramtypes", [PassportService_1.PassportService, Object, Object, Object, ResendOtpUseCase_1.ResendOtpUseCase,
-        AdminLoginUseCase_1.AdminLoginUseCase,
-        GoogleAuthUseCase_1.GoogleAuthUseCase,
-        ForgotPasswordUseCase_1.ForgotPasswordUseCase,
-        VerifyForgotPasswordOtpUseCase_1.VerifyForgotPasswordOtpUseCase,
-        ResetPasswordUseCase_1.ResetPasswordUseCase, Object, Object])
+    __metadata("design:paramtypes", [PassportService_1.PassportService, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object])
 ], AuthController);
 //# sourceMappingURL=AuthController.js.map

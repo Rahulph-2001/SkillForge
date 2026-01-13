@@ -3,10 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-
-export interface IToggleSkillBlockUseCase {
-    execute(skillId: string, providerId: string): Promise<Skill>;
-}
+import { IToggleSkillBlockUseCase } from './interfaces/IToggleSkillBlockUseCase';
 
 @injectable()
 export class ToggleSkillBlockUseCase implements IToggleSkillBlockUseCase {

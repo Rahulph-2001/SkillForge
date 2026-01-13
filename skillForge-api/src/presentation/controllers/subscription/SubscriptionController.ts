@@ -27,7 +27,7 @@ export class SubscriptionController {
    */
   async listPlans(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 20;
       const isActive = req.query.isActive === 'true' ? true : req.query.isActive === 'false' ? false : undefined;
@@ -54,7 +54,7 @@ export class SubscriptionController {
    */
   async getStats(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const stats = await this.getStatsUseCase.execute(adminUserId);
       const response = this.responseBuilder.success(
         stats,
@@ -72,7 +72,7 @@ export class SubscriptionController {
    */
   async createPlan(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const dto = req.body;
       const plan = await this.createPlanUseCase.execute(adminUserId, dto);
       const response = this.responseBuilder.success(
@@ -91,7 +91,7 @@ export class SubscriptionController {
    */
   async updatePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const planId = req.params.id;
       const dto = req.body;
       const plan = await this.updatePlanUseCase.execute(adminUserId, planId, dto);
@@ -111,7 +111,7 @@ export class SubscriptionController {
    */
   async deletePlan(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const planId = req.params.id;
       await this.deletePlanUseCase.execute(adminUserId, planId);
       const response = this.responseBuilder.success(

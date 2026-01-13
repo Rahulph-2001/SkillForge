@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/// <reference path="../types/express.d.ts" />
 const container_1 = require("./infrastructure/di/container");
 const types_1 = require("./infrastructure/di/types");
 const Database_1 = require("./infrastructure/database/Database");

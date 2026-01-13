@@ -20,20 +20,24 @@ let SkillDetailsMapper = class SkillDetailsMapper {
             creditsPerHour: skill.creditsPerHour,
             imageUrl: skill.imageUrl,
             tags: skill.tags,
-            rating: skill.rating,
+            rating: Number(skill.rating) || 0,
             totalSessions: skill.totalSessions,
             provider: {
                 id: provider.id,
                 name: provider.name,
                 email: provider.email.value,
-                rating: providerStats.rating,
+                avatarUrl: provider.avatarUrl,
+                rating: Number(providerStats.rating) || 0,
                 reviewCount: providerStats.reviewCount,
             },
             availability: availability ? {
                 weeklySchedule: availability.weeklySchedule,
-                blockedDates: availability.blockedDates,
+                blockedDates: availability.blockedDates.map(bd => ({
+                    date: new Date(bd.date),
+                    reason: bd.label
+                })),
                 timezone: availability.timezone,
-                bookedSlots: availability.bookedSlots // Map this field!
+                bookedSlots: availability.bookedSlots
             } : null
         };
     }

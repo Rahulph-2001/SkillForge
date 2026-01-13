@@ -11,6 +11,8 @@ export const CommunityResponseDTOSchema = z.object({
   imageUrl: z.string().url('Invalid image URL').nullable(),
   videoUrl: z.string().url('Invalid video URL').nullable(),
   adminId: z.string().uuid('Invalid admin ID'),
+  adminName: z.string().optional(),
+  adminAvatar: z.string().url('Invalid avatar URL').nullable().optional(),
   creditsCost: z.number().min(0, 'Credits cost must be non-negative'),
   creditsPeriod: z.string().min(1, 'Credits period is required'),
   membersCount: z.number().int().min(0, 'Members count must be non-negative'),

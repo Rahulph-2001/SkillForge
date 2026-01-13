@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BrowseSkillsUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const AppError_1 = require("../../../domain/errors/AppError");
 let BrowseSkillsUseCase = class BrowseSkillsUseCase {
     constructor(skillRepository, userRepository, availabilityRepository, browseSkillMapper) {
         this.skillRepository = skillRepository;
@@ -35,7 +36,7 @@ let BrowseSkillsUseCase = class BrowseSkillsUseCase {
         const skillDTOs = skills.map(skill => {
             const provider = providersMap.get(skill.providerId);
             if (!provider) {
-                throw new Error(`Provider not found for skill ${skill.id}`);
+                throw new AppError_1.NotFoundError(`Provider not found for skill ${skill.id}`);
             }
             const availability = availabilityMap.get(skill.providerId);
             return this.browseSkillMapper.toDTO(skill, provider, availability);

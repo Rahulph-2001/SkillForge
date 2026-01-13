@@ -17,6 +17,8 @@ import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';
 import { CommunityRoutes } from './routes/community/communityRoutes';
 import { PaymentRoutes } from './routes/payment/paymentRoutes';
 import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRoutes';
+import { ProjectRoutes } from './routes/project/projectRoutes';
+import { AdminWalletRoutes } from './routes/admin/AdminWalletRoutes';
 export declare class App {
     private readonly authRoutes;
     private readonly adminRoutes;
@@ -35,9 +37,11 @@ export declare class App {
     private readonly communityRoutes;
     private readonly paymentRoutes;
     private readonly userSubscriptionRoutes;
+    private readonly projectRoutes;
+    private readonly adminWalletRoutes;
     private readonly passportService;
     private app;
-    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, availabilityRoutes: AvailabilityRoutes, communityRoutes: CommunityRoutes, paymentRoutes: PaymentRoutes, userSubscriptionRoutes: UserSubscriptionRoutes, passportService: PassportService);
+    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, availabilityRoutes: AvailabilityRoutes, communityRoutes: CommunityRoutes, paymentRoutes: PaymentRoutes, userSubscriptionRoutes: UserSubscriptionRoutes, projectRoutes: ProjectRoutes, adminWalletRoutes: AdminWalletRoutes, passportService: PassportService);
     private setupMiddlewares;
     private setupRoutes;
     private setupErrorHandlers;

@@ -29,6 +29,7 @@ import { CommunityRoutes } from './routes/community/communityRoutes';
 import { PaymentRoutes } from './routes/payment/paymentRoutes';
 import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRoutes';
 import { ProjectRoutes } from './routes/project/projectRoutes';
+import { AdminWalletRoutes } from './routes/admin/AdminWalletRoutes';
 
 @injectable()
 export class App {
@@ -53,7 +54,9 @@ export class App {
         @inject(TYPES.PaymentRoutes) private readonly paymentRoutes: PaymentRoutes,
         @inject(TYPES.UserSubscriptionRoutes) private readonly userSubscriptionRoutes: UserSubscriptionRoutes,
         @inject(TYPES.ProjectRoutes) private readonly projectRoutes: ProjectRoutes,
+        @inject(TYPES.AdminWalletRoutes) private readonly adminWalletRoutes: AdminWalletRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
+
     ) {
         this.app = express();
         this.setupMiddlewares();
@@ -124,6 +127,7 @@ export class App {
         this.app.use('/api/v1/payments', this.paymentRoutes.getRouter());
         this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
         this.app.use('/api/v1/projects', this.projectRoutes.router);
+        this.app.use('/api/v1/admin/wallet', this.adminWalletRoutes.router);
         this.app.all('*', notFoundHandler);
     }
 

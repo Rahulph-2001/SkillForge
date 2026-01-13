@@ -1,9 +1,9 @@
 import { Database } from '../Database';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
-export declare class TemplateQuestionRepository implements ITemplateQuestionRepository {
-    private readonly database;
-    constructor(database: Database);
+import { BaseRepository } from '../BaseRepository';
+export declare class TemplateQuestionRepository extends BaseRepository<TemplateQuestion> implements ITemplateQuestionRepository {
+    constructor(db: Database);
     create(question: TemplateQuestion): Promise<TemplateQuestion>;
     findById(id: string): Promise<TemplateQuestion | null>;
     findByTemplateId(templateId: string): Promise<TemplateQuestion[]>;

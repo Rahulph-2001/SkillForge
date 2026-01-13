@@ -29,7 +29,7 @@ export class UpdateSkillTemplateUseCase implements IUpdateSkillTemplateUseCase {
       throw new NotFoundError('Skill template not found');
     }
 
-    const updates: any = {};
+    const updates: Partial<{ title: string; category: string; description: string; creditsMin: number; creditsMax: number; mcqCount: number; passRange: number; levels: string[]; tags: string[]; status: string }> = {};
     if (dto.title) updates.title = dto.title;
     if (dto.category) updates.category = dto.category;
     if (dto.description) updates.description = dto.description;

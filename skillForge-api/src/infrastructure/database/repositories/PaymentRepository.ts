@@ -5,6 +5,7 @@ import { Payment } from '../../../domain/entities/Payment';
 import { PaymentStatus, PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
+import { IPaginationParams, IPaginationResult } from '../../../domain/types/IPaginationParams';
 
 @injectable()
 export class PrismaPaymentRepository extends BaseRepository<Payment> implements IPaymentRepository {
@@ -35,8 +36,8 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
     }
 
     async findById(id: string): Promise<Payment | null> {
-        const data = await this.prisma.payment.findUnique({ where: { id } });
-        return data ? Payment.fromJSON(data) : null;
+        const data = await super.findById(id);
+        return data ? Payment.fromJSON(data as any) : null;
     }
 
     async findByProviderPaymentId(providerPaymentId: string): Promise<Payment | null> {
@@ -89,5 +90,57 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
             where: { id },
             data: { status, updated_at: new Date() },
         });
+    }
+   async findWithPagination(
+        paginationParams: IPaginationParams,
+        filters?: {
+            userId?: string;
+            purpose?: PaymentPurpose;
+            status?: PaymentStatus;
+            search?: string;
+        }
+    ): Promise<IPaginationResult<Payment>> {
+        const where: any = {};
+        
+        if (filters?.userId) {
+            where.user_id = filters.userId;
+        }
+        
+        if (filters?.purpose) {
+            where.purpose = filters.purpose;
+        }
+        
+        if (filters?.status) {
+            where.status = filters.status;
+        }
+        
+        if (filters?.search) {
+            where.OR = [
+                { id: { contains: filters.search, mode: 'insensitive' } },
+                { provider_payment_id: { contains: filters.search, mode: 'insensitive' } },
+            ];
+        }
+
+        const [data, total] = await Promise.all([
+            this.prisma.payment.findMany({
+                where,
+                skip: paginationParams.skip,
+                take: paginationParams.take,
+                orderBy: { created_at: 'desc' },
+            }),
+            this.prisma.payment.count({ where }),
+        ]);
+
+        const totalPages = Math.ceil(total / paginationParams.limit);
+
+        return {
+            data: data.map(Payment.fromJSON),
+            total,
+            page: paginationParams.page,
+            limit: paginationParams.limit,
+            totalPages,
+            hasNextPage: paginationParams.page < totalPages,
+            hasPreviousPage: paginationParams.page > 1,
+        };
     }
 }

@@ -36,7 +36,7 @@ let SkillDetailsController = class SkillDetailsController {
 exports.SkillDetailsController = SkillDetailsController;
 exports.SkillDetailsController = SkillDetailsController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.GetSkillDetailsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IGetSkillDetailsUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object])
 ], SkillDetailsController);

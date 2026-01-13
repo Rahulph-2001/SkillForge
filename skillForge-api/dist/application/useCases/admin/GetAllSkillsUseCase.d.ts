@@ -1,4 +1,6 @@
-import { PrismaClient } from '@prisma/client';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IGetAllSkillsUseCase } from './interfaces/IGetAllSkillsUseCase';
 export interface SkillDTO {
     id: string;
     providerId: string;
@@ -28,9 +30,10 @@ export interface SkillDTO {
     createdAt: Date;
     updatedAt: Date;
 }
-export declare class GetAllSkillsUseCase {
-    private prisma;
-    constructor(prisma: PrismaClient);
+export declare class GetAllSkillsUseCase implements IGetAllSkillsUseCase {
+    private skillRepository;
+    private userRepository;
+    constructor(skillRepository: ISkillRepository, userRepository: IUserRepository);
     execute(): Promise<SkillDTO[]>;
 }
 //# sourceMappingURL=GetAllSkillsUseCase.d.ts.map

@@ -15,12 +15,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RemoveCommunityMemberUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const Database_1 = require("../../../infrastructure/database/Database");
 const AppError_1 = require("../../../domain/errors/AppError");
-const client_1 = require("@prisma/client");
 let RemoveCommunityMemberUseCase = class RemoveCommunityMemberUseCase {
-    constructor(communityRepository, prisma) {
+    constructor(communityRepository, database) {
         this.communityRepository = communityRepository;
-        this.prisma = prisma;
+        this.database = database;
     }
     async execute(adminId, communityId, memberId) {
         const community = await this.communityRepository.findById(communityId);
@@ -35,7 +35,7 @@ let RemoveCommunityMemberUseCase = class RemoveCommunityMemberUseCase {
             throw new AppError_1.NotFoundError('Member not found in this community');
         }
         // Use transaction for atomic removal
-        await this.prisma.$transaction(async (tx) => {
+        await this.database.transaction(async (tx) => {
             // Remove member
             await tx.communityMember.updateMany({
                 where: { userId: memberId, communityId, isActive: true },
@@ -59,7 +59,7 @@ exports.RemoveCommunityMemberUseCase = RemoveCommunityMemberUseCase;
 exports.RemoveCommunityMemberUseCase = RemoveCommunityMemberUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [Object, client_1.PrismaClient])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Object, Database_1.Database])
 ], RemoveCommunityMemberUseCase);
 //# sourceMappingURL=RemoveCommunityMemberUseCase.js.map

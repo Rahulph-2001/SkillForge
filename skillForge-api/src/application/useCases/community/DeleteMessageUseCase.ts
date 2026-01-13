@@ -4,9 +4,7 @@ import { ICommunityMessageRepository } from '../../../domain/repositories/ICommu
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
-export interface IDeleteMessageUseCase {
-  execute(userId: string, messageId: string): Promise<void>;
-}
+import { IDeleteMessageUseCase } from './interfaces/IDeleteMessageUseCase';
 @injectable()
 export class DeleteMessageUseCase implements IDeleteMessageUseCase {
   constructor(

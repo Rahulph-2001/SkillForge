@@ -4,25 +4,7 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { IStorageService } from '../../../domain/services/IStorageService';
-
-export interface UpdateSkillDTO {
-    description?: string;
-    category?: string;
-    level?: string;
-    durationHours?: number;
-    creditsPerHour?: number;
-    tags?: string[];
-    imageUrl?: string;
-}
-
-export interface IUpdateSkillUseCase {
-    execute(
-        skillId: string,
-        providerId: string,
-        updates: UpdateSkillDTO,
-        imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
-    ): Promise<Skill>;
-}
+import { IUpdateSkillUseCase, UpdateSkillDTO } from './interfaces/IUpdateSkillUseCase';
 
 @injectable()
 export class UpdateSkillUseCase implements IUpdateSkillUseCase {
@@ -37,7 +19,6 @@ export class UpdateSkillUseCase implements IUpdateSkillUseCase {
         updates: UpdateSkillDTO,
         imageFile?: { buffer: Buffer; originalname: string; mimetype: string }
     ): Promise<Skill> {
-        console.log('🔍 [UpdateSkillUseCase] Executing update for skill:', skillId);
         const skill = await this.skillRepository.findById(skillId);
 
         if (!skill) {
@@ -57,13 +38,11 @@ export class UpdateSkillUseCase implements IUpdateSkillUseCase {
         if (imageFile) {
             // Create S3 key with skills/ prefix
             const key = `skills/${Date.now()}-${imageFile.originalname}`;
-            console.log('🔍 [UpdateSkillUseCase] Uploading new image to S3:', key);
             imageUrl = await this.storageService.uploadFile(
                 imageFile.buffer,
                 key,
                 imageFile.mimetype
             );
-            console.log('✅ [UpdateSkillUseCase] Image uploaded successfully. URL:', imageUrl);
         }
 
         // Create a new Skill instance with updated properties

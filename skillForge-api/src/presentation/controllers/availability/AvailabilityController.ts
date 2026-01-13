@@ -17,15 +17,12 @@ export class AvailabilityController {
 
     async getAvailability(req: Request, res: Response): Promise<void> {
         try {
-            const providerId = (req as any).user!.userId; // Assumes auth middleware populates user
-            console.log('[AvailabilityController] GET /availability for provider', providerId);
+            const providerId = req.user!.userId;
             const availability = await this.getUseCase.execute(providerId);
-            console.log('[AvailabilityController] GET result schedule keys', Object.keys(availability.weeklySchedule || {}));
 
             const response = this.responseBuilder.success(availability);
             res.status(response.statusCode).json(response.body);
         } catch (error) {
-            console.error('Error getting availability:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve availability');
             res.status(response.statusCode).json(response.body);
         }
@@ -33,22 +30,13 @@ export class AvailabilityController {
 
     async updateAvailability(req: Request, res: Response): Promise<void> {
         try {
-            const providerId = (req as any).user!.userId;
+            const providerId = req.user!.userId;
             const data = req.body;
-            console.log(`[AvailabilityController] PUT /availability for provider ${providerId}`, {
-                timezone: data?.timezone,
-                bufferTime: data?.bufferTime,
-                minAdvanceBooking: data?.minAdvanceBooking,
-                maxAdvanceBooking: data?.maxAdvanceBooking,
-                weeklyScheduleKeys: data?.weeklySchedule ? Object.keys(data.weeklySchedule) : [],
-            });
             const updated = await this.updateUseCase.execute(providerId, data);
-            console.log('[AvailabilityController] PUT result schedule keys', Object.keys(updated.weeklySchedule || {}));
 
             const response = this.responseBuilder.success(updated, 'Availability settings updated successfully');
             res.status(response.statusCode).json(response.body);
         } catch (error) {
-            console.error('Error updating availability:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to update availability');
             res.status(response.statusCode).json(response.body);
         }
@@ -74,7 +62,6 @@ export class AvailabilityController {
             const response = this.responseBuilder.success(slots);
             res.status(response.statusCode).json(response.body);
         } catch (error) {
-            console.error('Error getting occupied slots:', error);
             const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', 'Failed to retrieve occupied slots');
             res.status(response.statusCode).json(response.body);
         }

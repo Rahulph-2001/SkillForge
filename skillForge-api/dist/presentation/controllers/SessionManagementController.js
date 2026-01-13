@@ -15,13 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SessionManagementController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../infrastructure/di/types");
-const AcceptBookingUseCase_1 = require("../../application/useCases/booking/AcceptBookingUseCase");
-const DeclineBookingUseCase_1 = require("../../application/useCases/booking/DeclineBookingUseCase");
-const CancelBookingUseCase_1 = require("../../application/useCases/booking/CancelBookingUseCase");
-const RescheduleBookingUseCase_1 = require("../../application/useCases/booking/RescheduleBookingUseCase");
-const AcceptRescheduleUseCase_1 = require("../../application/useCases/booking/AcceptRescheduleUseCase");
-const DeclineRescheduleUseCase_1 = require("../../application/useCases/booking/DeclineRescheduleUseCase");
-const GetProviderBookingsUseCase_1 = require("../../application/useCases/booking/GetProviderBookingsUseCase");
 const HttpStatusCode_1 = require("../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../config/messages");
 let SessionManagementController = class SessionManagementController {
@@ -204,20 +197,14 @@ let SessionManagementController = class SessionManagementController {
 exports.SessionManagementController = SessionManagementController;
 exports.SessionManagementController = SessionManagementController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.AcceptBookingUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.DeclineBookingUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.CancelBookingUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.RescheduleBookingUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.AcceptRescheduleUseCase)),
-    __param(5, (0, inversify_1.inject)(types_1.TYPES.DeclineRescheduleUseCase)),
-    __param(6, (0, inversify_1.inject)(types_1.TYPES.GetProviderBookingsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IAcceptBookingUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IDeclineBookingUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ICancelBookingUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IRescheduleBookingUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IAcceptRescheduleUseCase)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IDeclineRescheduleUseCase)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IGetProviderBookingsUseCase)),
     __param(7, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [AcceptBookingUseCase_1.AcceptBookingUseCase,
-        DeclineBookingUseCase_1.DeclineBookingUseCase,
-        CancelBookingUseCase_1.CancelBookingUseCase,
-        RescheduleBookingUseCase_1.RescheduleBookingUseCase,
-        AcceptRescheduleUseCase_1.AcceptRescheduleUseCase,
-        DeclineRescheduleUseCase_1.DeclineRescheduleUseCase,
-        GetProviderBookingsUseCase_1.GetProviderBookingsUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object])
 ], SessionManagementController);
 //# sourceMappingURL=SessionManagementController.js.map

@@ -25,7 +25,7 @@ let AdminController = class AdminController {
     }
     async listUsers(req, res, next) {
         try {
-            const adminUserId = req.user.userId; // Typed via middleware
+            const adminUserId = req.user.userId;
             const page = Number(req.query.page) || 1;
             const limit = Number(req.query.limit) || 20;
             const search = req.query.search;
@@ -83,9 +83,9 @@ let AdminController = class AdminController {
 exports.AdminController = AdminController;
 exports.AdminController = AdminController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.ListUsersUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.SuspendUserUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.UnsuspendUserUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IListUsersUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.ISuspendUserUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUnsuspendUserUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], AdminController);

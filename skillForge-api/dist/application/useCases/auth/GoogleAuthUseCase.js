@@ -22,6 +22,7 @@ const User_1 = require("../../../domain/entities/User");
 const Email_1 = require("../../../shared/value-objects/Email");
 const env_1 = require("../../../config/env");
 const crypto_1 = __importDefault(require("crypto"));
+const AppError_1 = require("../../../domain/errors/AppError");
 let GoogleAuthUseCase = class GoogleAuthUseCase {
     constructor(userRepository, jwtService, userDTOMapper) {
         this.userRepository = userRepository;
@@ -31,7 +32,7 @@ let GoogleAuthUseCase = class GoogleAuthUseCase {
     async execute(googleProfile) {
         const googleEmail = googleProfile.emails?.[0]?.value;
         if (!googleEmail) {
-            throw new Error('Google profile is missing an email address.');
+            throw new AppError_1.ValidationError('Google profile is missing an email address.');
         }
         const fullName = this.extractFullName(googleProfile);
         const avatarUrl = googleProfile.photos?.[0]?.value;
@@ -46,8 +47,8 @@ let GoogleAuthUseCase = class GoogleAuthUseCase {
                 email: new Email_1.Email(googleEmail),
                 password: this.generateSecurePasswordHash(), // Secure random password for OAuth users
                 role: 'user',
-                bonus_credits: env_1.env.DEFAULT_BONUS_CREDITS, // Ensure free credits are given
-                registration_ip: 'Google OAuth',
+                bonusCredits: env_1.env.DEFAULT_BONUS_CREDITS, // Ensure free credits are given
+                registrationIp: 'Google OAuth',
                 avatarUrl: avatarUrl,
             });
             // Mark email as verified since Google verified it

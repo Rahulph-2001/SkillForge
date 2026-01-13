@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListFeaturesUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const FeatureMapper_1 = require("../../mappers/FeatureMapper");
 let ListFeaturesUseCase = class ListFeaturesUseCase {
-    constructor(featureRepository) {
+    constructor(featureRepository, featureMapper) {
         this.featureRepository = featureRepository;
+        this.featureMapper = featureMapper;
     }
     async execute(planId, highlightedOnly = false) {
         let features;
@@ -34,13 +34,14 @@ let ListFeaturesUseCase = class ListFeaturesUseCase {
             // Fetch library features (master features)
             features = await this.featureRepository.findLibraryFeatures();
         }
-        return FeatureMapper_1.FeatureMapper.toDTOArray(features);
+        return this.featureMapper.toDTOArray(features);
     }
 };
 exports.ListFeaturesUseCase = ListFeaturesUseCase;
 exports.ListFeaturesUseCase = ListFeaturesUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IFeatureMapper)),
+    __metadata("design:paramtypes", [Object, Object])
 ], ListFeaturesUseCase);
 //# sourceMappingURL=ListFeaturesUseCase.js.map

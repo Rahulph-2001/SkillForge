@@ -37,7 +37,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -49,7 +49,7 @@ export class AdminSkillController {
   public approve = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
 
       await this.approveSkillUseCase.execute(skillId, adminId);
 
@@ -59,7 +59,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -72,7 +72,7 @@ export class AdminSkillController {
     try {
       const { skillId } = req.params;
       const { reason } = req.body;
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -97,7 +97,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -116,7 +116,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -129,7 +129,7 @@ export class AdminSkillController {
     try {
       const { skillId } = req.params;
       const { reason } = req.body;
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -154,7 +154,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };
@@ -166,7 +166,7 @@ export class AdminSkillController {
   public unblockSkill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const adminId = (req as any).user.userId;
+      const adminId = req.user!.userId;
 
       await this.unblockSkillUseCase.execute(skillId, adminId);
 
@@ -176,7 +176,7 @@ export class AdminSkillController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };

@@ -8,6 +8,7 @@ import { IGetSkillDetailsUseCase } from './interfaces/IGetSkillDetailsUseCase';
 import { SkillDetailsDTO } from '../../dto/skill/SkillDetailsResponseDTO';
 import { ISkillDetailsMapper } from '../../mappers/interfaces/ISkillDetailsMapper';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
+import { ProviderAvailability } from '../../../domain/entities/ProviderAvailability';
 @injectable()
 export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
   constructor(
@@ -70,14 +71,14 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
       enrichedAvailability = {
         ...availability,
         bookedSlots // <-- Crucial for "Industrial" feel
-      };
+      } as ProviderAvailability & { bookedSlots: any[] };
     }
 
     return this.skillDetailsMapper.toDTO(
       skill,
       provider,
       { rating: Number(avgRating.toFixed(1)), reviewCount },
-      enrichedAvailability
+      enrichedAvailability as ProviderAvailability
     );
   }
 

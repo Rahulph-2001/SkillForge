@@ -33,11 +33,22 @@ let UpdateProviderAvailabilityUseCase = class UpdateProviderAvailabilityUseCase 
         return this.availabilityRepository.update(providerId, data);
     }
     validateAndMergeSchedule(schedule) {
-        const result = { ...schedule };
+        const result = {};
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         for (const day of days) {
-            if (result[day] && result[day].enabled && result[day].slots && result[day].slots.length > 0) {
-                result[day].slots = this.mergeSlots(result[day].slots);
+            if (schedule[day]) {
+                result[day] = {
+                    enabled: schedule[day].enabled,
+                    slots: schedule[day].slots && schedule[day].slots.length > 0
+                        ? this.mergeSlots(schedule[day].slots)
+                        : []
+                };
+            }
+            else {
+                result[day] = {
+                    enabled: false,
+                    slots: []
+                };
             }
         }
         return result;

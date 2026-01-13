@@ -141,7 +141,7 @@ export class AuthController {
   async getMe(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       // User token payload is attached to req by auth middleware
-      const tokenPayload = (req as any).user;
+      const tokenPayload = req.user;
       if (!tokenPayload || !tokenPayload.userId) {
         res.status(HttpStatusCode.UNAUTHORIZED).json({
           success: false,
@@ -232,7 +232,7 @@ export class AuthController {
 
   async googleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const googleProfile = req.user as Profile;
+      const googleProfile = req.user as unknown as Profile;
       if (!googleProfile) {
         res.redirect(`${env.FRONTEND_URL}/login?error=google_auth_failed`);
         return;
@@ -312,7 +312,7 @@ export class AuthController {
 
   async validateUserStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = (req as any).user?.userId;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(HttpStatusCode.UNAUTHORIZED).json({

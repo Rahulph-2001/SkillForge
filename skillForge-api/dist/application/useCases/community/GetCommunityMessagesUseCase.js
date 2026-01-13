@@ -22,9 +22,17 @@ let GetCommunityMessagesUseCase = class GetCommunityMessagesUseCase {
         this.communityRepository = communityRepository;
     }
     async execute(userId, communityId, limit = 50, offset = 0) {
-        const member = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
-        if (!member || !member.isActive) {
-            throw new AppError_1.ForbiddenError('You are not a member of this community');
+        // First, allow community admins to fetch messages even if not in members table
+        const community = await this.communityRepository.findById(communityId);
+        if (!community) {
+            throw new AppError_1.ForbiddenError('Community not found');
+        }
+        if (community.adminId !== userId) {
+            // Check active membership (note: argument order is communityId, userId)
+            const member = await this.communityRepository.findMemberByUserAndCommunity(communityId, userId);
+            if (!member || !member.isActive) {
+                throw new AppError_1.ForbiddenError('You are not a member of this community');
+            }
         }
         return await this.messageRepository.findByCommunityId(communityId, limit, offset);
     }

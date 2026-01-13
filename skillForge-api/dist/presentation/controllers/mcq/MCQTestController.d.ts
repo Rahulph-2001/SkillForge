@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { StartMCQTestUseCase } from '../../../application/useCases/mcq/StartMCQTestUseCase';
-import { SubmitMCQTestUseCase } from '../../../application/useCases/mcq/SubmitMCQTestUseCase';
+import { IStartMCQTestUseCase } from '../../../application/useCases/mcq/interfaces/IStartMCQTestUseCase';
+import { ISubmitMCQTestUseCase } from '../../../application/useCases/mcq/interfaces/ISubmitMCQTestUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class MCQTestController {
     private startMCQTestUseCase;
     private submitMCQTestUseCase;
     private responseBuilder;
-    constructor(startMCQTestUseCase: StartMCQTestUseCase, submitMCQTestUseCase: SubmitMCQTestUseCase, responseBuilder: IResponseBuilder);
+    constructor(startMCQTestUseCase: IStartMCQTestUseCase, submitMCQTestUseCase: ISubmitMCQTestUseCase, responseBuilder: IResponseBuilder);
     startTest: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     /**
      * Submit MCQ test answers

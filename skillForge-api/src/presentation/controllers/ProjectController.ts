@@ -22,15 +22,15 @@ export class ProjectController {
         search: req.query.search as string | undefined,
         category: req.query.category as string | undefined,
         status: req.query.status as 'Open' | 'In_Progress' | 'Completed' | 'Cancelled' | undefined,
-        page: req.query.page ? parseInt(req.query.page as string) : undefined,
-        limit: req.query.limit ? parseInt(req.query.limit as string) : undefined,
+        page: req.query.page ? parseInt(req.query.page as string) : 1,
+        limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
       };
 
       const result = await this.listProjectsUseCase.execute(filters);
 
       const response = this.responseBuilder.success(result, 'Projects fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   };

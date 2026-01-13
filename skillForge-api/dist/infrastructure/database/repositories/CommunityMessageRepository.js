@@ -14,12 +14,13 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommunityMessageRepository = void 0;
 const inversify_1 = require("inversify");
-const client_1 = require("@prisma/client");
 const types_1 = require("../../di/types");
 const CommunityMessage_1 = require("../../../domain/entities/CommunityMessage");
-let CommunityMessageRepository = class CommunityMessageRepository {
-    constructor(prisma) {
-        this.prisma = prisma;
+const Database_1 = require("../Database");
+const BaseRepository_1 = require("../BaseRepository");
+let CommunityMessageRepository = class CommunityMessageRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'communityMessage');
     }
     async create(message) {
         const data = message.toJSON();
@@ -86,16 +87,13 @@ let CommunityMessageRepository = class CommunityMessageRepository {
         return CommunityMessage_1.CommunityMessage.fromDatabaseRow(updated);
     }
     async delete(id) {
-        await this.prisma.communityMessage.update({
-            where: { id },
-            data: { isDeleted: true, deletedAt: new Date(), updatedAt: new Date() },
-        });
+        await super.delete(id);
     }
 };
 exports.CommunityMessageRepository = CommunityMessageRepository;
 exports.CommunityMessageRepository = CommunityMessageRepository = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [client_1.PrismaClient])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Database_1.Database])
 ], CommunityMessageRepository);
 //# sourceMappingURL=CommunityMessageRepository.js.map

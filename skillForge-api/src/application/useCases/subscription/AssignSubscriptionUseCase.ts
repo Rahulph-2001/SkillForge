@@ -24,8 +24,6 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
     ) { }
 
     async execute(dto: AssignSubscriptionDTO): Promise<UserSubscriptionResponseDTO> {
-        console.log('[AssignSubscriptionUseCase] Executing with DTO:', dto);
-
         // Verify plan exists
         const plan = await this.planRepository.findById(dto.planId);
         if (!plan) {
@@ -44,13 +42,11 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
         if (existingSubscription && existingSubscription.isActive()) {
             if (existingSubscription.planId === dto.planId) {
                 // CASE: Extend
-                console.log('[AssignSubscriptionUseCase] Extending existing subscription (Admin Override)');
                 periodStart = existingSubscription.currentPeriodStart;
                 const currentEnd = existingSubscription.currentPeriodEnd > now ? existingSubscription.currentPeriodEnd : now;
                 periodEnd = new Date(currentEnd);
             } else {
                 // CASE: Upgrade/Downgrade (Immediate)
-                console.log('[AssignSubscriptionUseCase] Switching plan (Admin Override)');
                 // Defaults to now
             }
         }
@@ -141,12 +137,11 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
                     true // autoRenew
                 );
                 await this.userRepository.update(user);
-                console.log('[AssignSubscriptionUseCase] Synced user entity subscription data');
-            } else {
-                console.error('[AssignSubscriptionUseCase] User not found for sync:', dto.userId);
+                // User entity subscription data synced
             }
         } catch (error) {
-            console.error('[AssignSubscriptionUseCase] Failed to sync user entity:', error);
+            // Failed to sync user entity - non-critical, subscription still created
+            // TODO: Add proper logging service for error tracking
         }
 
         // Return DTO using mapper

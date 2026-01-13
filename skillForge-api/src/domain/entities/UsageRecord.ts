@@ -107,6 +107,7 @@ export class UsageRecord {
         return this._usageCount >= this._limitValue;
     }
 
+
     /**
      * Check if usage is within limit
      */

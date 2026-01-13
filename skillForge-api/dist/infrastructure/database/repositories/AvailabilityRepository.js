@@ -17,22 +17,22 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../di/types");
 const Database_1 = require("../Database");
 const ProviderAvailability_1 = require("../../../domain/entities/ProviderAvailability");
-let PrismaAvailabilityRepository = class PrismaAvailabilityRepository {
-    constructor(database) {
-        this.database = database;
+const BaseRepository_1 = require("../BaseRepository");
+let PrismaAvailabilityRepository = class PrismaAvailabilityRepository extends BaseRepository_1.BaseRepository {
+    constructor(db) {
+        super(db, 'providerAvailability');
     }
     async findByProviderId(providerId) {
-        const data = await this.database.getClient().providerAvailability.findUnique({
+        const data = await this.prisma.providerAvailability.findUnique({
             where: { providerId },
         });
         if (!data)
             return null;
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] findByProviderId', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
     async findByProviderIds(providerIds) {
-        const data = await this.database.getClient().providerAvailability.findMany({
+        const data = await this.prisma.providerAvailability.findMany({
             where: {
                 providerId: { in: providerIds }
             }
@@ -40,7 +40,7 @@ let PrismaAvailabilityRepository = class PrismaAvailabilityRepository {
         return data.map(item => this.mapToEntity(item));
     }
     async create(availability) {
-        const data = await this.database.getClient().providerAvailability.create({
+        const data = await this.prisma.providerAvailability.create({
             data: {
                 providerId: availability.providerId,
                 weeklySchedule: availability.weeklySchedule,
@@ -54,11 +54,10 @@ let PrismaAvailabilityRepository = class PrismaAvailabilityRepository {
             },
         });
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] create', availability.providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
     async update(providerId, availability) {
-        const data = await this.database.getClient().providerAvailability.update({
+        const data = await this.prisma.providerAvailability.update({
             where: { providerId },
             data: {
                 weeklySchedule: availability.weeklySchedule,
@@ -72,7 +71,6 @@ let PrismaAvailabilityRepository = class PrismaAvailabilityRepository {
             },
         });
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] update', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
     mapToEntity(data) {

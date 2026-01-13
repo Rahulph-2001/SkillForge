@@ -1,8 +1,8 @@
 import { Database } from '../Database';
 import { MCQImportJob, ImportStatus } from '../../../domain/entities/MCQImportJob';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
-export declare class MCQImportJobRepository implements IMCQImportJobRepository {
-    private prisma;
+import { BaseRepository } from '../BaseRepository';
+export declare class MCQImportJobRepository extends BaseRepository<MCQImportJob> implements IMCQImportJobRepository {
     constructor(db: Database);
     private toDomain;
     private toPersistence;

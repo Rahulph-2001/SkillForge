@@ -16,7 +16,7 @@ export class BrowseSkillsController {
   public browse = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // Extract userId from optional auth middleware
-      const userId = (req as any).user?.userId;
+      const userId = req.user?.userId;
 
       const {
         search,

@@ -18,7 +18,7 @@ export class AdminController {
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId; // Typed via middleware
+      const adminUserId = req.user!.userId;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 20;
       const search = req.query.search as string | undefined;
@@ -45,7 +45,7 @@ export class AdminController {
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const { targetUserId, reason, duration } = req.body;
       const result = await this.suspendUserUseCase.execute({
         adminUserId,
@@ -65,7 +65,7 @@ export class AdminController {
 
   async unsuspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = (req as any).user.userId;
+      const adminUserId = req.user!.userId;
       const { targetUserId } = req.body;
       const result = await this.unsuspendUserUseCase.execute({
         adminUserId,

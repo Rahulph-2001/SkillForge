@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.LeaveCommunityUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const Database_1 = require("../../../infrastructure/database/Database");
 const AppError_1 = require("../../../domain/errors/AppError");
-const client_1 = require("@prisma/client");
 let LeaveCommunityUseCase = class LeaveCommunityUseCase {
-    constructor(communityRepository, webSocketService, prisma) {
+    constructor(communityRepository, webSocketService, database) {
         this.communityRepository = communityRepository;
         this.webSocketService = webSocketService;
-        this.prisma = prisma;
+        this.database = database;
     }
     async execute(userId, communityId) {
         const community = await this.communityRepository.findById(communityId);
@@ -36,7 +36,7 @@ let LeaveCommunityUseCase = class LeaveCommunityUseCase {
             throw new AppError_1.NotFoundError('Not a member of this community');
         }
         // Use transaction for atomic update
-        await this.prisma.$transaction(async (tx) => {
+        await this.database.transaction(async (tx) => {
             // Update member status
             await tx.communityMember.updateMany({
                 where: { userId, communityId, isActive: true },
@@ -72,7 +72,7 @@ exports.LeaveCommunityUseCase = LeaveCommunityUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IWebSocketService)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [Object, Object, client_1.PrismaClient])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Object, Object, Database_1.Database])
 ], LeaveCommunityUseCase);
 //# sourceMappingURL=LeaveCommunityUseCase.js.map

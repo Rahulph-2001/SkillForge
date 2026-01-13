@@ -2,7 +2,8 @@ import { ITemplateQuestionRepository } from '../../../domain/repositories/ITempl
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { UpdateTemplateQuestionDTO } from '../../dto/templateQuestion/UpdateTemplateQuestionDTO';
-export declare class UpdateTemplateQuestionUseCase {
+import { IUpdateTemplateQuestionUseCase } from './interfaces/IUpdateTemplateQuestionUseCase';
+export declare class UpdateTemplateQuestionUseCase implements IUpdateTemplateQuestionUseCase {
     private readonly templateQuestionRepository;
     private readonly userRepository;
     constructor(templateQuestionRepository: ITemplateQuestionRepository, userRepository: IUserRepository);

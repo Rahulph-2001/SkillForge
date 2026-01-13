@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { CreateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase';
-import { ListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase';
-import { UpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/UpdateTemplateQuestionUseCase';
-import { DeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/DeleteTemplateQuestionUseCase';
-import { BulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/BulkDeleteTemplateQuestionsUseCase';
+import { ICreateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/ICreateTemplateQuestionUseCase';
+import { IListTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/interfaces/IListTemplateQuestionsUseCase';
+import { IUpdateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/IUpdateTemplateQuestionUseCase';
+import { IDeleteTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/interfaces/IDeleteTemplateQuestionUseCase';
+import { IBulkDeleteTemplateQuestionsUseCase } from '../../../application/useCases/templateQuestion/interfaces/IBulkDeleteTemplateQuestionsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class TemplateQuestionController {
     private readonly createTemplateQuestionUseCase;
@@ -12,7 +12,7 @@ export declare class TemplateQuestionController {
     private readonly deleteTemplateQuestionUseCase;
     private readonly bulkDeleteTemplateQuestionsUseCase;
     private readonly responseBuilder;
-    constructor(createTemplateQuestionUseCase: CreateTemplateQuestionUseCase, listTemplateQuestionsUseCase: ListTemplateQuestionsUseCase, updateTemplateQuestionUseCase: UpdateTemplateQuestionUseCase, deleteTemplateQuestionUseCase: DeleteTemplateQuestionUseCase, bulkDeleteTemplateQuestionsUseCase: BulkDeleteTemplateQuestionsUseCase, responseBuilder: IResponseBuilder);
+    constructor(createTemplateQuestionUseCase: ICreateTemplateQuestionUseCase, listTemplateQuestionsUseCase: IListTemplateQuestionsUseCase, updateTemplateQuestionUseCase: IUpdateTemplateQuestionUseCase, deleteTemplateQuestionUseCase: IDeleteTemplateQuestionUseCase, bulkDeleteTemplateQuestionsUseCase: IBulkDeleteTemplateQuestionsUseCase, responseBuilder: IResponseBuilder);
     /**
      * POST /api/v1/admin/skill-templates/:templateId/questions
      * Create a new question for a template

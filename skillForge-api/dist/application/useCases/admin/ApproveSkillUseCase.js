@@ -15,39 +15,57 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ApproveSkillUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const Database_1 = require("../../../infrastructure/database/Database");
+const Skill_1 = require("../../../domain/entities/Skill");
+const AppError_1 = require("../../../domain/errors/AppError");
 let ApproveSkillUseCase = class ApproveSkillUseCase {
-    constructor(database) {
-        this.prisma = database.getClient();
+    constructor(skillRepository) {
+        this.skillRepository = skillRepository;
     }
     async execute(skillId, _adminId) {
         // Verify skill exists and is in review
-        const skill = await this.prisma.skill.findUnique({
-            where: { id: skillId },
-        });
+        const skill = await this.skillRepository.findById(skillId);
         if (!skill) {
-            throw new Error('Skill not found');
+            throw new AppError_1.NotFoundError('Skill not found');
         }
         if (skill.status !== 'in-review') {
-            throw new Error('Skill is not in review status');
+            throw new AppError_1.ValidationError('Skill is not in review status');
         }
-        // Allow admin to approve even if verification is not passed (manual override)
-        // But we should log it or ensure it sets verificationStatus to passed
-        // Update skill status to approved AND ensure verificationStatus is passed
-        await this.prisma.skill.update({
-            where: { id: skillId },
-            data: {
-                status: 'approved',
-                verificationStatus: 'passed', // Ensure it shows in browse skills
-                updatedAt: new Date(),
-            },
+        // Create updated skill with approved status
+        const skillData = skill.toJSON();
+        const updatedSkill = new Skill_1.Skill({
+            id: skillData.id,
+            providerId: skillData.providerId,
+            title: skillData.title,
+            description: skillData.description,
+            category: skillData.category,
+            level: skillData.level,
+            durationHours: skillData.durationHours,
+            creditsPerHour: skillData.creditsPerHour,
+            tags: skillData.tags,
+            imageUrl: skillData.imageUrl,
+            templateId: skillData.templateId,
+            status: 'approved',
+            verificationStatus: 'passed',
+            mcqScore: skillData.mcqScore,
+            mcqTotalQuestions: skillData.mcqTotalQuestions,
+            mcqPassingScore: skillData.mcqPassingScore,
+            verifiedAt: skillData.verifiedAt,
+            totalSessions: skillData.totalSessions,
+            rating: skillData.rating,
+            isBlocked: skillData.isBlocked,
+            blockedReason: skillData.blockedReason,
+            blockedAt: skillData.blockedAt,
+            isAdminBlocked: skillData.isAdminBlocked,
+            createdAt: skillData.createdAt,
+            updatedAt: new Date(),
         });
+        await this.skillRepository.update(updatedSkill);
     }
 };
 exports.ApproveSkillUseCase = ApproveSkillUseCase;
 exports.ApproveSkillUseCase = ApproveSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Database_1.Database])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object])
 ], ApproveSkillUseCase);
 //# sourceMappingURL=ApproveSkillUseCase.js.map

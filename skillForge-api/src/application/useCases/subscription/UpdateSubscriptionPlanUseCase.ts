@@ -4,7 +4,7 @@ import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubsc
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { UpdateSubscriptionPlanDTO } from '../../dto/subscription/UpdateSubscriptionPlanDTO';
-import { ForbiddenError, NotFoundError, ConflictError } from '../../../domain/errors/AppError';
+import { ForbiddenError, NotFoundError, ConflictError, InternalServerError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUpdateSubscriptionPlanUseCase } from './interfaces/IUpdateSubscriptionPlanUseCase';
@@ -108,7 +108,7 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
     // Fetch updated plan with features
     const updatedPlan = await this.subscriptionPlanRepository.findById(planId);
     if (!updatedPlan) {
-      throw new Error('Failed to retrieve updated plan');
+      throw new InternalServerError('Failed to retrieve updated plan');
     }
 
     return this.subscriptionPlanMapper.toDTO(updatedPlan);

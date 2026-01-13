@@ -4,13 +4,12 @@ import { IUsageRecordRepository } from '../../../domain/repositories/IUsageRecor
 import { UsageRecord } from '../../../domain/entities/UsageRecord';
 import { v4 as uuidv4 } from 'uuid';
 import { TYPES } from '../../di/types';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaUsageRecordRepository implements IUsageRecordRepository {
-    private readonly prisma;
-
+export class UsageRecordRepository extends BaseRepository<UsageRecord> implements IUsageRecordRepository {
     constructor(@inject(TYPES.Database) db: Database) {
-        this.prisma = db.getClient();
+        super(db, 'usageRecord');
     }
 
     async create(usageRecord: UsageRecord): Promise<UsageRecord> {
@@ -160,5 +159,37 @@ export class PrismaUsageRecordRepository implements IUsageRecordRepository {
         });
 
         return await this.create(newRecord);
+    }
+
+    async upsert(record: UsageRecord): Promise<UsageRecord> {
+        const data = record.toJSON();
+        
+        const upserted = await this.prisma.usageRecord.upsert({
+            where: {
+                subscriptionId_featureKey_periodStart: {
+                    subscriptionId: data.subscriptionId as string,
+                    featureKey: data.featureKey as string,
+                    periodStart: data.periodStart as Date,
+                },
+            },
+            create: {
+                id: data.id as string,
+                subscriptionId: data.subscriptionId as string,
+                featureKey: data.featureKey as string,
+                usageCount: data.usageCount as number,
+                limitValue: data.limitValue as number | null,
+                periodStart: data.periodStart as Date,
+                periodEnd: data.periodEnd as Date,
+                createdAt: data.createdAt as Date,
+                updatedAt: data.updatedAt as Date,
+            },
+            update: {
+                usageCount: data.usageCount as number,
+                limitValue: data.limitValue as number | null,
+                updatedAt: new Date(),
+            },
+        });
+
+        return UsageRecord.fromJSON(upserted);
     }
 }

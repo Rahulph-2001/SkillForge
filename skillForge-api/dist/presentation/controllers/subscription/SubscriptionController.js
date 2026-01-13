@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SubscriptionController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const GetSubscriptionStatsUseCase_1 = require("../../../application/useCases/subscription/GetSubscriptionStatsUseCase");
-const DeleteSubscriptionPlanUseCase_1 = require("../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase");
 const messages_1 = require("../../../config/messages");
 let SubscriptionController = class SubscriptionController {
     constructor(listPlansUseCase, getStatsUseCase, createPlanUseCase, updatePlanUseCase, deletePlanUseCase, responseBuilder) {
@@ -118,12 +116,12 @@ let SubscriptionController = class SubscriptionController {
 exports.SubscriptionController = SubscriptionController;
 exports.SubscriptionController = SubscriptionController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.ListSubscriptionPlansUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.GetSubscriptionStatsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.CreateSubscriptionPlanUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.UpdateSubscriptionPlanUseCase)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.DeleteSubscriptionPlanUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IListSubscriptionPlansUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IGetSubscriptionStatsUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.ICreateSubscriptionPlanUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUpdateSubscriptionPlanUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IDeleteSubscriptionPlanUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, GetSubscriptionStatsUseCase_1.GetSubscriptionStatsUseCase, Object, Object, DeleteSubscriptionPlanUseCase_1.DeleteSubscriptionPlanUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], SubscriptionController);
 //# sourceMappingURL=SubscriptionController.js.map

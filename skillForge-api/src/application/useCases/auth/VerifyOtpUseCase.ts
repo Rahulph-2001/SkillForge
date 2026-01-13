@@ -7,7 +7,7 @@ import { IJWTService } from '../../../domain/services/IJWTService';
 import { IPendingRegistrationService } from '../../../domain/services/IPendingRegistrationService';
 import { User } from '../../../domain/entities/User';
 import { Email } from '../../../shared/value-objects/Email';
-import { NotFoundError, UnauthorizedError, ConflictError, ForbiddenError } from '../../../domain/errors/AppError';
+import { NotFoundError, UnauthorizedError, ConflictError, ForbiddenError, InternalServerError } from '../../../domain/errors/AppError';
 import { VerifyOtpDTO } from '../../dto/auth/VerifyOtpDTO';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { VerifyOtpResponseDTO } from '../../dto/auth/VerifyOtpResponseDTO';
@@ -88,7 +88,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
     // Safety check - should never happen due to earlier validation
     if (!user) {
-      throw new Error('User creation or retrieval failed during OTP verification');
+      throw new InternalServerError('User creation or retrieval failed during OTP verification');
     }
 
     try {

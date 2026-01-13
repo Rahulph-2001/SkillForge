@@ -23,9 +23,7 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
         super(db, 'user');
     }
     async findById(id) {
-        const user = await this.prisma.user.findUnique({
-            where: { id }
-        });
+        const user = await super.findById(id);
         return user ? User_1.User.fromDatabaseRow(user) : null;
     }
     async findByIds(ids) {

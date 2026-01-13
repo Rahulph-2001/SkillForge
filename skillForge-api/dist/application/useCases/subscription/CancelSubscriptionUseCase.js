@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CancelSubscriptionUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const UserSubscriptionMapper_1 = require("../../mappers/UserSubscriptionMapper");
 const AppError_1 = require("../../../domain/errors/AppError");
 let CancelSubscriptionUseCase = class CancelSubscriptionUseCase {
-    constructor(subscriptionRepository, planRepository, userRepository) {
+    constructor(subscriptionRepository, planRepository, userRepository, userSubscriptionMapper) {
         this.subscriptionRepository = subscriptionRepository;
         this.planRepository = planRepository;
         this.userRepository = userRepository;
+        this.userSubscriptionMapper = userSubscriptionMapper;
     }
     async execute(userId, immediate = false) {
         // Find user's subscription
@@ -62,16 +62,16 @@ let CancelSubscriptionUseCase = class CancelSubscriptionUseCase {
                     );
                 }
                 await this.userRepository.update(user);
-                console.log('[CancelSubscriptionUseCase] Synced user entity subscription data');
             }
         }
         catch (error) {
-            console.error('[CancelSubscriptionUseCase] Failed to sync user entity:', error);
+            // Failed to sync user entity - non-critical, subscription still cancelled
+            // TODO: Add proper logging service for error tracking
         }
         // Get plan details
         const plan = await this.planRepository.findById(updated.planId);
         // Map to DTO
-        return UserSubscriptionMapper_1.UserSubscriptionMapper.toDTO(updated, plan?.name);
+        return this.userSubscriptionMapper.toDTO(updated, plan?.name);
     }
 };
 exports.CancelSubscriptionUseCase = CancelSubscriptionUseCase;
@@ -80,6 +80,7 @@ exports.CancelSubscriptionUseCase = CancelSubscriptionUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISubscriptionPlanRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserSubscriptionMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], CancelSubscriptionUseCase);
 //# sourceMappingURL=CancelSubscriptionUseCase.js.map

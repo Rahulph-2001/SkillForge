@@ -16,131 +16,93 @@ exports.UserProfileController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
-const messages_1 = require("../../../config/messages");
-const client_1 = require("@prisma/client");
 let UserProfileController = class UserProfileController {
-    constructor(prisma, responseBuilder) {
-        this.prisma = prisma;
+    constructor(getProviderProfileUseCase, getProviderReviewsUseCase, getUserProfileUseCase, updateUserProfileUseCase, responseBuilder) {
+        this.getProviderProfileUseCase = getProviderProfileUseCase;
+        this.getProviderReviewsUseCase = getProviderReviewsUseCase;
+        this.getUserProfileUseCase = getUserProfileUseCase;
+        this.updateUserProfileUseCase = updateUserProfileUseCase;
         this.responseBuilder = responseBuilder;
-        this.getProviderProfile = async (req, res, next) => {
-            try {
-                const { userId } = req.params;
-                const user = await this.prisma.user.findUnique({
-                    where: { id: userId, isDeleted: false, isActive: true },
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatarUrl: true,
-                        bio: true,
-                        location: true,
-                        rating: true,
-                        reviewCount: true,
-                        totalSessionsCompleted: true,
-                        memberSince: true,
-                        verification: true,
-                        skillsOffered: true,
-                    },
+    }
+    async getProviderProfile(req, res, next) {
+        try {
+            const { userId } = req.params;
+            const profile = await this.getProviderProfileUseCase.execute(userId);
+            const response = this.responseBuilder.success(profile, 'Profile fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getProviderReviews(req, res, next) {
+        try {
+            const { userId } = req.params;
+            const reviews = await this.getProviderReviewsUseCase.execute(userId);
+            const response = this.responseBuilder.success(reviews, 'Reviews fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getProfile(req, res, next) {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(HttpStatusCode_1.HttpStatusCode.UNAUTHORIZED).json({
+                    success: false,
+                    error: 'User not authenticated',
                 });
-                if (!user) {
-                    const response = this.responseBuilder.error('USER_NOT_FOUND', messages_1.ERROR_MESSAGES.USER.NOT_FOUND, HttpStatusCode_1.HttpStatusCode.NOT_FOUND);
-                    res.status(response.statusCode).json(response.body);
-                    return;
-                }
-                const response = this.responseBuilder.success(user, messages_1.SUCCESS_MESSAGES.USER.PROFILE_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
-                res.status(response.statusCode).json(response.body);
+                return;
             }
-            catch (error) {
-                next(error);
-            }
-        };
-        this.getProfile = async (req, res, next) => {
-            try {
-                const userId = req.user.userId;
-                const user = await this.prisma.user.findUnique({
-                    where: { id: userId, isDeleted: false, isActive: true },
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatarUrl: true,
-                        bio: true,
-                        location: true,
-                        rating: true,
-                        reviewCount: true,
-                        totalSessionsCompleted: true,
-                        memberSince: true,
-                        verification: true,
-                        skillsOffered: true,
-                        skillsLearning: true,
-                        credits: true,
-                        subscriptionPlan: true,
-                    },
+            const profile = await this.getUserProfileUseCase.execute(userId);
+            const response = this.responseBuilder.success(profile, 'Profile fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async updateProfile(req, res, next) {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(HttpStatusCode_1.HttpStatusCode.UNAUTHORIZED).json({
+                    success: false,
+                    error: 'User not authenticated',
                 });
-                if (!user) {
-                    const response = this.responseBuilder.error('USER_NOT_FOUND', messages_1.ERROR_MESSAGES.USER.NOT_FOUND, HttpStatusCode_1.HttpStatusCode.NOT_FOUND);
-                    res.status(response.statusCode).json(response.body);
-                    return;
-                }
-                const profileData = {
-                    ...user,
-                    skillsOffered: user.skillsOffered.length,
-                };
-                const response = this.responseBuilder.success(profileData, messages_1.SUCCESS_MESSAGES.USER.PROFILE_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
-                res.status(response.statusCode).json(response.body);
+                return;
             }
-            catch (error) {
-                next(error);
-            }
-        };
-        this.updateProfile = async (req, res, next) => {
-            try {
-                const userId = req.user.userId;
-                const { name, bio, location } = req.body;
-                const updateData = {};
-                if (name)
-                    updateData.name = name;
-                if (bio !== undefined)
-                    updateData.bio = bio;
-                if (location !== undefined)
-                    updateData.location = location;
-                const user = await this.prisma.user.update({
-                    where: { id: userId },
-                    data: updateData,
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                        avatarUrl: true,
-                        bio: true,
-                        location: true,
-                    },
-                });
-                const response = this.responseBuilder.success(user, messages_1.SUCCESS_MESSAGES.USER.PROFILE_UPDATED, HttpStatusCode_1.HttpStatusCode.OK);
-                res.status(response.statusCode).json(response.body);
-            }
-            catch (error) {
-                next(error);
-            }
-        };
-        this.getProviderReviews = async (req, res, next) => {
-            try {
-                const { userId } = req.params;
-                const reviews = [];
-                const response = this.responseBuilder.success(reviews, messages_1.SUCCESS_MESSAGES.USER.REVIEWS_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
-                res.status(response.statusCode).json(response.body);
-            }
-            catch (error) {
-                next(error);
-            }
-        };
+            const { name, bio, location } = req.body;
+            const avatarFile = req.file;
+            const result = await this.updateUserProfileUseCase.execute({
+                userId,
+                name,
+                bio,
+                location,
+                avatarFile: avatarFile ? {
+                    buffer: avatarFile.buffer,
+                    originalname: avatarFile.originalname,
+                    mimetype: avatarFile.mimetype,
+                } : undefined,
+            });
+            const response = this.responseBuilder.success(result, 'Profile updated successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
     }
 };
 exports.UserProfileController = UserProfileController;
 exports.UserProfileController = UserProfileController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [client_1.PrismaClient, Object])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IGetProviderProfileUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IGetProviderReviewsUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetUserProfileUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUpdateUserProfileUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], UserProfileController);
 //# sourceMappingURL=UserProfileController.js.map

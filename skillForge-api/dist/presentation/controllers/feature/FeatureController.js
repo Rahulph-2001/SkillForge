@@ -16,11 +16,6 @@ exports.FeatureController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const messages_1 = require("../../../config/messages");
-const CreateFeatureUseCase_1 = require("../../../application/useCases/feature/CreateFeatureUseCase");
-const ListFeaturesUseCase_1 = require("../../../application/useCases/feature/ListFeaturesUseCase");
-const GetFeatureByIdUseCase_1 = require("../../../application/useCases/feature/GetFeatureByIdUseCase");
-const UpdateFeatureUseCase_1 = require("../../../application/useCases/feature/UpdateFeatureUseCase");
-const DeleteFeatureUseCase_1 = require("../../../application/useCases/feature/DeleteFeatureUseCase");
 let FeatureController = class FeatureController {
     constructor(createFeatureUseCase, listFeaturesUseCase, getFeatureByIdUseCase, updateFeatureUseCase, deleteFeatureUseCase, responseBuilder) {
         this.createFeatureUseCase = createFeatureUseCase;
@@ -53,8 +48,7 @@ let FeatureController = class FeatureController {
         try {
             const planId = req.query.planId;
             const highlightedOnly = req.query.highlightedOnly === 'true';
-            let features = [];
-            features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
+            const features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
             const response = this.responseBuilder.success(features, messages_1.SUCCESS_MESSAGES.FEATURE.FETCHED);
             res.status(response.statusCode).json(response.body);
         }
@@ -118,10 +112,6 @@ exports.FeatureController = FeatureController = __decorate([
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IUpdateFeatureUseCase)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IDeleteFeatureUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [CreateFeatureUseCase_1.CreateFeatureUseCase,
-        ListFeaturesUseCase_1.ListFeaturesUseCase,
-        GetFeatureByIdUseCase_1.GetFeatureByIdUseCase,
-        UpdateFeatureUseCase_1.UpdateFeatureUseCase,
-        DeleteFeatureUseCase_1.DeleteFeatureUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], FeatureController);
 //# sourceMappingURL=FeatureController.js.map

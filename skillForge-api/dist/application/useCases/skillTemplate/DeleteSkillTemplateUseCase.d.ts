@@ -1,6 +1,7 @@
 import { ISkillTemplateRepository } from '../../../domain/repositories/ISkillTemplateRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-export declare class DeleteSkillTemplateUseCase {
+import { IDeleteSkillTemplateUseCase } from './interfaces/IDeleteSkillTemplateUseCase';
+export declare class DeleteSkillTemplateUseCase implements IDeleteSkillTemplateUseCase {
     private readonly skillTemplateRepository;
     private readonly userRepository;
     constructor(skillTemplateRepository: ISkillTemplateRepository, userRepository: IUserRepository);

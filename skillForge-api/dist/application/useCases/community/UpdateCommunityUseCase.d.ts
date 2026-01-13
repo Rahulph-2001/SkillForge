@@ -2,13 +2,7 @@ import { ICommunityRepository } from '../../../domain/repositories/ICommunityRep
 import { IStorageService } from '../../../domain/services/IStorageService';
 import { Community } from '../../../domain/entities/Community';
 import { UpdateCommunityDTO } from '../../dto/community/UpdateCommunityDTO';
-export interface IUpdateCommunityUseCase {
-    execute(communityId: string, userId: string, dto: UpdateCommunityDTO, imageFile?: {
-        buffer: Buffer;
-        originalname: string;
-        mimetype: string;
-    }): Promise<Community>;
-}
+import { IUpdateCommunityUseCase } from './interfaces/IUpdateCommunityUseCase';
 export declare class UpdateCommunityUseCase implements IUpdateCommunityUseCase {
     private readonly communityRepository;
     private readonly storageService;

@@ -5,7 +5,7 @@ import { ForbiddenError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-import { IGetSubscriptionStatsUseCase } from './interfaces/IGetSubscriptionStatsUseCase';
+import { IGetSubscriptionStatsUseCase, SubscriptionStats } from './interfaces/IGetSubscriptionStatsUseCase';
 
 
 @injectable()

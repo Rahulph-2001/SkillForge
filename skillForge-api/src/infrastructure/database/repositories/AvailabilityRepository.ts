@@ -1,29 +1,32 @@
+
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../di/types';
 import { Database } from '../Database';
 import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
 import { ProviderAvailability, WeeklySchedule, BlockedDate } from '../../../domain/entities/ProviderAvailability';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaAvailabilityRepository implements IAvailabilityRepository {
+export class PrismaAvailabilityRepository extends BaseRepository<ProviderAvailability> implements IAvailabilityRepository {
     constructor(
-        @inject(TYPES.Database) private readonly database: Database
-    ) { }
+        @inject(TYPES.Database) db: Database
+    ) {
+        super(db, 'providerAvailability');
+    }
 
     async findByProviderId(providerId: string): Promise<ProviderAvailability | null> {
-        const data = await this.database.getClient().providerAvailability.findUnique({
+        const data = await this.prisma.providerAvailability.findUnique({
             where: { providerId },
         });
 
         if (!data) return null;
 
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] findByProviderId', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
 
     async findByProviderIds(providerIds: string[]): Promise<ProviderAvailability[]> {
-        const data = await this.database.getClient().providerAvailability.findMany({
+        const data = await this.prisma.providerAvailability.findMany({
             where: {
                 providerId: { in: providerIds }
             }
@@ -33,7 +36,7 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
     }
 
     async create(availability: ProviderAvailability): Promise<ProviderAvailability> {
-        const data = await this.database.getClient().providerAvailability.create({
+        const data = await this.prisma.providerAvailability.create({
             data: {
                 providerId: availability.providerId,
                 weeklySchedule: availability.weeklySchedule as any,
@@ -48,12 +51,11 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
         });
 
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] create', availability.providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
 
     async update(providerId: string, availability: Partial<ProviderAvailability>): Promise<ProviderAvailability> {
-        const data = await this.database.getClient().providerAvailability.update({
+        const data = await this.prisma.providerAvailability.update({
             where: { providerId },
             data: {
                 weeklySchedule: availability.weeklySchedule as any,
@@ -68,7 +70,6 @@ export class PrismaAvailabilityRepository implements IAvailabilityRepository {
         });
 
         const entity = this.mapToEntity(data);
-        console.log('[PrismaAvailabilityRepository] update', providerId, 'keys', Object.keys(entity.weeklySchedule || {}));
         return entity;
     }
 

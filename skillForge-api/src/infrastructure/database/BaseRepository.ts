@@ -4,10 +4,18 @@ import { Database } from './Database';
 type ModelName = keyof Omit<PrismaClient, '$connect' | '$disconnect' | '$transaction' | '$queryRaw' | '$executeRaw'>;
 
 export abstract class BaseRepository<T> {
-  protected prisma: PrismaClient;
+  protected prisma: PrismaClient | Prisma.TransactionClient;
 
   constructor(db: Database, protected model: ModelName) {
     this.prisma = db.getClient();
+  }
+
+  /**
+   * Set transaction client for atomic operations
+   * @internal Used by TransactionService
+   */
+  public setTransactionClient(client: Prisma.TransactionClient): void {
+    this.prisma = client;
   }
 
  

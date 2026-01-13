@@ -9,7 +9,7 @@ export class GetProviderReviewsUseCase implements IGetProviderReviewsUseCase {
     // TODO: Inject review repository when reviews model is implemented
   }
 
-  async execute(userId: string): Promise<ProviderReviewResponseDTO[]> {
+  async execute(_userId: string): Promise<ProviderReviewResponseDTO[]> {
     // TODO: Implement when reviews model is created
     // For now, return empty array as per original implementation
     return [];

@@ -80,8 +80,13 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
             throw new ValidationError('You already have a booking for this skill at this time');
         }
 
-        // 7. Get provider availability settings
+        // 7. Get provider availability settings - REQUIRED for booking
         const availability = await this.availabilityRepository.findByProviderId(request.providerId);
+        if (!availability) {
+            throw new ValidationError('Provider has not set their availability. Please contact the provider or try another skill.');
+        }
+        
+        // 8. Validate availability settings
         if (availability) {
             // Validate booking is not in the past
             const pastValidation = BookingValidator.validateDateNotInPast(

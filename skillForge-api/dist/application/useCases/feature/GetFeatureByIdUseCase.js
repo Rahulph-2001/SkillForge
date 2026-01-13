@@ -15,24 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetFeatureByIdUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const FeatureMapper_1 = require("../../mappers/FeatureMapper");
 const AppError_1 = require("../../../domain/errors/AppError");
 let GetFeatureByIdUseCase = class GetFeatureByIdUseCase {
-    constructor(featureRepository) {
+    constructor(featureRepository, featureMapper) {
         this.featureRepository = featureRepository;
+        this.featureMapper = featureMapper;
     }
     async execute(featureId) {
         const feature = await this.featureRepository.findById(featureId);
         if (!feature) {
             throw new AppError_1.NotFoundError('Feature not found');
         }
-        return FeatureMapper_1.FeatureMapper.toDTO(feature);
+        return this.featureMapper.toDTO(feature);
     }
 };
 exports.GetFeatureByIdUseCase = GetFeatureByIdUseCase;
 exports.GetFeatureByIdUseCase = GetFeatureByIdUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IFeatureMapper)),
+    __metadata("design:paramtypes", [Object, Object])
 ], GetFeatureByIdUseCase);
 //# sourceMappingURL=GetFeatureByIdUseCase.js.map

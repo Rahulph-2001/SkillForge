@@ -17,8 +17,9 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 let GetCommunityDetailsUseCase = class GetCommunityDetailsUseCase {
-    constructor(communityRepository) {
+    constructor(communityRepository, communityMapper) {
         this.communityRepository = communityRepository;
+        this.communityMapper = communityMapper;
     }
     async execute(communityId, userId) {
         const community = await this.communityRepository.findById(communityId);
@@ -31,13 +32,14 @@ let GetCommunityDetailsUseCase = class GetCommunityDetailsUseCase {
             community.isJoined = !!membership && membership.isActive;
             community.isAdmin = community.adminId === userId;
         }
-        return community;
+        return this.communityMapper.toDTO(community, userId);
     }
 };
 exports.GetCommunityDetailsUseCase = GetCommunityDetailsUseCase;
 exports.GetCommunityDetailsUseCase = GetCommunityDetailsUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.ICommunityMapper)),
+    __metadata("design:paramtypes", [Object, Object])
 ], GetCommunityDetailsUseCase);
 //# sourceMappingURL=GetCommunityDetailsUseCase.js.map

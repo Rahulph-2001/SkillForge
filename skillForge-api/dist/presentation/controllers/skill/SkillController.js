@@ -58,11 +58,6 @@ let SkillController = class SkillController {
                 const { id } = req.params;
                 const updates = req.body;
                 const file = req.file;
-                console.log('🔍 [SkillController] Update request received:', {
-                    skillId: id,
-                    userId,
-                    hasFile: !!file
-                });
                 // Parse numeric fields from multipart/form-data (which come as strings)
                 if (updates.durationHours)
                     updates.durationHours = Number(updates.durationHours);
@@ -74,7 +69,7 @@ let SkillController = class SkillController {
                         updates.tags = JSON.parse(updates.tags);
                     }
                     catch (e) {
-                        console.error('❌ [SkillController] Failed to parse tags:', e);
+                        // Invalid JSON - tags will remain as string, which will be validated by use case
                     }
                 }
                 if (file) {
@@ -121,10 +116,10 @@ let SkillController = class SkillController {
 exports.SkillController = SkillController;
 exports.SkillController = SkillController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.CreateSkillUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.ListUserSkillsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.UpdateSkillUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.ToggleSkillBlockUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ICreateSkillUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IListUserSkillsUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUpdateSkillUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IToggleSkillBlockUseCase)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], SkillController);

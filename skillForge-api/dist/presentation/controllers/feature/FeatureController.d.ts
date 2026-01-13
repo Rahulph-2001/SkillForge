@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { CreateFeatureUseCase } from '../../../application/useCases/feature/CreateFeatureUseCase';
-import { ListFeaturesUseCase } from '../../../application/useCases/feature/ListFeaturesUseCase';
-import { GetFeatureByIdUseCase } from '../../../application/useCases/feature/GetFeatureByIdUseCase';
-import { UpdateFeatureUseCase } from '../../../application/useCases/feature/UpdateFeatureUseCase';
-import { DeleteFeatureUseCase } from '../../../application/useCases/feature/DeleteFeatureUseCase';
+import { ICreateFeatureUseCase } from '../../../application/useCases/feature/interfaces/ICreateFeatureUseCase';
+import { IListFeaturesUseCase } from '../../../application/useCases/feature/interfaces/IListFeaturesUseCase';
+import { IGetFeatureByIdUseCase } from '../../../application/useCases/feature/interfaces/IGetFeatureByIdUseCase';
+import { IUpdateFeatureUseCase } from '../../../application/useCases/feature/interfaces/IUpdateFeatureUseCase';
+import { IDeleteFeatureUseCase } from '../../../application/useCases/feature/interfaces/IDeleteFeatureUseCase';
 export declare class FeatureController {
     private readonly createFeatureUseCase;
     private readonly listFeaturesUseCase;
@@ -12,7 +12,7 @@ export declare class FeatureController {
     private readonly updateFeatureUseCase;
     private readonly deleteFeatureUseCase;
     private readonly responseBuilder;
-    constructor(createFeatureUseCase: CreateFeatureUseCase, listFeaturesUseCase: ListFeaturesUseCase, getFeatureByIdUseCase: GetFeatureByIdUseCase, updateFeatureUseCase: UpdateFeatureUseCase, deleteFeatureUseCase: DeleteFeatureUseCase, responseBuilder: IResponseBuilder);
+    constructor(createFeatureUseCase: ICreateFeatureUseCase, listFeaturesUseCase: IListFeaturesUseCase, getFeatureByIdUseCase: IGetFeatureByIdUseCase, updateFeatureUseCase: IUpdateFeatureUseCase, deleteFeatureUseCase: IDeleteFeatureUseCase, responseBuilder: IResponseBuilder);
     /**
      * POST /api/v1/admin/features
      * Create a new feature

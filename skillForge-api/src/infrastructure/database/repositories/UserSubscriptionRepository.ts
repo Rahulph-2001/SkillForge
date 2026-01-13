@@ -4,13 +4,12 @@ import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserS
 import { UserSubscription } from '../../../domain/entities/UserSubscription';
 import { SubscriptionStatus } from '../../../domain/enums/SubscriptionEnums';
 import { TYPES } from '../../di/types';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class PrismaUserSubscriptionRepository implements IUserSubscriptionRepository {
-    private readonly prisma;
-
+export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscription> implements IUserSubscriptionRepository {
     constructor(@inject(TYPES.Database) db: Database) {
-        this.prisma = db.getClient();
+        super(db, 'userSubscription');
     }
 
     async create(subscription: UserSubscription): Promise<UserSubscription> {

@@ -36,7 +36,12 @@ let UpdateCommunityUseCase = class UpdateCommunityUseCase {
                 await this.storageService.deleteFile(community.imageUrl);
             }
             const timestamp = Date.now();
-            const key = `communities/${userId}/${timestamp}-${imageFile.originalname}`;
+            // Sanitize filename: replace spaces with hyphens and remove special characters
+            const sanitizedFilename = imageFile.originalname
+                .replace(/\s+/g, '-') // Replace spaces with hyphens
+                .replace(/[^a-zA-Z0-9.-]/g, '') // Remove special characters except dots and hyphens
+                .toLowerCase(); // Convert to lowercase for consistency
+            const key = `communities/${userId}/${timestamp}-${sanitizedFilename}`;
             imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
         }
         community.updateDetails({

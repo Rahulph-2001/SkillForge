@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MCQTestController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const StartMCQTestUseCase_1 = require("../../../application/useCases/mcq/StartMCQTestUseCase");
-const SubmitMCQTestUseCase_1 = require("../../../application/useCases/mcq/SubmitMCQTestUseCase");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 let MCQTestController = class MCQTestController {
     constructor(startMCQTestUseCase, submitMCQTestUseCase, responseBuilder) {
@@ -73,10 +71,9 @@ let MCQTestController = class MCQTestController {
 exports.MCQTestController = MCQTestController;
 exports.MCQTestController = MCQTestController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.StartMCQTestUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.SubmitMCQTestUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IStartMCQTestUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.ISubmitMCQTestUseCase)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [StartMCQTestUseCase_1.StartMCQTestUseCase,
-        SubmitMCQTestUseCase_1.SubmitMCQTestUseCase, Object])
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], MCQTestController);
 //# sourceMappingURL=MCQTestController.js.map

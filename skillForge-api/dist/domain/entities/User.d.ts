@@ -25,7 +25,7 @@ export interface AntiFraudData {
     last_redemption_date: string | null;
     redemption_count: number;
     risk_score: number;
-    flagged_for_review: boolean;
+    flaggedForReview: boolean;
 }
 export interface AdminPermissions {
     can_manage_users: boolean;
@@ -65,8 +65,8 @@ export interface CreateUserData {
     email: Email | string;
     password: Password | string;
     role?: UserRole | 'user' | 'admin';
-    bonus_credits?: number;
-    registration_ip?: string;
+    bonusCredits?: number;
+    registrationIp?: string;
     avatarUrl?: string | null;
     bio?: string | null;
     location?: string | null;
@@ -115,8 +115,15 @@ export declare class User {
     get email(): Email;
     get passwordHash(): string;
     get avatarUrl(): string | null;
+    get bio(): string | null;
+    get location(): string | null;
     get role(): UserRole;
     get credits(): number;
+    get walletBalance(): number;
+    get rating(): number;
+    get reviewCount(): number;
+    get totalSessionsCompleted(): number;
+    get memberSince(): Date;
     get verification(): VerificationData;
     get antiFraud(): AntiFraudData;
     get isDeleted(): boolean;
@@ -162,6 +169,10 @@ export declare class User {
      * @param autoRenew - Enable auto-renewal (optional, defaults to false)
      */
     activateSubscription(planType: SubscriptionPlan, validUntil: Date, startedAt?: Date, autoRenew?: boolean): void;
+    /**
+     * Deactivate/expire subscription (called when subscription period ends)
+     */
+    deactivateSubscription(): void;
     /**
      * Credit amount to user wallet
      * @param amount - Amount to credit (must be positive)

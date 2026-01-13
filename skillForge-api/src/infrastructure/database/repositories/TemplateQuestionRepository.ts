@@ -3,13 +3,16 @@ import { TYPES } from '../../di/types';
 import { Database } from '../Database';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
+import { BaseRepository } from '../BaseRepository';
 
 @injectable()
-export class TemplateQuestionRepository implements ITemplateQuestionRepository {
-  constructor(@inject(TYPES.Database) private readonly database: Database) { }
+export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion> implements ITemplateQuestionRepository {
+  constructor(@inject(TYPES.Database) db: Database) {
+    super(db, 'templateQuestion');
+  }
 
   async create(question: TemplateQuestion): Promise<TemplateQuestion> {
-    const created = await this.database.getClient().templateQuestion.create({
+    const created = await this.prisma.templateQuestion.create({
       data: {
         id: question.id,
         templateId: question.templateId,
@@ -37,7 +40,7 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async findById(id: string): Promise<TemplateQuestion | null> {
-    const found = await this.database.getClient().templateQuestion.findUnique({
+    const found = await this.prisma.templateQuestion.findUnique({
       where: { id },
     });
 
@@ -58,7 +61,7 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async findByTemplateId(templateId: string): Promise<TemplateQuestion[]> {
-    const questions = await this.database.getClient().templateQuestion.findMany({
+    const questions = await this.prisma.templateQuestion.findMany({
       where: { templateId, isActive: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -80,7 +83,7 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async findByTemplateIdAndLevel(templateId: string, level: string): Promise<TemplateQuestion[]> {
-    const questions = await this.database.getClient().templateQuestion.findMany({
+    const questions = await this.prisma.templateQuestion.findMany({
       where: { templateId, level, isActive: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -102,7 +105,7 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async update(id: string, data: any): Promise<TemplateQuestion> {
-    const updated = await this.database.getClient().templateQuestion.update({
+    const updated = await this.prisma.templateQuestion.update({
       where: { id },
       data,
     });
@@ -122,14 +125,14 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async delete(id: string): Promise<void> {
-    await this.database.getClient().templateQuestion.update({
+    await this.prisma.templateQuestion.update({
       where: { id },
       data: { isActive: false },
     });
   }
 
   async bulkDelete(ids: string[]): Promise<number> {
-    const result = await this.database.getClient().templateQuestion.updateMany({
+    const result = await this.prisma.templateQuestion.updateMany({
       where: {
         id: { in: ids },
         isActive: true
@@ -140,19 +143,19 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async countByTemplateId(templateId: string): Promise<number> {
-    return this.database.getClient().templateQuestion.count({
+    return this.prisma.templateQuestion.count({
       where: { templateId, isActive: true },
     });
   }
 
   async countByTemplateIdAndLevel(templateId: string, level: string): Promise<number> {
-    return this.database.getClient().templateQuestion.count({
+    return this.prisma.templateQuestion.count({
       where: { templateId, level, isActive: true },
     });
   }
 
   async getRandomQuestions(templateId: string, level: string, count: number): Promise<TemplateQuestion[]> {
-    const questions = await this.database.getClient().templateQuestion.findMany({
+    const questions = await this.prisma.templateQuestion.findMany({
       where: { templateId, level, isActive: true },
     });
 
@@ -177,7 +180,7 @@ export class TemplateQuestionRepository implements ITemplateQuestionRepository {
   }
 
   async createMany(questions: TemplateQuestion[]): Promise<number> {
-    const result = await this.database.getClient().templateQuestion.createMany({
+    const result = await this.prisma.templateQuestion.createMany({
       data: questions.map(q => ({
         id: q.id,
         templateId: q.templateId,

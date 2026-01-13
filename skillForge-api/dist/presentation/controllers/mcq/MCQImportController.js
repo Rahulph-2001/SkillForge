@@ -86,9 +86,9 @@ let MCQImportController = class MCQImportController {
 exports.MCQImportController = MCQImportController;
 exports.MCQImportController = MCQImportController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.StartMCQImportUseCase)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.ListMCQImportJobsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.DownloadMCQImportErrorsUseCase)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IStartMCQImportUseCase)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IListMCQImportJobsUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IDownloadMCQImportErrorsUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], MCQImportController);

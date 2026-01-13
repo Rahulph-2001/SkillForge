@@ -106,6 +106,12 @@ export const SUCCESS_MESSAGES = {
     REACTION_ADDED: 'Reaction added successfully',
     REACTION_REMOVED: 'Reaction removed successfully',
   },
+
+  WALLET: {
+    STATS_FETCHED: 'Wallet statistics retrieved successfully',
+    TRANSACTIONS_FETCHED: 'Wallet transactions retrieved successfully',
+    WALLET_CREDITED: 'Admin wallet credited successfully',
+  },
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -207,6 +213,12 @@ export const ERROR_MESSAGES = {
     ONLY_ADMIN_CAN_UPDATE: 'Only admin can update community',
     ONLY_ADMIN_CAN_PIN: 'Only admin can pin messages',
     MESSAGE_NOT_FOUND: 'Message not found',
+  },
+   WALLET: {
+    STATS_FETCH_FAILED: 'Failed to fetch wallet statistics',
+    TRANSACTIONS_FETCH_FAILED: 'Failed to fetch wallet transactions',
+    ADMIN_NOT_FOUND: 'No admin user found in the system',
+    CREDIT_FAILED: 'Failed to credit admin wallet',
   },
 
   VALIDATION: {

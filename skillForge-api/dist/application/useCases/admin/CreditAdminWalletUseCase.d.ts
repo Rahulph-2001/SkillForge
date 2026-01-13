@@ -1,9 +1,7 @@
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { CreditAdminWalletRequestDTO } from '../../dto/admin/CreditAdminWalletDTO';
 import { WalletCreditResponseDTO } from '../../dto/admin/WalletCreditResponseDTO';
-export interface ICreditAdminWalletUseCase {
-    execute(dto: CreditAdminWalletRequestDTO): Promise<WalletCreditResponseDTO>;
-}
+import { ICreditAdminWalletUseCase } from './interfaces/ICreditAdminWalletUseCase';
 export declare class CreditAdminWalletUseCase implements ICreditAdminWalletUseCase {
     private userRepository;
     constructor(userRepository: IUserRepository);

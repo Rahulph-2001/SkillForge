@@ -48,8 +48,7 @@ export class FeatureController {
             const planId = req.query.planId as string | undefined;
             const highlightedOnly = req.query.highlightedOnly === 'true';
 
-            let features: any[] = [];
-            features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
+            const features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
 
             const response = this.responseBuilder.success(
                 features,

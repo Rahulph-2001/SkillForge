@@ -278,25 +278,44 @@ export default function SkillDetailPage() {
               </div>
 
               {/* Book Button */}
-              <button
-                onClick={handleBookSession}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+              {skill.availability ? (
+                <button
+                  onClick={handleBookSession}
+                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                Book a Session
-              </button>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  Book a Session
+                </button>
+              ) : (
+                <div className="w-full bg-gray-100 border-2 border-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                    />
+                  </svg>
+                  Provider Not Available
+                </div>
+              )}
 
               {/* Cancellation Info */}
               <p className="text-sm text-gray-600 text-center pt-2 border-t border-gray-200">
@@ -314,7 +333,22 @@ export default function SkillDetailPage() {
 
                 {/* Provider Card */}
                 <div className="flex items-start gap-4">
-                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md">
+                  {skill.provider.avatarUrl ? (
+                    <img
+                      src={skill.provider.avatarUrl}
+                      alt={skill.provider.name}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-gray-200 shadow-md"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.style.display = 'none';
+                        const fallback = target.nextElementSibling as HTMLElement;
+                        if (fallback) fallback.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md ${skill.provider.avatarUrl ? 'hidden' : ''}`}
+                  >
                     <span className="text-white font-bold text-xl">
                       {skill.provider.name.charAt(0).toUpperCase()}
                     </span>
@@ -349,6 +383,38 @@ export default function SkillDetailPage() {
                   View Profile
                 </button>
               </div>
+
+              {/* Availability Status */}
+              {!skill.availability && (
+                <>
+                  <div className="border-t border-gray-200" />
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <svg
+                        className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                      <div>
+                        <h4 className="font-semibold text-yellow-900 mb-1">
+                          Provider Availability Not Set
+                        </h4>
+                        <p className="text-sm text-yellow-800">
+                          This provider has not set their availability schedule yet. Please contact them directly or check back later.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Availability Schedule */}
               {skill.availability && skill.availability.weeklySchedule && (

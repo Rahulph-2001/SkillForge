@@ -1,7 +1,7 @@
 import { IJobQueueService, JobQueueName } from '../../domain/services/IJobQueueService';
 import { RedisService } from './RedisService';
 import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
-import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/CheckSubscriptionExpiryUseCase';
+import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/interfaces/ICheckSubscriptionExpiryUseCase';
 export declare class JobQueueService implements IJobQueueService {
     private redisService;
     private mcqImportJobProcessor;

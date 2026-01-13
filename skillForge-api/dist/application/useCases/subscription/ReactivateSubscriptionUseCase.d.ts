@@ -1,8 +1,6 @@
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-export interface IReactivateSubscriptionUseCase {
-    execute(userId: string): Promise<void>;
-}
+import { IReactivateSubscriptionUseCase } from './interfaces/IReactivateSubscriptionUseCase';
 export declare class ReactivateSubscriptionUseCase implements IReactivateSubscriptionUseCase {
     private subscriptionRepository;
     private userRepository;

@@ -1,11 +1,8 @@
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
-export interface AcceptRescheduleRequest {
-    bookingId: string;
-    userId: string;
-}
-export declare class AcceptRescheduleUseCase {
+import { IAcceptRescheduleUseCase, AcceptRescheduleRequestDTO } from './interfaces/IAcceptRescheduleUseCase';
+export declare class AcceptRescheduleUseCase implements IAcceptRescheduleUseCase {
     private readonly bookingRepository;
     constructor(bookingRepository: IBookingRepository);
-    execute(request: AcceptRescheduleRequest): Promise<void>;
+    execute(request: AcceptRescheduleRequestDTO): Promise<void>;
 }
 //# sourceMappingURL=AcceptRescheduleUseCase.d.ts.map

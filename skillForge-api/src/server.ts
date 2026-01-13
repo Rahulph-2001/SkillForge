@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 import { container } from './infrastructure/di/container';
 import { TYPES } from './infrastructure/di/types';
 import { App } from './presentation/server';

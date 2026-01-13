@@ -1,0 +1,1 @@
+{"version":3,"file":"IRejectSkillUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IRejectSkillUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,cAAc;IAC7B,OAAO,EAAE,MAAM,CAAC;IAChB,OAAO,EAAE,MAAM,CAAC;IAChB,MAAM,EAAE,MAAM,CAAC;CAChB;AAED,MAAM,WAAW,mBAAmB;IAClC,OAAO,CAAC,IAAI,EAAE,cAAc,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC9C"}

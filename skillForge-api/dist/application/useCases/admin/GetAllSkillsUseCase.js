@@ -14,68 +14,62 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetAllSkillsUseCase = void 0;
 const inversify_1 = require("inversify");
-const client_1 = require("@prisma/client");
 const types_1 = require("../../../infrastructure/di/types");
 let GetAllSkillsUseCase = class GetAllSkillsUseCase {
-    constructor(prisma) {
-        this.prisma = prisma;
+    constructor(skillRepository, userRepository) {
+        this.skillRepository = skillRepository;
+        this.userRepository = userRepository;
     }
     async execute() {
-        const skills = await this.prisma.skill.findMany({
-            where: {
-                isDeleted: false,
-                verificationStatus: {
-                    not: 'failed' // Exclude failed MCQ skills (they are not saved)
-                }
-            },
-            include: {
-                provider: {
-                    select: {
-                        id: true,
-                        name: true,
-                        email: true,
-                    },
-                },
-            },
-            orderBy: {
-                createdAt: 'desc',
-            },
+        // Get all non-deleted skills that haven't failed verification
+        const skills = await this.skillRepository.findAll();
+        const filteredSkills = skills.filter(skill => skill.verificationStatus !== 'failed');
+        // Get unique provider IDs
+        const providerIds = [...new Set(filteredSkills.map(s => s.providerId))];
+        const providers = await this.userRepository.findByIds(providerIds);
+        const providersMap = new Map(providers.map(p => [p.id, p]));
+        // Map to DTOs
+        return filteredSkills
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+            .map(skill => {
+            const provider = providersMap.get(skill.providerId);
+            return {
+                id: skill.id,
+                providerId: skill.providerId,
+                providerName: provider?.name || 'Unknown',
+                providerEmail: provider?.email.value || 'unknown@example.com',
+                title: skill.title,
+                description: skill.description,
+                category: skill.category,
+                level: skill.level,
+                durationHours: skill.durationHours,
+                creditsPerHour: Number(skill.creditsPerHour),
+                tags: skill.tags,
+                imageUrl: skill.imageUrl,
+                templateId: skill.templateId,
+                status: skill.status,
+                verificationStatus: skill.verificationStatus,
+                mcqScore: skill.mcqScore,
+                mcqTotalQuestions: skill.mcqTotalQuestions,
+                mcqPassingScore: skill.mcqPassingScore,
+                verifiedAt: skill.verifiedAt,
+                rejectionReason: skill.blockedReason,
+                isBlocked: skill.isBlocked,
+                blockedReason: skill.blockedReason,
+                blockedAt: skill.blockedAt,
+                totalSessions: skill.totalSessions,
+                rating: skill.rating || 0,
+                createdAt: skill.createdAt,
+                updatedAt: skill.updatedAt,
+            };
         });
-        return skills.map(skill => ({
-            id: skill.id,
-            providerId: skill.providerId,
-            providerName: skill.provider.name,
-            providerEmail: skill.provider.email,
-            title: skill.title,
-            description: skill.description,
-            category: skill.category,
-            level: skill.level,
-            durationHours: skill.durationHours,
-            creditsPerHour: skill.creditsPerHour,
-            tags: skill.tags,
-            imageUrl: skill.imageUrl,
-            templateId: skill.templateId,
-            status: skill.status,
-            verificationStatus: skill.verificationStatus,
-            mcqScore: skill.mcqScore,
-            mcqTotalQuestions: skill.mcqTotalQuestions,
-            mcqPassingScore: skill.mcqPassingScore,
-            verifiedAt: skill.verifiedAt,
-            rejectionReason: skill.rejectionReason,
-            isBlocked: skill.isBlocked,
-            blockedReason: skill.blockedReason,
-            blockedAt: skill.blockedAt,
-            totalSessions: skill.totalSessions,
-            rating: Number(skill.rating),
-            createdAt: skill.createdAt,
-            updatedAt: skill.updatedAt,
-        }));
     }
 };
 exports.GetAllSkillsUseCase = GetAllSkillsUseCase;
 exports.GetAllSkillsUseCase = GetAllSkillsUseCase = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PrismaClient)),
-    __metadata("design:paramtypes", [client_1.PrismaClient])
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], GetAllSkillsUseCase);
 //# sourceMappingURL=GetAllSkillsUseCase.js.map

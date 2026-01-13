@@ -1,10 +1,11 @@
-import { PrismaClient } from '@prisma/client';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { Payment } from '../../../domain/entities/Payment';
 import { PaymentStatus, PaymentPurpose } from '../../../domain/enums/PaymentEnums';
-export declare class PrismaPaymentRepository implements IPaymentRepository {
-    private prisma;
-    constructor(prisma: PrismaClient);
+import { Database } from '../Database';
+import { BaseRepository } from '../BaseRepository';
+import { IPaginationParams, IPaginationResult } from '../../../domain/types/IPaginationParams';
+export declare class PrismaPaymentRepository extends BaseRepository<Payment> implements IPaymentRepository {
+    constructor(db: Database);
     create(payment: Payment): Promise<Payment>;
     findById(id: string): Promise<Payment | null>;
     findByProviderPaymentId(providerPaymentId: string): Promise<Payment | null>;
@@ -15,5 +16,11 @@ export declare class PrismaPaymentRepository implements IPaymentRepository {
     findByUserIdAndPurpose(userId: string, purpose: PaymentPurpose): Promise<Payment[]>;
     update(payment: Payment): Promise<Payment>;
     updateStatus(id: string, status: PaymentStatus): Promise<void>;
+    findWithPagination(paginationParams: IPaginationParams, filters?: {
+        userId?: string;
+        purpose?: PaymentPurpose;
+        status?: PaymentStatus;
+        search?: string;
+    }): Promise<IPaginationResult<Payment>>;
 }
 //# sourceMappingURL=PaymentRepository.d.ts.map

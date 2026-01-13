@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
-import { ICreatePaymentIntentUseCase } from '../../../application/useCases/payment/CreatePaymentIntentUseCase';
-import { IConfirmPaymentUseCase } from '../../../application/useCases/payment/ConfirmPaymentUseCase';
-import { IHandleWebhookUseCase } from '../../../application/useCases/payment/HandleWebhookUseCase';
+import { ICreatePaymentIntentUseCase } from '../../../application/useCases/payment/interfaces/ICreatePaymentIntentUseCase';
+import { IConfirmPaymentUseCase } from '../../../application/useCases/payment/interfaces/IConfirmPaymentUseCase';
+import { IHandleWebhookUseCase } from '../../../application/useCases/payment/interfaces/IHandleWebhookUseCase';
 export declare class PaymentController {
     private responseBuilder;
     private createPaymentIntentUseCase;

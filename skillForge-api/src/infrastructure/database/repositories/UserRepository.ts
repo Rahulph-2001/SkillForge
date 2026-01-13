@@ -12,9 +12,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id }
-    });
+    const user = await super.findById(id);
     return user ? User.fromDatabaseRow(user as unknown as Record<string, unknown>) : null;
   }
 

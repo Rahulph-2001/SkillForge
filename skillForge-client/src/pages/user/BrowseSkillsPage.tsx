@@ -376,6 +376,8 @@ export default function BrowseSkillsPage() {
                                 <Pagination
                                     currentPage={currentPage}
                                     totalPages={totalPages}
+                                    totalItems={total}
+                                    limit={12}
                                     onPageChange={setCurrentPage}
                                 />
                             </div>

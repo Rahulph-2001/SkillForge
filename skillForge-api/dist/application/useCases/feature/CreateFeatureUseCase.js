@@ -18,8 +18,9 @@ const types_1 = require("../../../infrastructure/di/types");
 const Feature_1 = require("../../../domain/entities/Feature");
 const uuid_1 = require("uuid");
 let CreateFeatureUseCase = class CreateFeatureUseCase {
-    constructor(featureRepository) {
+    constructor(featureRepository, featureMapper) {
         this.featureRepository = featureRepository;
+        this.featureMapper = featureMapper;
     }
     async execute(dto) {
         // Create feature entity
@@ -38,26 +39,15 @@ let CreateFeatureUseCase = class CreateFeatureUseCase {
         });
         // Save to database
         const savedFeature = await this.featureRepository.create(feature);
-        // Return DTO
-        return {
-            id: savedFeature.id,
-            planId: savedFeature.planId,
-            name: savedFeature.name,
-            description: savedFeature.description,
-            featureType: savedFeature.featureType,
-            limitValue: savedFeature.limitValue,
-            isEnabled: savedFeature.isEnabled,
-            displayOrder: savedFeature.displayOrder,
-            isHighlighted: savedFeature.isHighlighted,
-            createdAt: savedFeature.createdAt,
-            updatedAt: savedFeature.updatedAt,
-        };
+        // Return DTO using mapper
+        return this.featureMapper.toDTO(savedFeature);
     }
 };
 exports.CreateFeatureUseCase = CreateFeatureUseCase;
 exports.CreateFeatureUseCase = CreateFeatureUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IFeatureMapper)),
+    __metadata("design:paramtypes", [Object, Object])
 ], CreateFeatureUseCase);
 //# sourceMappingURL=CreateFeatureUseCase.js.map

@@ -141,11 +141,11 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
             return {
                 level: row['Level'] || row['level'],
                 question: row['Question'] || row['question'],
-                option_a: row['Option A'] || row['option_a'] || row['Option_A'],
-                option_b: row['Option B'] || row['option_b'] || row['Option_B'],
-                option_c: row['Option C'] || row['option_c'] || row['Option_C'],
-                option_d: row['Option D'] || row['option_d'] || row['Option_D'],
-                correct_answer: row['Correct Answer'] || row['correct_answer'] || row['CorrectAnswer'],
+                optionA: row['Option A'] || row['option_a'] || row['Option_A'] || row['optionA'],
+                optionB: row['Option B'] || row['option_b'] || row['Option_B'] || row['optionB'],
+                optionC: row['Option C'] || row['option_c'] || row['Option_C'] || row['optionC'],
+                optionD: row['Option D'] || row['option_d'] || row['Option_D'] || row['optionD'],
+                correctAnswer: row['Correct Answer'] || row['correct_answer'] || row['CorrectAnswer'] || row['correctAnswer'],
                 explanation: row['Explanation'] || row['explanation']
             };
         });
@@ -164,29 +164,29 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
     validateAndMapRow(row, templateId) {
         const level = row.level || row.Level;
         const question = row.question || row.Question;
-        const option_a = row.option_a || row['Option A'] || row.Option_A;
-        const option_b = row.option_b || row['Option B'] || row.Option_B;
-        const option_c = row.option_c || row['Option C'] || row.Option_C;
-        const option_d = row.option_d || row['Option D'] || row.Option_D;
-        const correct_answer = row.correct_answer || row['Correct Answer'] || row.CorrectAnswer;
+        const optionA = row.optionA || row.option_a || row['Option A'] || row.Option_A;
+        const optionB = row.optionB || row.option_b || row['Option B'] || row.Option_B;
+        const optionC = row.optionC || row.option_c || row['Option C'] || row.Option_C;
+        const optionD = row.optionD || row.option_d || row['Option D'] || row.Option_D;
+        const correctAnswer = row.correctAnswer || row.correct_answer || row['Correct Answer'] || row.CorrectAnswer;
         const explanation = row.explanation || row.Explanation;
         // 1. Basic Presence
-        if (!level || !question || !option_a || !option_b || !option_c || !option_d || !correct_answer) {
-            throw new AppError_1.ValidationError('Missing required fields: level, question, options (A-D), or correct_answer.');
+        if (!level || !question || !optionA || !optionB || !optionC || !optionD || !correctAnswer) {
+            throw new AppError_1.ValidationError('Missing required fields: level, question, options (A-D), or correctAnswer.');
         }
         // 2. Level Validation
         if (!this.validLevels.includes(level.trim())) {
             throw new AppError_1.ValidationError(`Invalid level: ${level}. Must be one of: ${this.validLevels.join(', ')}`);
         }
         // 3. Correct Answer Mapping
-        const answerKey = correct_answer.toString().toUpperCase().trim();
+        const answerKey = correctAnswer.toString().toUpperCase().trim();
         if (!this.validAnswers.includes(answerKey)) {
-            throw new AppError_1.ValidationError(`Invalid correct_answer: ${correct_answer}. Must be A, B, C, or D.`);
+            throw new AppError_1.ValidationError(`Invalid correctAnswer: ${correctAnswer}. Must be A, B, C, or D.`);
         }
         const answerMap = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
         const correctAnswerIndex = answerMap[answerKey];
         // 4. Options Array
-        const options = [option_a, option_b, option_c, option_d].map(String);
+        const options = [optionA, optionB, optionC, optionD].map(String);
         if (options.some(opt => !opt || opt.trim().length === 0)) {
             throw new AppError_1.ValidationError('All options (A, B, C, D) must have content.');
         }
@@ -209,11 +209,11 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
                 `"${err.reason.replace(/"/g, '""')}"`, // Escape quotes in reason
                 `"${data.level.replace(/"/g, '""')}"`,
                 `"${data.question.replace(/"/g, '""')}"`,
-                `"${data.option_a.replace(/"/g, '""')}"`,
-                `"${data.option_b.replace(/"/g, '""')}"`,
-                `"${data.option_c.replace(/"/g, '""')}"`,
-                `"${data.option_d.replace(/"/g, '""')}"`,
-                data.correct_answer,
+                `"${data.optionA.replace(/"/g, '""')}"`,
+                `"${data.optionB.replace(/"/g, '""')}"`,
+                `"${data.optionC.replace(/"/g, '""')}"`,
+                `"${data.optionD.replace(/"/g, '""')}"`,
+                data.correctAnswer,
                 `"${data.explanation?.replace(/"/g, '""') || ''}"`,
             ];
             csvContent += rowData.join(',') + '\n';

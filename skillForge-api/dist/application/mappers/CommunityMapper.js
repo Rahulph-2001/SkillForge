@@ -13,13 +13,27 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommunityMapper = void 0;
+// skillForge-api/src/application/mappers/CommunityMapper.ts
 const inversify_1 = require("inversify");
 const types_1 = require("../../infrastructure/di/types");
 let CommunityMapper = class CommunityMapper {
-    constructor(communityRepository) {
+    constructor(communityRepository, userRepository) {
         this.communityRepository = communityRepository;
+        this.userRepository = userRepository;
     }
-    toDTO(community, userId) {
+    async toDTO(community, userId) {
+        let adminName = undefined;
+        let adminAvatar = undefined;
+        try {
+            const adminUser = await this.userRepository.findById(community.adminId);
+            if (adminUser) {
+                adminName = adminUser.name;
+                adminAvatar = adminUser.avatarUrl;
+            }
+        }
+        catch (error) {
+            console.error('[CommunityMapper] Failed to fetch admin user:', error);
+        }
         return {
             id: community.id,
             name: community.name,
@@ -28,6 +42,8 @@ let CommunityMapper = class CommunityMapper {
             imageUrl: community.imageUrl,
             videoUrl: community.videoUrl,
             adminId: community.adminId,
+            adminName: adminName,
+            adminAvatar: adminAvatar,
             creditsCost: community.creditsCost,
             creditsPeriod: community.creditsPeriod,
             membersCount: community.membersCount,
@@ -38,14 +54,16 @@ let CommunityMapper = class CommunityMapper {
             isJoined: community.isJoined || false,
         };
     }
-    toDTOList(communities, userId) {
-        return communities.map(community => this.toDTO(community, userId));
+    async toDTOList(communities, userId) {
+        const dtos = await Promise.all(communities.map(community => this.toDTO(community, userId)));
+        return dtos;
     }
 };
 exports.CommunityMapper = CommunityMapper;
 exports.CommunityMapper = CommunityMapper = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], CommunityMapper);
 //# sourceMappingURL=CommunityMapper.js.map

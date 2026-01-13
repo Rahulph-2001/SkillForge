@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { ICreateSkillUseCase } from '../../../application/useCases/skill/interfaces/ICreateSkillUseCase';
 import { IListUserSkillsUseCase } from '../../../application/useCases/skill/interfaces/IListUserSkillsUseCase';
-import { IUpdateSkillUseCase } from '../../../application/useCases/skill/UpdateSkillUseCase';
-import { IToggleSkillBlockUseCase } from '../../../application/useCases/skill/ToggleSkillBlockUseCase';
+import { IUpdateSkillUseCase } from '../../../application/useCases/skill/interfaces/IUpdateSkillUseCase';
+import { IToggleSkillBlockUseCase } from '../../../application/useCases/skill/interfaces/IToggleSkillBlockUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class SkillController {
     private readonly createSkillUseCase;

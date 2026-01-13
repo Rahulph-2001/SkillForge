@@ -67,10 +67,10 @@ export class CancelSubscriptionUseCase implements ICancelSubscriptionUseCase {
                     );
                 }
                 await this.userRepository.update(user);
-                console.log('[CancelSubscriptionUseCase] Synced user entity subscription data');
             }
         } catch (error) {
-            console.error('[CancelSubscriptionUseCase] Failed to sync user entity:', error);
+            // Failed to sync user entity - non-critical, subscription still cancelled
+            // TODO: Add proper logging service for error tracking
         }
 
         // Get plan details

@@ -36,14 +36,16 @@ let HandleWebhookUseCase = class HandleWebhookUseCase {
                 await this.handleRefund(data.object);
                 break;
             default:
-                console.log(`Unhandled webhook event type: ${type}`);
+            // Unhandled webhook event type - log for monitoring
+            // TODO: Add proper logging service
         }
     }
     async handlePaymentSuccess(paymentIntent) {
         try {
             const payment = await this.paymentRepository.findByProviderPaymentId(paymentIntent.id);
             if (!payment) {
-                console.error(`Payment not found for provider payment ID: ${paymentIntent.id}`);
+                // Payment not found - may have been created outside this system
+                // TODO: Add proper logging service for monitoring
                 return;
             }
             // Update payment status
@@ -68,19 +70,19 @@ let HandleWebhookUseCase = class HandleWebhookUseCase {
             const metadata = payment.metadata || {};
             const { planId, planName } = metadata;
             if (!planId) {
-                console.error('No planId in payment metadata for subscription payment');
+                // Missing planId in payment metadata - cannot activate subscription
+                // TODO: Add proper logging service for monitoring
                 return;
             }
             // Activate subscription
-            const activationResult = await this.activateSubscriptionUseCase.execute({
+            await this.activateSubscriptionUseCase.execute({
                 userId: payment.userId,
                 planId: planId,
                 paymentId: payment.id,
                 billingInterval: metadata.billingInterval || SubscriptionEnums_1.BillingInterval.MONTHLY // Read from metadata
             });
-            console.log(`Subscription activated for user ${payment.userId}:`, activationResult);
             // Credit admin wallet
-            const walletResult = await this.creditAdminWalletUseCase.execute({
+            await this.creditAdminWalletUseCase.execute({
                 amount: payment.amount,
                 currency: payment.currency,
                 source: 'SUBSCRIPTION_PAYMENT',
@@ -91,25 +93,29 @@ let HandleWebhookUseCase = class HandleWebhookUseCase {
                     userId: payment.userId
                 }
             });
-            console.log(`Admin wallet credited:`, walletResult);
         }
         catch (error) {
-            console.error('Error handling subscription payment:', error);
-            // Log error but don't throw
+            // Error handling subscription payment
+            // TODO: Add proper logging service and retry mechanism
         }
     }
     async handlePaymentFailure(paymentIntent) {
         const payment = await this.paymentRepository.findByProviderPaymentId(paymentIntent.id);
         if (payment) {
-            payment.markAsFailed(paymentIntent.last_payment_error?.message || 'Payment failed');
+            const errorMessage = paymentIntent.last_payment_error?.message || 'Payment failed';
+            payment.markAsFailed(errorMessage);
             await this.paymentRepository.update(payment);
         }
     }
     async handleRefund(charge) {
-        const payment = await this.paymentRepository.findByProviderPaymentId(charge.payment_intent);
-        if (payment) {
-            payment.markAsRefunded(charge.amount_refunded / 100);
-            await this.paymentRepository.update(payment);
+        const paymentIntentId = charge.payment_intent;
+        if (paymentIntentId) {
+            const payment = await this.paymentRepository.findByProviderPaymentId(paymentIntentId);
+            if (payment) {
+                const refundedAmount = charge.amount_refunded || 0;
+                payment.markAsRefunded(refundedAmount / 100);
+                await this.paymentRepository.update(payment);
+            }
         }
     }
 };

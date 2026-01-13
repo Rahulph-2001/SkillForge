@@ -22,7 +22,7 @@ export class SkillController {
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const file = req.file;
       const skillDTO: CreateSkillDTO = req.body;
 
@@ -49,7 +49,7 @@ export class SkillController {
 
   public listMySkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const skills = await this.listUserSkillsUseCase.execute(userId);
 
       const response = this.responseBuilder.success(
@@ -65,16 +65,10 @@ export class SkillController {
 
   public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
       const updates = req.body;
       const file = req.file;
-
-      console.log('🔍 [SkillController] Update request received:', {
-        skillId: id,
-        userId,
-        hasFile: !!file
-      });
 
       // Parse numeric fields from multipart/form-data (which come as strings)
       if (updates.durationHours) updates.durationHours = Number(updates.durationHours);
@@ -85,7 +79,7 @@ export class SkillController {
         try {
           updates.tags = JSON.parse(updates.tags);
         } catch (e) {
-          console.error('❌ [SkillController] Failed to parse tags:', e);
+          // Invalid JSON - tags will remain as string, which will be validated by use case
         }
       }
 
@@ -125,7 +119,7 @@ export class SkillController {
 
   public toggleBlock = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.userId;
+      const userId = req.user!.userId;
       const { id } = req.params;
 
       const skill = await this.toggleSkillBlockUseCase.execute(id, userId);

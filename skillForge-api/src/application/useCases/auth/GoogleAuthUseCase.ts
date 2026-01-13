@@ -9,6 +9,7 @@ import { Profile } from 'passport-google-oauth20';
 import crypto from 'crypto';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { IGoogleAuthUseCase, GoogleAuthResponseDTO } from './interfaces/IGoogleAuthUseCase';
+import { ValidationError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
@@ -22,7 +23,7 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
     const googleEmail = googleProfile.emails?.[0]?.value;
 
     if (!googleEmail) {
-      throw new Error('Google profile is missing an email address.');
+      throw new ValidationError('Google profile is missing an email address.');
     }
     const fullName = this.extractFullName(googleProfile);
     const avatarUrl = googleProfile.photos?.[0]?.value;

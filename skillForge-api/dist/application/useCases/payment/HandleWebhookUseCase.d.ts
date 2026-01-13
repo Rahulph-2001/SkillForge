@@ -1,10 +1,8 @@
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { WebhookEventDTO } from '../../dto/payment/WebhookEventDTO';
-import { IActivateSubscriptionUseCase } from '../subscription/ActivateSubscriptionUseCase';
-import { ICreditAdminWalletUseCase } from '../admin/CreditAdminWalletUseCase';
-export interface IHandleWebhookUseCase {
-    execute(event: WebhookEventDTO): Promise<void>;
-}
+import { IHandleWebhookUseCase } from './interfaces/IHandleWebhookUseCase';
+import { IActivateSubscriptionUseCase } from '../subscription/interfaces/IActivateSubscriptionUseCase';
+import { ICreditAdminWalletUseCase } from '../admin/interfaces/ICreditAdminWalletUseCase';
 export declare class HandleWebhookUseCase implements IHandleWebhookUseCase {
     private paymentRepository;
     private activateSubscriptionUseCase;

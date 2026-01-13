@@ -10,6 +10,23 @@ export interface CreateCommunityMessageData {
     replyToId?: string | null;
     forwardedFromId?: string | null;
 }
+export interface ReactionData {
+    emoji: string;
+    userId: string;
+    userName?: string;
+    userAvatar?: string;
+    user?: {
+        id: string;
+        name: string;
+        avatar?: string;
+        avatarUrl?: string;
+    };
+}
+export interface ReactionUser {
+    id: string;
+    name: string;
+    avatar?: string | null;
+}
 export declare class CommunityMessage {
     private _id;
     private _communityId;
@@ -22,7 +39,7 @@ export declare class CommunityMessage {
     private _pinnedAt;
     private _pinnedBy;
     private _replyToId;
-    private _forwardedFromId;
+    private _sourceMessageId;
     private _isDeleted;
     private _deletedAt;
     private _createdAt;

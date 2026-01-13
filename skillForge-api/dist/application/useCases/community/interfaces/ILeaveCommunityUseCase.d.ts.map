@@ -1,0 +1,1 @@
+{"version":3,"file":"ILeaveCommunityUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/community/interfaces/ILeaveCommunityUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,sBAAsB;IACrC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC7D"}

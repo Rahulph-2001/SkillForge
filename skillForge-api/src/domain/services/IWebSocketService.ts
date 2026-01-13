@@ -1,6 +1,6 @@
 export interface WebSocketMessage {
-  type: 'message' | 'pin' | 'unpin' | 'delete' | 'member_joined' | 'member_left' | 'reaction_added' | 'reaction_removed';
-  communityId: string;
+  type: 'message' | 'pin' | 'unpin' | 'delete' | 'member_joined' | 'member_left' | 'member_removed' | 'reaction_added' | 'reaction_removed' | 'balance_updated';
+  communityId?: string;
   data: unknown;
 }
 export interface IWebSocketService {

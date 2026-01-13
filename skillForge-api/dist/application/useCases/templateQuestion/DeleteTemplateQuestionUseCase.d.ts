@@ -1,6 +1,7 @@
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
-export declare class DeleteTemplateQuestionUseCase {
+import { IDeleteTemplateQuestionUseCase } from './interfaces/IDeleteTemplateQuestionUseCase';
+export declare class DeleteTemplateQuestionUseCase implements IDeleteTemplateQuestionUseCase {
     private readonly templateQuestionRepository;
     private readonly userRepository;
     constructor(templateQuestionRepository: ITemplateQuestionRepository, userRepository: IUserRepository);

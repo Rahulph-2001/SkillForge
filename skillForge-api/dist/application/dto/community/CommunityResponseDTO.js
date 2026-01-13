@@ -13,6 +13,8 @@ exports.CommunityResponseDTOSchema = zod_1.z.object({
     imageUrl: zod_1.z.string().url('Invalid image URL').nullable(),
     videoUrl: zod_1.z.string().url('Invalid video URL').nullable(),
     adminId: zod_1.z.string().uuid('Invalid admin ID'),
+    adminName: zod_1.z.string().optional(),
+    adminAvatar: zod_1.z.string().url('Invalid avatar URL').nullable().optional(),
     creditsCost: zod_1.z.number().min(0, 'Credits cost must be non-negative'),
     creditsPeriod: zod_1.z.string().min(1, 'Credits period is required'),
     membersCount: zod_1.z.number().int().min(0, 'Members count must be non-negative'),

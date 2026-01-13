@@ -18,9 +18,10 @@ const Database_1 = require("../Database");
 const SubscriptionPlan_1 = require("../../../domain/entities/SubscriptionPlan");
 const AppError_1 = require("../../../domain/errors/AppError");
 const types_1 = require("../../di/types");
-let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
+const BaseRepository_1 = require("../BaseRepository");
+let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
-        this.prisma = db.getClient();
+        super(db, 'subscriptionPlanModel');
     }
     async findAll() {
         const plans = await this.prisma.subscriptionPlanModel.findMany({
@@ -60,8 +61,6 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
     }
     async create(plan) {
         const planData = plan.toJSON();
-        // Note: features is now a relation, not a JSON field
-        // Use the new Feature model for proper feature management
         const createdPlan = await this.prisma.subscriptionPlanModel.create({
             data: {
                 name: planData.name,
@@ -77,10 +76,9 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
                 displayOrder: planData.displayOrder || 0,
                 isActive: planData.isActive,
                 isPublic: planData.isPublic !== undefined ? planData.isPublic : true,
-                // Link features if provided
             },
             include: {
-                features: true // Include features in response
+                features: true
             }
         });
         return this.toDomain(createdPlan);
@@ -107,7 +105,7 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
                     updatedAt: new Date(),
                 },
                 include: {
-                    features: true // Include features in response
+                    features: true
                 }
             });
             return this.toDomain(updatedPlan);
@@ -132,12 +130,9 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
         }
     }
     async getStats() {
-        // Get all active plans
         const plans = await this.prisma.subscriptionPlanModel.findMany({
             where: { isActive: true },
         });
-        // For now, return mock statistics
-        // In a real app, you would query actual user subscriptions
         const totalRevenue = plans.reduce((sum, plan) => sum + Number(plan.price), 0);
         const monthlyRecurring = totalRevenue;
         const activeSubscriptions = plans.length;
@@ -164,9 +159,6 @@ let PrismaSubscriptionPlanRepository = class PrismaSubscriptionPlanRepository {
         });
         return plan !== null;
     }
-    /**
-     * Convert Prisma model to Domain entity
-     */
     toDomain(prismaModel) {
         return SubscriptionPlan_1.SubscriptionPlan.fromJSON({
             id: prismaModel.id,

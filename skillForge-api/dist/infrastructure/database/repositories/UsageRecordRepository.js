@@ -12,15 +12,16 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.PrismaUsageRecordRepository = void 0;
+exports.UsageRecordRepository = void 0;
 const inversify_1 = require("inversify");
 const Database_1 = require("../Database");
 const UsageRecord_1 = require("../../../domain/entities/UsageRecord");
 const uuid_1 = require("uuid");
 const types_1 = require("../../di/types");
-let PrismaUsageRecordRepository = class PrismaUsageRecordRepository {
+const BaseRepository_1 = require("../BaseRepository");
+let UsageRecordRepository = class UsageRecordRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
-        this.prisma = db.getClient();
+        super(db, 'usageRecord');
     }
     async create(usageRecord) {
         const data = await this.prisma.usageRecord.create({
@@ -127,11 +128,40 @@ let PrismaUsageRecordRepository = class PrismaUsageRecordRepository {
         });
         return await this.create(newRecord);
     }
+    async upsert(record) {
+        const data = record.toJSON();
+        const upserted = await this.prisma.usageRecord.upsert({
+            where: {
+                subscriptionId_featureKey_periodStart: {
+                    subscriptionId: data.subscriptionId,
+                    featureKey: data.featureKey,
+                    periodStart: data.periodStart,
+                },
+            },
+            create: {
+                id: data.id,
+                subscriptionId: data.subscriptionId,
+                featureKey: data.featureKey,
+                usageCount: data.usageCount,
+                limitValue: data.limitValue,
+                periodStart: data.periodStart,
+                periodEnd: data.periodEnd,
+                createdAt: data.createdAt,
+                updatedAt: data.updatedAt,
+            },
+            update: {
+                usageCount: data.usageCount,
+                limitValue: data.limitValue,
+                updatedAt: new Date(),
+            },
+        });
+        return UsageRecord_1.UsageRecord.fromJSON(upserted);
+    }
 };
-exports.PrismaUsageRecordRepository = PrismaUsageRecordRepository;
-exports.PrismaUsageRecordRepository = PrismaUsageRecordRepository = __decorate([
+exports.UsageRecordRepository = UsageRecordRepository;
+exports.UsageRecordRepository = UsageRecordRepository = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.Database)),
     __metadata("design:paramtypes", [Database_1.Database])
-], PrismaUsageRecordRepository);
+], UsageRecordRepository);
 //# sourceMappingURL=UsageRecordRepository.js.map

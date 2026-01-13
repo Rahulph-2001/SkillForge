@@ -1,12 +1,14 @@
 import { RedisService } from '../../services/RedisService';
 import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { OTPToken } from '../../../domain/entities/OTPToken';
-export declare class RedisOTPRepository implements IOTPRepository {
+import { BaseRedisRepository } from '../BaseRedisRepository';
+export declare class RedisOTPRepository extends BaseRedisRepository implements IOTPRepository {
     private redisService;
     private readonly OTP_PREFIX;
     private readonly OTP_USER_PREFIX;
     private readonly OTP_CODE_PREFIX;
     constructor(redisService: RedisService);
+    protected getKeyPrefix(): string;
     private getKey;
     private getCodeKey;
     private getOTPKey;

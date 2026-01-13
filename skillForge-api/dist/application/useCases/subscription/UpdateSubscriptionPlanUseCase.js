@@ -126,7 +126,7 @@ let UpdateSubscriptionPlanUseCase = class UpdateSubscriptionPlanUseCase {
         // Fetch updated plan with features
         const updatedPlan = await this.subscriptionPlanRepository.findById(planId);
         if (!updatedPlan) {
-            throw new Error('Failed to retrieve updated plan');
+            throw new AppError_1.InternalServerError('Failed to retrieve updated plan');
         }
         return this.subscriptionPlanMapper.toDTO(updatedPlan);
     }

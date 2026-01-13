@@ -1,0 +1,1 @@
+{"version":3,"file":"IListFeaturesUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/feature/interfaces/IListFeaturesUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,yCAAyC,CAAC;AAE7E,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,MAAM,CAAC,EAAE,MAAM,EAAE,eAAe,CAAC,EAAE,OAAO,GAAG,OAAO,CAAC,kBAAkB,EAAE,CAAC,CAAC;CACtF"}

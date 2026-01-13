@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { IListSubscriptionPlansUseCase } from '../../../application/useCases/subscription/interfaces/IListSubscriptionPlansUseCase';
-import { GetSubscriptionStatsUseCase } from '../../../application/useCases/subscription/GetSubscriptionStatsUseCase';
+import { IGetSubscriptionStatsUseCase } from '../../../application/useCases/subscription/interfaces/IGetSubscriptionStatsUseCase';
 import { ICreateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/ICreateSubscriptionPlanUseCase';
 import { IUpdateSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/IUpdateSubscriptionPlanUseCase';
-import { DeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/DeleteSubscriptionPlanUseCase';
+import { IDeleteSubscriptionPlanUseCase } from '../../../application/useCases/subscription/interfaces/IDeleteSubscriptionPlanUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class SubscriptionController {
     private readonly listPlansUseCase;
@@ -12,7 +12,7 @@ export declare class SubscriptionController {
     private readonly updatePlanUseCase;
     private readonly deletePlanUseCase;
     private readonly responseBuilder;
-    constructor(listPlansUseCase: IListSubscriptionPlansUseCase, getStatsUseCase: GetSubscriptionStatsUseCase, createPlanUseCase: ICreateSubscriptionPlanUseCase, updatePlanUseCase: IUpdateSubscriptionPlanUseCase, deletePlanUseCase: DeleteSubscriptionPlanUseCase, responseBuilder: IResponseBuilder);
+    constructor(listPlansUseCase: IListSubscriptionPlansUseCase, getStatsUseCase: IGetSubscriptionStatsUseCase, createPlanUseCase: ICreateSubscriptionPlanUseCase, updatePlanUseCase: IUpdateSubscriptionPlanUseCase, deletePlanUseCase: IDeleteSubscriptionPlanUseCase, responseBuilder: IResponseBuilder);
     /**
      * GET /api/v1/admin/subscriptions/plans
      * List all subscription plans

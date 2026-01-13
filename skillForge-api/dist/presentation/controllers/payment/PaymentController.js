@@ -65,8 +65,8 @@ let PaymentController = class PaymentController {
             res.status(HttpStatusCode_1.HttpStatusCode.OK).json({ received: true });
         }
         catch (error) {
-            console.error('Webhook error:', error.message);
-            res.status(HttpStatusCode_1.HttpStatusCode.BAD_REQUEST).send(`Webhook Error: ${error.message}`);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            res.status(HttpStatusCode_1.HttpStatusCode.BAD_REQUEST).send(`Webhook Error: ${errorMessage}`);
         }
     }
 };

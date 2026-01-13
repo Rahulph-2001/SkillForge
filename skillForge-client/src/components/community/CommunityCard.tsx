@@ -21,10 +21,23 @@ const CommunityCard: React.FC<CommunityCardProps> = ({ community, onJoin, onLeav
             {/* Image Section */}
             <div className="h-48 relative overflow-hidden group">
                 {community.imageUrl ? (
-                    <div
-                        className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${community.imageUrl})` }}
-                    />
+                    <>
+                        <img
+                            src={community.imageUrl}
+                            alt={community.name}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                                // Fallback to placeholder if image fails to load
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                const placeholder = target.nextElementSibling as HTMLElement;
+                                if (placeholder) placeholder.style.display = 'flex';
+                            }}
+                        />
+                        <div className="hidden w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 items-center justify-center">
+                            <Users className="w-16 h-16 text-white/50" />
+                        </div>
+                    </>
                 ) : (
                     <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                         <Users className="w-16 h-16 text-white/50" />

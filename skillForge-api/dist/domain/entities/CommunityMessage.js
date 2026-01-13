@@ -15,7 +15,7 @@ class CommunityMessage {
         this._pinnedAt = null;
         this._pinnedBy = null;
         this._replyToId = data.replyToId || null;
-        this._forwardedFromId = data.forwardedFromId || null;
+        this._sourceMessageId = data.forwardedFromId || null;
         this._isDeleted = false;
         this._deletedAt = null;
         const now = new Date();
@@ -37,7 +37,7 @@ class CommunityMessage {
     get pinnedAt() { return this._pinnedAt; }
     get pinnedBy() { return this._pinnedBy; }
     get replyToId() { return this._replyToId; }
-    get forwardedFromId() { return this._forwardedFromId; }
+    get forwardedFromId() { return this._sourceMessageId; }
     get isDeleted() { return this._isDeleted; }
     get deletedAt() { return this._deletedAt; }
     get createdAt() { return this._createdAt; }
@@ -74,7 +74,7 @@ class CommunityMessage {
             pinned_at: this._pinnedAt,
             pinned_by: this._pinnedBy,
             reply_to_id: this._replyToId,
-            forwarded_from_id: this._forwardedFromId,
+            forwarded_from_id: this._sourceMessageId,
             is_deleted: this._isDeleted,
             deleted_at: this._deletedAt,
             created_at: this._createdAt,

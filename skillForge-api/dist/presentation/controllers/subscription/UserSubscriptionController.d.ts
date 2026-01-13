@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { IGetUserSubscriptionUseCase } from '../../../application/useCases/subscription/GetUserSubscriptionUseCase';
-import { ICancelSubscriptionUseCase } from '../../../application/useCases/subscription/CancelSubscriptionUseCase';
-import { IReactivateSubscriptionUseCase } from '../../../application/useCases/subscription/ReactivateSubscriptionUseCase';
+import { IGetUserSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/IGetUserSubscriptionUseCase';
+import { ICancelSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/ICancelSubscriptionUseCase';
+import { IReactivateSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/IReactivateSubscriptionUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class UserSubscriptionController {
     private readonly getUserSubscriptionUseCase;
