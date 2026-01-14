@@ -197,13 +197,19 @@ export default function UserProfilePage() {
             <div>
               <p className="text-xs text-gray-500 mb-1">Project Posts</p>
               <p className="text-lg font-semibold text-gray-900">
-                {isPro ? '7' : '2'} <span className="text-xs text-gray-500 font-normal">remaining</span>
+                {(profile.projectPostLimit === null || profile.projectPostLimit === -1)
+                  ? 'Unlimited'
+                  : Math.max(0, profile.projectPostLimit - profile.projectPostUsage)}
+                <span className="text-xs text-gray-500 font-normal"> remaining</span>
               </p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Communities</p>
               <p className="text-lg font-semibold text-gray-900">
-                {isPro ? '2' : '0'} <span className="text-xs text-gray-500 font-normal">remaining</span>
+                {(profile.communityCreateLimit === null || profile.communityCreateLimit === -1)
+                  ? 'Unlimited'
+                  : Math.max(0, profile.communityCreateLimit - profile.communityCreateUsage)}
+                <span className="text-xs text-gray-500 font-normal"> remaining</span>
               </p>
             </div>
           </div>

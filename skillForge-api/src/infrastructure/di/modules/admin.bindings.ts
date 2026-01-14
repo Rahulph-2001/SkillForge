@@ -39,6 +39,7 @@ import { AdminRoutes } from '../../../presentation/routes/admin/adminRoutes';
 import { AdminSkillRoutes } from '../../../presentation/routes/admin/adminSkillRoutes';
 import { AdminWalletRoutes } from '../../../presentation/routes/admin/AdminWalletRoutes';
 
+
 /**
  * Binds all admin-related use cases, controllers, and routes
  */

@@ -14,6 +14,10 @@ export interface UserProfileDTO {
   memberSince: string;
   subscriptionPlan: string;
   subscriptionValidUntil: string | null;
+  projectPostLimit: number | null;
+  projectPostUsage: number;
+  communityCreateLimit: number | null;
+  communityCreateUsage: number;
 }
 
 export interface IGetUserProfileUseCase {
