@@ -51,4 +51,13 @@ export interface IBookingRepository {
     completed: number;
     cancelled: number;
   }>;
+
+  // Admin Operations
+  listAll(page: number, limit: number, search?: string): Promise<{ data: Booking[]; total: number }>;
+  getGlobalStats(): Promise<{
+    totalSessions: number;
+    completed: number;
+    upcoming: number;
+    cancelled: number;
+  }>;
 }

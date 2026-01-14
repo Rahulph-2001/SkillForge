@@ -30,6 +30,7 @@ import { PaymentRoutes } from './routes/payment/paymentRoutes';
 import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRoutes';
 import { ProjectRoutes } from './routes/project/projectRoutes';
 import { AdminWalletRoutes } from './routes/admin/AdminWalletRoutes';
+import { AdminSessionRoutes } from './routes/admin/adminSessionRoutes';
 
 @injectable()
 export class App {
@@ -55,6 +56,7 @@ export class App {
         @inject(TYPES.UserSubscriptionRoutes) private readonly userSubscriptionRoutes: UserSubscriptionRoutes,
         @inject(TYPES.ProjectRoutes) private readonly projectRoutes: ProjectRoutes,
         @inject(TYPES.AdminWalletRoutes) private readonly adminWalletRoutes: AdminWalletRoutes,
+        @inject(TYPES.AdminSessionRoutes) private readonly adminSessionRoutes: AdminSessionRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
 
     ) {
@@ -128,6 +130,7 @@ export class App {
         this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
         this.app.use('/api/v1/projects', this.projectRoutes.router);
         this.app.use('/api/v1/admin/wallet', this.adminWalletRoutes.router);
+        this.app.use('/api/v1/admin/sessions', this.adminSessionRoutes.router);
         this.app.all('*', notFoundHandler);
     }
 

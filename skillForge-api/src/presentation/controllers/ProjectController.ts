@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../infrastructure/di/types';
 import { ICreateProjectUseCase } from '../../application/useCases/project/interfaces/ICreateProjectUseCase';
 import { IListProjectsUseCase } from '../../application/useCases/project/interfaces/IListProjectsUseCase';
+import { IGetProjectUseCase } from '../../application/useCases/project/interfaces/IGetProjectUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { CreateProjectRequestDTO } from '../../application/dto/project/CreateProjectDTO';
@@ -13,8 +14,9 @@ export class ProjectController {
   constructor(
     @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase,
     @inject(TYPES.IListProjectsUseCase) private listProjectsUseCase: IListProjectsUseCase,
+    @inject(TYPES.IGetProjectUseCase) private getProjectUseCase: IGetProjectUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
-  ) {}
+  ) { }
 
   public listProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -29,6 +31,18 @@ export class ProjectController {
       const result = await this.listProjectsUseCase.execute(filters);
 
       const response = this.responseBuilder.success(result, 'Projects fetched successfully', HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
+
+  public getProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const project = await this.getProjectUseCase.execute(id);
+
+      const response = this.responseBuilder.success(project, 'Project details fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);

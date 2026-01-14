@@ -289,6 +289,7 @@ export const TYPES = {
   IProjectRepository: Symbol.for('IProjectRepository'),
   ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
   IListProjectsUseCase: Symbol.for('IListProjectsUseCase'),
+  IGetProjectUseCase: Symbol.for('IGetProjectUseCase'),
   IValidateProjectPostLimitUseCase: Symbol.for('IValidateProjectPostLimitUseCase'),
   IIncrementProjectPostUsageUseCase: Symbol.for('IIncrementProjectPostUsageUseCase'),
   ProjectController: Symbol.for('ProjectController'),
@@ -341,4 +342,11 @@ export const TYPES = {
   IWalletTransactionRepository: Symbol.for('IWalletTransactionRepository'),
 
 
+  // Admin Session Management
+  IAdminListSessionsUseCase: Symbol.for('IAdminListSessionsUseCase'),
+  IAdminGetSessionStatsUseCase: Symbol.for('IAdminGetSessionStatsUseCase'),
+  IAdminCancelSessionUseCase: Symbol.for('IAdminCancelSessionUseCase'),
+  IAdminCompleteSessionUseCase: Symbol.for('IAdminCompleteSessionUseCase'),
+  AdminSessionController: Symbol.for('AdminSessionController'),
+  AdminSessionRoutes: Symbol.for('AdminSessionRoutes'),
 };

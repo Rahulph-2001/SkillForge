@@ -19,7 +19,6 @@ export default function AdminNavbar() {
         if (path.startsWith('/admin/subscriptions')) return 'Subscriptions';
         if (path.startsWith('/admin/feature-management')) return 'Feature Management';
         if (path.startsWith('/admin/sessions')) return 'Sessions';
-        if (path.startsWith('/admin/transactions')) return 'Transactions';
         if (path.startsWith('/admin/wallet')) return 'Wallet';
         if (path.startsWith('/admin/credits')) return 'Credits';
         if (path.startsWith('/admin/communities')) return 'Communities';
@@ -59,7 +58,6 @@ export default function AdminNavbar() {
         { label: 'Subscriptions', path: '/admin/subscriptions' },
         { label: 'Feature Management', path: '/admin/feature-management' },
         { label: 'Sessions', path: '/admin/sessions' },
-        { label: 'Transactions', path: '/admin/transactions' },
         { label: 'Wallet', path: '/admin/wallet' },
         { label: 'Credits', path: '/admin/credits' },
         { label: 'Communities', path: '/admin/communities' },

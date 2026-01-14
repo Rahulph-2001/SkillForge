@@ -16,6 +16,8 @@ import { bindSubscriptionModule } from './modules/subscription.bindings';
 import { bindPaymentModule } from './modules/payment.bindings';
 import { bindCommunityModule } from './modules/community.bindings';
 import { bindAdminModule } from './modules/admin.bindings';
+import { bindProjectModule } from './modules/project.bindings';
+import { bindAdminSessionModule } from './modules/adminSession.bindings';
 
 export { container };
 
@@ -42,6 +44,8 @@ bindSubscriptionModule(container);
 bindPaymentModule(container);
 bindCommunityModule(container);
 bindAdminModule(container);
+bindProjectModule(container);
+bindAdminSessionModule(container);
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);

@@ -13,6 +13,7 @@ import SubscriptionPlansPage from '../pages/user/SubscriptionPlansPage';
 import SkillsPage from '../pages/user/SkillsPage';
 import BrowseSkillsPage from '../pages/user/BrowseSkillsPage';
 import ProjectsPage from '../pages/user/ProjectsPage';
+import ProjectDetailsPage from '../pages/user/ProjectDetailsPage';
 import CreateProjectPage from '../pages/user/CreateProjectPage';
 import SkillDetailPage from '../pages/user/SkillDetailPage';
 import ProviderProfilePage from '../pages/user/ProviderProfilePage';
@@ -39,6 +40,7 @@ import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
 import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
+import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPage';
 
 
 const AppRoutes = () => {
@@ -164,6 +166,32 @@ const AppRoutes = () => {
                         </ProtectedRoute>
                     }
                 />
+
+                {/* Project Routes */}
+                <Route
+                    path="/projects"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <ProjectsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/create"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <CreateProjectPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/:id"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <ProjectDetailsPage />
+                        </ProtectedRoute>
+                    }
+                />
                 <Route
                     path="/provider/availability"
                     element={
@@ -277,6 +305,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminCommunitiesPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/sessions"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminSessionManagementPage />
                         </ProtectedRoute>
                     }
                 />

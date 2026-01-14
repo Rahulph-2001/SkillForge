@@ -33,16 +33,7 @@ import { GetOccupiedSlotsUseCase } from '../../../application/useCases/availabil
 import { IGetOccupiedSlotsUseCase } from '../../../application/useCases/availability/interfaces/IGetOccupiedSlotsUseCase';
 import { AvailabilityController } from '../../../presentation/controllers/availability/AvailabilityController';
 import { AvailabilityRoutes } from '../../../presentation/routes/availability/availabilityRoutes';
-import { CreateProjectUseCase } from '../../../application/useCases/project/CreateProjectUseCase';
-import { ICreateProjectUseCase } from '../../../application/useCases/project/interfaces/ICreateProjectUseCase';
-import { ListProjectsUseCase } from '../../../application/useCases/project/ListProjectsUseCase';
-import { IListProjectsUseCase } from '../../../application/useCases/project/interfaces/IListProjectsUseCase';
-import { ProjectController } from '../../../presentation/controllers/ProjectController';
-import { ProjectRoutes } from '../../../presentation/routes/project/projectRoutes';
-import { ValidateProjectPostLimitUseCase } from '../../../application/useCases/project/ValidateProjectPostLimitUseCase';
-import { IValidateProjectPostLimitUseCase } from '../../../application/useCases/project/interfaces/IValidateProjectPostLimitUseCase';
-import { IncrementProjectPostUsageUseCase } from '../../../application/useCases/project/IncrementProjectPostUsageUseCase';
-import { IIncrementProjectPostUsageUseCase } from '../../../application/useCases/project/interfaces/IIncrementProjectPostUsageUseCase';
+
 
 
 export const bindBookingModule = (container: Container): void => {
@@ -58,7 +49,7 @@ export const bindBookingModule = (container: Container): void => {
   container.bind<IAcceptRescheduleUseCase>(TYPES.IAcceptRescheduleUseCase).to(AcceptRescheduleUseCase);
   container.bind<IDeclineRescheduleUseCase>(TYPES.IDeclineRescheduleUseCase).to(DeclineRescheduleUseCase);
   container.bind<IGetProviderBookingsUseCase>(TYPES.IGetProviderBookingsUseCase).to(GetProviderBookingsUseCase);
-  
+
   // Availability Use Cases
   container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);
   container.bind<IGetProviderAvailabilityUseCase>(TYPES.IGetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);
@@ -66,20 +57,11 @@ export const bindBookingModule = (container: Container): void => {
   container.bind<IUpdateProviderAvailabilityUseCase>(TYPES.IUpdateProviderAvailabilityUseCase).to(UpdateProviderAvailabilityUseCase);
   container.bind<GetOccupiedSlotsUseCase>(TYPES.GetOccupiedSlotsUseCase).to(GetOccupiedSlotsUseCase);
   container.bind<IGetOccupiedSlotsUseCase>(TYPES.IGetOccupiedSlotsUseCase).to(GetOccupiedSlotsUseCase);
-  
-  // Project Use Cases
-  container.bind<ICreateProjectUseCase>(TYPES.ICreateProjectUseCase).to(CreateProjectUseCase);
-  container.bind<IListProjectsUseCase>(TYPES.IListProjectsUseCase).to(ListProjectsUseCase);
-  container.bind<IValidateProjectPostLimitUseCase>(TYPES.IValidateProjectPostLimitUseCase).to(ValidateProjectPostLimitUseCase);
-  container.bind<IIncrementProjectPostUsageUseCase>(TYPES.IIncrementProjectPostUsageUseCase).to(IncrementProjectPostUsageUseCase);
-  
+
   // Controllers & Routes
   container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);
   container.bind<BookingController>(TYPES.BookingController).to(BookingController);
   container.bind<BookingRoutes>(TYPES.BookingRoutes).to(BookingRoutes);
   container.bind<AvailabilityController>(TYPES.AvailabilityController).to(AvailabilityController);
   container.bind<AvailabilityRoutes>(TYPES.AvailabilityRoutes).to(AvailabilityRoutes);
-  container.bind<ProjectController>(TYPES.ProjectController).to(ProjectController);
-  container.bind<ProjectRoutes>(TYPES.ProjectRoutes).to(ProjectRoutes);
 };
-

@@ -8,7 +8,8 @@ interface ConfirmModalProps {
   cancelText?: string
   onConfirm: () => void
   onCancel: () => void
-  type?: 'danger' | 'warning' | 'info'
+  type?: 'danger' | 'warning' | 'info' | 'primary'
+  children?: React.ReactNode
 }
 
 
@@ -20,7 +21,8 @@ export default function ConfirmModal({
   cancelText = 'Cancel',
   onConfirm,
   onCancel,
-  type = 'warning'
+  type = 'warning',
+  children
 }: ConfirmModalProps) {
   if (!isOpen) return null
 
@@ -28,7 +30,8 @@ export default function ConfirmModal({
     if (e.key === 'Escape') {
       onCancel()
     } else if (e.key === 'Enter') {
-      onConfirm()
+      // Don't auto-confirm on Enter if there are children (like inputs)
+      if (!children) onConfirm()
     }
   }
 
@@ -61,13 +64,27 @@ export default function ConfirmModal({
           confirmBg: 'bg-blue-600 hover:bg-blue-700',
           confirmText: 'text-white'
         }
+      case 'primary':
+        return {
+          iconBg: 'bg-blue-100',
+          iconColor: 'text-blue-600',
+          confirmBg: 'bg-blue-600 hover:bg-blue-700',
+          confirmText: 'text-white'
+        }
+      default:
+        return {
+          iconBg: 'bg-blue-100',
+          iconColor: 'text-blue-600',
+          confirmBg: 'bg-blue-600 hover:bg-blue-700',
+          confirmText: 'text-white'
+        }
     }
   }
 
   const styles = getTypeStyles()
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
@@ -96,7 +113,7 @@ export default function ConfirmModal({
         </div>
 
         {/* Title */}
-        <h2 
+        <h2
           id="confirm-modal-title"
           className="text-xl font-bold text-gray-900 text-center mb-3"
         >
@@ -104,12 +121,15 @@ export default function ConfirmModal({
         </h2>
 
         {/* Message */}
-        <p 
+        <p
           id="confirm-modal-description"
           className="text-gray-600 text-center mb-6"
         >
           {message}
         </p>
+
+        {/* Custom Content */}
+        {children && <div className="mb-6">{children}</div>}
 
         {/* Action Buttons */}
         <div className="flex gap-3">

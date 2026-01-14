@@ -1,0 +1,196 @@
+import { useState } from 'react';
+import { X, Send, Loader2 } from 'lucide-react';
+import projectService, { Project } from '../../services/projectService';
+// import api from '../../services/api';
+import { toast } from 'react-hot-toast';
+
+interface ApplyProjectModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    project: Project;
+    onSuccess?: () => void;
+}
+
+export default function ApplyProjectModal({
+    isOpen,
+    onClose,
+    project,
+    onSuccess,
+}: ApplyProjectModalProps) {
+    const [formData, setFormData] = useState({
+        coverLetter: '',
+        proposedTimeline: '',
+        proposedBudget: project.budget,
+        portfolioLinks: '',
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!formData.coverLetter.trim()) {
+            toast.error('Please write a cover letter');
+            return;
+        }
+
+        if (!formData.proposedTimeline.trim()) {
+            toast.error('Please provide a proposed timeline');
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+            await projectService.applyToProject(project.id, {
+                coverLetter: formData.coverLetter.trim(),
+                proposedTimeline: formData.proposedTimeline.trim(),
+                proposedBudget: formData.proposedBudget,
+                portfolioLinks: formData.portfolioLinks.trim() || undefined,
+            });
+
+            toast.success('Application submitted successfully!');
+            if (onSuccess) onSuccess();
+            onClose();
+
+            // Reset form
+            setFormData({
+                coverLetter: '',
+                proposedTimeline: '',
+                proposedBudget: project.budget,
+                portfolioLinks: '',
+            });
+        } catch (error: any) {
+            console.error('Failed to submit application:', error);
+            toast.error(error.response?.data?.message || 'Failed to submit application');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (!isOpen) return null;
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                {/* Header */}
+                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900">Apply for Project</h2>
+                        <p className="text-sm text-gray-600 mt-1">{project.title}</p>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* Form */}
+                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                    {/* Cover Letter */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Cover Letter <span className="text-red-500">*</span>
+                        </label>
+                        <textarea
+                            required
+                            rows={6}
+                            value={formData.coverLetter}
+                            onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
+                            placeholder="Explain why you're the best fit for this project. Highlight your relevant experience and skills..."
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            {formData.coverLetter.length}/2000 characters
+                        </p>
+                    </div>
+
+                    {/* Proposed Timeline */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Proposed Timeline <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            value={formData.proposedTimeline}
+                            onChange={(e) => setFormData({ ...formData, proposedTimeline: e.target.value })}
+                            placeholder="e.g., 4 weeks, 2 months"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            How long will it take you to complete this project?
+                        </p>
+                    </div>
+
+                    {/* Proposed Budget */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Proposed Budget (Credits)
+                        </label>
+                        <input
+                            type="number"
+                            min="0"
+                            value={formData.proposedBudget}
+                            onChange={(e) => setFormData({ ...formData, proposedBudget: parseInt(e.target.value) || 0 })}
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            Project budget: {project.budget.toLocaleString()} credits
+                        </p>
+                    </div>
+
+                    {/* Portfolio Links */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Portfolio Links (Optional)
+                        </label>
+                        <textarea
+                            rows={3}
+                            value={formData.portfolioLinks}
+                            onChange={(e) => setFormData({ ...formData, portfolioLinks: e.target.value })}
+                            placeholder="Add links to your portfolio, GitHub, or relevant work samples (one per line)"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                        />
+                    </div>
+
+                    {/* Info Box */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <p className="text-sm text-blue-900">
+                            <strong>Note:</strong> Your application will be reviewed by the project creator.
+                            Make sure to highlight your relevant skills and experience.
+                        </p>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex gap-3 pt-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isSubmitting ? (
+                                <>
+                                    <Loader2 className="w-5 h-5 animate-spin" />
+                                    Submitting...
+                                </>
+                            ) : (
+                                <>
+                                    <Send className="w-5 h-5" />
+                                    Submit Application
+                                </>
+                            )}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+}

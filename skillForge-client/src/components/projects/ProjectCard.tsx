@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Project } from '../../types/project';
 import { Clock, Users, CheckCircle } from 'lucide-react';
 
@@ -7,6 +8,8 @@ interface ProjectCardProps {
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
+    const navigate = useNavigate();
+
     const getStatusColor = (status: Project['status']) => {
         switch (status) {
             case 'Open':
@@ -32,11 +35,14 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow">
+        <div
+            onClick={() => navigate(`/projects/${project.id}`)}
+            className="bg-white rounded-xl border border-gray-100 p-6 hover:shadow-md transition-shadow cursor-pointer"
+        >
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-700 cursor-pointer">
+                        <h3 className="text-lg font-semibold text-blue-600 hover:text-blue-700">
                             {project.title}
                         </h3>
                         <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(project.status)}`}>

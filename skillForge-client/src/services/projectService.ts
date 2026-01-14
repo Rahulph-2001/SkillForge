@@ -61,6 +61,15 @@ const projectService = {
     const response = await api.get(`/projects?${params.toString()}`);
     return response.data.data;
   },
+
+  getProject: async (id: string): Promise<Project> => {
+    const response = await api.get(`/projects/${id}`);
+    return response.data.data;
+  },
+
+  applyToProject: async (id: string, data: any): Promise<void> => {
+    await api.post(`/projects/${id}/apply`, data);
+  }
 };
 
 export default projectService;

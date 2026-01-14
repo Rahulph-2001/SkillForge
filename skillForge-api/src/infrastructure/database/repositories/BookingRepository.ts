@@ -107,12 +107,12 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     // Convert date string to Date object at start of day for Prisma
     const dateObj = new Date(preferredDate);
     dateObj.setHours(0, 0, 0, 0);
-    
+
     // Use date range to match the entire day
     const startOfDay = dateObj.toISOString();
     const endOfDay = new Date(dateObj);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     const booking = await this.prisma.booking.findFirst({
       where: {
         learnerId,
@@ -141,7 +141,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     const domainBooking = booking.toObject();
     // Convert preferredDate string to Date object for Prisma
     const preferredDateObj = new Date(domainBooking.preferredDate);
-    
+
     const created = await this.prisma.booking.create({
       data: {
         id: domainBooking.id,
@@ -215,7 +215,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       // 4. Create Booking
       // Convert preferredDate string to Date object for Prisma
       const preferredDateObj = new Date(domainBooking.preferredDate);
-      
+
       const created = await tx.booking.create({
         data: {
           id: domainBooking.id,
@@ -377,7 +377,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     const dateString = date.toISOString().split('T')[0];
     const bookings = await this.prisma.booking.findMany({
       where: {
@@ -411,11 +411,11 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     // Set startDate to beginning of day (00:00:00)
     const startOfDay = new Date(startDate);
     startOfDay.setHours(0, 0, 0, 0);
-    
+
     // Set endDate to end of day (23:59:59.999)
     const endOfDay = new Date(endDate);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     const bookings = await this.prisma.booking.findMany({
       where: {
         providerId,
@@ -447,7 +447,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     const dateString = date.toISOString().split('T')[0];
     const bufferMs = bufferMinutes * 60 * 1000;
     const startDateTime = new Date(`${dateString}T${startTime}`);
@@ -482,12 +482,12 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     // Convert date string to Date object at start of day for Prisma
     const dateObj = new Date(dateString);
     dateObj.setHours(0, 0, 0, 0);
-    
+
     // Use date range to match the entire day
     const startOfDay = dateObj.toISOString();
     const endOfDay = new Date(dateObj);
     endOfDay.setHours(23, 59, 59, 999);
-    
+
     return await this.prisma.booking.count({
       where: {
         providerId,
@@ -538,7 +538,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     const rescheduleInfo = booking.rescheduleInfo as any;
     // Convert preferredDate string to Date object for Prisma
     const preferredDateObj = new Date(newDate);
-    
+
     const updated = await this.prisma.booking.update({
       where: { id: bookingId },
       data: {
@@ -594,5 +594,58 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     ]);
 
     return { pending, confirmed, reschedule, completed, cancelled };
+  }
+
+  // --- Admin Operations ---
+
+  async listAll(page: number, limit: number, search?: string): Promise<{ data: Booking[]; total: number }> {
+    const skip = (page - 1) * limit;
+
+    const where: Prisma.BookingWhereInput = {
+      isDeleted: false,
+    };
+
+    if (search) {
+      where.OR = [
+        { skill: { title: { contains: search, mode: 'insensitive' } } },
+        { provider: { name: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    const [bookings, total] = await Promise.all([
+      this.prisma.booking.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          skill: { select: { title: true, durationHours: true } },
+          provider: { select: { name: true, avatarUrl: true } },
+          learner: { select: { name: true, avatarUrl: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.booking.count({ where }),
+    ]);
+
+    return {
+      data: bookings.map((b) => this.mapToDomain(b)),
+      total,
+    };
+  }
+
+  async getGlobalStats(): Promise<{
+    totalSessions: number;
+    completed: number;
+    upcoming: number;
+    cancelled: number;
+  }> {
+    const [totalSessions, completed, upcoming, cancelled] = await Promise.all([
+      this.prisma.booking.count({ where: { isDeleted: false } }),
+      this.prisma.booking.count({ where: { status: 'completed', isDeleted: false } }),
+      this.prisma.booking.count({ where: { status: { in: ['pending', 'confirmed'] }, isDeleted: false } }),
+      this.prisma.booking.count({ where: { status: 'cancelled', isDeleted: false } }),
+    ]);
+
+    return { totalSessions, completed, upcoming, cancelled };
   }
 }

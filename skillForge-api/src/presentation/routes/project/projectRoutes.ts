@@ -23,6 +23,11 @@ export class ProjectRoutes {
       asyncHandler(this.projectController.listProjects.bind(this.projectController))
     );
 
+    this.router.get(
+      '/:id',
+      asyncHandler(this.projectController.getProject.bind(this.projectController))
+    );
+
     // Protected routes (can be added later for create/update/delete)
     // this.router.post(
     //   '/',
