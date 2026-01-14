@@ -1,41 +1,63 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IWalletTransactionRepository } from '../../../domain/repositories/IWalletTransactionRepository';
+import { WalletTransaction } from '../../../domain/entities/WalletTransaction';
 import { CreditAdminWalletRequestDTO } from '../../dto/admin/CreditAdminWalletDTO';
 import { WalletCreditResponseDTO } from '../../dto/admin/WalletCreditResponseDTO';
 import { NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ICreditAdminWalletUseCase } from './interfaces/ICreditAdminWalletUseCase';
+import { v4 as uuidv4 } from 'uuid';
 
 @injectable()
 export class CreditAdminWalletUseCase implements ICreditAdminWalletUseCase {
     constructor(
-        @inject(TYPES.IUserRepository) private userRepository: IUserRepository
+        @inject(TYPES.IUserRepository) private userRepository: IUserRepository,
+        @inject(TYPES.IWalletTransactionRepository) private walletTransactionRepository: IWalletTransactionRepository
     ) { }
 
     async execute(dto: CreditAdminWalletRequestDTO): Promise<WalletCreditResponseDTO> {
-        // Find the first admin user
-        // Note: In a production system, you might have a dedicated admin ID or wallet service
         const adminUser = await this.findAdminUser();
         if (!adminUser) {
             throw new NotFoundError('No admin user found in the system');
         }
 
-        // Get current balance before crediting
         const previousBalance = adminUser.toJSON().wallet_balance as number;
 
-        // Credit the admin wallet
         adminUser.creditWallet(dto.amount);
 
-        // Save updated admin
         await this.userRepository.update(adminUser);
 
-        // Return response
+        const newBalance = previousBalance + dto.amount;
+
+        // Record transaction
+        const transaction = WalletTransaction.create({
+            id: uuidv4(),
+            adminId: adminUser.id,
+            type: 'CREDIT',
+            amount: dto.amount,
+            currency: dto.currency,
+            source: dto.source,
+            referenceId: dto.referenceId,
+            description: this.generateDescription(dto),
+            metadata: dto.metadata,
+            previousBalance,
+            newBalance,
+            status: 'COMPLETED',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+
+        await this.walletTransactionRepository.create(transaction);
+
+        console.log(`[CreditAdminWallet] Recorded transaction: ${dto.source} - ₹${dto.amount}`);
+
         return {
             adminId: adminUser.id,
             previousBalance,
             creditedAmount: dto.amount,
-            newBalance: previousBalance + dto.amount,
+            newBalance,
             currency: dto.currency,
             source: dto.source,
             referenceId: dto.referenceId,
@@ -43,13 +65,18 @@ export class CreditAdminWalletUseCase implements ICreditAdminWalletUseCase {
         };
     }
 
-    /**
-     * Find the first admin user in the system
-     * TODO: In future, implement a dedicated admin wallet system
-     */
+    private generateDescription(dto: CreditAdminWalletRequestDTO): string {
+        if (dto.source === 'SUBSCRIPTION_PAYMENT') {
+            const planName = dto.metadata?.planName || 'Subscription Plan';
+            return `Subscription payment: ${planName}`;
+        } else if (dto.source === 'PROJECT_ESCROW') {
+            const projectTitle = dto.metadata?.projectTitle || 'Project';
+            return `Project escrow: ${projectTitle}`;
+        }
+        return `Wallet credit: ${dto.source}`;
+    }
+
     private async findAdminUser() {
-        // This is a simple implementation
-        // In production, you might want to have a dedicated admin wallet or use a specific admin ID
         const users = await this.userRepository.findAll();
         return users.find(user => user.role === UserRole.ADMIN) || null;
     }

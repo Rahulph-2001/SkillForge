@@ -6,6 +6,7 @@ import { Queue, Worker, Job } from 'bullmq';
 import { MCQImportJobProcessor } from '../../application/useCases/mcq/MCQImportJobProcessor';
 import { ICheckSubscriptionExpiryUseCase } from '../../application/useCases/subscription/interfaces/ICheckSubscriptionExpiryUseCase';
 import { ICheckCommunityMembershipExpiryUseCase } from '../../application/useCases/community/interfaces/ICheckCommunityMembershipExpiryUseCase';
+import { IProcessAutoRenewMembershipsUseCase } from '../../application/useCases/community/interfaces/IProcessAutoRenewMembershipsUseCase';
 import { InternalServerError } from '../../domain/errors/AppError';
 
 @injectable()
@@ -17,7 +18,8 @@ export class JobQueueService implements IJobQueueService {
     @inject(TYPES.RedisService) private redisService: RedisService,
     @inject(TYPES.MCQImportJobProcessor) private mcqImportJobProcessor: MCQImportJobProcessor,
     @inject(TYPES.ICheckSubscriptionExpiryUseCase) private checkSubscriptionExpiryUseCase: ICheckSubscriptionExpiryUseCase,
-    @inject(TYPES.ICheckCommunityMembershipExpiryUseCase) private checkCommunityMembershipExpiryUseCase: ICheckCommunityMembershipExpiryUseCase
+    @inject(TYPES.ICheckCommunityMembershipExpiryUseCase) private checkCommunityMembershipExpiryUseCase: ICheckCommunityMembershipExpiryUseCase,
+    @inject(TYPES.IProcessAutoRenewMembershipsUseCase) private processAutoRenewUseCase: IProcessAutoRenewMembershipsUseCase
   ) {
     this.initializeQueues();
   }
@@ -49,6 +51,16 @@ export class JobQueueService implements IJobQueueService {
     membershipExpiryQueue.add(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, {}, {
       repeat: {
         pattern: '0 1 * * *', // Daily at 1 AM
+      },
+      removeOnComplete: true,
+    });
+
+    const autoRenewQueue = new Queue(JobQueueName.COMMUNITY_AUTO_RENEW, { connection: connectionOptions });
+    this.queues.set(JobQueueName.COMMUNITY_AUTO_RENEW, autoRenewQueue);
+
+    autoRenewQueue.add(JobQueueName.COMMUNITY_AUTO_RENEW, {}, {
+      repeat: {
+        pattern: '0 0 * * *',
       },
       removeOnComplete: true,
     });
@@ -111,6 +123,27 @@ export class JobQueueService implements IJobQueueService {
 
       this.setupWorkerListeners(worker, JobQueueName.SUBSCRIPTION_EXPIRY);
       this.workers.set(JobQueueName.SUBSCRIPTION_EXPIRY, worker);
+    }
+
+    // Start Community Auto-Renew Worker
+    if (!this.workers.has(JobQueueName.COMMUNITY_AUTO_RENEW)) {
+      const worker = new Worker(
+        JobQueueName.COMMUNITY_AUTO_RENEW,
+        async (job: Job) => {
+          console.log(`[Worker] Processing job ${job.id} from ${JobQueueName.COMMUNITY_AUTO_RENEW}`);
+          try {
+            await this.processAutoRenewUseCase.execute();
+            console.log(`[Worker] Job ${job.id} completed`);
+          } catch (error) {
+            console.error(`[Worker] Job ${job.id} failed:`, error);
+            throw error;
+          }
+        },
+        { connection: connectionOptions }
+      );
+
+      this.setupWorkerListeners(worker, JobQueueName.COMMUNITY_AUTO_RENEW);
+      this.workers.set(JobQueueName.COMMUNITY_AUTO_RENEW, worker);
     }
 
     // Start Community Membership Expiry Worker

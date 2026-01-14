@@ -2,6 +2,7 @@ export enum JobQueueName {
   MCQ_IMPORT = 'mcq-import',
   SUBSCRIPTION_EXPIRY = 'subscription-expiry',
   COMMUNITY_MEMBERSHIP_EXPIRY = 'community-membership-expiry',
+  COMMUNITY_AUTO_RENEW = 'community-auto-renew',
 }
 
 export interface IJobQueueService {

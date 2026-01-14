@@ -38,6 +38,7 @@ import { isAdmin } from '../config/userRole';
 import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
+import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
 
 
 const AppRoutes = () => {
@@ -158,7 +159,7 @@ const AppRoutes = () => {
                     path="/communities/:id/settings"
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
-                           
+
                             <CommunityDetailsPage />
                         </ProtectedRoute>
                     }
@@ -268,6 +269,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminWalletManagement />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/communities"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminCommunitiesPage />
                         </ProtectedRoute>
                     }
                 />

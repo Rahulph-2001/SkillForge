@@ -262,8 +262,15 @@ export class AuthController {
         ? `${env.FRONTEND_URL}/auth/google/callback?isNewUser=true`
         : `${env.FRONTEND_URL}/auth/google/callback`;
       res.redirect(redirectUrl);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      // Handle suspended user error - redirect to login with message
+      if (error.name === 'ForbiddenError' || error.statusCode === 403) {
+        const errorMessage = encodeURIComponent(error.message || 'Account suspended');
+        res.redirect(`${env.FRONTEND_URL}/login?error=account_suspended&message=${errorMessage}`);
+        return;
+      }
+      // For other errors, redirect to login with generic error
+      res.redirect(`${env.FRONTEND_URL}/login?error=google_auth_failed`);
     }
   }
 

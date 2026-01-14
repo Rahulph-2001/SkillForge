@@ -6,6 +6,14 @@ import { SuspendUserUseCase } from '../../../application/useCases/admin/SuspendU
 import { ISuspendUserUseCase } from '../../../application/useCases/admin/interfaces/ISuspendUserUseCase';
 import { UnsuspendUserUseCase } from '../../../application/useCases/admin/UnsuspendUserUseCase';
 import { IUnsuspendUserUseCase } from '../../../application/useCases/admin/interfaces/IUnsuspendUserUseCase';
+import { ListCommunitiesUseCase } from '../../../application/useCases/admin/ListCommunitiesUseCase';
+import { IListCommunitiesUseCase } from '../../../application/useCases/admin/interfaces/IListCommunitiesUseCase';
+import { UpdateCommunityByAdminUseCase } from '../../../application/useCases/admin/UpdateCommunityByAdminUseCase';
+import { IUpdateCommunityByAdminUseCase } from '../../../application/useCases/admin/interfaces/IUpdateCommunityByAdminUseCase';
+import { BlockCommunityUseCase } from '../../../application/useCases/admin/BlockCommunityUseCase';
+import { IBlockCommunityUseCase } from '../../../application/useCases/admin/interfaces/IBlockCommunityUseCase';
+import { UnblockCommunityUseCase } from '../../../application/useCases/admin/UnblockCommunityUseCase';
+import { IUnblockCommunityUseCase } from '../../../application/useCases/admin/interfaces/IUnblockCommunityUseCase';
 import { ListPendingSkillsUseCase } from '../../../application/useCases/admin/ListPendingSkillsUseCase';
 import { IListPendingSkillsUseCase } from '../../../application/useCases/admin/interfaces/IListPendingSkillsUseCase';
 import { ApproveSkillUseCase } from '../../../application/useCases/admin/ApproveSkillUseCase';
@@ -41,7 +49,13 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<ISuspendUserUseCase>(TYPES.ISuspendUserUseCase).to(SuspendUserUseCase);
   container.bind<UnsuspendUserUseCase>(TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase);
   container.bind<IUnsuspendUserUseCase>(TYPES.IUnsuspendUserUseCase).to(UnsuspendUserUseCase);
-  
+
+  // Admin Community Management Use Cases
+  container.bind<IListCommunitiesUseCase>(TYPES.IListCommunitiesUseCase).to(ListCommunitiesUseCase);
+  container.bind<IUpdateCommunityByAdminUseCase>(TYPES.IUpdateCommunityByAdminUseCase).to(UpdateCommunityByAdminUseCase);
+  container.bind<IBlockCommunityUseCase>(TYPES.IBlockCommunityUseCase).to(BlockCommunityUseCase);
+  container.bind<IUnblockCommunityUseCase>(TYPES.IUnblockCommunityUseCase).to(UnblockCommunityUseCase);
+
   // Admin Skill Management Use Cases
   container.bind<IListPendingSkillsUseCase>(TYPES.IListPendingSkillsUseCase).to(ListPendingSkillsUseCase);
   container.bind<IApproveSkillUseCase>(TYPES.IApproveSkillUseCase).to(ApproveSkillUseCase);
@@ -49,12 +63,12 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<IGetAllSkillsUseCase>(TYPES.IGetAllSkillsUseCase).to(GetAllSkillsUseCase);
   container.bind<IBlockSkillUseCase>(TYPES.IBlockSkillUseCase).to(BlockSkillUseCase);
   container.bind<IUnblockSkillUseCase>(TYPES.IUnblockSkillUseCase).to(UnblockSkillUseCase);
-  
+
   // Admin Wallet Use Cases
   container.bind<IGetAdminWalletStatsUseCase>(TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase);
   container.bind<IGetWalletTransactionsUseCase>(TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase);
   container.bind<ICreditAdminWalletUseCase>(TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase);
-  
+
   // Controllers & Routes
   container.bind<AdminController>(TYPES.AdminController).to(AdminController);
   container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);

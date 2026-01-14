@@ -441,6 +441,7 @@ model User {
   sentMessages         CommunityMessage[] @relation("SentMessages")
   messageReactions     MessageReaction[]  @relation("MessageReactions")
   userSubscription     UserSubscription?  @relation("UserSubscriptions")
+  walletTransactions  WalletTransaction[] @relation("AdminWalletTransactions")
 
   @@index([role])
   @@index([isActive])
@@ -709,4 +710,35 @@ model Project {
   @@index([isDeleted])
   @@index([createdAt])
   @@map("projects")
+}
+
+// Admin Wallet Transaction Tracking
+model WalletTransaction {
+  id            String   @id @default(uuid()) @db.Uuid
+  adminId       String   @map("admin_id") @db.Uuid
+  type          String   @db.VarChar(20) // CREDIT, WITHDRAWAL
+  amount        Decimal  @db.Decimal(10, 2)
+  currency      String   @default("INR") @db.VarChar(10)
+  source        String   @db.VarChar(50) // SUBSCRIPTION_PAYMENT, PROJECT_ESCROW, WITHDRAWAL_REQUEST
+  referenceId   String?  @map("reference_id") @db.Uuid
+  description   String?  @db.Text
+  metadata      Json?
+  
+  previousBalance Decimal @map("previous_balance") @db.Decimal(10, 2)
+  newBalance      Decimal @map("new_balance") @db.Decimal(10, 2)
+  
+  status        String   @default("COMPLETED") @db.VarChar(20) // COMPLETED, PENDING, FAILED
+  
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  // Relations
+  admin User @relation("AdminWalletTransactions", fields: [adminId], references: [id], onDelete: Cascade)
+  
+  @@index([adminId])
+  @@index([type])
+  @@index([source])
+  @@index([status])
+  @@index([createdAt])
+  @@map("wallet_transactions")
 }

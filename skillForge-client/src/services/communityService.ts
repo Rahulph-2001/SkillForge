@@ -21,8 +21,8 @@ export interface Community {
     creditsPeriod: string;
     membersCount: number;
     isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     isAdmin?: boolean;
     isJoined?: boolean;
 }
@@ -238,6 +238,31 @@ export const addReaction = async (messageId: string, emoji: string): Promise<voi
 };
 
 // Remove reaction
-export const removeReaction = async (messageId: string, emoji: string): Promise<void> => {
-    await api.delete(`/communities/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
+export const removeReaction = async (
+    communityId: string,
+    messageId: string,
+    emoji: string
+): Promise<void> => {
+    await api.delete(`/communities/${communityId}/messages/${messageId}/reactions`, {
+        data: { emoji },
+    });
 };
+
+/**
+ * Block community by admin (admin-only operation)
+ */
+export const blockCommunityByAdmin = async (communityId: string, reason?: string): Promise<void> => {
+    await api.post(`/admin/communities/${communityId}/block`, {
+        reason,
+    });
+};
+
+/**
+ * Unblock community by admin (admin-only operation)
+ */
+export const unblockCommunityByAdmin = async (communityId: string, reason?: string): Promise<void> => {
+    await api.post(`/admin/communities/${communityId}/unblock`, {
+        reason,
+    });
+};
+

@@ -36,6 +36,8 @@ import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabil
 import { PrismaAvailabilityRepository } from '../../database/repositories/AvailabilityRepository';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { PrismaPaymentRepository } from '../../database/repositories/PaymentRepository';
+import { IWalletTransactionRepository } from '../../../domain/repositories/IWalletTransactionRepository';
+import { WalletTransactionRepository } from '../../database/repositories/WalletTransactionRepository';
 
 /**
  * Binds all repository interfaces to their implementations
@@ -70,5 +72,6 @@ export const bindRepositoryModule = (container: Container): void => {
   
   // Payment Repository
   container.bind<IPaymentRepository>(TYPES.IPaymentRepository).to(PrismaPaymentRepository).inSingletonScope();
+  container.bind<IWalletTransactionRepository>(TYPES.IWalletTransactionRepository).to(WalletTransactionRepository)
 };
 

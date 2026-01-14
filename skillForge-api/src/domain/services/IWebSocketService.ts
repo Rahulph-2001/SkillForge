@@ -1,8 +1,10 @@
-export interface WebSocketMessage {
-  type: 'message' | 'pin' | 'unpin' | 'delete' | 'member_joined' | 'member_left' | 'member_removed' | 'reaction_added' | 'reaction_removed' | 'balance_updated';
+export type WebSocketMessage = {
+  type: 'message_sent' | 'message_deleted' | 'message_pinned' | 'message_unpinned' 
+    | 'reaction_added' | 'reaction_removed' | 'member_joined' | 'member_left' 
+    | 'member_removed' | 'balance_updated' | 'subscription_renewed';
   communityId?: string;
-  data: unknown;
-}
+  data: Record<string, unknown>;
+};
 export interface IWebSocketService {
   initialize(io: any): void;
   sendToCommunity(communityId: string, message: WebSocketMessage): void;

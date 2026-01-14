@@ -27,7 +27,7 @@ export class DeleteMessageUseCase implements IDeleteMessageUseCase {
     message.delete();
     await this.messageRepository.update(message);
     this.webSocketService.sendToCommunity(message.communityId, {
-      type: 'delete',
+      type: 'message_deleted',
       communityId: message.communityId,
       data: { messageId },
     });

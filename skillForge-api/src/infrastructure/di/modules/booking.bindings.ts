@@ -39,10 +39,12 @@ import { ListProjectsUseCase } from '../../../application/useCases/project/ListP
 import { IListProjectsUseCase } from '../../../application/useCases/project/interfaces/IListProjectsUseCase';
 import { ProjectController } from '../../../presentation/controllers/ProjectController';
 import { ProjectRoutes } from '../../../presentation/routes/project/projectRoutes';
+import { ValidateProjectPostLimitUseCase } from '../../../application/useCases/project/ValidateProjectPostLimitUseCase';
+import { IValidateProjectPostLimitUseCase } from '../../../application/useCases/project/interfaces/IValidateProjectPostLimitUseCase';
+import { IncrementProjectPostUsageUseCase } from '../../../application/useCases/project/IncrementProjectPostUsageUseCase';
+import { IIncrementProjectPostUsageUseCase } from '../../../application/useCases/project/interfaces/IIncrementProjectPostUsageUseCase';
 
-/**
- * Binds all booking, availability, and project-related use cases, controllers, and routes
- */
+
 export const bindBookingModule = (container: Container): void => {
   // Booking Use Cases
   container.bind<ICreateBookingUseCase>(TYPES.ICreateBookingUseCase).to(CreateBookingUseCase);
@@ -68,6 +70,8 @@ export const bindBookingModule = (container: Container): void => {
   // Project Use Cases
   container.bind<ICreateProjectUseCase>(TYPES.ICreateProjectUseCase).to(CreateProjectUseCase);
   container.bind<IListProjectsUseCase>(TYPES.IListProjectsUseCase).to(ListProjectsUseCase);
+  container.bind<IValidateProjectPostLimitUseCase>(TYPES.IValidateProjectPostLimitUseCase).to(ValidateProjectPostLimitUseCase);
+  container.bind<IIncrementProjectPostUsageUseCase>(TYPES.IIncrementProjectPostUsageUseCase).to(IncrementProjectPostUsageUseCase);
   
   // Controllers & Routes
   container.bind<SessionManagementController>(TYPES.SessionManagementController).to(SessionManagementController);

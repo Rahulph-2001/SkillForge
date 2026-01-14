@@ -31,7 +31,7 @@ export class PinMessageUseCase implements IPinMessageUseCase {
     const updatedMessage = await this.messageRepository.update(message);
     const messageDTO = await this.messageMapper.toDTO(updatedMessage);
     this.webSocketService.sendToCommunity(message.communityId, {
-      type: 'pin',
+      type: 'message_pinned',
       communityId: message.communityId,
       data: messageDTO,
     });

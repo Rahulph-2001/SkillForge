@@ -19,7 +19,8 @@ import {
     Search,
     Reply,
     X,
-    Smile
+    Smile,
+    Edit
 } from 'lucide-react';
 import {
     getCommunityDetails,
@@ -40,6 +41,7 @@ import {
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
 import ConfirmModal from '../common/Modal/ConfirmModal';
+import EditCommunityModal from './EditCommunityModal';
 import { RootState } from '../../store/store';
 
 interface CommunityDetailsProps {
@@ -78,6 +80,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
 
     // Modals
     const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [successMessage, setSuccessMessage] = useState('');
     const [error, setError] = useState<string | null>(null);
@@ -364,10 +367,10 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             if (existingUserReaction) {
                 if (existingUserReaction.emoji === emoji) {
                     // Same emoji tapped -> Remove it (toggle off)
-                    await removeReaction(messageId, emoji);
+                    await removeReaction(id!, messageId, emoji);
                 } else {
                     // Different emoji tapped -> Switch (remove old, add new)
-                    await removeReaction(messageId, existingUserReaction.emoji);
+                    await removeReaction(id!, messageId, existingUserReaction.emoji);
                     await addReaction(messageId, emoji);
                 }
             } else {
@@ -471,6 +474,16 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                             <div className="flex items-center gap-3">
                                 <h1 className="text-xl font-bold text-gray-900">{community.name}</h1>
                                 <span className="px-2 py-0.5 bg-gray-100 text-xs font-medium text-gray-600 rounded-full">{community.category}</span>
+                                {/* Edit button for community creator */}
+                                {community.adminId === user?.id && (
+                                    <button
+                                        onClick={() => setShowEditModal(true)}
+                                        className="text-gray-400 hover:text-blue-600 transition-colors"
+                                        title="Edit Community"
+                                    >
+                                        <Edit className="w-4 h-4" />
+                                    </button>
+                                )}
                                 {community.isAdmin && (
                                     <button onClick={() => navigate(`/communities/${id}/settings`)} className="text-gray-400 hover:text-gray-600">
                                         <Settings className="w-4 h-4" />
@@ -1029,7 +1042,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                     <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-xl">
                         <h3 className="text-lg font-bold text-gray-900 mb-2">Remove Member?</h3>
                         <p className="text-sm text-gray-600 mb-6">
-                            Are you sure you want to remove <span className="font-semibold">{kickMemberConfirm.userName}</span> from this community? 
+                            Are you sure you want to remove <span className="font-semibold">{kickMemberConfirm.userName}</span> from this community?
                             They will be notified and will need to rejoin if they want to come back.
                         </p>
                         <div className="flex gap-3">
@@ -1068,6 +1081,21 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                 onConfirm={handleLeave}
                 onCancel={() => setShowLeaveConfirm(false)}
             />
+
+            {/* Edit Community Modal */}
+            {community && (
+                <EditCommunityModal
+                    isOpen={showEditModal}
+                    onClose={() => setShowEditModal(false)}
+                    community={community}
+                    onSuccess={() => {
+                        setShowEditModal(false);
+                        loadCommunityData();
+                        setSuccessMessage('Community updated successfully!');
+                        setShowSuccess(true);
+                    }}
+                />
+            )}
 
             <SuccessModal
                 isOpen={showSuccess}

@@ -34,6 +34,19 @@ export class AdminRoutes {
     // POST /api/v1/admin/users/unsuspend - Unsuspend (reactivate) a user
     this.router.post('/users/unsuspend', this.adminController.unsuspendUser.bind(this.adminController));
 
+    // Community Management Routes
+    // GET /api/v1/admin/communities - List all communities with pagination and search
+    this.router.get('/communities', this.adminController.listCommunities.bind(this.adminController));
+
+    // PUT /api/v1/admin/communities/:id - Update community
+    this.router.put('/communities/:id', this.adminController.updateCommunity.bind(this.adminController));
+
+    // POST /api/v1/admin/communities/:id/block - Block community
+    this.router.post('/communities/:id/block', this.adminController.blockCommunity.bind(this.adminController));
+
+    // POST /api/v1/admin/communities/:id/unblock - Unblock community
+    this.router.post('/communities/:id/unblock', this.adminController.unblockCommunity.bind(this.adminController));
+
     // Subscription Management Routes
     // Mount subscription routes at /api/v1/admin/subscriptions
     this.router.use('/subscriptions', this.subscriptionRoutes.router);

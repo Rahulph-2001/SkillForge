@@ -64,7 +64,7 @@ export class SendMessageUseCase implements ISendMessageUseCase {
 
     // Broadcast via WebSocket
     this.webSocketService.sendToCommunity(dto.communityId, {
-      type: 'message',
+      type: 'message_sent',
       communityId: dto.communityId,
       data: messageDTO,
     });

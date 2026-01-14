@@ -589,7 +589,7 @@ export default function SubscriptionPlansPage() {
       {/* Current Subscription Section */}
       {currentSubscription && (
         <div className="max-w-4xl mx-auto px-4 mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Current Subscription</h2>
+        
           <div className="max-w-4xl mx-auto px-4 mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Current Subscription</h2>
             <CurrentSubscriptionCard

@@ -297,7 +297,6 @@ export default function HomePage() {
                 </div>
             </section>
 
-            <Footer />
         </main>
     );
 }

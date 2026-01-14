@@ -33,7 +33,7 @@ export class AdminLoginUseCase implements IAdminLoginUseCase {
     }
 
     if (!user.isActive || user.isDeleted) {
-      throw new UnauthorizedError(ERROR_MESSAGES.AUTH.ACCOUNT_INACTIVE);
+      throw new ForbiddenError('Your account has been suspended. Please contact support.');
     }
     if (user.role !== UserRole.ADMIN) {
       throw new ForbiddenError(ERROR_MESSAGES.AUTH.ACCESS_DENIED);

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { X, Upload } from 'lucide-react';
+import { X, Upload, Image as ImageIcon } from 'lucide-react';
 import { updateCommunity, Community } from '../../services/communityService';
+import ImageCropper from '../common/imageCropper';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
 
@@ -40,6 +41,10 @@ export default function EditCommunityModal({
     const [showSuccess, setShowSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Image cropper states
+    const [showCropper, setShowCropper] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
     useEffect(() => {
         if (isOpen) {
             setFormData({
@@ -51,10 +56,11 @@ export default function EditCommunityModal({
             });
             setImagePreview(community.imageUrl);
             setImage(null);
+            setSelectedImage(null);
         }
     }, [isOpen, community]);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
@@ -65,9 +71,22 @@ export default function EditCommunityModal({
                 setError('Only image files are allowed');
                 return;
             }
-            setImage(file);
-            setImagePreview(URL.createObjectURL(file));
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setSelectedImage(reader.result as string);
+                setShowCropper(true);
+            };
+            reader.readAsDataURL(file);
         }
+    };
+
+    const handleCropComplete = (croppedBlob: Blob) => {
+        // Convert blob to File
+        const file = new File([croppedBlob], 'community-image.jpg', { type: 'image/jpeg' });
+        setImage(file);
+        setImagePreview(URL.createObjectURL(croppedBlob));
+        setShowCropper(false);
+        setSelectedImage(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -192,44 +211,62 @@ export default function EditCommunityModal({
                             </div>
                         </div>
 
-                        {/* Image Upload */}
+                        {/* Image Upload with Cropper */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Community Image
                             </label>
                             {imagePreview ? (
-                                <div className="relative">
-                                    <img
-                                        src={imagePreview}
-                                        alt="Preview"
-                                        className="w-full h-48 object-cover rounded-lg"
-                                    />
+                                <div className="space-y-3">
+                                    <div className="relative">
+                                        <img
+                                            src={imagePreview}
+                                            alt="Preview"
+                                            className="w-full h-48 object-cover rounded-lg"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setImage(null);
+                                                setImagePreview(null);
+                                            }}
+                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                                        >
+                                            <X className="w-4 h-4" />
+                                        </button>
+                                    </div>
                                     <button
                                         type="button"
-                                        onClick={() => {
-                                            setImage(null);
-                                            setImagePreview(null);
-                                        }}
-                                        className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
+                                        onClick={() => document.getElementById('image-upload')?.click()}
+                                        className="w-full px-4 py-2 border-2 border-blue-500 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
                                     >
-                                        <X className="w-4 h-4" />
+                                        <ImageIcon className="w-5 h-5" />
+                                        Change Image
                                     </button>
                                 </div>
                             ) : (
-                                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50">
+                                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                         <Upload className="w-10 h-10 text-gray-400 mb-3" />
                                         <p className="text-sm text-gray-500">Click to upload image</p>
                                         <p className="text-xs text-gray-400 mt-1">Max 5MB</p>
                                     </div>
                                     <input
+                                        id="image-upload"
                                         type="file"
                                         className="hidden"
                                         accept="image/*"
-                                        onChange={handleImageChange}
+                                        onChange={handleImageSelect}
                                     />
                                 </label>
                             )}
+                            <input
+                                id="image-upload"
+                                type="file"
+                                className="hidden"
+                                accept="image/*"
+                                onChange={handleImageSelect}
+                            />
                         </div>
 
                         {/* Actions */}
@@ -253,7 +290,20 @@ export default function EditCommunityModal({
                 </div>
             </div>
 
-            {/* Modals */}
+            {/* Image Cropper Modal */}
+            {showCropper && selectedImage && (
+                <ImageCropper
+                    imageSrc={selectedImage}
+                    onCropComplete={handleCropComplete}
+                    onCancel={() => {
+                        setShowCropper(false);
+                        setSelectedImage(null);
+                    }}
+                    aspect={16 / 9}
+                />
+            )}
+
+            {/* Success Modal */}
             <SuccessModal
                 isOpen={showSuccess}
                 title="Community Updated!"
@@ -261,6 +311,7 @@ export default function EditCommunityModal({
                 onClose={() => setShowSuccess(false)}
             />
 
+            {/* Error Modal */}
             <ErrorModal isOpen={!!error} message={error || ''} onClose={() => setError(null)} />
         </>
     );

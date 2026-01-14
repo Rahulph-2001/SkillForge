@@ -23,20 +23,40 @@ export class MCQImportController {
    */
   public startImport = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      console.log('[MCQImportController] Starting MCQ import process');
+      
       const adminId = req.user!.userId;
       const { templateId } = req.params;
       const file = req.file;
 
+      console.log('[MCQImportController] Request details:', {
+        adminId,
+        templateId,
+        hasFile: !!file,
+        fileName: file?.originalname,
+        fileSize: file?.size,
+        mimeType: file?.mimetype
+      });
+
       if (!file) {
-        throw new ValidationError('CSV file is required for import');
+        console.error('[MCQImportController] No file uploaded');
+        throw new ValidationError('CSV or Excel file is required for import');
       }
 
+      console.log('[MCQImportController] File validation passed, executing use case');
+      
       const result = await this.startImportUseCase.execute({
         templateId,
         adminId,
         fileName: file.originalname,
         filePath: '' // Will be set by the use case after upload
       }, file);
+
+      console.log('[MCQImportController] Import job created successfully:', {
+        jobId: result.jobId,
+        fileName: result.fileName,
+        status: result.status
+      });
 
       const response = this.responseBuilder.success(
         result,
@@ -45,7 +65,12 @@ export class MCQImportController {
       );
 
       res.status(response.statusCode).json(response.body);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('[MCQImportController] Error during import:', {
+        message: error.message,
+        stack: error.stack,
+        name: error.name
+      });
       next(error);
     }
   };

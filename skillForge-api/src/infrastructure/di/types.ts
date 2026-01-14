@@ -36,6 +36,14 @@ export const TYPES = {
   ISuspendUserUseCase: Symbol.for('ISuspendUserUseCase'),
   UnsuspendUserUseCase: Symbol.for('UnsuspendUserUseCase'),
   IUnsuspendUserUseCase: Symbol.for('IUnsuspendUserUseCase'),
+  ListCommunitiesUseCase: Symbol.for('ListCommunitiesUseCase'),
+  IListCommunitiesUseCase: Symbol.for('IListCommunitiesUseCase'),
+  UpdateCommunityByAdminUseCase: Symbol.for('UpdateCommunityByAdminUseCase'),
+  IUpdateCommunityByAdminUseCase: Symbol.for('IUpdateCommunityByAdminUseCase'),
+  BlockCommunityUseCase: Symbol.for('BlockCommunityUseCase'),
+  IBlockCommunityUseCase: Symbol.for('IBlockCommunityUseCase'),
+  UnblockCommunityUseCase: Symbol.for('UnblockCommunityUseCase'),
+  IUnblockCommunityUseCase: Symbol.for('IUnblockCommunityUseCase'),
   GetUserProfileUseCase: Symbol.for('GetUserProfileUseCase'),
   UpdateUserProfileUseCase: Symbol.for('UpdateUserProfileUseCase'),
 
@@ -237,6 +245,7 @@ export const TYPES = {
   CommunityController: Symbol.for('CommunityController'),
   CommunityRoutes: Symbol.for('CommunityRoutes'),
   ITransactionService: Symbol.for('ITransactionService'),
+  IProcessAutoRenewMembershipsUseCase: Symbol.for('IProcessAutoRenewMembershipsUseCase'),
 
   // Industrial Subscription System
   IFeatureRepository: Symbol.for('IFeatureRepository'),
@@ -276,10 +285,12 @@ export const TYPES = {
   ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
   ICheckCommunityMembershipExpiryUseCase: Symbol.for('ICheckCommunityMembershipExpiryUseCase'),
 
-  // Project Management
+  // Project 
   IProjectRepository: Symbol.for('IProjectRepository'),
   ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
   IListProjectsUseCase: Symbol.for('IListProjectsUseCase'),
+  IValidateProjectPostLimitUseCase: Symbol.for('IValidateProjectPostLimitUseCase'),
+  IIncrementProjectPostUsageUseCase: Symbol.for('IIncrementProjectPostUsageUseCase'),
   ProjectController: Symbol.for('ProjectController'),
   ProjectRoutes: Symbol.for('ProjectRoutes'),
   ProjectRepository: Symbol.for('ProjectRepository'),
@@ -321,12 +332,13 @@ export const TYPES = {
 
   // Pagination Service
   IPaginationService: Symbol.for('IPaginationService'),
-  
+
   // Admin Wallet
   IGetAdminWalletStatsUseCase: Symbol.for('IGetAdminWalletStatsUseCase'),
   IGetWalletTransactionsUseCase: Symbol.for('IGetWalletTransactionsUseCase'),
   AdminWalletController: Symbol.for('AdminWalletController'),
   AdminWalletRoutes: Symbol.for('AdminWalletRoutes'),
+  IWalletTransactionRepository: Symbol.for('IWalletTransactionRepository'),
 
-  
+
 };

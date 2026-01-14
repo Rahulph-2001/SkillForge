@@ -3,7 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types'
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { IJWTService } from '../../../domain/services/IJWTService';
-import { UnauthorizedError, NotFoundError } from '../../../domain/errors/AppError';
+import { UnauthorizedError, NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { LoginDTO } from '../../dto/auth/LoginDTO';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { LoginResponseDTO } from '../../dto/auth/LoginResponseDTO';
@@ -30,7 +30,7 @@ export class LoginUseCase implements ILoginUseCase {
       throw new UnauthorizedError(ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
     }
     if (!user.isActive || user.isDeleted) {
-      throw new UnauthorizedError(ERROR_MESSAGES.AUTH.ACCOUNT_INACTIVE);
+      throw new ForbiddenError('Your account has been suspended. Please contact support.');
     }
     user.updateLastLogin(ipAddress || 'unknown');
     await this.userRepository.update(user);

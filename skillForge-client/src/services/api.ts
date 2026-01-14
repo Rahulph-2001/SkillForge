@@ -29,9 +29,14 @@ api.interceptors.response.use(
         if (error.response?.status === 403) {
             const errorData = error.response?.data as any;
             
+            // Get error message string safely (handle both string and object formats)
+            const errorMessage = typeof errorData?.error === 'string' 
+                ? errorData.error 
+                : (typeof errorData?.message === 'string' ? errorData.message : '');
+            
             // Check if this is a suspension error
-            if (errorData?.error?.toLowerCase().includes('suspended') || 
-                errorData?.error?.toLowerCase().includes('account')) {
+            if (errorMessage.toLowerCase().includes('suspended') || 
+                errorMessage.toLowerCase().includes('account')) {
                 
                 // Lazy import to avoid circular dependency
                 const { store } = await import('../store/store');
@@ -49,7 +54,7 @@ api.interceptors.response.use(
                     
                     // Store suspension message in sessionStorage for display on login page
                     sessionStorage.setItem('suspensionMessage', 
-                        errorData?.error || 'Your account has been suspended. Please contact support.');
+                        errorMessage || 'Your account has been suspended. Please contact support.');
                     
                     window.location.href = loginPath;
                 }

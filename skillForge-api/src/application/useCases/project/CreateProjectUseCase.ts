@@ -2,6 +2,8 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IProjectRepository } from '../../../domain/repositories/IProjectRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { IValidateProjectPostLimitUseCase } from './interfaces/IValidateProjectPostLimitUseCase';
+import { IIncrementProjectPostUsageUseCase } from './interfaces/IIncrementProjectPostUsageUseCase';
 import { ICreateProjectUseCase } from './interfaces/ICreateProjectUseCase';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { ProjectResponseDTO } from '../../dto/project/ProjectResponseDTO';
@@ -13,7 +15,9 @@ import { v4 as uuidv4 } from 'uuid';
 export class CreateProjectUseCase implements ICreateProjectUseCase {
   constructor(
     @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
-    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
+    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.IValidateProjectPostLimitUseCase) private readonly validateLimitUseCase: IValidateProjectPostLimitUseCase,
+    @inject(TYPES.IIncrementProjectPostUsageUseCase) private readonly incrementUsageUseCase: IIncrementProjectPostUsageUseCase
   ) {}
 
   async execute(userId: string, request: CreateProjectRequestDTO, paymentId?: string): Promise<ProjectResponseDTO> {
@@ -23,7 +27,10 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
       throw new NotFoundError('User not found');
     }
 
-    // 2. Create project entity
+    // 2. Validate subscription and project post limit
+    await this.validateLimitUseCase.execute(userId);
+
+    // 3. Create project entity
     const project = Project.create({
       id: uuidv4(),
       clientId: userId,
@@ -41,10 +48,13 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
       updatedAt: new Date(),
     });
 
-    // 3. Save project
+    // 4. Save project
     const savedProject = await this.projectRepository.create(project);
 
-    // 4. Map to response DTO
+    // 5. Track usage (increment project post count)
+    await this.incrementUsageUseCase.execute(userId);
+
+    // 6. Map to response DTO
     return {
       id: savedProject.id!,
       clientId: savedProject.clientId,
@@ -69,4 +79,3 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
     };
   }
 }
-

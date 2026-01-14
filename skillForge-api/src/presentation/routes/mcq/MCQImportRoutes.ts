@@ -13,14 +13,27 @@ export class MCQImportRoutes {
   constructor(
     @inject(TYPES.MCQImportController) private mcqImportController: MCQImportController
   ) {
+    console.log('[MCQImportRoutes] Constructor called - initializing routes');
     this.router = Router();
     this.setupRoutes();
+    console.log('[MCQImportRoutes] Routes setup complete');
   }
 
   private setupRoutes(): void {
+    console.log('[MCQImportRoutes] Setting up MCQ import routes');
     
     this.router.use(authMiddleware, adminMiddleware);
     
+    // Add logging middleware to track requests
+    this.router.use((req, _res, next) => {
+      console.log('[MCQImportRoutes] Request received:', {
+        method: req.method,
+        path: req.path,
+        params: req.params,
+        hasFile: !!req.file
+      });
+      next();
+    });
     
     this.router.post(
       '/:templateId/import', 

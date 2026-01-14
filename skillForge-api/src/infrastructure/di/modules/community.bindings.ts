@@ -34,6 +34,8 @@ import { CheckCommunityMembershipExpiryUseCase } from '../../../application/useC
 import { ICheckCommunityMembershipExpiryUseCase } from '../../../application/useCases/community/interfaces/ICheckCommunityMembershipExpiryUseCase';
 import { CommunityController } from '../../../presentation/controllers/community/CommunityController';
 import { CommunityRoutes } from '../../../presentation/routes/community/communityRoutes';
+import { ProcessAutoRenewMembershipsUseCase } from '../../../application/useCases/community/ProcessAutoRenewMembershipsUseCase';
+import { IProcessAutoRenewMembershipsUseCase } from '../../../application/useCases/community/interfaces/IProcessAutoRenewMembershipsUseCase';
 
 /**
  * Binds all community-related use cases, controllers, and routes
@@ -58,6 +60,7 @@ export const bindCommunityModule = (container: Container): void => {
   container.bind<IDeleteMessageUseCase>(TYPES.IDeleteMessageUseCase).to(DeleteMessageUseCase);
   container.bind<IAddReactionUseCase>(TYPES.IAddReactionUseCase).to(AddReactionUseCase);
   container.bind<IRemoveReactionUseCase>(TYPES.IRemoveReactionUseCase).to(RemoveReactionUseCase);
+  container.bind<IProcessAutoRenewMembershipsUseCase>(TYPES.IProcessAutoRenewMembershipsUseCase).to(ProcessAutoRenewMembershipsUseCase);
   
   // Controllers & Routes
   container.bind<CommunityController>(TYPES.CommunityController).to(CommunityController);

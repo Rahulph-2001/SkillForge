@@ -113,8 +113,26 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
 
                     if (projectData.title && projectData.description && projectData.category && projectData.budget) {
                         await this.createProjectUseCase.execute(updatedPayment.userId, projectData, updatedPayment.id);
+                        // Credit admin wallet with escrow budget
+                        try {
+                            await this.creditAdminWalletUseCase.execute({
+                                amount: projectData.budget,
+                                currency: updatedPayment.currency,
+                                source: 'PROJECT_ESCROW',
+                                referenceId: updatedPayment.id,
+                                metadata: {
+                                    projectTitle: projectData.title,
+                                    userId: updatedPayment.userId,
+                                    category: projectData.category
+                                }
+                            });
+                            console.log(`[ConfirmPayment] Credited ${projectData.budget} ${updatedPayment.currency} to admin wallet as escrow for project`);
+                        } catch (walletError) {
+                            console.error('[ConfirmPayment] Failed to credit admin wallet for project escrow:', walletError);
+                        }
                     }
                 } catch (error) {
+                    console.error('[ConfirmPayment] Failed to create project after payment:', error);
                     // Failed to create project after payment
                     // We don't throw here to avoid failing the payment confirmation response
                     // TODO: Add proper logging service and retry mechanism

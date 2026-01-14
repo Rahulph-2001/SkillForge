@@ -9,7 +9,7 @@ import { Profile } from 'passport-google-oauth20';
 import crypto from 'crypto';
 import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { IGoogleAuthUseCase, GoogleAuthResponseDTO } from './interfaces/IGoogleAuthUseCase';
-import { ValidationError } from '../../../domain/errors/AppError';
+import { ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class GoogleAuthUseCase implements IGoogleAuthUseCase {
@@ -51,6 +51,11 @@ export class GoogleAuthUseCase implements IGoogleAuthUseCase {
       // Save new user
       user = await this.userRepository.save(newUser);
     } else {
+      // Check if existing user is suspended or deleted
+      if (!user.isActive || user.isDeleted) {
+        throw new ForbiddenError('Your account has been suspended. Please contact support.');
+      }
+
       // Existing user - update avatar if changed and update login time
       if (avatarUrl && user.avatarUrl !== avatarUrl) {
         user.updateAvatar(avatarUrl);
