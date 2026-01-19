@@ -72,6 +72,11 @@ enum BillingInterval {
   YEARLY
   LIFETIME
 }
+enum EscrowStatus {
+  HELD
+  RELEASED
+  REFUNDED
+}
 
 // --- Models ---
 
@@ -384,6 +389,7 @@ model User {
   passwordHash String   @map("password_hash") @db.VarChar(255)
   avatarUrl    String?  @map("avatar_url") @db.Text
   bio          String?  @db.Text
+  heldCredits Int @default(0) @map("held_credits")
   location     String?  @db.VarChar(255)
   role         UserRole @default(user)
 
@@ -442,6 +448,8 @@ model User {
   messageReactions     MessageReaction[]  @relation("MessageReactions")
   userSubscription     UserSubscription?  @relation("UserSubscriptions")
   walletTransactions  WalletTransaction[] @relation("AdminWalletTransactions")
+  escrowAsLearner     EscrowTransaction[] @relation("LearnerEscrow")
+  escrowAsProvider    EscrowTransaction[] @relation("ProviderEscrow")
 
   @@index([role])
   @@index([isActive])
@@ -628,7 +636,7 @@ model Booking {
   isDeleted       Boolean       @default(false) @map("is_deleted")
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
-
+  escrow EscrowTransaction?
   // Industrial Level Time Range (Exact overlap checks)
   startAt DateTime? @map("start_at") @db.Timestamptz(6)
   endAt   DateTime? @map("end_at") @db.Timestamptz(6)
@@ -646,6 +654,30 @@ model Booking {
   @@index([isDeleted])
   @@index([providerId, startAt, endAt])
   @@map("bookings")
+}
+
+model EscrowTransaction {
+  id          String       @id @default(uuid()) @db.Uuid
+  bookingId   String       @unique @map("booking_id") @db.Uuid
+  learnerId   String       @map("learner_id") @db.Uuid
+  providerId  String       @map("provider_id") @db.Uuid
+  amount      Int
+  status      EscrowStatus @default(HELD)
+  heldAt      DateTime     @default(now()) @map("held_at") @db.Timestamptz(6)
+  releasedAt  DateTime?    @map("released_at") @db.Timestamptz(6)
+  refundedAt  DateTime?    @map("refunded_at") @db.Timestamptz(6)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  learner  User    @relation("LearnerEscrow", fields: [learnerId], references: [id])
+  provider User    @relation("ProviderEscrow", fields: [providerId], references: [id])
+
+  @@index([bookingId])
+  @@index([learnerId])
+  @@index([providerId])
+  @@index([status])
+  @@map("escrow_transactions")
 }
 
 // --- Availability Model ---

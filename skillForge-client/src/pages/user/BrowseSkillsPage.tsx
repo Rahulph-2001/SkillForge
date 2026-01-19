@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Star, Award, Loader2, Filter, X } from 'lucide-react';
 
 import Pagination from '../../components/common/Pagination';
+import { usePagination } from '../../hooks/usePagination';
 import { useAppSelector } from '../../store/hooks';
 import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
 import { toast } from 'react-hot-toast';
@@ -15,10 +16,19 @@ export default function BrowseSkillsPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [selectedLevel, setSelectedLevel] = useState('All Levels');
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+
     const [total, setTotal] = useState(0);
     const [showFilters, setShowFilters] = useState(false);
+
+    const {
+        page: currentPage,
+        totalPages,
+        goToPage: setCurrentPage,
+    } = usePagination({
+        totalItems: total,
+        initialLimit: 12,
+        initialPage: 1
+    });
 
     const categories = [
         'All',
@@ -53,7 +63,7 @@ export default function BrowseSkillsPage() {
 
             setSkills(response.skills);
             setTotal(response.total);
-            setTotalPages(response.totalPages);
+            // totalPages is calculated by the hook based on 'total'
         } catch (error: any) {
             console.error('Failed to fetch skills:', error);
             toast.error(error.response?.data?.message || 'Failed to load skills');

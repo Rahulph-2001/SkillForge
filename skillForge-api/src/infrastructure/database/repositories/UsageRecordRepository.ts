@@ -5,6 +5,7 @@ import { UsageRecord } from '../../../domain/entities/UsageRecord';
 import { v4 as uuidv4 } from 'uuid';
 import { TYPES } from '../../di/types';
 import { BaseRepository } from '../BaseRepository';
+import { PrismaClient } from '@prisma/client';
 
 @injectable()
 export class UsageRecordRepository extends BaseRepository<UsageRecord> implements IUsageRecordRepository {
@@ -117,7 +118,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
         }));
 
         // Create all new records in a transaction
-        await this.prisma.$transaction(
+        await (this.prisma as PrismaClient).$transaction(
             newRecords.map((record) =>
                 this.prisma.usageRecord.create({
                     data: record,
@@ -163,7 +164,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
 
     async upsert(record: UsageRecord): Promise<UsageRecord> {
         const data = record.toJSON();
-        
+
         const upserted = await this.prisma.usageRecord.upsert({
             where: {
                 subscriptionId_featureKey_periodStart: {

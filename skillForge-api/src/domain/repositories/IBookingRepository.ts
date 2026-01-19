@@ -20,6 +20,7 @@ export interface IBookingRepository {
     endTime: string,
     bufferMinutes: number
   ): Promise<Booking[]>;
+  createWithEscrow(booking: Booking, sessionCost: number): Promise<Booking>;
   countActiveBookingsByProviderAndDate(providerId: string, dateString: string): Promise<number>;
   findDuplicateBooking(
     learnerId: string,
@@ -28,10 +29,7 @@ export interface IBookingRepository {
     preferredTime: string
   ): Promise<Booking | null>;
 
-  // Transactional Operations (Industrial Level)
-  createTransactional(booking: Booking, sessionCost: number): Promise<Booking>;
-  confirmTransactional(bookingId: string): Promise<Booking>;
-  cancelTransactional(bookingId: string, cancelledBy: string, reason: string): Promise<Booking>;
+
 
   // Standard CRUD
   create(booking: Booking): Promise<Booking>;

@@ -63,9 +63,22 @@ export interface CommunityMessage {
     updatedAt: Date;
 }
 
-// Get all communities
-export const getCommunities = async (category?: string): Promise<Community[]> => {
-    const params = category ? { category } : {};
+// Get all communities with pagination
+export const getCommunities = async (
+    page = 1,
+    limit = 12,
+    search?: string,
+    category?: string
+): Promise<{
+    communities: Community[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+}> => {
+    const params: any = { page, limit };
+    if (search) params.search = search;
+    if (category) params.category = category;
 
     const response = await api.get('/communities', {
         params,

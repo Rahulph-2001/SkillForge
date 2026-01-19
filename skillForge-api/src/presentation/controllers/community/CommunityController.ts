@@ -115,17 +115,29 @@ export class CommunityController {
   public getCommunities = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user?.userId;
-      const { category } = req.query;
-      const communities = await this.getCommunitiesUseCase.execute(
+      const { category, search, page, limit } = req.query;
+
+      const result = await this.getCommunitiesUseCase.execute(
         {
-          category: category as string
+          category: category as string,
+          search: search as string
         },
-        userId
+        userId,
+        page ? parseInt(page as string) : undefined,
+        limit ? parseInt(limit as string) : undefined
       );
-      // communityMapper.toDTOList is async; ensure we await it so we return actual data (not a Promise)
-      const communitiesDto = await this.communityMapper.toDTOList(communities, userId);
+
+      // Map the communities data to DTOs
+      const communitiesDto = await this.communityMapper.toDTOList(result.data, userId);
+
       const response = this.responseBuilder.success(
-        communitiesDto,
+        {
+          communities: communitiesDto,
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages
+        },
         SUCCESS_MESSAGES.COMMUNITY.FETCHED,
         HttpStatusCode.OK
       );

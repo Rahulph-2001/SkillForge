@@ -36,17 +36,20 @@ const AdminCommunitiesPage: React.FC = () => {
     const fetchCommunities = async () => {
         try {
             setLoading(true);
-            const data = await getCommunities();
-            setCommunities(data);
+            const data = await getCommunities(1, 1000); // Fetch logic needs to be updated for admin too, but temporarily fetching large page or we should implement admin specific list
+            // Assuming for now getCommunities returns paginated structure
+
+            const communityList = data.communities;
+            setCommunities(communityList);
 
             // Calculate stats
-            const totalMembers = data.reduce((sum, community) => sum + community.membersCount, 0);
-            const avgCost = data.length > 0
-                ? data.reduce((sum, community) => sum + community.creditsCost, 0) / data.length
+            const totalMembers = communityList.reduce((sum, community) => sum + community.membersCount, 0);
+            const avgCost = communityList.length > 0
+                ? communityList.reduce((sum, community) => sum + community.creditsCost, 0) / communityList.length
                 : 0;
 
             setStats({
-                totalCommunities: data.length,
+                totalCommunities: data.total,
                 totalMembers,
                 avgMembershipCost: parseFloat(avgCost.toFixed(1))
             });

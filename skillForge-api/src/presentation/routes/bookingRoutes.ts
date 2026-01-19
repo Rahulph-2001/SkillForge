@@ -22,5 +22,6 @@ export class BookingRoutes {
     this.router.get('/upcoming', this.bookingController.getUpcomingSessions);
     this.router.get('/:id', this.bookingController.getBookingById);
     this.router.patch('/:id/cancel', this.bookingController.cancelBooking);
+    this.router.post('/:id/complete', this.bookingController.completeSession);
   }
 }

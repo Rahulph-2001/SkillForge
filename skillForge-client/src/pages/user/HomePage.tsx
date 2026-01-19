@@ -1,5 +1,4 @@
 
-import { Footer } from '../../components/common/Footer';
 import { Link } from 'react-router-dom';
 
 

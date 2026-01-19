@@ -49,7 +49,7 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
       const nextMonth = new Date();
       nextMonth.setDate(today.getDate() + 30);
 
-      // Fetch existing confirmed/pending bookings
+      // Fetch existing confirmed/pending bookings (exclude rejected, cancelled, completed)
       const activeBookings = await this.bookingRepository.findInDateRange(
         skill.providerId,
         today,
@@ -57,9 +57,12 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
       );
 
       // Map to simple objects for Frontend to gray out
-      // User Request: Only show bookings related to THIS skill.
+      // User Request: Only show bookings related to THIS skill and only CONFIRMED/PENDING statuses
       const bookedSlots = activeBookings
-        .filter((b: any) => b.skillId === skillId)
+        .filter((b: any) => 
+          b.skillId === skillId && 
+          (b.status === 'confirmed' || b.status === 'pending' || b.status === 'reschedule_requested')
+        )
         .map((b: any) => ({
           id: b.id,
           title: b.skillTitle || 'Session',

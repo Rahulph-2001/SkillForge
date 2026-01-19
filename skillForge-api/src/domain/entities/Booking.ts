@@ -21,6 +21,8 @@ export interface RescheduleInfo {
   reason: string;
   requestedBy: 'learner' | 'provider';
   requestedAt: Date;
+  newStartAt?: Date;
+  newEndAt?: Date;
 }
 
 export interface BookingProps {

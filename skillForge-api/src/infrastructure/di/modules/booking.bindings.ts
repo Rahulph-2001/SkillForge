@@ -22,6 +22,8 @@ import { DeclineRescheduleUseCase } from '../../../application/useCases/booking/
 import { IDeclineRescheduleUseCase } from '../../../application/useCases/booking/interfaces/IDeclineRescheduleUseCase';
 import { GetProviderBookingsUseCase } from '../../../application/useCases/booking/GetProviderBookingsUseCase';
 import { IGetProviderBookingsUseCase } from '../../../application/useCases/booking/interfaces/IGetProviderBookingsUseCase';
+import { CompleteSessionUseCase } from '../../../application/useCases/booking/CompleteSessionUseCase';
+import { ICompleteSessionUseCase } from '../../../application/useCases/booking/interfaces/ICompleteSessionUseCase';
 import { SessionManagementController } from '../../../presentation/controllers/SessionManagementController';
 import { BookingController } from '../../../presentation/controllers/BookingController';
 import { BookingRoutes } from '../../../presentation/routes/bookingRoutes';
@@ -33,8 +35,6 @@ import { GetOccupiedSlotsUseCase } from '../../../application/useCases/availabil
 import { IGetOccupiedSlotsUseCase } from '../../../application/useCases/availability/interfaces/IGetOccupiedSlotsUseCase';
 import { AvailabilityController } from '../../../presentation/controllers/availability/AvailabilityController';
 import { AvailabilityRoutes } from '../../../presentation/routes/availability/availabilityRoutes';
-
-
 
 export const bindBookingModule = (container: Container): void => {
   // Booking Use Cases
@@ -49,6 +49,9 @@ export const bindBookingModule = (container: Container): void => {
   container.bind<IAcceptRescheduleUseCase>(TYPES.IAcceptRescheduleUseCase).to(AcceptRescheduleUseCase);
   container.bind<IDeclineRescheduleUseCase>(TYPES.IDeclineRescheduleUseCase).to(DeclineRescheduleUseCase);
   container.bind<IGetProviderBookingsUseCase>(TYPES.IGetProviderBookingsUseCase).to(GetProviderBookingsUseCase);
+  
+  // Complete Session Use Case (Escrow Release)
+  container.bind<ICompleteSessionUseCase>(TYPES.ICompleteSessionUseCase).to(CompleteSessionUseCase);
 
   // Availability Use Cases
   container.bind<GetProviderAvailabilityUseCase>(TYPES.GetProviderAvailabilityUseCase).to(GetProviderAvailabilityUseCase);

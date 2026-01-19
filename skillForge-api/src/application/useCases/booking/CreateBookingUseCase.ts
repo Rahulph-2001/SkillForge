@@ -4,6 +4,7 @@ import { IBookingRepository } from '../../../domain/repositories/IBookingReposit
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IAvailabilityRepository } from '../../../domain/repositories/IAvailabilityRepository';
+import { IEscrowRepository } from '../../../domain/repositories/IEscrowRepository';
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { Booking } from '../../../domain/entities/Booking';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
@@ -20,6 +21,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
         @inject(TYPES.IAvailabilityRepository) private readonly availabilityRepository: IAvailabilityRepository,
+        @inject(TYPES.IEscrowRepository) private readonly escrowRepository: IEscrowRepository,
         @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper
     ) { }
 
@@ -88,7 +90,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         
         // 8. Validate availability settings
         if (availability) {
-            // Validate booking is not in the past
             const pastValidation = BookingValidator.validateDateNotInPast(
                 request.preferredDate,
                 request.preferredTime,
@@ -98,7 +99,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError(pastValidation.error || 'Booking date must be in the future');
             }
 
-            // Validate advance booking window
             const bookingDate = DateTimeUtils.parseDateTime(request.preferredDate, request.preferredTime);
             const advanceValidation = BookingValidator.validateWithinAdvanceBookingWindow(
                 bookingDate,
@@ -109,7 +109,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError(advanceValidation.error || 'Booking outside allowed time window');
             }
 
-            // Validate against blocked dates
             const blockedDates = availability.blockedDates as any[];
             const blockedValidation = BookingValidator.validateAgainstBlockedDates(
                 request.preferredDate,
@@ -119,7 +118,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError(blockedValidation.error || 'Provider unavailable on this date');
             }
 
-            // Validate session doesn't cross midnight
             const midnightValidation = BookingValidator.validateSessionWithinSameDay(
                 request.preferredDate,
                 request.preferredTime,
@@ -130,7 +128,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError(midnightValidation.error || 'Session cannot cross midnight');
             }
 
-            // Validate within working hours
             const dayOfWeek = new Date(request.preferredDate).toLocaleDateString('en-US', { weekday: 'long' });
             const weeklySchedule = availability.weeklySchedule as any;
             const daySchedule = weeklySchedule[dayOfWeek];
@@ -146,7 +143,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 }
             }
 
-            // Check for overlapping bookings with buffer
             const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
             const startDate = new Date(request.preferredDate);
             startDate.setHours(startHours, startMinutes, 0, 0);
@@ -166,7 +162,6 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError('This time slot conflicts with an existing booking');
             }
 
-            // Check max sessions per day if configured
             if (availability.maxSessionsPerDay) {
                 const sessionsCount = await this.bookingRepository.countActiveBookingsByProviderAndDate(
                     request.providerId,
@@ -178,14 +173,14 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
             }
         }
 
-        // 8. Calculate start and end times for the booking
+        // 9. Calculate start and end times for the booking
         const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
         const startAt = new Date(request.preferredDate);
         startAt.setHours(startHours, startMinutes, 0, 0);
 
         const endAt = DateTimeUtils.addHours(startAt, skill.durationHours);
 
-        // 9. Create booking entity
+        // 10. Create booking entity
         const booking = Booking.create({
             learnerId: request.learnerId,
             skillId: request.skillId,
@@ -201,11 +196,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
             updatedAt: new Date()
         });
 
-        // 9. Create booking with transaction (deducts credits from learner)
-        const createdBooking = await this.bookingRepository.createTransactional(booking, sessionCost);
-
-        // TODO: Send notification to provider
-        // TODO: Send confirmation to learner
+        // 11. Create booking with escrow hold (holds credits from learner)
+        const createdBooking = await this.bookingRepository.createWithEscrow(booking, sessionCost);
 
         return this.bookingMapper.toDTO(createdBooking);
     }

@@ -1,4 +1,5 @@
 import { injectable, inject } from 'inversify';
+import { PrismaClient } from '@prisma/client';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
 import { Feature } from '../../../domain/entities/Feature';
 import { FeatureType } from '../../../domain/enums/SubscriptionEnums';
@@ -78,7 +79,7 @@ export class PrismaFeatureRepository extends BaseRepository<Feature> implements 
             })
         );
 
-        await this.prisma.$transaction(updates);
+        await (this.prisma as PrismaClient).$transaction(updates);
     }
 
     async findHighlightedByPlanId(planId: string): Promise<Feature[]> {

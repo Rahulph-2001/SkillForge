@@ -2,16 +2,20 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 import { RescheduleInfo } from '../../../domain/entities/Booking';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { BookingValidator } from '../../../shared/validators/BookingValidator';
+import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
 import { IRescheduleBookingUseCase, RescheduleBookingRequestDTO } from './interfaces/IRescheduleBookingUseCase';
 
 @injectable()
 export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
-    private readonly bookingRepository: IBookingRepository
+    private readonly bookingRepository: IBookingRepository,
+    @inject(TYPES.ISkillRepository)
+    private readonly skillRepository: ISkillRepository
   ) { }
 
   async execute(request: RescheduleBookingRequestDTO): Promise<void> {
@@ -50,16 +54,30 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
       throw new ValidationError(`Cannot reschedule booking with status: ${booking.status}`);
     }
 
-    // 6. Create reschedule info
+    // 6. Get skill to calculate duration
+    const skill = await this.skillRepository.findById(booking.skillId);
+    if (!skill) {
+      throw new NotFoundError('Skill not found');
+    }
+
+    // 7. Calculate new start and end times
+    const [startHours, startMinutes] = request.newTime.split(':').map(Number);
+    const newStartAt = new Date(request.newDate);
+    newStartAt.setHours(startHours, startMinutes, 0, 0);
+    const newEndAt = DateTimeUtils.addHours(newStartAt, skill.durationHours);
+
+    // 8. Create reschedule info with calculated times
     const rescheduleInfo: RescheduleInfo = {
       newDate: request.newDate,
       newTime: request.newTime,
       reason: request.reason,
       requestedBy: isLearner ? 'learner' : 'provider',
       requestedAt: new Date(),
+      newStartAt,
+      newEndAt,
     };
 
-    // 7. Update booking with reschedule request
+    // 9. Update booking with reschedule request
     await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
 
     // TODO: Send notification to the other party (learner or provider)

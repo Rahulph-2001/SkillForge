@@ -1,5 +1,5 @@
 
-import { Footer } from '../../components/common/Footer';
+
 import Hero from '../../components/landing/Hero';
 import HowItWorks from '../../components/landing/HowItWorks';
 import PopularSkills from '../../components/landing/PopularSkills';
@@ -15,7 +15,6 @@ export default function LandingPage() {
             <PopularSkills />
             <SafeTrusted />
             <CTA />
-            <Footer />
         </main>
     );
 }

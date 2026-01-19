@@ -301,6 +301,8 @@ export const TYPES = {
   IGetMyBookingsUseCase: Symbol.for('IGetMyBookingsUseCase'),
   IGetUpcomingSessionsUseCase: Symbol.for('IGetUpcomingSessionsUseCase'),
   IGetBookingByIdUseCase: Symbol.for('IGetBookingByIdUseCase'),
+  IEscrowRepository: Symbol.for('IEscrowRepository'),
+  ICompleteSessionUseCase: Symbol.for('ICompleteSessionUseCase'),
 
   // Community Use Cases
   IGetCommunityMembersUseCase: Symbol.for('IGetCommunityMembersUseCase'),

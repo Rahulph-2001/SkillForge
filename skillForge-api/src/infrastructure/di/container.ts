@@ -18,16 +18,10 @@ import { bindCommunityModule } from './modules/community.bindings';
 import { bindAdminModule } from './modules/admin.bindings';
 import { bindProjectModule } from './modules/project.bindings';
 import { bindAdminSessionModule } from './modules/adminSession.bindings';
+import { escrowModule } from './modules/escrow.bindings';
 
 export { container };
 
-/**
- * Main Dependency Injection Container Setup
- * 
- * This file orchestrates all DI bindings by importing and calling
- * feature-specific binding modules. This modular approach makes the
- * DI container more maintainable and follows Clean Architecture principles.
- */
 
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
@@ -46,6 +40,8 @@ bindCommunityModule(container);
 bindAdminModule(container);
 bindProjectModule(container);
 bindAdminSessionModule(container);
+
+container.load(escrowModule)
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);

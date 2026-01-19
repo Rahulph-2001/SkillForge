@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Users, Search, Plus, Zap, LayoutGrid, CheckCircle } from 'lucide-react';
+import { Users, Search, Plus, Zap, LayoutGrid, CheckCircle, Loader2 } from 'lucide-react';
 import { getCommunities, joinCommunity, Community, leaveCommunity } from '../../services/communityService';
+import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../common/Pagination';
 import CreateCommunityModal from './CreateCommunityModal';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
@@ -13,9 +15,25 @@ import CommunityCard from './CommunityCard';
 export default function CommunityList() {
     const user = useSelector((state: RootState) => state.auth.user);
     const [communities, setCommunities] = useState<Community[]>([]);
-    const [filteredCommunities, setFilteredCommunities] = useState<Community[]>([]);
     const [loading, setLoading] = useState(true);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [totalItems, setTotalItems] = useState(0);
+
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('All');
+
+    const {
+        page: currentPage,
+        totalPages,
+        goToPage: setCurrentPage,
+    } = usePagination({
+        totalItems,
+        initialLimit: 12,
+        initialPage: 1
+    });
+
+    const categories = ['All', 'Technology', 'Languages', 'Music', 'Fitness', 'Creative', 'Professional', 'Business'];
 
     // Modal States
     const [selectedCommunity, setSelectedCommunity] = useState<Community | null>(null);
@@ -26,39 +44,21 @@ export default function CommunityList() {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
 
-    // Filters
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('All');
-
-    const categories = ['All', 'Technology', 'Languages', 'Music', 'Fitness', 'Creative', 'Professional', 'Business'];
-
     useEffect(() => {
         loadCommunities();
-    }, []);
-
-    useEffect(() => {
-        let result = communities;
-
-        if (searchQuery) {
-            result = result.filter(c =>
-                c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                c.description.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-        }
-
-        if (selectedCategory !== 'All') {
-            result = result.filter(c => c.category === selectedCategory);
-        }
-
-        setFilteredCommunities(result);
-    }, [communities, searchQuery, selectedCategory]);
+    }, [currentPage, searchQuery, selectedCategory]);
 
     const loadCommunities = async () => {
         try {
             setLoading(true);
-            const data = await getCommunities();
-            setCommunities(data);
-            setFilteredCommunities(data);
+            const data = await getCommunities(
+                currentPage,
+                12,
+                searchQuery || undefined,
+                selectedCategory !== 'All' ? selectedCategory : undefined
+            );
+            setCommunities(data.communities);
+            setTotalItems(data.total);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to load communities');
         } finally {
@@ -122,16 +122,17 @@ export default function CommunityList() {
         },
         {
             label: 'Total Communities',
-            value: communities.length,
+            value: totalItems,
             icon: LayoutGrid,
             color: 'text-purple-600'
         },
         {
             label: 'Communities Joined',
-            value: communities.filter(c => c.isJoined || c.isAdmin).length,
+            value: communities.filter(c => c.isJoined || c.isAdmin).length, // Note: This is only for current page
             icon: CheckCircle,
             color: 'text-emerald-600'
         },
+        // Approximating total members from current page or just removing this stat if not available from API globally
         {
             label: 'Total Members',
             value: communities.reduce((acc, curr) => acc + curr.membersCount, 0).toLocaleString(),
@@ -140,10 +141,10 @@ export default function CommunityList() {
         }
     ];
 
-    if (loading) {
+    if (loading && communities.length === 0) {
         return (
             <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <Loader2 className="animate-spin h-12 w-12 text-blue-600" />
             </div>
         );
     }
@@ -165,7 +166,10 @@ export default function CommunityList() {
                         type="text"
                         placeholder="Search communities..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={(e) => {
+                            setSearchQuery(e.target.value);
+                            setCurrentPage(1);
+                        }}
                         className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm"
                     />
                 </div>
@@ -175,7 +179,10 @@ export default function CommunityList() {
                     {categories.map((cat) => (
                         <button
                             key={cat}
-                            onClick={() => setSelectedCategory(cat)}
+                            onClick={() => {
+                                setSelectedCategory(cat);
+                                setCurrentPage(1);
+                            }}
                             className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-colors ${selectedCategory === cat
                                 ? 'bg-blue-600 text-white shadow-md shadow-blue-200'
                                 : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
@@ -201,7 +208,7 @@ export default function CommunityList() {
 
                 {/* Communities Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredCommunities.map((community) => (
+                    {communities.map((community) => (
                         <CommunityCard
                             key={community.id}
                             community={community}
@@ -213,7 +220,7 @@ export default function CommunityList() {
                 </div>
 
                 {/* Empty State */}
-                {filteredCommunities.length === 0 && (
+                {!loading && communities.length === 0 && (
                     <div className="text-center py-16 bg-white rounded-xl border border-gray-100 shadow-sm">
                         <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <h3 className="text-xl font-semibold text-gray-900 mb-2">No Communities Found</h3>
@@ -228,8 +235,8 @@ export default function CommunityList() {
                     </div>
                 )}
 
-                {/* Floating Create Button (if not empty state) */}
-                {filteredCommunities.length > 0 && (
+                {/* Floating Create Button */}
+                {!loading && communities.length > 0 && (
                     <div className="flex justify-center mt-12 mb-8">
                         <div className="bg-blue-50/50 p-8 rounded-2xl text-center w-full max-w-2xl border border-blue-100">
                             <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
@@ -248,11 +255,27 @@ export default function CommunityList() {
                     </div>
                 )}
 
+                {/* Pagination */}
+                {!loading && totalPages > 1 && (
+                    <div className="mt-8 mb-12">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            totalItems={totalItems}
+                            limit={12}
+                            onPageChange={setCurrentPage}
+                        />
+                    </div>
+                )}
+
                 {/* Modals */}
                 <CreateCommunityModal
                     isOpen={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
-                    onSuccess={loadCommunities}
+                    onSuccess={() => {
+                        loadCommunities();
+                        setShowCreateModal(false);
+                    }}
                 />
 
                 <ConfirmModal
@@ -275,7 +298,6 @@ export default function CommunityList() {
                     onCancel={() => setShowLeaveConfirm(false)}
                 />
 
-                {/* Chat Modal */}
                 {selectedCommunityForChat && (
                     <ChatModal
                         isOpen={!!selectedCommunityForChat}
