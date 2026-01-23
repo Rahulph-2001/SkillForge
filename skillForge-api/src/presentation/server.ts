@@ -31,6 +31,7 @@ import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRo
 import { ProjectRoutes } from './routes/project/projectRoutes';
 import { AdminWalletRoutes } from './routes/admin/AdminWalletRoutes';
 import { AdminSessionRoutes } from './routes/admin/adminSessionRoutes';
+import { VideoCallRoutes } from './routes/videoCall/VideoCallRoutes';
 
 @injectable()
 export class App {
@@ -57,6 +58,7 @@ export class App {
         @inject(TYPES.ProjectRoutes) private readonly projectRoutes: ProjectRoutes,
         @inject(TYPES.AdminWalletRoutes) private readonly adminWalletRoutes: AdminWalletRoutes,
         @inject(TYPES.AdminSessionRoutes) private readonly adminSessionRoutes: AdminSessionRoutes,
+        @inject(TYPES.VideoCallRoutes) private readonly videoCallRoutes: VideoCallRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
 
     ) {
@@ -131,6 +133,7 @@ export class App {
         this.app.use('/api/v1/projects', this.projectRoutes.router);
         this.app.use('/api/v1/admin/wallet', this.adminWalletRoutes.router);
         this.app.use('/api/v1/admin/sessions', this.adminSessionRoutes.router);
+        this.app.use('/api/v1/video-call', this.videoCallRoutes.router);
         this.app.all('*', notFoundHandler);
     }
 

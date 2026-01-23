@@ -77,4 +77,10 @@ export const env = {
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY || '',
   STRIPE_PUBLISHABLE_KEY: process.env.STRIPE_PUBLISHABLE_KEY || '',
   STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET || '',
+
+  // WebRTC STUN/TURN Configuration
+  STUN_SERVER: process.env.STUN_SERVER || 'stun:stun.l.google.com:19302',
+  TURN_SERVER: process.env.TURN_SERVER || '',
+  TURN_USERNAME: process.env.TURN_USERNAME || '',
+  TURN_CREDENTIAL: process.env.TURN_CREDENTIAL || '',
 } as const;

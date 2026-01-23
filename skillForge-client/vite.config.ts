@@ -12,6 +12,8 @@ export default defineConfig({
   },
   server: {
     port: 3001,
+    host: true, // Allow network access via IP
+    https: true, // Enable HTTPS for WebRTC support
     proxy: {
       '/api': {
         target: 'http://localhost:3000',

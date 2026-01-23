@@ -336,6 +336,21 @@ export const TYPES = {
   // Pagination Service
   IPaginationService: Symbol.for('IPaginationService'),
 
+
+  // Video Call
+IVideoCallRoomRepository: Symbol.for('IVideoCallRoomRepository'),
+IVideoCallPresenceService: Symbol.for('IVideoCallPresenceService'),
+IVideoCallSignalingService: Symbol.for('IVideoCallSignalingService'),
+IVideoCallRoomMapper: Symbol.for('IVideoCallRoomMapper'),
+ICreateVideoRoomUseCase: Symbol.for('ICreateVideoRoomUseCase'),
+IJoinVideoRoomUseCase: Symbol.for('IJoinVideoRoomUseCase'),
+ILeaveVideoRoomUseCase: Symbol.for('ILeaveVideoRoomUseCase'),
+IGetRoomInfoUseCase: Symbol.for('IGetRoomInfoUseCase'),
+IEndVideoRoomUseCase: Symbol.for('IEndVideoRoomUseCase'),
+IGetSessionInfoUseCase: Symbol.for('IGetSessionInfoUseCase'),
+VideoCallController: Symbol.for('VideoCallController'),
+VideoCallRoutes: Symbol.for('VideoCallRoutes'),
+
   // Admin Wallet
   IGetAdminWalletStatsUseCase: Symbol.for('IGetAdminWalletStatsUseCase'),
   IGetWalletTransactionsUseCase: Symbol.for('IGetWalletTransactionsUseCase'),

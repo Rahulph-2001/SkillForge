@@ -19,6 +19,12 @@ export const SUCCESS_MESSAGES = {
     CONFIRMED: 'Payment confirmed successfully',
     REFUNDED: 'Payment refunded successfully',
   },
+  VIDEO_CALL: {
+  ROOM_CREATED: 'Video call room created successfully',
+  JOINED: 'Joined video call successfully',
+  LEFT: 'Left video call successfully',
+  ENDED: 'Video call ended successfully',
+},
 
   USER: {
     PROFILE_FETCHED: 'Profile retrieved successfully',

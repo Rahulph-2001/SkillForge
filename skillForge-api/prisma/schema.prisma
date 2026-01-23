@@ -441,6 +441,7 @@ model User {
   availability        ProviderAvailability?
   payments            Payment[]
   projects            Project[]             @relation("ClientProjects")
+  hostedVideoRooms    VideoCallRoom[]       @relation("VideoCallHost")
 
   adminCommunities     Community[]        @relation("CommunityAdmin")
   communityMemberships CommunityMember[]  @relation("CommunityMemberships")
@@ -637,6 +638,7 @@ model Booking {
   createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
   escrow EscrowTransaction?
+  videoCallRoom   VideoCallRoom?
   // Industrial Level Time Range (Exact overlap checks)
   startAt DateTime? @map("start_at") @db.Timestamptz(6)
   endAt   DateTime? @map("end_at") @db.Timestamptz(6)
@@ -742,6 +744,22 @@ model Project {
   @@index([isDeleted])
   @@index([createdAt])
   @@map("projects")
+}
+
+model VideoCallRoom {
+  id        String    @id @default(uuid()) @db.Uuid
+  roomCode  String    @unique
+  bookingId String?   @unique @db.Uuid
+  hostId    String    @db.Uuid
+  status    String    @default("waiting")
+  createdAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  booking Booking? @relation(fields: [bookingId], references: [id])
+  host    User     @relation("VideoCallHost", fields: [hostId], references: [id])
+
+  @@index([hostId])
+  @@index([status])
 }
 
 // Admin Wallet Transaction Tracking

@@ -19,6 +19,7 @@ import { bindAdminModule } from './modules/admin.bindings';
 import { bindProjectModule } from './modules/project.bindings';
 import { bindAdminSessionModule } from './modules/adminSession.bindings';
 import { escrowModule } from './modules/escrow.bindings';
+import { registerVideoCallBindings } from './modules/videoCall.bindings';
 
 export { container };
 
@@ -40,6 +41,7 @@ bindCommunityModule(container);
 bindAdminModule(container);
 bindProjectModule(container);
 bindAdminSessionModule(container);
+registerVideoCallBindings(container);
 
 container.load(escrowModule)
 

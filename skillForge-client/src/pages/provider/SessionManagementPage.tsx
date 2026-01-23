@@ -14,6 +14,7 @@ import {
   BookOpen,
   CalendarClock,
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // import { useAppSelector } from '../../store/hooks';
 import { sessionManagementService, SessionStats } from '../../services/sessionManagementService';
@@ -51,6 +52,7 @@ export default function SessionManagementPage() {
     message: '',
     onConfirm: (_value: string) => { }, // eslint-disable-line @typescript-eslint/no-unused-vars
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchSessions();
@@ -296,7 +298,10 @@ export default function SessionManagementPage() {
       if (session.status === 'confirmed') {
         return (
           <div className="flex flex-col gap-2">
-            <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+            <button
+              onClick={() => navigate(`/session/${session.id}/call`)}
+              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+            >
               <Video className="w-4 h-4" />
               Join Session
             </button>
@@ -348,7 +353,10 @@ export default function SessionManagementPage() {
     if (session.status === 'confirmed') {
       return (
         <div className="flex flex-col gap-2">
-          <button className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">
+          <button
+            onClick={() => navigate(`/session/${session.id}/call`)}
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
+          >
             <Video className="w-4 h-4" />
             Join
           </button>

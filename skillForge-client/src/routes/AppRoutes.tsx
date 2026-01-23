@@ -38,6 +38,7 @@ import { useAppSelector } from '../store/hooks';
 import { isAdmin } from '../config/userRole';
 import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
+import VideoCallPage from '../pages/user/VideoCallPage';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
 import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
 import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPage';
@@ -356,6 +357,16 @@ const AppRoutes = () => {
                 }
             />
             <Route path="/welcome" element={<WelcomePage />} />
+
+            {/* Video Call Route (No Layout - Full Screen) */}
+            <Route
+                path="/session/:bookingId/call"
+                element={
+                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <VideoCallPage />
+                    </ProtectedRoute>
+                }
+            />
 
             {/* Catch all */}
             <Route path="*" element={<Navigate to="/" />} />
