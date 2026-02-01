@@ -12,7 +12,7 @@ export class GetCommunityDetailsUseCase implements IGetCommunityDetailsUseCase {
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper
   ) { }
-  
+
   public async execute(communityId: string, userId?: string): Promise<CommunityResponseDTO> {
     const community = await this.communityRepository.findById(communityId);
     if (!community) {
@@ -22,8 +22,8 @@ export class GetCommunityDetailsUseCase implements IGetCommunityDetailsUseCase {
     if (userId) {
       const membership = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
       // Check if membership exists AND is active
-      community.isJoined = !!membership && membership.isActive;
-      community.isAdmin = community.adminId === userId;
+      community.setIsJoined(!!membership && membership.isActive);
+      community.setIsAdmin(community.adminId === userId);
     }
 
     return this.communityMapper.toDTO(community, userId);

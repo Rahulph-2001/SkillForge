@@ -10,7 +10,6 @@ import {
     MessageSquare,
     Phone,
     Clock,
-    DollarSign,
     Video,
     Calendar,
     CheckCircle,
@@ -145,7 +144,7 @@ export default function MyProjectsDashboardPage() {
                             className="space-y-6"
                         >
                             {activeTab === 'created' && <CreatedProjectsTab projects={createdProjects} />}
-                            {activeTab === 'contributing' && <ContributingProjectsTab projects={contributingProjects} />}
+                            {activeTab === 'contributing' && <ContributingProjectsTab projects={contributingProjects} refreshData={fetchData} />}
                             {activeTab === 'applications' && <MyApplicationsTab applications={myApplications} />}
                             {activeTab === 'applicants' && (
                                 <ApplicantsTab
@@ -228,7 +227,9 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                                 <span className={`px-2.5 py-0.5 rounded text-xs font-semibold
                                     ${project.status === 'Open' ? 'bg-blue-100 text-blue-700' :
                                         project.status === 'In_Progress' ? 'bg-gray-100 text-gray-700' :
-                                            'bg-green-100 text-green-700'}`}>
+                                            project.status === 'Payment_Pending' ? 'bg-indigo-100 text-indigo-700' :
+                                                project.status === 'Refund_Pending' ? 'bg-red-100 text-red-700' :
+                                                    'bg-green-100 text-green-700'}`}>
                                     {project.status.replace('_', ' ')}
                                 </span>
                             </div>
@@ -256,7 +257,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                             <Clock className="w-4 h-4 text-gray-400" />
                             <span>{project.duration}</span>
                         </div>
-                        {['In_Progress', 'Pending_Completion'].includes(project.status) && (
+                        {['In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending'].includes(project.status) && (
                             <div className="flex items-center gap-2 px-2 py-0.5 bg-amber-50 rounded text-amber-700 font-medium text-xs border border-amber-100">
                                 <Lock className="w-3 h-3" />
                                 In Escrow
@@ -265,7 +266,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                     </div>
 
                     {/* Working With Section (For In Progress / Pending) */}
-                    {['In_Progress', 'Pending_Completion', 'Completed'].includes(project.status) && project.acceptedContributor && (
+                    {['In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending', 'Completed'].includes(project.status) && project.acceptedContributor && (
                         <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border border-gray-100">
@@ -322,6 +323,26 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                         </div>
                     )}
 
+                    {project.status === 'Payment_Pending' && (
+                        <div className="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4 flex items-center gap-3 text-indigo-800">
+                            <Clock className="w-5 h-5" />
+                            <div>
+                                <h4 className="font-bold text-sm">Payment Release Pending Approval</h4>
+                                <p className="text-xs mt-0.5">Admin approval is required to release the payment. This usually takes 24-48 hours.</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {project.status === 'Refund_Pending' && (
+                        <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 text-red-800">
+                            <Clock className="w-5 h-5" />
+                            <div>
+                                <h4 className="font-bold text-sm">Refund Pending Approval</h4>
+                                <p className="text-xs mt-0.5">Admin approval is required to process the refund.</p>
+                            </div>
+                        </div>
+                    )}
+
 
                 </div>
             ))}
@@ -329,7 +350,9 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
     );
 }
 
-function ContributingProjectsTab({ projects }: { projects: Project[] }) {
+function ContributingProjectsTab({ projects, refreshData }: { projects: Project[]; refreshData: () => Promise<void> }) {
+    const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
+
     if (projects.length === 0) {
         return (
             <EmptyState
@@ -340,11 +363,21 @@ function ContributingProjectsTab({ projects }: { projects: Project[] }) {
         );
     }
 
-    const handleMarkComplete = (_projectId: string) => {
-        toast.success("Project completion requested! The client will be notified to verify.", {
-            icon: '🎉',
-            duration: 4000
-        });
+    const handleMarkComplete = async (projectId: string) => {
+        setLoadingProjectId(projectId);
+        try {
+            await projectService.requestCompletion(projectId);
+            toast.success("Project completion requested! The client will be notified to verify.", {
+                icon: '🎉',
+                duration: 4000
+            });
+            await refreshData();
+        } catch (error: any) {
+            console.error('Failed to request completion:', error);
+            toast.error(error?.response?.data?.message || 'Failed to request project completion');
+        } finally {
+            setLoadingProjectId(null);
+        }
     };
 
     return (
@@ -361,7 +394,9 @@ function ContributingProjectsTab({ projects }: { projects: Project[] }) {
                                 <span className={`text-xs px-2 py-0.5 rounded font-medium 
                                     ${project.status === 'In_Progress' ? 'bg-amber-100 text-amber-800' :
                                         project.status === 'Pending_Completion' ? 'bg-purple-100 text-purple-800' :
-                                            'bg-gray-100 text-gray-600'}`}>
+                                            project.status === 'Payment_Pending' ? 'bg-indigo-100 text-indigo-800' :
+                                                project.status === 'Refund_Pending' ? 'bg-red-100 text-red-800' :
+                                                    'bg-gray-100 text-gray-600'}`}>
                                     {project.status.replace('_', ' ')}
                                 </span>
                             </div>
@@ -441,13 +476,36 @@ function ContributingProjectsTab({ projects }: { projects: Project[] }) {
                                 <Clock className="w-4 h-4" />
                                 Verification Pending
                             </div>
+                        ) : project.status === 'Payment_Pending' ? (
+                            <div className="flex items-center gap-2 text-indigo-600 font-medium text-sm bg-indigo-50 px-3 py-2 rounded-lg">
+                                <Clock className="w-4 h-4" />
+                                Payment Release Pending
+                            </div>
+                        ) : project.status === 'Refund_Pending' ? (
+                            <div className="flex items-center gap-2 text-red-600 font-medium text-sm bg-red-50 px-3 py-2 rounded-lg">
+                                <Clock className="w-4 h-4" />
+                                Refund Pending
+                            </div>
                         ) : (
                             <button
                                 onClick={() => handleMarkComplete(project.id)}
-                                className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-sm"
+                                disabled={loadingProjectId === project.id}
+                                className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm ${loadingProjectId === project.id
+                                    ? 'bg-blue-400 cursor-not-allowed'
+                                    : 'bg-blue-600 hover:bg-blue-700'
+                                    } text-white`}
                             >
-                                <div className="w-4 h-4 rounded-full border-2 border-white"></div>
-                                Mark as Completed
+                                {loadingProjectId === project.id ? (
+                                    <>
+                                        <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                                        Submitting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <CheckCircle className="w-4 h-4" />
+                                        Mark as Completed
+                                    </>
+                                )}
                             </button>
                         )}
                     </div>

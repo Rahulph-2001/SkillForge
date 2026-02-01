@@ -1,7 +1,7 @@
 export interface WalletTransactionProps {
   id: string;
   adminId: string;
-  type: 'CREDIT' | 'WITHDRAWAL';
+  type: 'CREDIT' | 'WITHDRAWAL' | 'DEBIT';
   amount: number;
   currency: string;
   source: string;
@@ -31,7 +31,7 @@ export class WalletTransaction {
     if (this.props.amount <= 0) {
       throw new Error('Amount must be positive');
     }
-    if (!['CREDIT', 'WITHDRAWAL'].includes(this.props.type)) {
+    if (!['CREDIT', 'WITHDRAWAL', 'DEBIT'].includes(this.props.type)) {
       throw new Error('Invalid transaction type');
     }
   }
@@ -44,7 +44,7 @@ export class WalletTransaction {
     return this.props.adminId;
   }
 
-  get type(): 'CREDIT' | 'WITHDRAWAL' {
+  get type(): 'CREDIT' | 'WITHDRAWAL' | 'DEBIT' {
     return this.props.type;
   }
 

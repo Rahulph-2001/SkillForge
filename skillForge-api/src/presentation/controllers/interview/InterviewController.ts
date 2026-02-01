@@ -22,7 +22,7 @@ export class InterviewController {
 
             const response = this.responseBuilder.success(
                 result,
-                'Interview scheduled successfully', // TODO: Move to config/messages
+                SUCCESS_MESSAGES.INTERVIEW.SCHEDULED,
                 HttpStatusCode.CREATED
             );
             res.status(response.statusCode).json(response.body);
@@ -39,7 +39,7 @@ export class InterviewController {
 
             const response = this.responseBuilder.success(
                 result,
-                'Interviews retrieved successfully',
+                SUCCESS_MESSAGES.INTERVIEW.FETCHED,
                 HttpStatusCode.OK
             );
             res.status(response.statusCode).json(response.body);

@@ -183,6 +183,7 @@ export const TYPES = {
   IUsageRecordMapper: Symbol.for('IUsageRecordMapper'),
   IUserSubscriptionMapper: Symbol.for('IUserSubscriptionMapper'),
   IFeatureMapper: Symbol.for('IFeatureMapper'),
+  IWalletTransactionMapper: Symbol.for('IWalletTransactionMapper'),
 
 
   // MCQ Bulk Import
@@ -285,6 +286,16 @@ export const TYPES = {
   ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
   ICheckCommunityMembershipExpiryUseCase: Symbol.for('ICheckCommunityMembershipExpiryUseCase'),
 
+  // Project Escrow & Admin
+  IProjectPaymentRequestRepository: Symbol.for('IProjectPaymentRequestRepository'),
+  IDebitAdminWalletUseCase: Symbol.for('IDebitAdminWalletUseCase'),
+  DebitAdminWalletUseCase: Symbol.for('DebitAdminWalletUseCase'),
+  IProcessProjectPaymentRequestUseCase: Symbol.for('IProcessProjectPaymentRequestUseCase'),
+  ProcessProjectPaymentRequestUseCase: Symbol.for('ProcessProjectPaymentRequestUseCase'),
+  IGetPendingPaymentRequestsUseCase: Symbol.for('IGetPendingPaymentRequestsUseCase'),
+  GetPendingPaymentRequestsUseCase: Symbol.for('GetPendingPaymentRequestsUseCase'),
+  ProjectPaymentRequestController: Symbol.for('ProjectPaymentRequestController'),
+
   // Project 
   IProjectRepository: Symbol.for('IProjectRepository'),
   ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
@@ -296,9 +307,13 @@ export const TYPES = {
   ProjectRoutes: Symbol.for('ProjectRoutes'),
   ProjectRepository: Symbol.for('ProjectRepository'),
   GetMyProjectsUseCase: Symbol.for('GetMyProjectsUseCase'),
+  IGetMyProjectsUseCase: Symbol.for('IGetMyProjectsUseCase'),
   GetContributingProjectsUseCase: Symbol.for('GetContributingProjectsUseCase'),
+  IGetContributingProjectsUseCase: Symbol.for('IGetContributingProjectsUseCase'),
   RequestProjectCompletionUseCase: Symbol.for('RequestProjectCompletionUseCase'),
+  IRequestProjectCompletionUseCase: Symbol.for('IRequestProjectCompletionUseCase'),
   ReviewProjectCompletionUseCase: Symbol.for('ReviewProjectCompletionUseCase'),
+  IReviewProjectCompletionUseCase: Symbol.for('IReviewProjectCompletionUseCase'),
 
   // Booking Use Cases
   ICancelBookingUseCase: Symbol.for('ICancelBookingUseCase'),

@@ -75,6 +75,17 @@ export class ProjectApplicationRepository
     return data ? this.toDomain(data) : null;
   }
 
+  async findAcceptedByProject(projectId: string): Promise<ProjectApplication | null> {
+    const prisma = this.prisma as PrismaClient;
+    const data = await prisma.projectApplication.findFirst({
+      where: {
+        projectId,
+        status: ProjectApplicationStatus.ACCEPTED
+      },
+    });
+    return data ? this.toDomain(data) : null;
+  }
+
   async findReceivedApplications(userId: string): Promise<ProjectApplication[]> {
     const prisma = this.prisma as PrismaClient;
     const data = await prisma.projectApplication.findMany({

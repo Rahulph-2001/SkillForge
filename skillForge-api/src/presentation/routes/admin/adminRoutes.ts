@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { AdminController } from '../../controllers/admin/AdminController';
 import { SubscriptionRoutes } from '../subscription/subscriptionRoutes';
 import { FeatureRoutes } from '../feature/featureRoutes';
+import { ProjectPaymentRequestController } from '../../controllers/admin/ProjectPaymentRequestController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
 
@@ -14,7 +15,8 @@ export class AdminRoutes {
   constructor(
     @inject(TYPES.AdminController) private readonly adminController: AdminController,
     @inject(TYPES.SubscriptionRoutes) private readonly subscriptionRoutes: SubscriptionRoutes,
-    @inject(TYPES.FeatureRoutes) private readonly featureRoutes: FeatureRoutes
+    @inject(TYPES.FeatureRoutes) private readonly featureRoutes: FeatureRoutes,
+    @inject(TYPES.ProjectPaymentRequestController) private readonly paymentRequestController: ProjectPaymentRequestController
   ) {
     this.initializeRoutes();
   }
@@ -54,5 +56,12 @@ export class AdminRoutes {
     // Feature Management Routes
     // Mount feature routes at /api/v1/admin/features
     this.router.use('/features', this.featureRoutes.router);
+
+    // Project Payment Requests
+    // GET /api/v1/admin/payment-requests/pending
+    this.router.get('/payment-requests/pending', this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));
+
+    // POST /api/v1/admin/payment-requests/:id/process
+    this.router.post('/payment-requests/:id/process', this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
   }
 }

@@ -4,14 +4,15 @@ import { TYPES } from '../../infrastructure/di/types';
 import { ICreateProjectUseCase } from '../../application/useCases/project/interfaces/ICreateProjectUseCase';
 import { IListProjectsUseCase } from '../../application/useCases/project/interfaces/IListProjectsUseCase';
 import { IGetProjectUseCase } from '../../application/useCases/project/interfaces/IGetProjectUseCase';
+import { IGetMyProjectsUseCase } from '../../application/useCases/project/interfaces/IGetMyProjectsUseCase';
+import { IGetContributingProjectsUseCase } from '../../application/useCases/project/interfaces/IGetContributingProjectsUseCase';
+import { IRequestProjectCompletionUseCase } from '../../application/useCases/project/interfaces/IRequestProjectCompletionUseCase';
+import { IReviewProjectCompletionUseCase } from '../../application/useCases/project/interfaces/IReviewProjectCompletionUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { CreateProjectRequestDTO } from '../../application/dto/project/CreateProjectDTO';
 import { ListProjectsRequestDTO } from '../../application/dto/project/ListProjectsDTO';
-import { GetMyProjectsUseCase } from '../../application/useCases/project/GetMyProjectsUseCase';
-import { GetContributingProjectsUseCase } from '../../application/useCases/project/GetContributingProjectsUseCase';
-import { RequestProjectCompletionUseCase } from '../../application/useCases/project/RequestProjectCompletionUseCase';
-import { ReviewProjectCompletionUseCase } from '../../application/useCases/project/ReviewProjectCompletionUseCase';
+import { SUCCESS_MESSAGES } from '../../config/messages';
 
 @injectable()
 export class ProjectController {
@@ -19,10 +20,10 @@ export class ProjectController {
     @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase,
     @inject(TYPES.IListProjectsUseCase) private listProjectsUseCase: IListProjectsUseCase,
     @inject(TYPES.IGetProjectUseCase) private getProjectUseCase: IGetProjectUseCase,
-    @inject(TYPES.GetMyProjectsUseCase) private getMyProjectsUseCase: GetMyProjectsUseCase,
-    @inject(TYPES.GetContributingProjectsUseCase) private readonly getContributingProjectsUseCase: GetContributingProjectsUseCase,
-    @inject(TYPES.RequestProjectCompletionUseCase) private readonly requestProjectCompletionUseCase: RequestProjectCompletionUseCase,
-    @inject(TYPES.ReviewProjectCompletionUseCase) private readonly reviewProjectCompletionUseCase: ReviewProjectCompletionUseCase,
+    @inject(TYPES.IGetMyProjectsUseCase) private getMyProjectsUseCase: IGetMyProjectsUseCase,
+    @inject(TYPES.IGetContributingProjectsUseCase) private readonly getContributingProjectsUseCase: IGetContributingProjectsUseCase,
+    @inject(TYPES.IRequestProjectCompletionUseCase) private readonly requestProjectCompletionUseCase: IRequestProjectCompletionUseCase,
+    @inject(TYPES.IReviewProjectCompletionUseCase) private readonly reviewProjectCompletionUseCase: IReviewProjectCompletionUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 
@@ -38,7 +39,7 @@ export class ProjectController {
 
       const result = await this.listProjectsUseCase.execute(filters);
 
-      const response = this.responseBuilder.success(result, 'Projects fetched successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(result, SUCCESS_MESSAGES.PROJECT.FETCHED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);
@@ -50,7 +51,7 @@ export class ProjectController {
       const { id } = req.params;
       const project = await this.getProjectUseCase.execute(id);
 
-      const response = this.responseBuilder.success(project, 'Project details fetched successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(project, SUCCESS_MESSAGES.PROJECT.DETAILS_FETCHED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);
@@ -63,7 +64,7 @@ export class ProjectController {
       const userId = (req as any).user.id;
       const projects = await this.getMyProjectsUseCase.execute(userId);
 
-      const response = this.responseBuilder.success(projects, 'My projects fetched successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(projects, SUCCESS_MESSAGES.PROJECT.MY_PROJECTS_FETCHED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);
@@ -75,7 +76,7 @@ export class ProjectController {
       const userId = (req as any).user.id;
       const projects = await this.getContributingProjectsUseCase.execute(userId);
 
-      const response = this.responseBuilder.success(projects, 'Contributing projects fetched successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(projects, SUCCESS_MESSAGES.PROJECT.CONTRIBUTING_FETCHED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);
@@ -88,7 +89,7 @@ export class ProjectController {
       const userId = (req as any).user.id;
       await this.requestProjectCompletionUseCase.execute(id, userId);
 
-      const response = this.responseBuilder.success(null, 'Project completion requested successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(null, SUCCESS_MESSAGES.PROJECT.COMPLETION_REQUESTED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);
@@ -103,7 +104,7 @@ export class ProjectController {
 
       await this.reviewProjectCompletionUseCase.execute(id, userId, decision);
 
-      const response = this.responseBuilder.success(null, 'Project review submitted successfully', HttpStatusCode.OK);
+      const response = this.responseBuilder.success(null, SUCCESS_MESSAGES.PROJECT.COMPLETION_REVIEWED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error: unknown) {
       next(error);

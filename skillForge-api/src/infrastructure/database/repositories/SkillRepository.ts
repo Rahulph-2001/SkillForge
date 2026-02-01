@@ -1,10 +1,9 @@
 import { injectable, inject } from 'inversify';
-import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { ISkillRepository, BrowseSkillsFilters } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
 import { Database } from '../Database';
 import { TYPES } from '../../di/types';
 import { BaseRepository } from '../BaseRepository';
-import { BrowseSkillsRequestDTO } from '../../../application/dto/skill/BrowseSkillsRequestDTO';
 
 @injectable()
 export class SkillRepository extends BaseRepository<Skill> implements ISkillRepository {
@@ -12,7 +11,7 @@ export class SkillRepository extends BaseRepository<Skill> implements ISkillRepo
     super(db, 'skill');
   }
 
-  async browse(filters: BrowseSkillsRequestDTO): Promise<{ skills: Skill[]; total: number }> {
+  async browse(filters: BrowseSkillsFilters): Promise<{ skills: Skill[]; total: number }> {
     const page = filters.page || 1;
     const limit = filters.limit || 12;
     const skip = (page - 1) * limit;

@@ -1,8 +1,11 @@
+import { injectable } from 'inversify';
 import { WalletTransaction } from '../../domain/entities/WalletTransaction';
 import { WalletTransactionDTO } from '../dto/admin/GetWalletTransactionsDTO';
+import { IWalletTransactionMapper } from './interfaces/IWalletTransactionMapper';
 
-export class WalletTransactionMapper {
-  static toDTO(
+@injectable()
+export class WalletTransactionMapper implements IWalletTransactionMapper {
+  public toDTO(
     transaction: WalletTransaction,
     userName?: string,
     userEmail?: string
@@ -24,7 +27,7 @@ export class WalletTransactionMapper {
     };
   }
 
-  static toDTOList(
+  public toDTOList(
     transactions: WalletTransaction[],
     userMap: Map<string, { name: string; email: string }>
   ): WalletTransactionDTO[] {
@@ -37,3 +40,4 @@ export class WalletTransactionMapper {
     });
   }
 }
+

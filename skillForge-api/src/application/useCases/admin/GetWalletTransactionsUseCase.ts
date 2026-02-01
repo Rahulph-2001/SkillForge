@@ -4,7 +4,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IWalletTransactionRepository } from '../../../domain/repositories/IWalletTransactionRepository';
 import { IGetWalletTransactionsUseCase } from './interfaces/IGetWalletTransactionsUseCase';
 import { GetWalletTransactionsResponseDTO } from '../../dto/admin/GetWalletTransactionsDTO';
-import { WalletTransactionMapper } from '../../mappers/WalletTransactionMapper';
+import { IWalletTransactionMapper } from '../../mappers/interfaces/IWalletTransactionMapper';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { NotFoundError } from '../../../domain/errors/AppError';
 
@@ -12,7 +12,8 @@ import { NotFoundError } from '../../../domain/errors/AppError';
 export class GetWalletTransactionsUseCase implements IGetWalletTransactionsUseCase {
     constructor(
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
-        @inject(TYPES.IWalletTransactionRepository) private readonly walletTransactionRepository: IWalletTransactionRepository
+        @inject(TYPES.IWalletTransactionRepository) private readonly walletTransactionRepository: IWalletTransactionRepository,
+        @inject(TYPES.IWalletTransactionMapper) private readonly walletTransactionMapper: IWalletTransactionMapper
     ) { }
 
     async execute(
@@ -24,7 +25,7 @@ export class GetWalletTransactionsUseCase implements IGetWalletTransactionsUseCa
     ): Promise<GetWalletTransactionsResponseDTO> {
         const users = await this.userRepository.findAll();
         const adminUser = users.find(user => user.role === UserRole.ADMIN);
-        
+
         if (!adminUser) {
             throw new NotFoundError('No admin user found in the system');
         }
@@ -42,7 +43,7 @@ export class GetWalletTransactionsUseCase implements IGetWalletTransactionsUseCa
         );
 
         // Use mapper to convert entities to DTOs
-        const transactions = WalletTransactionMapper.toDTOList(result.transactions, userMap);
+        const transactions = this.walletTransactionMapper.toDTOList(result.transactions, userMap);
 
         const totalPages = Math.ceil(result.total / limit);
 

@@ -113,12 +113,18 @@ export class Community {
   private _isJoined?: boolean;
   private _isAdmin?: boolean;
 
-  // ... getters and setters
+  // Getters only - no public setters on entities
   get isJoined(): boolean | undefined { return this._isJoined; }
-  set isJoined(value: boolean | undefined) { this._isJoined = value; }
-
   get isAdmin(): boolean | undefined { return this._isAdmin; }
-  set isAdmin(value: boolean | undefined) { this._isAdmin = value; }
+
+  // Domain methods to set view-model properties
+  public setIsJoined(value: boolean): void {
+    this._isJoined = value;
+  }
+
+  public setIsAdmin(value: boolean): void {
+    this._isAdmin = value;
+  }
 
   public toJSON(): Record<string, unknown> {
     return {

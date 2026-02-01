@@ -23,6 +23,7 @@ import { registerVideoCallBindings } from './modules/videoCall.bindings';
 import { registerReviewBindings } from './modules/review.bindings';
 import { registerProjectApplicationBindings } from './modules/projectApplication.bindings';
 import { registerInterviewBindings } from './modules/interview.bindings';
+import { projectPaymentRequestBindings } from './modules/projectPaymentRequest.bindings';
 import { CronScheduler } from '../scheduler/CronScheduler';
 
 export { container };
@@ -52,6 +53,7 @@ registerInterviewBindings(container);
 container.bind(TYPES.CronScheduler).to(CronScheduler).inSingletonScope();
 
 container.load(escrowModule);
+container.load(projectPaymentRequestBindings);
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);

@@ -5,9 +5,10 @@ import { IProjectApplicationRepository } from '../../../domain/repositories/IPro
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { ProjectStatus } from '../../../domain/entities/Project';
 import { ProjectApplicationStatus } from '../../../domain/entities/ProjectApplication';
+import { IRequestProjectCompletionUseCase } from './interfaces/IRequestProjectCompletionUseCase';
 
 @injectable()
-export class RequestProjectCompletionUseCase {
+export class RequestProjectCompletionUseCase implements IRequestProjectCompletionUseCase {
     constructor(
         @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
         @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository

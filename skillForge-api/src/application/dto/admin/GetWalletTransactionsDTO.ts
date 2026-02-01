@@ -7,7 +7,7 @@ export const WalletTransactionSchema = z.object({
     userId: z.string(),
     userName: z.string(),
     userEmail: z.string(),
-    type: z.enum(['CREDIT', 'WITHDRAWAL']),
+    type: z.enum(['CREDIT', 'WITHDRAWAL', 'DEBIT']),
     amount: z.number(),
     description: z.string(),
     date: z.date(),

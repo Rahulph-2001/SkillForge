@@ -133,6 +133,24 @@ export const SUCCESS_MESSAGES = {
   REVIEW: {
     CREATED: 'Review submitted successfully',
   },
+
+  PROJECT: {
+    CREATED: 'Project created successfully',
+    FETCHED: 'Projects fetched successfully',
+    DETAILS_FETCHED: 'Project details fetched successfully',
+    UPDATED: 'Project updated successfully',
+    DELETED: 'Project deleted successfully',
+    MY_PROJECTS_FETCHED: 'My projects fetched successfully',
+    CONTRIBUTING_FETCHED: 'Contributing projects fetched successfully',
+    COMPLETION_REQUESTED: 'Project completion requested successfully',
+    COMPLETION_REVIEWED: 'Project review submitted successfully',
+  },
+
+  INTERVIEW: {
+    SCHEDULED: 'Interview scheduled successfully',
+    FETCHED: 'Interviews retrieved successfully',
+    CANCELLED: 'Interview cancelled successfully',
+  },
 } as const;
 
 export const ERROR_MESSAGES = {

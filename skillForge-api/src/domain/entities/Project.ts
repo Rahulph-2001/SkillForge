@@ -3,6 +3,8 @@ export enum ProjectStatus {
   OPEN = 'Open',
   IN_PROGRESS = 'In_Progress',
   PENDING_COMPLETION = 'Pending_Completion',
+  PAYMENT_PENDING = 'Payment_Pending',
+  REFUND_PENDING = 'Refund_Pending',
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
 }
@@ -161,10 +163,37 @@ export class Project {
   }
 
   markAsCompleted(): void {
-    if (this.props.status !== ProjectStatus.IN_PROGRESS && this.props.status !== ProjectStatus.PENDING_COMPLETION) {
-      throw new Error('Project must be in progress or pending completion to be marked as completed');
+    if (this.props.status !== ProjectStatus.IN_PROGRESS &&
+      this.props.status !== ProjectStatus.PENDING_COMPLETION &&
+      this.props.status !== ProjectStatus.PAYMENT_PENDING) {
+      throw new Error('Project must be in progress, pending completion, or payment pending to be marked as completed');
     }
     this.props.status = ProjectStatus.COMPLETED;
+    this.props.updatedAt = new Date();
+  }
+
+  markAsPaymentPending(): void {
+    if (this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+      throw new Error('Project must be pending completion to mark as payment pending');
+    }
+    this.props.status = ProjectStatus.PAYMENT_PENDING;
+    this.props.updatedAt = new Date();
+  }
+
+  markAsRefundPending(): void {
+    if (this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+      throw new Error('Project must be pending completion to mark as refund pending');
+    }
+    this.props.status = ProjectStatus.REFUND_PENDING;
+    this.props.updatedAt = new Date();
+  }
+
+  revertToPendingCompletion(): void {
+    if (this.props.status !== ProjectStatus.PAYMENT_PENDING &&
+      this.props.status !== ProjectStatus.REFUND_PENDING) {
+      throw new Error('Only payment/refund pending projects can be reverted');
+    }
+    this.props.status = ProjectStatus.PENDING_COMPLETION;
     this.props.updatedAt = new Date();
   }
 

@@ -12,7 +12,7 @@ interface SessionCountdownProps {
 export default function SessionCountdown({
     sessionStartAt,
     sessionEndAt,
-    sessionDurationMinutes = 60,
+    sessionDurationMinutes: _sessionDurationMinutes = 60,
     showLabels = true,
     size = 'md',
 }: SessionCountdownProps) {

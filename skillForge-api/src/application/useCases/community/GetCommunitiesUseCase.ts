@@ -41,8 +41,8 @@ export class GetCommunitiesUseCase implements IGetCommunitiesUseCase {
       processedCommunities = communities.map(community => {
         const isJoined = joinedCommunityIds.has(community.id);
         const isAdmin = community.adminId === userId;
-        community.isJoined = isJoined;
-        community.isAdmin = isAdmin;
+        community.setIsJoined(isJoined);
+        community.setIsAdmin(isAdmin);
         return community;
       });
     }

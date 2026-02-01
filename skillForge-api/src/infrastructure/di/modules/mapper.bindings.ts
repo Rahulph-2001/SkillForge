@@ -28,6 +28,8 @@ import { ICommunityMapper } from '../../../application/mappers/interfaces/ICommu
 import { CommunityMapper } from '../../../application/mappers/CommunityMapper';
 import { ICommunityMessageMapper } from '../../../application/mappers/interfaces/ICommunityMessageMapper';
 import { CommunityMessageMapper } from '../../../application/mappers/CommunityMessageMapper';
+import { IWalletTransactionMapper } from '../../../application/mappers/interfaces/IWalletTransactionMapper';
+import { WalletTransactionMapper } from '../../../application/mappers/WalletTransactionMapper';
 
 /**
  * Binds all mapper interfaces to their implementations
@@ -47,5 +49,6 @@ export const bindMapperModule = (container: Container): void => {
   container.bind<IFeatureMapper>(TYPES.IFeatureMapper).to(FeatureMapper);
   container.bind<ICommunityMapper>(TYPES.ICommunityMapper).to(CommunityMapper);
   container.bind<ICommunityMessageMapper>(TYPES.ICommunityMessageMapper).to(CommunityMessageMapper);
+  container.bind<IWalletTransactionMapper>(TYPES.IWalletTransactionMapper).to(WalletTransactionMapper);
 };
 

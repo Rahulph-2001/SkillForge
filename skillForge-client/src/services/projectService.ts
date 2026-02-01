@@ -10,7 +10,7 @@ export interface Project {
   budget: number;
   duration: string;
   deadline?: string;
-  status: 'Open' | 'In_Progress' | 'Pending_Completion' | 'Completed' | 'Cancelled';
+  status: 'Open' | 'In_Progress' | 'Pending_Completion' | 'Payment_Pending' | 'Refund_Pending' | 'Completed' | 'Cancelled';
   paymentId?: string;
   applicationsCount: number;
   createdAt: string;

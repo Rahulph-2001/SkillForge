@@ -13,21 +13,25 @@ import { IIncrementProjectPostUsageUseCase } from '../../../application/useCases
 import { GetProjectUseCase } from '../../../application/useCases/project/GetProjectUseCase';
 import { IGetProjectUseCase } from '../../../application/useCases/project/interfaces/IGetProjectUseCase';
 import { GetMyProjectsUseCase } from '../../../application/useCases/project/GetMyProjectsUseCase';
+import { IGetMyProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetMyProjectsUseCase';
 import { GetContributingProjectsUseCase } from '../../../application/useCases/project/GetContributingProjectsUseCase';
+import { IGetContributingProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetContributingProjectsUseCase';
 import { RequestProjectCompletionUseCase } from '../../../application/useCases/project/RequestProjectCompletionUseCase';
+import { IRequestProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IRequestProjectCompletionUseCase';
 import { ReviewProjectCompletionUseCase } from '../../../application/useCases/project/ReviewProjectCompletionUseCase';
+import { IReviewProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IReviewProjectCompletionUseCase';
 
 export const bindProjectModule = (container: Container): void => {
-    // Project Use Cases
+    // Project Use Cases - bound to interfaces following SOLID principles
     container.bind<ICreateProjectUseCase>(TYPES.ICreateProjectUseCase).to(CreateProjectUseCase);
     container.bind<IListProjectsUseCase>(TYPES.IListProjectsUseCase).to(ListProjectsUseCase);
     container.bind<IValidateProjectPostLimitUseCase>(TYPES.IValidateProjectPostLimitUseCase).to(ValidateProjectPostLimitUseCase);
     container.bind<IIncrementProjectPostUsageUseCase>(TYPES.IIncrementProjectPostUsageUseCase).to(IncrementProjectPostUsageUseCase);
     container.bind<IGetProjectUseCase>(TYPES.IGetProjectUseCase).to(GetProjectUseCase);
-    container.bind<GetMyProjectsUseCase>(TYPES.GetMyProjectsUseCase).to(GetMyProjectsUseCase);
-    container.bind<GetContributingProjectsUseCase>(TYPES.GetContributingProjectsUseCase).to(GetContributingProjectsUseCase);
-    container.bind<RequestProjectCompletionUseCase>(TYPES.RequestProjectCompletionUseCase).to(RequestProjectCompletionUseCase);
-    container.bind<ReviewProjectCompletionUseCase>(TYPES.ReviewProjectCompletionUseCase).to(ReviewProjectCompletionUseCase);
+    container.bind<IGetMyProjectsUseCase>(TYPES.IGetMyProjectsUseCase).to(GetMyProjectsUseCase);
+    container.bind<IGetContributingProjectsUseCase>(TYPES.IGetContributingProjectsUseCase).to(GetContributingProjectsUseCase);
+    container.bind<IRequestProjectCompletionUseCase>(TYPES.IRequestProjectCompletionUseCase).to(RequestProjectCompletionUseCase);
+    container.bind<IReviewProjectCompletionUseCase>(TYPES.IReviewProjectCompletionUseCase).to(ReviewProjectCompletionUseCase);
 
     // Controllers & Routes
     container.bind<ProjectController>(TYPES.ProjectController).to(ProjectController);

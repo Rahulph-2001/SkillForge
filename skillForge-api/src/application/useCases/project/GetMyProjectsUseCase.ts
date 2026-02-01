@@ -2,9 +2,10 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IProjectRepository } from '../../../domain/repositories/IProjectRepository';
 import { Project } from '../../../domain/entities/Project';
+import { IGetMyProjectsUseCase } from './interfaces/IGetMyProjectsUseCase';
 
 @injectable()
-export class GetMyProjectsUseCase {
+export class GetMyProjectsUseCase implements IGetMyProjectsUseCase {
     constructor(
         @inject(TYPES.IProjectRepository) private projectRepository: IProjectRepository
     ) { }
