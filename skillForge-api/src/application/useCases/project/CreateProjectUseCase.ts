@@ -8,7 +8,7 @@ import { ICreateProjectUseCase } from './interfaces/ICreateProjectUseCase';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { ProjectResponseDTO } from '../../dto/project/ProjectResponseDTO';
 import { Project, ProjectStatus } from '../../../domain/entities/Project';
-import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
+import { ForbiddenError, NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { v4 as uuidv4 } from 'uuid';
 
 @injectable()
@@ -23,6 +23,7 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
   async execute(userId: string, request: CreateProjectRequestDTO, paymentId?: string): Promise<ProjectResponseDTO> {
     // 1. Verify user exists
     const user = await this.userRepository.findById(userId);
+    
     if (!user) {
       throw new NotFoundError('User not found');
     }

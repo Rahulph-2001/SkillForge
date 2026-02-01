@@ -26,6 +26,11 @@ export const UserSubscriptionResponseDTOSchema = z.object({
     stripeCustomerId: z.string().optional(),
     createdAt: z.coerce.date(),
     updatedAt: z.coerce.date(),
+    usage: z.array(z.object({
+        feature: z.string(),
+        used: z.number(),
+        limit: z.number().nullable(),
+    })).optional(),
 });
 
 export type UserSubscriptionResponseDTO = z.infer<typeof UserSubscriptionResponseDTOSchema>;

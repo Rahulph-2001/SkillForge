@@ -1,3 +1,4 @@
+// App Attributes and Messages
 export const SUCCESS_MESSAGES = {
   AUTH: {
     REGISTER_SUCCESS: 'Registration successful. Please check your email for verification code.',
@@ -20,11 +21,17 @@ export const SUCCESS_MESSAGES = {
     REFUNDED: 'Payment refunded successfully',
   },
   VIDEO_CALL: {
-  ROOM_CREATED: 'Video call room created successfully',
-  JOINED: 'Joined video call successfully',
-  LEFT: 'Left video call successfully',
-  ENDED: 'Video call ended successfully',
-},
+    ROOM_CREATED: 'Video call room created successfully',
+    JOINED: 'Joined video call successfully',
+    LEFT: 'Left video call successfully',
+    ENDED: 'Video call ended successfully',
+  },
+  PROJECT_APPLICATION: {
+    SUBMITTED: 'Application submitted successfully',
+    FETCHED: 'Applications retrieved successfully',
+    UPDATED: 'Application status updated successfully',
+    WITHDRAWN: 'Application withdrawn successfully',
+  },
 
   USER: {
     PROFILE_FETCHED: 'Profile retrieved successfully',
@@ -118,6 +125,14 @@ export const SUCCESS_MESSAGES = {
     TRANSACTIONS_FETCHED: 'Wallet transactions retrieved successfully',
     WALLET_CREDITED: 'Admin wallet credited successfully',
   },
+
+  SESSION: {
+    TIME_VALIDATED: 'Session time validated successfully',
+  },
+
+  REVIEW: {
+    CREATED: 'Review submitted successfully',
+  },
 } as const;
 
 export const ERROR_MESSAGES = {
@@ -154,12 +169,32 @@ export const ERROR_MESSAGES = {
     TOO_MANY_REQUESTS: 'Too many requests, try again later.',
     EMAIL_SEND_FAILED: 'Failed to send email. Please try again.',
   },
+
+  SESSION: {
+    NOT_STARTED_YET: 'Session has not started yet. Please wait until the scheduled time.',
+    SESSION_EXPIRED: 'This session has already ended.',
+    NOT_CONFIRMED: 'Session must be confirmed before joining.',
+    JOIN_WINDOW_NOT_OPEN: 'You can only join the session within 15 minutes before the start time.',
+    SESSION_TIME_VALIDATION_FAILED: 'Failed to validate session time.',
+  },
   PAYMENT: {
     INTENT_CREATION_FAILED: 'Failed to create payment intent',
     CONFIRMATION_FAILED: 'Payment confirmation failed',
     REFUND_FAILED: 'Payment refund failed',
     NOT_FOUND: 'Payment not found',
     INVALID_AMOUNT: 'Invalid payment amount',
+  },
+  PROJECT_APPLICATION: {
+    NOT_FOUND: 'Application not found',
+    ALREADY_APPLIED: 'You have already applied to this project',
+    CANNOT_APPLY_OWN: 'Cannot apply to your own project',
+    PROJECT_NOT_OPEN: 'Project is not accepting applications',
+    UNAUTHORIZED: 'You are not authorized to perform this action',
+  },
+  PROJECT: {
+    NOT_FOUND: 'Project not found',
+    CREATION_FAILED: 'Failed to create project',
+    UPDATE_FAILED: 'Failed to update project',
   },
 
   USER: {
@@ -210,6 +245,13 @@ export const ERROR_MESSAGES = {
     LIMIT_REQUIRED: 'Limit value is required for numeric limit features',
   },
 
+  REVIEW: {
+    CREATED: 'Review submitted successfully',
+    NOT_FOUND: 'Review not found',
+    ALREADY_EXISTS: 'Review already exists for this session',
+    CREATION_FAILED: 'Failed to submit review',
+  },
+
   COMMUNITY: {
     NOT_FOUND: 'Community not found',
     ALREADY_MEMBER: 'Already a member of this community',
@@ -220,7 +262,7 @@ export const ERROR_MESSAGES = {
     ONLY_ADMIN_CAN_PIN: 'Only admin can pin messages',
     MESSAGE_NOT_FOUND: 'Message not found',
   },
-   WALLET: {
+  WALLET: {
     STATS_FETCH_FAILED: 'Failed to fetch wallet statistics',
     TRANSACTIONS_FETCH_FAILED: 'Failed to fetch wallet transactions',
     ADMIN_NOT_FOUND: 'No admin user found in the system',

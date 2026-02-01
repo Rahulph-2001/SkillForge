@@ -9,7 +9,8 @@ export declare enum PaymentStatus {
     SUCCEEDED = "SUCCEEDED",
     FAILED = "FAILED",
     CANCELED = "CANCELED",
-    REFUNDED = "REFUNDED"
+    REFUNDED = "REFUNDED",
+    RELEASED = "RELEASED"
 }
 export declare enum PaymentPurpose {
     SUBSCRIPTION = "SUBSCRIPTION",

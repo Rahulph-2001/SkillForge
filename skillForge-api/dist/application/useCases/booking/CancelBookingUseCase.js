@@ -11,14 +11,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+var CancelBookingUseCase_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CancelBookingUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
-let CancelBookingUseCase = class CancelBookingUseCase {
-    constructor(bookingRepository) {
+let CancelBookingUseCase = CancelBookingUseCase_1 = class CancelBookingUseCase {
+    constructor(bookingRepository, escrowRepository) {
         this.bookingRepository = bookingRepository;
+        this.escrowRepository = escrowRepository;
     }
     async execute(request) {
         const { bookingId, userId, reason } = request;
@@ -34,14 +37,34 @@ let CancelBookingUseCase = class CancelBookingUseCase {
         if (!booking.canBeCancelled()) {
             throw new AppError_1.ValidationError('Booking cannot be cancelled in its current state');
         }
-        // 4. Perform Transactional Cancellation (Refunds credits automatically)
-        await this.bookingRepository.cancelTransactional(bookingId, userId, reason || 'Cancelled by user');
+        // 4. Time-based validation: Block cancellation if session time window has started
+        if (booking.status === Booking_1.BookingStatus.CONFIRMED) {
+            const sessionStart = this.parseDateTime(booking.preferredDate, booking.preferredTime);
+            const cancelCutoff = new Date(sessionStart.getTime() - CancelBookingUseCase_1.CANCEL_CUTOFF_MINUTES * 60 * 1000);
+            const now = new Date();
+            if (now >= cancelCutoff) {
+                throw new AppError_1.ValidationError('Cannot cancel: Session is about to start or has already started');
+            }
+        }
+        // 5. Refund credits from escrow to learner
+        await this.escrowRepository.refundCredits(bookingId);
+        // 6. Update booking status to cancelled
+        await this.bookingRepository.updateStatus(bookingId, Booking_1.BookingStatus.CANCELLED, reason || 'Cancelled by user');
+    }
+    parseDateTime(dateString, timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const date = new Date(dateString);
+        date.setHours(hours, minutes, 0, 0);
+        return date;
     }
 };
 exports.CancelBookingUseCase = CancelBookingUseCase;
-exports.CancelBookingUseCase = CancelBookingUseCase = __decorate([
+// Users can cancel up to 15 minutes before session starts (same as join window)
+CancelBookingUseCase.CANCEL_CUTOFF_MINUTES = 15;
+exports.CancelBookingUseCase = CancelBookingUseCase = CancelBookingUseCase_1 = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], CancelBookingUseCase);
 //# sourceMappingURL=CancelBookingUseCase.js.map

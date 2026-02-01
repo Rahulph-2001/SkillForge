@@ -20,9 +20,19 @@ let ListUserSkillsUseCase = class ListUserSkillsUseCase {
         this.skillRepository = skillRepository;
         this.skillMapper = skillMapper;
     }
-    async execute(userId) {
-        const skills = await this.skillRepository.findByProviderId(userId);
-        return skills.map(skill => this.skillMapper.toResponseDTO(skill));
+    async execute(userId, filters = {}) {
+        const result = await this.skillRepository.findByProviderIdWithPagination(userId, {
+            page: filters.page || 1,
+            limit: filters.limit || 12,
+            status: filters.status,
+        });
+        return {
+            skills: result.skills.map(skill => this.skillMapper.toResponseDTO(skill)),
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+        };
     }
 };
 exports.ListUserSkillsUseCase = ListUserSkillsUseCase;

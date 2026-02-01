@@ -20,11 +20,12 @@ const AppError_1 = require("../../../domain/errors/AppError");
 const BookingValidator_1 = require("../../../shared/validators/BookingValidator");
 const DateTimeUtils_1 = require("../../../shared/utils/DateTimeUtils");
 let CreateBookingUseCase = class CreateBookingUseCase {
-    constructor(bookingRepository, skillRepository, userRepository, availabilityRepository, bookingMapper) {
+    constructor(bookingRepository, skillRepository, userRepository, availabilityRepository, escrowRepository, bookingMapper) {
         this.bookingRepository = bookingRepository;
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
         this.availabilityRepository = availabilityRepository;
+        this.escrowRepository = escrowRepository;
         this.bookingMapper = bookingMapper;
     }
     async execute(request) {
@@ -72,29 +73,24 @@ let CreateBookingUseCase = class CreateBookingUseCase {
         }
         // 8. Validate availability settings
         if (availability) {
-            // Validate booking is not in the past
             const pastValidation = BookingValidator_1.BookingValidator.validateDateNotInPast(request.preferredDate, request.preferredTime, availability.timezone);
             if (!pastValidation.valid) {
                 throw new AppError_1.ValidationError(pastValidation.error || 'Booking date must be in the future');
             }
-            // Validate advance booking window
             const bookingDate = DateTimeUtils_1.DateTimeUtils.parseDateTime(request.preferredDate, request.preferredTime);
             const advanceValidation = BookingValidator_1.BookingValidator.validateWithinAdvanceBookingWindow(bookingDate, availability.minAdvanceBooking, availability.maxAdvanceBooking);
             if (!advanceValidation.valid) {
                 throw new AppError_1.ValidationError(advanceValidation.error || 'Booking outside allowed time window');
             }
-            // Validate against blocked dates
             const blockedDates = availability.blockedDates;
             const blockedValidation = BookingValidator_1.BookingValidator.validateAgainstBlockedDates(request.preferredDate, blockedDates);
             if (!blockedValidation.valid) {
                 throw new AppError_1.ValidationError(blockedValidation.error || 'Provider unavailable on this date');
             }
-            // Validate session doesn't cross midnight
             const midnightValidation = BookingValidator_1.BookingValidator.validateSessionWithinSameDay(request.preferredDate, request.preferredTime, skill.durationHours, availability.timezone);
             if (!midnightValidation.valid) {
                 throw new AppError_1.ValidationError(midnightValidation.error || 'Session cannot cross midnight');
             }
-            // Validate within working hours
             const dayOfWeek = new Date(request.preferredDate).toLocaleDateString('en-US', { weekday: 'long' });
             const weeklySchedule = availability.weeklySchedule;
             const daySchedule = weeklySchedule[dayOfWeek];
@@ -104,7 +100,6 @@ let CreateBookingUseCase = class CreateBookingUseCase {
                     throw new AppError_1.ValidationError(workingHoursValidation.error || 'Outside provider working hours');
                 }
             }
-            // Check for overlapping bookings with buffer
             const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
             const startDate = new Date(request.preferredDate);
             startDate.setHours(startHours, startMinutes, 0, 0);
@@ -114,7 +109,6 @@ let CreateBookingUseCase = class CreateBookingUseCase {
             if (overlapping.length > 0) {
                 throw new AppError_1.ValidationError('This time slot conflicts with an existing booking');
             }
-            // Check max sessions per day if configured
             if (availability.maxSessionsPerDay) {
                 const sessionsCount = await this.bookingRepository.countActiveBookingsByProviderAndDate(request.providerId, request.preferredDate);
                 if (sessionsCount >= availability.maxSessionsPerDay) {
@@ -122,12 +116,12 @@ let CreateBookingUseCase = class CreateBookingUseCase {
                 }
             }
         }
-        // 8. Calculate start and end times for the booking
+        // 9. Calculate start and end times for the booking
         const [startHours, startMinutes] = request.preferredTime.split(':').map(Number);
         const startAt = new Date(request.preferredDate);
         startAt.setHours(startHours, startMinutes, 0, 0);
         const endAt = DateTimeUtils_1.DateTimeUtils.addHours(startAt, skill.durationHours);
-        // 9. Create booking entity
+        // 10. Create booking entity
         const booking = Booking_1.Booking.create({
             learnerId: request.learnerId,
             skillId: request.skillId,
@@ -142,10 +136,8 @@ let CreateBookingUseCase = class CreateBookingUseCase {
             createdAt: new Date(),
             updatedAt: new Date()
         });
-        // 9. Create booking with transaction (deducts credits from learner)
-        const createdBooking = await this.bookingRepository.createTransactional(booking, sessionCost);
-        // TODO: Send notification to provider
-        // TODO: Send confirmation to learner
+        // 11. Create booking with escrow hold (holds credits from learner)
+        const createdBooking = await this.bookingRepository.createWithEscrow(booking, sessionCost);
         return this.bookingMapper.toDTO(createdBooking);
     }
 };
@@ -156,7 +148,8 @@ exports.CreateBookingUseCase = CreateBookingUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
-    __param(4, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], CreateBookingUseCase);
 //# sourceMappingURL=CreateBookingUseCase.js.map

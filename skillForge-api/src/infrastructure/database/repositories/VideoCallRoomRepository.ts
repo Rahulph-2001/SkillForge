@@ -6,13 +6,13 @@ import { IVideoCallRoomRepository } from '../../../domain/repositories/IVideoCal
 
 @injectable()
 export class VideoCallRoomRepository implements IVideoCallRoomRepository {
-  constructor(@inject(TYPES.Database) private db: Database) {}
+  constructor(@inject(TYPES.Database) private db: Database) { }
 
   private get prisma() { return this.db.getClient(); }
 
   async create(room: VideoCallRoom): Promise<VideoCallRoom> {
     const data = await this.prisma.videoCallRoom.create({
-      data: { id: room.id, roomCode: room.roomCode, bookingId: room.bookingId, hostId: room.hostId, status: room.status }
+      data: { id: room.id, roomCode: room.roomCode, bookingId: room.bookingId, interviewId: room.interviewId, hostId: room.hostId, status: room.status }
     });
     return this.toDomain(data);
   }
@@ -26,6 +26,13 @@ export class VideoCallRoomRepository implements IVideoCallRoomRepository {
     const data = await this.prisma.videoCallRoom.findUnique({ where: { bookingId } });
     return data ? this.toDomain(data) : null;
   }
+
+  async findByInterviewId(interviewId: string): Promise<VideoCallRoom | null> {
+    const data = await this.prisma.videoCallRoom.findUnique({ where: { interviewId } });
+    return data ? this.toDomain(data) : null;
+  }
+
+
 
   async findByRoomCode(roomCode: string): Promise<VideoCallRoom | null> {
     const data = await this.prisma.videoCallRoom.findUnique({ where: { roomCode } });
@@ -50,7 +57,7 @@ export class VideoCallRoomRepository implements IVideoCallRoomRepository {
 
   private toDomain(data: any): VideoCallRoom {
     return new VideoCallRoom({
-      id: data.id, roomCode: data.roomCode, bookingId: data.bookingId,
+      id: data.id, roomCode: data.roomCode, bookingId: data.bookingId, interviewId: data.interviewId,
       hostId: data.hostId, status: data.status, createdAt: data.createdAt, endedAt: data.endedAt
     });
   }

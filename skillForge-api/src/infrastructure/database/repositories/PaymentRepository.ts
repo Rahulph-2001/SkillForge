@@ -91,7 +91,7 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
             data: { status, updated_at: new Date() },
         });
     }
-   async findWithPagination(
+    async findWithPagination(
         paginationParams: IPaginationParams,
         filters?: {
             userId?: string;
@@ -101,19 +101,19 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
         }
     ): Promise<IPaginationResult<Payment>> {
         const where: any = {};
-        
+
         if (filters?.userId) {
             where.user_id = filters.userId;
         }
-        
+
         if (filters?.purpose) {
             where.purpose = filters.purpose;
         }
-        
+
         if (filters?.status) {
             where.status = filters.status;
         }
-        
+
         if (filters?.search) {
             where.OR = [
                 { id: { contains: filters.search, mode: 'insensitive' } },

@@ -26,27 +26,14 @@ let TransactionService = class TransactionService {
     }
     async execute(callback) {
         return await this.database.transaction(async (tx) => {
-            // Create repository instances with transaction client
-            // Note: We override the prisma property to use the transaction client
+            // Create repository instances and inject transaction client
             // This ensures all operations within the callback use the same transaction
             const userRepository = new UserRepository_1.UserRepository(this.database);
-            Object.defineProperty(userRepository, 'prisma', {
-                value: tx,
-                writable: false,
-                configurable: false,
-            });
+            userRepository.setTransactionClient(tx);
             const communityRepository = new CommunityRepository_1.CommunityRepository(this.database);
-            Object.defineProperty(communityRepository, 'prisma', {
-                value: tx,
-                writable: false,
-                configurable: false,
-            });
+            communityRepository.setTransactionClient(tx);
             const usageRecordRepository = new UsageRecordRepository_1.UsageRecordRepository(this.database);
-            Object.defineProperty(usageRecordRepository, 'prisma', {
-                value: tx,
-                writable: false,
-                configurable: false,
-            });
+            usageRecordRepository.setTransactionClient(tx);
             const repositories = {
                 userRepository,
                 communityRepository,

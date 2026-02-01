@@ -2,6 +2,7 @@
 export enum ProjectStatus {
   OPEN = 'Open',
   IN_PROGRESS = 'In_Progress',
+  PENDING_COMPLETION = 'Pending_Completion',
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
 }
@@ -21,6 +22,16 @@ export interface ProjectProps {
   applicationsCount?: number;
   createdAt: Date;
   updatedAt: Date;
+  client?: {
+    id: string;
+    name: string;
+    avatarUrl?: string | null;
+  };
+  acceptedContributor?: {
+    id: string;
+    name: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export class Project {
@@ -116,7 +127,9 @@ export class Project {
   }
 
   canBeCancelled(): boolean {
-    return this.props.status === ProjectStatus.OPEN || this.props.status === ProjectStatus.IN_PROGRESS;
+    return this.props.status === ProjectStatus.OPEN ||
+      this.props.status === ProjectStatus.IN_PROGRESS ||
+      this.props.status === ProjectStatus.PENDING_COMPLETION;
   }
 
   canBeCompleted(): boolean {
@@ -131,9 +144,25 @@ export class Project {
     this.props.updatedAt = new Date();
   }
 
+  markAsPendingCompletion(): void {
+    if (this.props.status !== ProjectStatus.IN_PROGRESS) {
+      throw new Error('Project must be in progress to be marked as pending completion');
+    }
+    this.props.status = ProjectStatus.PENDING_COMPLETION;
+    this.props.updatedAt = new Date();
+  }
+
+  requestModifications(): void {
+    if (this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+      throw new Error('Can only request modifications for projects pending completion');
+    }
+    this.props.status = ProjectStatus.IN_PROGRESS;
+    this.props.updatedAt = new Date();
+  }
+
   markAsCompleted(): void {
-    if (!this.canBeCompleted()) {
-      throw new Error('Project must be in progress to be marked as completed');
+    if (this.props.status !== ProjectStatus.IN_PROGRESS && this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+      throw new Error('Project must be in progress or pending completion to be marked as completed');
     }
     this.props.status = ProjectStatus.COMPLETED;
     this.props.updatedAt = new Date();
@@ -152,6 +181,10 @@ export class Project {
     this.props.updatedAt = new Date();
   }
 
+  get acceptedContributor() {
+    return this.props.acceptedContributor;
+  }
+
   toJSON(): ProjectProps {
     return {
       id: this.props.id,
@@ -168,7 +201,13 @@ export class Project {
       applicationsCount: this.props.applicationsCount || 0,
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
+      client: this.props.client,
+      acceptedContributor: this.props.acceptedContributor,
     };
+  }
+
+  get client() {
+    return this.props.client;
   }
 
   toObject(): ProjectProps {

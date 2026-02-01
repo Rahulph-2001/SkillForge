@@ -230,7 +230,7 @@ export class AuthController {
     }
   }
 
-  async googleCallback(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async googleCallback(req: Request, res: Response, _next: NextFunction): Promise<void> {
     try {
       const googleProfile = req.user as unknown as Profile;
       if (!googleProfile) {

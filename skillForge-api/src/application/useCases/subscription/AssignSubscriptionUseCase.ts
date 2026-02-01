@@ -129,9 +129,17 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
         try {
             const user = await this.userRepository.findById(dto.userId);
             if (user) {
-                const planName = plan.name.toLowerCase() as any;
+                // Map plan badge to subscription plan type (Safe Enum Mapping)
+                let planType: 'free' | 'starter' | 'professional' | 'enterprise' = 'free';
+                const lowerBadge = plan.badge.toLowerCase();
+
+                if (lowerBadge === 'starter') planType = 'starter';
+                else if (lowerBadge === 'professional') planType = 'professional';
+                else if (lowerBadge === 'enterprise') planType = 'enterprise';
+                else planType = 'free';
+
                 user.activateSubscription(
-                    planName,
+                    planType,
                     periodEnd,
                     periodStart,
                     true // autoRenew

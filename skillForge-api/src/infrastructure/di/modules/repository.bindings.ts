@@ -46,30 +46,30 @@ export const bindRepositoryModule = (container: Container): void => {
   // Core Repositories
   container.bind<IUserRepository>(TYPES.IUserRepository).to(UserRepository);
   container.bind<IOTPRepository>(TYPES.IOTPRepository).to(RedisOTPRepository);
-  
+
   // Subscription Repositories
   container.bind<ISubscriptionPlanRepository>(TYPES.ISubscriptionPlanRepository).to(PrismaSubscriptionPlanRepository);
   container.bind<IUserSubscriptionRepository>(TYPES.IUserSubscriptionRepository).to(PrismaUserSubscriptionRepository);
   container.bind<IUsageRecordRepository>(TYPES.IUsageRecordRepository).to(UsageRecordRepository);
   container.bind<IFeatureRepository>(TYPES.IFeatureRepository).to(PrismaFeatureRepository);
-  
+
   // Skill Repositories
   container.bind<ISkillRepository>(TYPES.ISkillRepository).to(SkillRepository);
   container.bind<ISkillTemplateRepository>(TYPES.ISkillTemplateRepository).to(SkillTemplateRepository);
   container.bind<ITemplateQuestionRepository>(TYPES.ITemplateQuestionRepository).to(TemplateQuestionRepository);
   container.bind<IMCQRepository>(TYPES.IMCQRepository).to(MCQRepository);
   container.bind<IMCQImportJobRepository>(TYPES.IMCQImportJobRepository).to(MCQImportJobRepository);
-  
+
   // Booking & Project Repositories
   container.bind<IBookingRepository>(TYPES.IBookingRepository).to(BookingRepository);
   container.bind<IProjectRepository>(TYPES.IProjectRepository).to(ProjectRepository);
   container.bind<IAvailabilityRepository>(TYPES.IAvailabilityRepository).to(PrismaAvailabilityRepository);
-  
+
   // Community Repositories
   container.bind<ICommunityRepository>(TYPES.ICommunityRepository).to(CommunityRepository);
   container.bind<ICommunityMessageRepository>(TYPES.ICommunityMessageRepository).to(CommunityMessageRepository);
   container.bind<IMessageReactionRepository>(TYPES.IMessageReactionRepository).to(MessageReactionRepository);
-  
+
   // Payment Repository
   container.bind<IPaymentRepository>(TYPES.IPaymentRepository).to(PrismaPaymentRepository).inSingletonScope();
   container.bind<IWalletTransactionRepository>(TYPES.IWalletTransactionRepository).to(WalletTransactionRepository)

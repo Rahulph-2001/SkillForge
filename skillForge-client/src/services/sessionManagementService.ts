@@ -81,7 +81,10 @@ export const sessionManagementService = {
     newTime: string,
     reason: string
   ): Promise<void> {
-    await api.post(`/sessions/${bookingId}/reschedule`, { newDate, newTime, reason });
+    // Backend route is defined as router.post('/reschedule/:id', ...) in sessionManagementRoutes.ts
+    // This is mounted under /api/v1/sessions
+    // So correct path is /sessions/reschedule/:bookingId
+    await api.post(`/sessions/reschedule/${bookingId}`, { newDate, newTime, reason });
   },
 
   /**
@@ -113,7 +116,9 @@ export const sessionManagementService = {
    * Accept a reschedule request
    */
   async acceptReschedule(bookingId: string): Promise<void> {
-    await api.post(`/sessions/${bookingId}/reschedule/accept`);
+    // Backend route: POST /reschedule/:bookingId/accept (mounted under /sessions)
+    // Correct path: /sessions/reschedule/:bookingId/accept
+    await api.post(`/sessions/reschedule/${bookingId}/accept`);
   },
 
   /**

@@ -16,15 +16,25 @@ exports.GetCommunitiesUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 let GetCommunitiesUseCase = class GetCommunitiesUseCase {
-    constructor(communityRepository) {
+    constructor(communityRepository, paginationService) {
         this.communityRepository = communityRepository;
+        this.paginationService = paginationService;
     }
-    async execute(filters, userId) {
-        const communities = await this.communityRepository.findAll({ ...filters, isActive: true });
+    async execute(filters, userId, page = 1, limit = 12) {
+        const paginationParams = this.paginationService.createParams(page, limit);
+        const { communities, total } = await this.communityRepository.findAllWithPagination({
+            category: filters?.category,
+            search: filters?.search,
+            isActive: true
+        }, {
+            skip: paginationParams.skip,
+            take: paginationParams.take
+        });
+        let processedCommunities = communities;
         if (userId) {
             const memberships = await this.communityRepository.findMembershipsByUserId(userId);
             const joinedCommunityIds = new Set(memberships.map(m => m.communityId));
-            return communities.map(community => {
+            processedCommunities = communities.map(community => {
                 const isJoined = joinedCommunityIds.has(community.id);
                 const isAdmin = community.adminId === userId;
                 community.isJoined = isJoined;
@@ -32,13 +42,14 @@ let GetCommunitiesUseCase = class GetCommunitiesUseCase {
                 return community;
             });
         }
-        return communities;
+        return this.paginationService.createResult(processedCommunities, total, paginationParams.page, paginationParams.limit);
     }
 };
 exports.GetCommunitiesUseCase = GetCommunitiesUseCase;
 exports.GetCommunitiesUseCase = GetCommunitiesUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object])
 ], GetCommunitiesUseCase);
 //# sourceMappingURL=GetCommunitiesUseCase.js.map

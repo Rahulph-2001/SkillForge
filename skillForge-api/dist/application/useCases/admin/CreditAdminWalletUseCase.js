@@ -15,44 +15,66 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreditAdminWalletUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const WalletTransaction_1 = require("../../../domain/entities/WalletTransaction");
 const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
+const uuid_1 = require("uuid");
 let CreditAdminWalletUseCase = class CreditAdminWalletUseCase {
-    constructor(userRepository) {
+    constructor(userRepository, walletTransactionRepository) {
         this.userRepository = userRepository;
+        this.walletTransactionRepository = walletTransactionRepository;
     }
     async execute(dto) {
-        // Find the first admin user
-        // Note: In a production system, you might have a dedicated admin ID or wallet service
         const adminUser = await this.findAdminUser();
         if (!adminUser) {
             throw new AppError_1.NotFoundError('No admin user found in the system');
         }
-        // Get current balance before crediting
         const previousBalance = adminUser.toJSON().wallet_balance;
-        // Credit the admin wallet
         adminUser.creditWallet(dto.amount);
-        // Save updated admin
         await this.userRepository.update(adminUser);
-        // Return response
+        const newBalance = previousBalance + dto.amount;
+        // Record transaction
+        const transaction = WalletTransaction_1.WalletTransaction.create({
+            id: (0, uuid_1.v4)(),
+            adminId: adminUser.id,
+            type: 'CREDIT',
+            amount: dto.amount,
+            currency: dto.currency,
+            source: dto.source,
+            referenceId: dto.referenceId,
+            description: this.generateDescription(dto),
+            metadata: dto.metadata,
+            previousBalance,
+            newBalance,
+            status: 'COMPLETED',
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        });
+        await this.walletTransactionRepository.create(transaction);
+        console.log(`[CreditAdminWallet] Recorded transaction: ${dto.source} - ₹${dto.amount}`);
         return {
             adminId: adminUser.id,
             previousBalance,
             creditedAmount: dto.amount,
-            newBalance: previousBalance + dto.amount,
+            newBalance,
             currency: dto.currency,
             source: dto.source,
             referenceId: dto.referenceId,
             timestamp: new Date()
         };
     }
-    /**
-     * Find the first admin user in the system
-     * TODO: In future, implement a dedicated admin wallet system
-     */
+    generateDescription(dto) {
+        if (dto.source === 'SUBSCRIPTION_PAYMENT') {
+            const planName = dto.metadata?.planName || 'Subscription Plan';
+            return `Subscription payment: ${planName}`;
+        }
+        else if (dto.source === 'PROJECT_ESCROW') {
+            const projectTitle = dto.metadata?.projectTitle || 'Project';
+            return `Project escrow: ${projectTitle}`;
+        }
+        return `Wallet credit: ${dto.source}`;
+    }
     async findAdminUser() {
-        // This is a simple implementation
-        // In production, you might want to have a dedicated admin wallet or use a specific admin ID
         const users = await this.userRepository.findAll();
         return users.find(user => user.role === UserRole_1.UserRole.ADMIN) || null;
     }
@@ -61,6 +83,7 @@ exports.CreditAdminWalletUseCase = CreditAdminWalletUseCase;
 exports.CreditAdminWalletUseCase = CreditAdminWalletUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IWalletTransactionRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], CreditAdminWalletUseCase);
 //# sourceMappingURL=CreditAdminWalletUseCase.js.map

@@ -15,6 +15,7 @@ var PaymentStatus;
     PaymentStatus["FAILED"] = "FAILED";
     PaymentStatus["CANCELED"] = "CANCELED";
     PaymentStatus["REFUNDED"] = "REFUNDED";
+    PaymentStatus["RELEASED"] = "RELEASED";
 })(PaymentStatus || (exports.PaymentStatus = PaymentStatus = {}));
 var PaymentPurpose;
 (function (PaymentPurpose) {

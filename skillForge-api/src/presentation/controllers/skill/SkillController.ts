@@ -50,10 +50,14 @@ export class SkillController {
   public listMySkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user!.userId;
-      const skills = await this.listUserSkillsUseCase.execute(userId);
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 20;
+      const status = req.query.status as string | undefined;
+
+      const result = await this.listUserSkillsUseCase.execute(userId, { page, limit, status });
 
       const response = this.responseBuilder.success(
-        skills,
+        result,
         SUCCESS_MESSAGES.SKILL.FETCHED,
         HttpStatusCode.OK
       );

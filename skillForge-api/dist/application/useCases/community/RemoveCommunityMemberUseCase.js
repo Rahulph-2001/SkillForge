@@ -18,11 +18,14 @@ const types_1 = require("../../../infrastructure/di/types");
 const Database_1 = require("../../../infrastructure/database/Database");
 const AppError_1 = require("../../../domain/errors/AppError");
 let RemoveCommunityMemberUseCase = class RemoveCommunityMemberUseCase {
-    constructor(communityRepository, database) {
+    constructor(communityRepository, userRepository, webSocketService, database) {
         this.communityRepository = communityRepository;
+        this.userRepository = userRepository;
+        this.webSocketService = webSocketService;
         this.database = database;
     }
     async execute(adminId, communityId, memberId) {
+        console.log(`[RemoveMember] Admin ${adminId} removing member ${memberId} from community ${communityId}`);
         const community = await this.communityRepository.findById(communityId);
         if (!community) {
             throw new AppError_1.NotFoundError('Community not found');
@@ -34,6 +37,9 @@ let RemoveCommunityMemberUseCase = class RemoveCommunityMemberUseCase {
         if (!member) {
             throw new AppError_1.NotFoundError('Member not found in this community');
         }
+        // Get user details for notification
+        const user = await this.userRepository.findById(memberId);
+        const userName = user?.name || 'Unknown User';
         // Use transaction for atomic removal
         await this.database.transaction(async (tx) => {
             // Remove member
@@ -53,13 +59,41 @@ let RemoveCommunityMemberUseCase = class RemoveCommunityMemberUseCase {
                 },
             });
         });
+        console.log(`[RemoveMember] Member ${memberId} removed successfully`);
+        // Broadcast WebSocket event to community
+        setImmediate(() => {
+            this.webSocketService.sendToCommunity(communityId, {
+                type: 'member_removed',
+                communityId,
+                data: {
+                    userId: memberId,
+                    userName,
+                    removedBy: adminId,
+                    timestamp: new Date().toISOString(),
+                },
+            });
+            // Notify the removed user
+            this.webSocketService.sendToUser(memberId, {
+                type: 'member_removed',
+                communityId,
+                data: {
+                    communityId,
+                    communityName: community.name,
+                    message: `You have been removed from ${community.name}`,
+                    timestamp: new Date().toISOString(),
+                },
+            });
+            console.log(`[RemoveMember] WebSocket notifications sent`);
+        });
     }
 };
 exports.RemoveCommunityMemberUseCase = RemoveCommunityMemberUseCase;
 exports.RemoveCommunityMemberUseCase = RemoveCommunityMemberUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
-    __param(1, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Object, Database_1.Database])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IWebSocketService)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.Database)),
+    __metadata("design:paramtypes", [Object, Object, Object, Database_1.Database])
 ], RemoveCommunityMemberUseCase);
 //# sourceMappingURL=RemoveCommunityMemberUseCase.js.map

@@ -33,8 +33,11 @@ export declare class CommunityMember {
     get userAvatar(): string | undefined;
     toggleAutoRenew(): void;
     leave(): void;
+    expireMembership(): void;
     updateSubscription(endsAt: Date): void;
     toJSON(): Record<string, unknown>;
+    renewSubscription(days: number): void;
+    hasAutoRenewEnabled(): boolean;
     static fromDatabaseRow(row: Record<string, any>): CommunityMember;
 }
 //# sourceMappingURL=CommunityMember.d.ts.map

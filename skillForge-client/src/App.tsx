@@ -3,9 +3,12 @@ import AvatarSync from './components/auth/AvatarSync';
 import SubscriptionSync from './components/auth/SubscriptionSync';
 import AppRoutes from './routes/AppRoutes';
 
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
     <>
+      <Toaster position="top-right" />
       {/* Global user status monitor - runs for all logged-in users */}
       <UserStatusMonitor />
 

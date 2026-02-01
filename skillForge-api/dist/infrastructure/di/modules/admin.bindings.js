@@ -5,6 +5,10 @@ const types_1 = require("../types");
 const ListUsersUseCase_1 = require("../../../application/useCases/admin/ListUsersUseCase");
 const SuspendUserUseCase_1 = require("../../../application/useCases/admin/SuspendUserUseCase");
 const UnsuspendUserUseCase_1 = require("../../../application/useCases/admin/UnsuspendUserUseCase");
+const ListCommunitiesUseCase_1 = require("../../../application/useCases/admin/ListCommunitiesUseCase");
+const UpdateCommunityByAdminUseCase_1 = require("../../../application/useCases/admin/UpdateCommunityByAdminUseCase");
+const BlockCommunityUseCase_1 = require("../../../application/useCases/admin/BlockCommunityUseCase");
+const UnblockCommunityUseCase_1 = require("../../../application/useCases/admin/UnblockCommunityUseCase");
 const ListPendingSkillsUseCase_1 = require("../../../application/useCases/admin/ListPendingSkillsUseCase");
 const ApproveSkillUseCase_1 = require("../../../application/useCases/admin/ApproveSkillUseCase");
 const RejectSkillUseCase_1 = require("../../../application/useCases/admin/RejectSkillUseCase");
@@ -30,6 +34,11 @@ const bindAdminModule = (container) => {
     container.bind(types_1.TYPES.ISuspendUserUseCase).to(SuspendUserUseCase_1.SuspendUserUseCase);
     container.bind(types_1.TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase_1.UnsuspendUserUseCase);
     container.bind(types_1.TYPES.IUnsuspendUserUseCase).to(UnsuspendUserUseCase_1.UnsuspendUserUseCase);
+    // Admin Community Management Use Cases
+    container.bind(types_1.TYPES.IListCommunitiesUseCase).to(ListCommunitiesUseCase_1.ListCommunitiesUseCase);
+    container.bind(types_1.TYPES.IUpdateCommunityByAdminUseCase).to(UpdateCommunityByAdminUseCase_1.UpdateCommunityByAdminUseCase);
+    container.bind(types_1.TYPES.IBlockCommunityUseCase).to(BlockCommunityUseCase_1.BlockCommunityUseCase);
+    container.bind(types_1.TYPES.IUnblockCommunityUseCase).to(UnblockCommunityUseCase_1.UnblockCommunityUseCase);
     // Admin Skill Management Use Cases
     container.bind(types_1.TYPES.IListPendingSkillsUseCase).to(ListPendingSkillsUseCase_1.ListPendingSkillsUseCase);
     container.bind(types_1.TYPES.IApproveSkillUseCase).to(ApproveSkillUseCase_1.ApproveSkillUseCase);

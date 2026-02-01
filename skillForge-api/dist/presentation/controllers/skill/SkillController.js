@@ -44,8 +44,11 @@ let SkillController = class SkillController {
         this.listMySkills = async (req, res, next) => {
             try {
                 const userId = req.user.userId;
-                const skills = await this.listUserSkillsUseCase.execute(userId);
-                const response = this.responseBuilder.success(skills, messages_1.SUCCESS_MESSAGES.SKILL.FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+                const page = parseInt(req.query.page) || 1;
+                const limit = parseInt(req.query.limit) || 20;
+                const status = req.query.status;
+                const result = await this.listUserSkillsUseCase.execute(userId, { page, limit, status });
+                const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.SKILL.FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {

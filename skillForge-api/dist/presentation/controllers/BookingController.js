@@ -17,12 +17,13 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../domain/enums/HttpStatusCode");
 let BookingController = class BookingController {
-    constructor(createBookingUseCase, cancelBookingUseCase, getMyBookingsUseCase, getUpcomingSessionsUseCase, getBookingByIdUseCase, responseBuilder) {
+    constructor(createBookingUseCase, cancelBookingUseCase, getMyBookingsUseCase, getUpcomingSessionsUseCase, getBookingByIdUseCase, completeSessionUseCase, responseBuilder) {
         this.createBookingUseCase = createBookingUseCase;
         this.cancelBookingUseCase = cancelBookingUseCase;
         this.getMyBookingsUseCase = getMyBookingsUseCase;
         this.getUpcomingSessionsUseCase = getUpcomingSessionsUseCase;
         this.getBookingByIdUseCase = getBookingByIdUseCase;
+        this.completeSessionUseCase = completeSessionUseCase;
         this.responseBuilder = responseBuilder;
         this.createBooking = async (req, res, next) => {
             try {
@@ -33,7 +34,6 @@ let BookingController = class BookingController {
                     return;
                 }
                 const { skillId, providerId, preferredDate, preferredTime, message } = req.body;
-                // Validation
                 if (!skillId || !providerId || !preferredDate || !preferredTime) {
                     const error = this.responseBuilder.error('VALIDATION_ERROR', 'Missing required fields', HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
                     res.status(error.statusCode).json(error.body);
@@ -127,6 +127,26 @@ let BookingController = class BookingController {
                 next(error);
             }
         };
+        this.completeSession = async (req, res, next) => {
+            try {
+                const userId = req.user?.userId;
+                const { id } = req.params;
+                if (!userId) {
+                    const error = this.responseBuilder.error('UNAUTHORIZED', 'Unauthorized', HttpStatusCode_1.HttpStatusCode.UNAUTHORIZED);
+                    res.status(error.statusCode).json(error.body);
+                    return;
+                }
+                const booking = await this.completeSessionUseCase.execute({
+                    bookingId: id,
+                    completedBy: userId,
+                });
+                const response = this.responseBuilder.success(booking, 'Session completed successfully. Credits released to provider.', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
     }
 };
 exports.BookingController = BookingController;
@@ -137,7 +157,8 @@ exports.BookingController = BookingController = __decorate([
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetMyBookingsUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IGetUpcomingSessionsUseCase)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IGetBookingByIdUseCase)),
-    __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.ICompleteSessionUseCase)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], BookingController);
 //# sourceMappingURL=BookingController.js.map

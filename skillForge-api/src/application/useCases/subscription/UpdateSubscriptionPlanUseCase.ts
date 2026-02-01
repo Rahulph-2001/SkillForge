@@ -45,14 +45,39 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
       }
     }
 
+    // Auto-populate legacy fields from features if not passed in DTO
+    let projectPosts = dto.projectPosts;
+    let createCommunity = dto.createCommunity;
+
+    // If legacy fields are undefined but features are updated, try to sync from features
+    if (dto.features && dto.features.length > 0) {
+      if (projectPosts === undefined) {
+        const feature = dto.features.find(f =>
+          f.name.toLowerCase().includes('project') && f.name.toLowerCase().includes('post')
+        );
+        if (feature && feature.limitValue !== undefined) {
+          projectPosts = feature.limitValue;
+        }
+      }
+
+      if (createCommunity === undefined) {
+        const feature = dto.features.find(f =>
+          f.name.toLowerCase().includes('community') && f.name.toLowerCase().includes('create')
+        );
+        if (feature && feature.limitValue !== undefined) {
+          createCommunity = feature.limitValue;
+        }
+      }
+    }
+
     // Update plan properties
-    if (dto.name || dto.price !== undefined || dto.projectPosts !== undefined ||
-      dto.createCommunity !== undefined || dto.badge || dto.color) {
+    if (dto.name || dto.price !== undefined || projectPosts !== undefined ||
+      createCommunity !== undefined || dto.badge || dto.color) {
       plan.updateDetails(
         dto.name ?? plan.name,
         dto.price ?? plan.price,
-        dto.projectPosts !== undefined ? dto.projectPosts : plan.projectPosts,
-        dto.createCommunity !== undefined ? dto.createCommunity : plan.createCommunity,
+        projectPosts !== undefined ? projectPosts : plan.projectPosts,
+        createCommunity !== undefined ? createCommunity : plan.createCommunity,
         (dto.badge ?? plan.badge) as any,
         dto.color ?? plan.color
       );

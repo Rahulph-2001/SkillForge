@@ -7,14 +7,25 @@ import StatCard from "../../components/admin/StatCard";
 import SkillCard from "../../components/skill/SkillCard";
 import SkillAddModal, { NewSkill } from "../../components/skill/SkillAddModal";
 import EditSkillModal from "../../components/skill/EditSkillModal";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
-import { fetchMySkills, createSkill, updateSkill, toggleSkillBlock } from "../../store/slices/skillSlice";
+import Pagination from "../../components/common/Pagination";
+import { useAppDispatch } from "../../store/hooks";
+import { createSkill, updateSkill, toggleSkillBlock } from "../../store/slices/skillSlice";
+import { skillService, SkillResponse } from "../../services/skillService";
 import { SuccessModal, ErrorModal } from "../../components/common/Modal";
 
 export default function SkillsPage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { mySkills, loading, error } = useAppSelector((state) => state.skills);
+
+  // Pagination state
+  const [skills, setSkills] = useState<SkillResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(12);
+
+  // Modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
@@ -22,9 +33,45 @@ export default function SkillsPage() {
   const [activeFilter, setActiveFilter] = useState<string>("all");
   const [editingSkill, setEditingSkill] = useState<any>(null);
 
+  const fetchSkills = async () => {
+    try {
+      setLoading(true);
+      const response = await skillService.getMySkills({
+        page: currentPage,
+        limit,
+        status: activeFilter !== 'all' ? activeFilter : undefined,
+      });
+
+      setSkills(response.data.skills);
+      setTotal(response.data.total);
+      setCurrentPage(response.data.page);
+      setTotalPages(response.data.totalPages);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Failed to fetch skills');
+      setShowError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    dispatch(fetchMySkills());
-  }, [dispatch]);
+    fetchSkills();
+  }, [currentPage, limit, activeFilter]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setCurrentPage(1);
+  };
+
+  const handleFilterChange = (filter: string) => {
+    setActiveFilter(filter);
+    setCurrentPage(1);
+  };
 
   const handleAddSkill = async (newSkill: NewSkill, file?: Blob) => {
     try {
@@ -38,6 +85,7 @@ export default function SkillsPage() {
 
       setIsModalOpen(false);
       setShowSuccess(true);
+      fetchSkills();
     } catch (err: any) {
       setErrorMessage(err?.message || `Failed to add skill: ${err}`);
       setShowError(true);
@@ -49,6 +97,7 @@ export default function SkillsPage() {
       await dispatch(updateSkill({ id, data: updates, imageFile })).unwrap();
       setEditingSkill(null);
       toast.success('Skill updated successfully');
+      fetchSkills();
     } catch (err: any) {
       setErrorMessage(err?.message || `Failed to update skill: ${err}`);
       setShowError(true);
@@ -59,6 +108,7 @@ export default function SkillsPage() {
     try {
       await dispatch(toggleSkillBlock(skill.id)).unwrap();
       toast.success(skill.isBlocked ? 'Skill unblocked successfully' : 'Skill blocked successfully');
+      fetchSkills();
     } catch (err: any) {
       setErrorMessage(err?.message || `Failed to update skill status: ${err}`);
       setShowError(true);
@@ -66,22 +116,13 @@ export default function SkillsPage() {
   };
 
   const stats = {
-    total: mySkills.length,
-    approved: mySkills.filter((s) => s.status === "approved").length,
-    pending: mySkills.filter((s) => s.status === "pending").length,
-    inReview: mySkills.filter((s) => s.status === "in-review").length,
-    rejected: mySkills.filter((s) => s.status === "rejected").length,
-    sessions: mySkills.reduce((sum, s) => sum + (s.totalSessions || 0), 0),
+    total: total,
+    approved: skills.filter((s) => s.status === "approved").length,
+    pending: skills.filter((s) => s.status === "pending").length,
+    inReview: skills.filter((s) => s.status === "in-review").length,
+    rejected: skills.filter((s) => s.status === "rejected").length,
+    sessions: skills.reduce((sum, s) => sum + (s.totalSessions || 0), 0),
   };
-
-  const filteredSkills = mySkills.filter((skill) => {
-    if (activeFilter === "all") return true;
-    if (activeFilter === "approved") return skill.status === "approved";
-    if (activeFilter === "pending") return skill.status === "pending";
-    if (activeFilter === "in-review") return skill.status === "in-review";
-    if (activeFilter === "rejected") return skill.status === "rejected";
-    return true;
-  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -132,7 +173,7 @@ export default function SkillsPage() {
         {/* Filter Tabs */}
         <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
           <button
-            onClick={() => setActiveFilter("all")}
+            onClick={() => handleFilterChange("all")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "all"
               ? "bg-blue-600 text-white"
               : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -142,7 +183,7 @@ export default function SkillsPage() {
             <span className="ml-2 font-bold">{stats.total}</span>
           </button>
           <button
-            onClick={() => setActiveFilter("approved")}
+            onClick={() => handleFilterChange("approved")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "approved"
               ? "bg-blue-600 text-white"
               : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -154,7 +195,7 @@ export default function SkillsPage() {
             </span>
           </button>
           <button
-            onClick={() => setActiveFilter("pending")}
+            onClick={() => handleFilterChange("pending")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "pending"
               ? "bg-blue-600 text-white"
               : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -166,7 +207,7 @@ export default function SkillsPage() {
             </span>
           </button>
           <button
-            onClick={() => setActiveFilter("in-review")}
+            onClick={() => handleFilterChange("in-review")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "in-review"
               ? "bg-blue-600 text-white"
               : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -178,7 +219,7 @@ export default function SkillsPage() {
             </span>
           </button>
           <button
-            onClick={() => setActiveFilter("rejected")}
+            onClick={() => handleFilterChange("rejected")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "rejected"
               ? "bg-blue-600 text-white"
               : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -189,26 +230,55 @@ export default function SkillsPage() {
           </button>
         </div>
 
-        {loading && mySkills.length === 0 ? (
+        {loading && skills.length === 0 ? (
           <div className="flex justify-center p-12">
             <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredSkills.map((skill) => (
-              <SkillCard
-                key={skill.id}
-                skill={{
-                  ...skill,
-                  creditsHour: skill.creditsPerHour,
-                  sessions: skill.totalSessions,
-                  imageUrl: skill.imageUrl
-                }}
-                onEdit={() => setEditingSkill(skill)}
-                onToggleBlock={() => handleToggleBlock(skill)}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {skills.map((skill) => (
+                <SkillCard
+                  key={skill.id}
+                  skill={{
+                    ...skill,
+                    creditsHour: skill.creditsPerHour,
+                    sessions: skill.totalSessions,
+                    imageUrl: skill.imageUrl
+                  }}
+                  onEdit={() => setEditingSkill(skill)}
+                  onToggleBlock={() => handleToggleBlock(skill)}
+                />
+              ))}
+            </div>
+
+            {/* Empty State */}
+            {skills.length === 0 && !loading && (
+              <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
+                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500 mb-2">No skills found</p>
+                <p className="text-gray-400 text-sm">Add a new skill to get started</p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 0 && total > 0 && (
+              <div className="mt-8 bg-white p-4 rounded-xl border border-gray-200">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={total}
+                  limit={limit}
+                  onPageChange={handlePageChange}
+                  onLimitChange={handleLimitChange}
+                  showLimitSelector={true}
+                  limitOptions={[6, 12, 24, 48]}
+                  showInfo={true}
+                  disabled={loading}
+                />
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -234,8 +304,8 @@ export default function SkillsPage() {
       />
 
       <ErrorModal
-        isOpen={showError || !!error}
-        message={errorMessage || error || ''}
+        isOpen={showError}
+        message={errorMessage}
         onClose={() => {
           setShowError(false);
           setErrorMessage('');

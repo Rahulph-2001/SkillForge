@@ -295,6 +295,10 @@ export const TYPES = {
   ProjectController: Symbol.for('ProjectController'),
   ProjectRoutes: Symbol.for('ProjectRoutes'),
   ProjectRepository: Symbol.for('ProjectRepository'),
+  GetMyProjectsUseCase: Symbol.for('GetMyProjectsUseCase'),
+  GetContributingProjectsUseCase: Symbol.for('GetContributingProjectsUseCase'),
+  RequestProjectCompletionUseCase: Symbol.for('RequestProjectCompletionUseCase'),
+  ReviewProjectCompletionUseCase: Symbol.for('ReviewProjectCompletionUseCase'),
 
   // Booking Use Cases
   ICancelBookingUseCase: Symbol.for('ICancelBookingUseCase'),
@@ -338,18 +342,20 @@ export const TYPES = {
 
 
   // Video Call
-IVideoCallRoomRepository: Symbol.for('IVideoCallRoomRepository'),
-IVideoCallPresenceService: Symbol.for('IVideoCallPresenceService'),
-IVideoCallSignalingService: Symbol.for('IVideoCallSignalingService'),
-IVideoCallRoomMapper: Symbol.for('IVideoCallRoomMapper'),
-ICreateVideoRoomUseCase: Symbol.for('ICreateVideoRoomUseCase'),
-IJoinVideoRoomUseCase: Symbol.for('IJoinVideoRoomUseCase'),
-ILeaveVideoRoomUseCase: Symbol.for('ILeaveVideoRoomUseCase'),
-IGetRoomInfoUseCase: Symbol.for('IGetRoomInfoUseCase'),
-IEndVideoRoomUseCase: Symbol.for('IEndVideoRoomUseCase'),
-IGetSessionInfoUseCase: Symbol.for('IGetSessionInfoUseCase'),
-VideoCallController: Symbol.for('VideoCallController'),
-VideoCallRoutes: Symbol.for('VideoCallRoutes'),
+  IVideoCallRoomRepository: Symbol.for('IVideoCallRoomRepository'),
+  IVideoCallPresenceService: Symbol.for('IVideoCallPresenceService'),
+  IVideoCallSignalingService: Symbol.for('IVideoCallSignalingService'),
+  IVideoCallRoomMapper: Symbol.for('IVideoCallRoomMapper'),
+  ICreateVideoRoomUseCase: Symbol.for('ICreateVideoRoomUseCase'),
+  IJoinVideoRoomUseCase: Symbol.for('IJoinVideoRoomUseCase'),
+  ILeaveVideoRoomUseCase: Symbol.for('ILeaveVideoRoomUseCase'),
+  IGetRoomInfoUseCase: Symbol.for('IGetRoomInfoUseCase'),
+  IEndVideoRoomUseCase: Symbol.for('IEndVideoRoomUseCase'),
+  IGetSessionInfoUseCase: Symbol.for('IGetSessionInfoUseCase'),
+  IGetInterviewSessionInfoUseCase: Symbol.for('IGetInterviewSessionInfoUseCase'),
+  IValidateSessionTimeUseCase: Symbol.for('IValidateSessionTimeUseCase'),
+  VideoCallController: Symbol.for('VideoCallController'),
+  VideoCallRoutes: Symbol.for('VideoCallRoutes'),
 
   // Admin Wallet
   IGetAdminWalletStatsUseCase: Symbol.for('IGetAdminWalletStatsUseCase'),
@@ -366,4 +372,34 @@ VideoCallRoutes: Symbol.for('VideoCallRoutes'),
   IAdminCompleteSessionUseCase: Symbol.for('IAdminCompleteSessionUseCase'),
   AdminSessionController: Symbol.for('AdminSessionController'),
   AdminSessionRoutes: Symbol.for('AdminSessionRoutes'),
+
+  // Review System
+  IReviewRepository: Symbol.for('IReviewRepository'),
+  ICreateReviewUseCase: Symbol.for('ICreateReviewUseCase'),
+  IReviewMapper: Symbol.for('IReviewMapper'),
+  ReviewController: Symbol.for('ReviewController'),
+  ReviewRoutes: Symbol.for('ReviewRoutes'),
+
+  // Project Applications
+  IProjectApplicationRepository: Symbol.for('IProjectApplicationRepository'),
+  IProjectApplicationMapper: Symbol.for('IProjectApplicationMapper'),
+  IGeminiAIService: Symbol.for('IGeminiAIService'),
+  IApplyToProjectUseCase: Symbol.for('IApplyToProjectUseCase'),
+  IGetProjectApplicationsUseCase: Symbol.for('IGetProjectApplicationsUseCase'),
+  IUpdateApplicationStatusUseCase: Symbol.for('IUpdateApplicationStatusUseCase'),
+  IGetMyApplicationsUseCase: Symbol.for('IGetMyApplicationsUseCase'),
+  GetReceivedApplicationsUseCase: Symbol.for('GetReceivedApplicationsUseCase'),
+  IWithdrawApplicationUseCase: Symbol.for('IWithdrawApplicationUseCase'),
+  ProjectApplicationController: Symbol.for('ProjectApplicationController'),
+  ProjectApplicationRoutes: Symbol.for('ProjectApplicationRoutes'),
+
+  // Interview
+  IInterviewRepository: Symbol.for('IInterviewRepository'),
+  IInterviewMapper: Symbol.for('IInterviewMapper'),
+  IScheduleInterviewUseCase: Symbol.for('IScheduleInterviewUseCase'),
+  IGetInterviewUseCase: Symbol.for('IGetInterviewUseCase'),
+  InterviewController: Symbol.for('InterviewController'),
+  InterviewRoutes: Symbol.for('InterviewRoutes'),
+  InterviewScheduler: Symbol.for('InterviewScheduler'),
+  CronScheduler: Symbol.for('CronScheduler'),
 };

@@ -70,17 +70,20 @@ let WebSocketService = class WebSocketService {
         if (!this.io)
             return;
         // Map internal event structure to frontend's expected events
-        if (message.type === 'message') {
+        if (message.type === 'message_sent') {
             this.io.to(`community:${communityId}`).emit('new_message', message.data);
         }
-        else if (message.type === 'pin') {
+        else if (message.type === 'message_pinned') {
             this.io.to(`community:${communityId}`).emit('message_pinned', message.data);
         }
-        else if (message.type === 'unpin') {
+        else if (message.type === 'message_unpinned') {
             this.io.to(`community:${communityId}`).emit('message_unpinned', message.data);
         }
-        else if (message.type === 'delete') {
+        else if (message.type === 'message_deleted') {
             this.io.to(`community:${communityId}`).emit('message_deleted', message.data);
+        }
+        else if (message.type === 'member_removed') {
+            this.io.to(`community:${communityId}`).emit('member_removed', message.data);
         }
         else if (message.type === 'reaction_added') {
             this.io.to(`community:${communityId}`).emit('reaction_added', message.data);
@@ -94,13 +97,29 @@ let WebSocketService = class WebSocketService {
         }
     }
     sendToUser(userId, message) {
-        if (!this.io)
+        if (!this.io) {
+            console.error('[WebSocket] IO not initialized, cannot send to user');
             return;
+        }
         const socketIds = this.userSockets.get(userId);
-        if (socketIds) {
+        console.log(`[WebSocket] Sending to user ${userId}, found ${socketIds?.size || 0} socket(s)`);
+        if (socketIds && socketIds.size > 0) {
             socketIds.forEach(socketId => {
-                this.io?.to(socketId).emit('user_event', message);
+                if (message.type === 'subscription_renewed') {
+                    this.io?.to(socketId).emit('subscription_renewed', message.data);
+                }
+                if (message.type === 'balance_updated') {
+                    console.log(`[WebSocket] Emitting 'user_balance_updated' to socket ${socketId}:`, message.data);
+                    this.io?.to(socketId).emit('user_balance_updated', message.data);
+                }
+                else {
+                    console.log(`[WebSocket] Emitting 'user_event' to socket ${socketId}`);
+                    this.io?.to(socketId).emit('user_event', message);
+                }
             });
+        }
+        else {
+            console.warn(`[WebSocket] No active sockets found for user ${userId}. User may not be connected.`);
         }
     }
     joinCommunity(userId, communityId, socketId) {

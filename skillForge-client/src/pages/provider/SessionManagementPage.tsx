@@ -9,12 +9,11 @@ import {
   AlertCircle,
   ArrowRight,
   Loader2,
-  Video,
   Users,
   BookOpen,
   CalendarClock,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 // import { useAppSelector } from '../../store/hooks';
 import { sessionManagementService, SessionStats } from '../../services/sessionManagementService';
@@ -23,6 +22,7 @@ import RescheduleModal from '../../components/booking/RescheduleModal';
 
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import PromptModal from '../../components/common/Modal/PromptModal';
+import JoinSessionButton from '../../components/session/JoinSessionButton';
 
 type FilterType = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 type ViewMode = 'learner' | 'provider';
@@ -52,7 +52,7 @@ export default function SessionManagementPage() {
     message: '',
     onConfirm: (_value: string) => { }, // eslint-disable-line @typescript-eslint/no-unused-vars
   });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   useEffect(() => {
     fetchSessions();
@@ -102,7 +102,7 @@ export default function SessionManagementPage() {
   const filteredSessions = sessions.filter((session) => {
     if (activeFilter === 'All') return true;
     if (activeFilter === 'Pending') return session.status === 'pending';
-    if (activeFilter === 'Confirmed') return session.status === 'confirmed';
+    if (activeFilter === 'Confirmed') return session.status === 'confirmed' || session.status === 'in_session';
     if (activeFilter === 'Completed') return session.status === 'completed';
     if (activeFilter === 'Cancelled') return session.status === 'cancelled';
     return true;
@@ -114,6 +114,8 @@ export default function SessionManagementPage() {
         return 'bg-amber-50 text-amber-700 border border-amber-200';
       case 'confirmed':
         return 'bg-green-50 text-green-700 border border-green-200';
+      case 'in_session':
+        return 'bg-purple-50 text-purple-700 border border-purple-200 animate-pulse';
       case 'completed':
         return 'bg-blue-50 text-blue-700 border border-blue-200';
       case 'cancelled':
@@ -279,6 +281,16 @@ export default function SessionManagementPage() {
   const renderSessionActions = (session: any) => {
     const isLoading = actionLoading === session.id;
 
+    // Helper: Check if session has started or is within 15-minute join window
+    const isSessionStarted = () => {
+      if (session.status !== 'confirmed') return false;
+      const [hours, minutes] = session.preferredTime.split(':').map(Number);
+      const sessionStart = new Date(session.preferredDate);
+      sessionStart.setHours(hours, minutes, 0, 0);
+      const joinWindowStart = new Date(sessionStart.getTime() - 15 * 60 * 1000); // 15 min before
+      return new Date() >= joinWindowStart;
+    };
+
     // In learner mode, show different actions
     if (viewMode === 'learner') {
       if (session.status === 'pending') {
@@ -295,16 +307,39 @@ export default function SessionManagementPage() {
           </div>
         );
       }
+
+      // For confirmed sessions, check if session time window has started
       if (session.status === 'confirmed') {
+        const sessionInProgress = isSessionStarted();
+
+        // If session has started or is about to start, only show Join button
+        if (sessionInProgress) {
+          return (
+            <div className="flex flex-col gap-2">
+              <JoinSessionButton
+                sessionId={session.id}
+                preferredDate={session.preferredDate}
+                preferredTime={session.preferredTime}
+                duration={session.duration}
+                status={session.status}
+                className="w-full"
+              />
+              <span className="text-xs text-purple-600 text-center font-medium">Session in progress</span>
+            </div>
+          );
+        }
+
+        // Session not started yet - show all buttons
         return (
           <div className="flex flex-col gap-2">
-            <button
-              onClick={() => navigate(`/session/${session.id}/call`)}
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-            >
-              <Video className="w-4 h-4" />
-              Join Session
-            </button>
+            <JoinSessionButton
+              sessionId={session.id}
+              preferredDate={session.preferredDate}
+              preferredTime={session.preferredTime}
+              duration={session.duration}
+              status={session.status}
+              className="w-full"
+            />
             <button
               onClick={() => handleRescheduleSession(session)}
               className="flex items-center justify-center gap-2 text-orange-600 hover:text-orange-700 px-4 py-2 rounded-lg text-sm font-medium transition border border-orange-200 hover:bg-orange-50"
@@ -320,6 +355,22 @@ export default function SessionManagementPage() {
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
               Cancel
             </button>
+          </div>
+        );
+      }
+      // IN_SESSION: Only show Join button - NO cancel/reschedule allowed
+      if (session.status === 'in_session') {
+        return (
+          <div className="flex flex-col gap-2">
+            <JoinSessionButton
+              sessionId={session.id}
+              preferredDate={session.preferredDate}
+              preferredTime={session.preferredTime}
+              duration={session.duration}
+              status={session.status}
+              className="w-full"
+            />
+            <span className="text-xs text-purple-600 text-center font-medium">Session in progress</span>
           </div>
         );
       }
@@ -351,15 +402,35 @@ export default function SessionManagementPage() {
     }
 
     if (session.status === 'confirmed') {
+      const sessionInProgress = isSessionStarted();
+
+      // If session has started, only show Join button (no Cancel for provider either)
+      if (sessionInProgress) {
+        return (
+          <div className="flex flex-col gap-2">
+            <JoinSessionButton
+              sessionId={session.id}
+              preferredDate={session.preferredDate}
+              preferredTime={session.preferredTime}
+              duration={session.duration}
+              status={session.status}
+              className="w-full"
+            />
+            <span className="text-xs text-purple-600 text-center font-medium">Session in progress</span>
+          </div>
+        );
+      }
+
       return (
         <div className="flex flex-col gap-2">
-          <button
-            onClick={() => navigate(`/session/${session.id}/call`)}
-            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition"
-          >
-            <Video className="w-4 h-4" />
-            Join
-          </button>
+          <JoinSessionButton
+            sessionId={session.id}
+            preferredDate={session.preferredDate}
+            preferredTime={session.preferredTime}
+            duration={session.duration}
+            status={session.status}
+            className="w-full"
+          />
           <button
             onClick={() => handleCancelSession(session.id)}
             disabled={isLoading}
@@ -391,6 +462,22 @@ export default function SessionManagementPage() {
             {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
             Decline
           </button>
+        </div>
+      );
+    }
+
+    // IN_SESSION: Only show Join button, no cancel
+    if (session.status === 'in_session') {
+      return (
+        <div className="flex flex-col gap-2">
+          <JoinSessionButton
+            sessionId={session.id}
+            preferredDate={session.preferredDate}
+            preferredTime={session.preferredTime}
+            duration={session.duration}
+            status={session.status}
+            className="w-full"
+          />
         </div>
       );
     }
@@ -631,7 +718,9 @@ export default function SessionManagementPage() {
                         </div>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyles(session.status)}`}>
-                        {session.status.charAt(0).toUpperCase() + session.status.slice(1).replace('_', ' ')}
+                        {session.status === 'in_session'
+                          ? 'In Progress'
+                          : session.status.charAt(0).toUpperCase() + session.status.slice(1).replace('_', ' ')}
                       </span>
                     </div>
 

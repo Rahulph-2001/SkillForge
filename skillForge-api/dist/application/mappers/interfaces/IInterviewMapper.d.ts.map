@@ -1,0 +1,1 @@
+{"version":3,"file":"IInterviewMapper.d.ts","sourceRoot":"","sources":["../../../../src/application/mappers/interfaces/IInterviewMapper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,SAAS,EAAE,MAAM,oCAAoC,CAAC;AAC/D,OAAO,EAAE,oBAAoB,EAAE,MAAM,0CAA0C,CAAC;AAEhF,MAAM,WAAW,gBAAgB;IAC7B,aAAa,CAAC,SAAS,EAAE,SAAS,GAAG,oBAAoB,CAAC;CAC7D"}

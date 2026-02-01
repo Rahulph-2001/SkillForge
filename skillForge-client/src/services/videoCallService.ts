@@ -1,5 +1,6 @@
 import api from './api';
 
+
 export interface RTCIceServerConfig {
   urls: string | string[];
   username?: string;
@@ -26,11 +27,15 @@ export interface VideoCallRoom {
 }
 
 export interface SessionInfo {
+  providerId: string;
   skillTitle: string;
   providerName: string;
   providerAvatar: string | null;
   learnerName: string;
   learnerAvatar: string | null;
+  scheduledAt: string;
+  duration: number;
+  meetingLink?: string | null;
 }
 
 export interface CreateRoomParams {
@@ -43,12 +48,21 @@ export interface JoinRoomParams {
   bookingId?: string;
 }
 
+export interface SessionTimeValidation {
+  canJoin: boolean;
+  message: string;
+  sessionStartAt: string;
+  sessionEndAt: string;
+  remainingSeconds: number;
+  sessionDurationMinutes: number;
+}
+
 export const videoCallService = {
   /**
    * Create a new video call room
    */
   async createRoom(params: CreateRoomParams = {}): Promise<VideoCallRoom> {
-    const response = await api.post('/video-call/rooms', params);
+    const response = await api.post('/video-call/room', params);
     return response.data.data;
   },
 
@@ -56,7 +70,7 @@ export const videoCallService = {
    * Join an existing room
    */
   async joinRoom(params: JoinRoomParams): Promise<VideoCallRoom> {
-    const response = await api.post('/video-call/rooms/join', params);
+    const response = await api.post('/video-call/room/join', params);
     return response.data.data;
   },
 
@@ -64,7 +78,7 @@ export const videoCallService = {
    * Get room info
    */
   async getRoomInfo(roomId: string): Promise<VideoCallRoom> {
-    const response = await api.get(`/video-call/rooms/${roomId}`);
+    const response = await api.get(`/video-call/room/${roomId}`);
     return response.data.data;
   },
 
@@ -72,9 +86,7 @@ export const videoCallService = {
    * Get or create room for a booking
    */
   async getRoomForBooking(bookingId: string): Promise<VideoCallRoom> {
-    console.log('[videoCallService] getRoomForBooking called with:', bookingId);
     const response = await api.get(`/video-call/booking/${bookingId}`);
-    console.log('[videoCallService] getRoomForBooking response:', response.data);
     return response.data.data;
   },
 
@@ -82,9 +94,23 @@ export const videoCallService = {
    * Get session info (skill title, provider/learner names)
    */
   async getSessionInfo(bookingId: string): Promise<SessionInfo> {
-    console.log('[videoCallService] getSessionInfo called with:', bookingId);
     const response = await api.get(`/video-call/session/${bookingId}/info`);
-    console.log('[videoCallService] getSessionInfo response:', response.data);
+    return response.data.data;
+  },
+
+  /**
+   * Get session info for interview
+   */
+  async getInterviewSessionInfo(interviewId: string): Promise<SessionInfo> {
+    const response = await api.get(`/video-call/session/interview/${interviewId}`);
+    return response.data.data;
+  },
+
+  /**
+   * Validate if user can join session at current time
+   */
+  async validateSessionTime(bookingId: string): Promise<SessionTimeValidation> {
+    const response = await api.get(`/video-call/session/${bookingId}/validate-time`);
     return response.data.data;
   },
 
@@ -92,14 +118,28 @@ export const videoCallService = {
    * Leave a room
    */
   async leaveRoom(roomId: string): Promise<void> {
-    await api.post(`/video-call/rooms/${roomId}/leave`);
+    await api.post(`/video-call/room/${roomId}/leave`);
   },
 
   /**
    * End a room (host only)
    */
   async endRoom(roomId: string): Promise<void> {
-    await api.post(`/video-call/rooms/${roomId}/end`);
+    await api.post(`/video-call/room/${roomId}/end`);
+  },
+
+  /**
+   * Complete session (release escrow and mark completed)
+   */
+  async completeSession(bookingId: string): Promise<void> {
+    await api.post(`/bookings/${bookingId}/complete`);
+  },
+
+  /**
+   * Submit review
+   */
+  async createReview(data: { bookingId: string; rating: number; review: string }): Promise<void> {
+    await api.post('/reviews', data);
   },
 
   /**

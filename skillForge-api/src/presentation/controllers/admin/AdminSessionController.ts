@@ -33,7 +33,7 @@ export class AdminSessionController {
         }
     };
 
-    public getStats = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    public getStats = async (_req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const stats = await this.adminGetSessionStatsUseCase.execute();
 

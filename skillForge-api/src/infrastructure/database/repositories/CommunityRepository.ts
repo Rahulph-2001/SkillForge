@@ -129,6 +129,17 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
     return Community.fromDatabaseRow(updated);
   }
 
+  public async delete(id: string): Promise<void> {
+    await this.prisma.community.update({
+      where: { id },
+      data: {
+        isDeleted: true,
+        isActive: false,
+        updatedAt: new Date(),
+      },
+    });
+  }
+
   /**
    * Block a community (set isActive to false)
    * Following Single Responsibility Principle

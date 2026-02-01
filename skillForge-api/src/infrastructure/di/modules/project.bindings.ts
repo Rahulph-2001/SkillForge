@@ -12,6 +12,10 @@ import { IncrementProjectPostUsageUseCase } from '../../../application/useCases/
 import { IIncrementProjectPostUsageUseCase } from '../../../application/useCases/project/interfaces/IIncrementProjectPostUsageUseCase';
 import { GetProjectUseCase } from '../../../application/useCases/project/GetProjectUseCase';
 import { IGetProjectUseCase } from '../../../application/useCases/project/interfaces/IGetProjectUseCase';
+import { GetMyProjectsUseCase } from '../../../application/useCases/project/GetMyProjectsUseCase';
+import { GetContributingProjectsUseCase } from '../../../application/useCases/project/GetContributingProjectsUseCase';
+import { RequestProjectCompletionUseCase } from '../../../application/useCases/project/RequestProjectCompletionUseCase';
+import { ReviewProjectCompletionUseCase } from '../../../application/useCases/project/ReviewProjectCompletionUseCase';
 
 export const bindProjectModule = (container: Container): void => {
     // Project Use Cases
@@ -20,6 +24,10 @@ export const bindProjectModule = (container: Container): void => {
     container.bind<IValidateProjectPostLimitUseCase>(TYPES.IValidateProjectPostLimitUseCase).to(ValidateProjectPostLimitUseCase);
     container.bind<IIncrementProjectPostUsageUseCase>(TYPES.IIncrementProjectPostUsageUseCase).to(IncrementProjectPostUsageUseCase);
     container.bind<IGetProjectUseCase>(TYPES.IGetProjectUseCase).to(GetProjectUseCase);
+    container.bind<GetMyProjectsUseCase>(TYPES.GetMyProjectsUseCase).to(GetMyProjectsUseCase);
+    container.bind<GetContributingProjectsUseCase>(TYPES.GetContributingProjectsUseCase).to(GetContributingProjectsUseCase);
+    container.bind<RequestProjectCompletionUseCase>(TYPES.RequestProjectCompletionUseCase).to(RequestProjectCompletionUseCase);
+    container.bind<ReviewProjectCompletionUseCase>(TYPES.ReviewProjectCompletionUseCase).to(ReviewProjectCompletionUseCase);
 
     // Controllers & Routes
     container.bind<ProjectController>(TYPES.ProjectController).to(ProjectController);

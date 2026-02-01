@@ -67,13 +67,22 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
         this.validAnswers = ['A', 'B', 'C', 'D'];
     }
     async execute(jobId) {
+        console.log(`[MCQProcessor] Starting job execution:`, { jobId });
         const job = await this.jobRepository.findById(jobId);
         if (!job) {
-            console.error(`[MCQProcessor] Job ${jobId} not found.`);
+            console.error(`[MCQProcessor] Job ${jobId} not found in database`);
             return;
         }
+        console.log(`[MCQProcessor] Job found:`, {
+            jobId: job.id,
+            fileName: job.fileName,
+            filePath: job.filePath,
+            totalRows: job.totalRows,
+            status: job.status
+        });
         job.startProcessing(job.totalRows);
         await this.jobRepository.update(job);
+        console.log(`[MCQProcessor] Job marked as IN_PROGRESS`);
         let processedRows = 0;
         let successfulRows = 0;
         let failedRows = 0;
@@ -81,9 +90,33 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
         let errorFilePath = null;
         try {
             // 1. Download file from S3
-            const fileBuffer = await this.storageService.downloadFile(job.filePath);
+            console.log(`[MCQProcessor] Downloading file from S3:`, { filePath: job.filePath });
+            let fileBuffer;
+            try {
+                fileBuffer = await this.storageService.downloadFile(job.filePath);
+                console.log(`[MCQProcessor] File downloaded successfully:`, { size: fileBuffer.length });
+            }
+            catch (error) {
+                if (error.statusCode === 404 || error.name === 'NotFoundError') {
+                    console.error(`[MCQProcessor] File not found in S3:`, {
+                        jobId,
+                        filePath: job.filePath,
+                        error: error.message
+                    });
+                    job.markFailed();
+                    await this.jobRepository.update(job);
+                    return;
+                }
+                console.error(`[MCQProcessor] Error downloading file:`, {
+                    jobId,
+                    error: error.message,
+                    stack: error.stack
+                });
+                throw error;
+            }
             // 2. Determine file type and parse
             const isExcel = job.fileName.endsWith('.xlsx') || job.fileName.endsWith('.xls');
+            console.log(`[MCQProcessor] Parsing file:`, { fileName: job.fileName, isExcel });
             let rowsToProcess = [];
             if (isExcel) {
                 rowsToProcess = this.parseExcel(fileBuffer);
@@ -91,6 +124,7 @@ let MCQImportJobProcessor = class MCQImportJobProcessor {
             else {
                 rowsToProcess = await this.parseCSV(fileBuffer);
             }
+            console.log(`[MCQProcessor] File parsed:`, { totalRows: rowsToProcess.length });
             // 3. Process rows iteratively
             for (const [index, row] of rowsToProcess.entries()) {
                 const rowNumber = index + 1;

@@ -10,16 +10,22 @@ export interface Project {
   budget: number;
   duration: string;
   deadline?: string;
-  status: 'Open' | 'In_Progress' | 'Completed' | 'Cancelled';
+  status: 'Open' | 'In_Progress' | 'Pending_Completion' | 'Completed' | 'Cancelled';
   paymentId?: string;
   applicationsCount: number;
   createdAt: string;
   updatedAt: string;
   client?: {
+    id?: string;
     name: string;
-    avatar?: string;
+    avatarUrl?: string;
     rating?: number;
     isVerified?: boolean;
+  };
+  acceptedContributor?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
   };
 }
 
@@ -69,6 +75,24 @@ const projectService = {
 
   applyToProject: async (id: string, data: any): Promise<void> => {
     await api.post(`/projects/${id}/apply`, data);
+  },
+
+  getMyProjects: async (): Promise<Project[]> => {
+    const response = await api.get('/projects/my-projects');
+    return response.data.data;
+  },
+
+  getContributingProjects: async (): Promise<Project[]> => {
+    const response = await api.get('/projects/contributing');
+    return response.data.data;
+  },
+
+  requestCompletion: async (id: string): Promise<void> => {
+    await api.post(`/projects/${id}/complete`);
+  },
+
+  reviewCompletion: async (id: string, decision: 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT'): Promise<void> => {
+    await api.post(`/projects/${id}/review`, { decision });
   }
 };
 

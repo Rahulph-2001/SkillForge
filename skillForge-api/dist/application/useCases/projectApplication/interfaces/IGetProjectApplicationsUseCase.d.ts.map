@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetProjectApplicationsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/projectApplication/interfaces/IGetProjectApplicationsUseCase.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,6BAA6B,EAAE,MAAM,+DAA+D,CAAC;AAE9G,MAAM,WAAW,8BAA8B;IAC7C,OAAO,CAAC,SAAS,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,6BAA6B,EAAE,CAAC,CAAC;CACtF"}

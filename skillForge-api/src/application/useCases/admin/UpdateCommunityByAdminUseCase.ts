@@ -32,7 +32,7 @@ export class UpdateCommunityByAdminUseCase implements IUpdateCommunityByAdminUse
         @inject(TYPES.ICommunityMapper) private readonly communityMapper: ICommunityMapper
     ) { }
 
-    async execute(request: UpdateCommunityByAdminRequestDTO): Promise<{ message: string }> {
+    async execute(request: UpdateCommunityByAdminRequestDTO): Promise<CommunityResponseDTO> {
         // 1. Verify user exists
         const user = await this.userRepository.findById(request.adminUserId);
         if (!user) {
@@ -71,9 +71,7 @@ export class UpdateCommunityByAdminUseCase implements IUpdateCommunityByAdminUse
             Community.fromDatabaseRow(updatedCommunityData)
         );
 
-        // 5. Return success message
-        return {
-            message: `Community "${updatedCommunity.name}" has been successfully updated`
-        };
+        // 5. Return updated community DTO
+        return this.communityMapper.toDTO(updatedCommunity);
     }
 }

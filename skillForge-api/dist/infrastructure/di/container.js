@@ -18,13 +18,14 @@ const subscription_bindings_1 = require("./modules/subscription.bindings");
 const payment_bindings_1 = require("./modules/payment.bindings");
 const community_bindings_1 = require("./modules/community.bindings");
 const admin_bindings_1 = require("./modules/admin.bindings");
-/**
- * Main Dependency Injection Container Setup
- *
- * This file orchestrates all DI bindings by importing and calling
- * feature-specific binding modules. This modular approach makes the
- * DI container more maintainable and follows Clean Architecture principles.
- */
+const project_bindings_1 = require("./modules/project.bindings");
+const adminSession_bindings_1 = require("./modules/adminSession.bindings");
+const escrow_bindings_1 = require("./modules/escrow.bindings");
+const videoCall_bindings_1 = require("./modules/videoCall.bindings");
+const review_bindings_1 = require("./modules/review.bindings");
+const projectApplication_bindings_1 = require("./modules/projectApplication.bindings");
+const interview_bindings_1 = require("./modules/interview.bindings");
+const CronScheduler_1 = require("../scheduler/CronScheduler");
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
 (0, repository_bindings_1.bindRepositoryModule)(di_1.container);
@@ -39,6 +40,14 @@ const admin_bindings_1 = require("./modules/admin.bindings");
 (0, payment_bindings_1.bindPaymentModule)(di_1.container);
 (0, community_bindings_1.bindCommunityModule)(di_1.container);
 (0, admin_bindings_1.bindAdminModule)(di_1.container);
+(0, project_bindings_1.bindProjectModule)(di_1.container);
+(0, adminSession_bindings_1.bindAdminSessionModule)(di_1.container);
+(0, videoCall_bindings_1.registerVideoCallBindings)(di_1.container);
+(0, review_bindings_1.registerReviewBindings)(di_1.container);
+(0, projectApplication_bindings_1.registerProjectApplicationBindings)(di_1.container);
+(0, interview_bindings_1.registerInterviewBindings)(di_1.container);
+di_1.container.bind(types_1.TYPES.CronScheduler).to(CronScheduler_1.CronScheduler).inSingletonScope();
+di_1.container.load(escrow_bindings_1.escrowModule);
 // 3. Application entry point
 di_1.container.bind(types_1.TYPES.App).to(server_1.App);
 //# sourceMappingURL=container.js.map

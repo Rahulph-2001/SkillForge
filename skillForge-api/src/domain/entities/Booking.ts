@@ -7,6 +7,7 @@ export enum BookingStatus {
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
   RESCHEDULE_REQUESTED = 'reschedule_requested',
+  IN_SESSION = 'in_session',
 }
 
 export enum SessionType {
@@ -183,6 +184,7 @@ export class Booking {
       this.props.status === BookingStatus.PENDING ||
       this.props.status === BookingStatus.CONFIRMED
     );
+    // Note: IN_SESSION status explicitly blocks cancellation
   }
 
   canBeRescheduled(): boolean {
@@ -193,7 +195,14 @@ export class Booking {
   }
 
   canBeCompleted(): boolean {
-    return this.props.status === BookingStatus.CONFIRMED;
+    return (
+      this.props.status === BookingStatus.CONFIRMED ||
+      this.props.status === BookingStatus.IN_SESSION
+    );
+  }
+
+  isInSession(): boolean {
+    return this.props.status === BookingStatus.IN_SESSION;
   }
 
   isRescheduleRequest(): boolean {

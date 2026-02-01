@@ -16,19 +16,31 @@ exports.UpdateCommunityUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
+const UserRole_1 = require("../../../domain/enums/UserRole");
 let UpdateCommunityUseCase = class UpdateCommunityUseCase {
-    constructor(communityRepository, storageService) {
+    constructor(communityRepository, storageService, userRepository) {
         this.communityRepository = communityRepository;
         this.storageService = storageService;
+        this.userRepository = userRepository;
     }
     async execute(communityId, userId, dto, imageFile) {
+        // 1. Verify community exists
         const community = await this.communityRepository.findById(communityId);
         if (!community) {
             throw new AppError_1.NotFoundError('Community not found');
         }
-        if (community.adminId !== userId) {
-            throw new AppError_1.ForbiddenError('Only community admin can update community details');
+        // 2. Verify user exists
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new AppError_1.ForbiddenError('User not found');
         }
+        // 3. Authorization: Allow both community creator AND platform admin
+        const isCommunityCreator = community.adminId === userId;
+        const isPlatformAdmin = user.role === UserRole_1.UserRole.ADMIN;
+        if (!isCommunityCreator && !isPlatformAdmin) {
+            throw new AppError_1.ForbiddenError('Only community admin or platform admin can update community details');
+        }
+        // 4. Handle image upload
         let imageUrl = dto.imageUrl;
         if (imageFile) {
             // Delete old image if exists
@@ -44,6 +56,7 @@ let UpdateCommunityUseCase = class UpdateCommunityUseCase {
             const key = `communities/${userId}/${timestamp}-${sanitizedFilename}`;
             imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
         }
+        // 5. Update community
         community.updateDetails({
             name: dto.name,
             description: dto.description,
@@ -61,6 +74,7 @@ exports.UpdateCommunityUseCase = UpdateCommunityUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICommunityRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], UpdateCommunityUseCase);
 //# sourceMappingURL=UpdateCommunityUseCase.js.map

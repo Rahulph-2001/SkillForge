@@ -1,0 +1,31 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.WalletTransactionMapper = void 0;
+class WalletTransactionMapper {
+    static toDTO(transaction, userName, userEmail) {
+        const data = transaction.toJSON();
+        return {
+            id: data.id,
+            transactionId: `wt-${data.id.substring(0, 8)}`,
+            userId: data.metadata?.userId || data.adminId,
+            userName: userName || 'System',
+            userEmail: userEmail || 'system@skillforge.com',
+            type: data.type,
+            amount: data.amount,
+            description: data.description || `${data.source} transaction`,
+            date: data.createdAt,
+            status: data.status,
+            metadata: data.metadata,
+        };
+    }
+    static toDTOList(transactions, userMap) {
+        return transactions.map(transaction => {
+            const data = transaction.toJSON();
+            const userId = data.metadata?.userId;
+            const user = userId ? userMap.get(userId) : undefined;
+            return this.toDTO(transaction, user?.name, user?.email);
+        });
+    }
+}
+exports.WalletTransactionMapper = WalletTransactionMapper;
+//# sourceMappingURL=WalletTransactionMapper.js.map

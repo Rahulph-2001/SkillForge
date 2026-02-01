@@ -36,7 +36,7 @@ let AdminLoginUseCase = class AdminLoginUseCase {
             throw new AppError_1.UnauthorizedError(messages_1.ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
         }
         if (!user.isActive || user.isDeleted) {
-            throw new AppError_1.UnauthorizedError(messages_1.ERROR_MESSAGES.AUTH.ACCOUNT_INACTIVE);
+            throw new AppError_1.ForbiddenError('Your account has been suspended. Please contact support.');
         }
         if (user.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.AUTH.ACCESS_DENIED);

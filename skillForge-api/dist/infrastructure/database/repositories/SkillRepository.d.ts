@@ -12,6 +12,17 @@ export declare class SkillRepository extends BaseRepository<Skill> implements IS
     findPending(): Promise<Skill[]>;
     findById(id: string): Promise<Skill | null>;
     findByProviderId(providerId: string): Promise<Skill[]>;
+    findByProviderIdWithPagination(providerId: string, filters: {
+        page?: number;
+        limit?: number;
+        status?: string;
+    }): Promise<{
+        skills: Skill[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     findByProviderIdAndStatus(providerId: string, status: string): Promise<Skill[]>;
     findAll(): Promise<Skill[]>;
     create(skill: Skill): Promise<Skill>;

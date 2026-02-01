@@ -24,8 +24,32 @@ export class ProjectRoutes {
     );
 
     this.router.get(
+      '/my-projects',
+      authMiddleware,
+      asyncHandler(this.projectController.getMyProjects.bind(this.projectController))
+    );
+
+    this.router.get(
+      '/contributing',
+      authMiddleware,
+      asyncHandler(this.projectController.getContributingProjects.bind(this.projectController))
+    );
+
+    this.router.get(
       '/:id',
       asyncHandler(this.projectController.getProject.bind(this.projectController))
+    );
+
+    this.router.post(
+      '/:id/complete',
+      authMiddleware,
+      asyncHandler(this.projectController.requestCompletion.bind(this.projectController))
+    );
+
+    this.router.post(
+      '/:id/review',
+      authMiddleware,
+      asyncHandler(this.projectController.reviewCompletion.bind(this.projectController))
     );
 
     // Protected routes (can be added later for create/update/delete)

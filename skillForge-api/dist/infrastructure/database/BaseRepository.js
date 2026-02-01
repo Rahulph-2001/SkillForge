@@ -6,6 +6,13 @@ class BaseRepository {
         this.model = model;
         this.prisma = db.getClient();
     }
+    /**
+     * Set transaction client for atomic operations
+     * @internal Used by TransactionService
+     */
+    setTransactionClient(client) {
+        this.prisma = client;
+    }
     async create(data) {
         const modelClient = this.prisma[this.model];
         return modelClient.create({ data });

@@ -4,7 +4,8 @@ export declare enum BookingStatus {
     REJECTED = "rejected",
     COMPLETED = "completed",
     CANCELLED = "cancelled",
-    RESCHEDULE_REQUESTED = "reschedule_requested"
+    RESCHEDULE_REQUESTED = "reschedule_requested",
+    IN_SESSION = "in_session"
 }
 export declare enum SessionType {
     VIRTUAL = "Virtual",
@@ -17,6 +18,8 @@ export interface RescheduleInfo {
     reason: string;
     requestedBy: 'learner' | 'provider';
     requestedAt: Date;
+    newStartAt?: Date;
+    newEndAt?: Date;
 }
 export interface BookingProps {
     id?: string;
@@ -76,6 +79,7 @@ export declare class Booking {
     canBeCancelled(): boolean;
     canBeRescheduled(): boolean;
     canBeCompleted(): boolean;
+    isInSession(): boolean;
     isRescheduleRequest(): boolean;
     isPending(): boolean;
     isConfirmed(): boolean;

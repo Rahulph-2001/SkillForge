@@ -19,9 +19,11 @@ const Project_1 = require("../../../domain/entities/Project");
 const AppError_1 = require("../../../domain/errors/AppError");
 const uuid_1 = require("uuid");
 let CreateProjectUseCase = class CreateProjectUseCase {
-    constructor(projectRepository, userRepository) {
+    constructor(projectRepository, userRepository, validateLimitUseCase, incrementUsageUseCase) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.validateLimitUseCase = validateLimitUseCase;
+        this.incrementUsageUseCase = incrementUsageUseCase;
     }
     async execute(userId, request, paymentId) {
         // 1. Verify user exists
@@ -29,7 +31,9 @@ let CreateProjectUseCase = class CreateProjectUseCase {
         if (!user) {
             throw new AppError_1.NotFoundError('User not found');
         }
-        // 2. Create project entity
+        // 2. Validate subscription and project post limit
+        await this.validateLimitUseCase.execute(userId);
+        // 3. Create project entity
         const project = Project_1.Project.create({
             id: (0, uuid_1.v4)(),
             clientId: userId,
@@ -46,9 +50,11 @@ let CreateProjectUseCase = class CreateProjectUseCase {
             createdAt: new Date(),
             updatedAt: new Date(),
         });
-        // 3. Save project
+        // 4. Save project
         const savedProject = await this.projectRepository.create(project);
-        // 4. Map to response DTO
+        // 5. Track usage (increment project post count)
+        await this.incrementUsageUseCase.execute(userId);
+        // 6. Map to response DTO
         return {
             id: savedProject.id,
             clientId: savedProject.clientId,
@@ -78,6 +84,8 @@ exports.CreateProjectUseCase = CreateProjectUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IValidateProjectPostLimitUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IIncrementProjectPostUsageUseCase)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], CreateProjectUseCase);
 //# sourceMappingURL=CreateProjectUseCase.js.map

@@ -19,6 +19,18 @@ export declare const SUCCESS_MESSAGES: {
         readonly CONFIRMED: "Payment confirmed successfully";
         readonly REFUNDED: "Payment refunded successfully";
     };
+    readonly VIDEO_CALL: {
+        readonly ROOM_CREATED: "Video call room created successfully";
+        readonly JOINED: "Joined video call successfully";
+        readonly LEFT: "Left video call successfully";
+        readonly ENDED: "Video call ended successfully";
+    };
+    readonly PROJECT_APPLICATION: {
+        readonly SUBMITTED: "Application submitted successfully";
+        readonly FETCHED: "Applications retrieved successfully";
+        readonly UPDATED: "Application status updated successfully";
+        readonly WITHDRAWN: "Application withdrawn successfully";
+    };
     readonly USER: {
         readonly PROFILE_FETCHED: "Profile retrieved successfully";
         readonly PROFILE_UPDATED: "Profile updated successfully";
@@ -103,6 +115,12 @@ export declare const SUCCESS_MESSAGES: {
         readonly TRANSACTIONS_FETCHED: "Wallet transactions retrieved successfully";
         readonly WALLET_CREDITED: "Admin wallet credited successfully";
     };
+    readonly SESSION: {
+        readonly TIME_VALIDATED: "Session time validated successfully";
+    };
+    readonly REVIEW: {
+        readonly CREATED: "Review submitted successfully";
+    };
 };
 export declare const ERROR_MESSAGES: {
     readonly AUTH: {
@@ -138,12 +156,31 @@ export declare const ERROR_MESSAGES: {
         readonly TOO_MANY_REQUESTS: "Too many requests, try again later.";
         readonly EMAIL_SEND_FAILED: "Failed to send email. Please try again.";
     };
+    readonly SESSION: {
+        readonly NOT_STARTED_YET: "Session has not started yet. Please wait until the scheduled time.";
+        readonly SESSION_EXPIRED: "This session has already ended.";
+        readonly NOT_CONFIRMED: "Session must be confirmed before joining.";
+        readonly JOIN_WINDOW_NOT_OPEN: "You can only join the session within 15 minutes before the start time.";
+        readonly SESSION_TIME_VALIDATION_FAILED: "Failed to validate session time.";
+    };
     readonly PAYMENT: {
         readonly INTENT_CREATION_FAILED: "Failed to create payment intent";
         readonly CONFIRMATION_FAILED: "Payment confirmation failed";
         readonly REFUND_FAILED: "Payment refund failed";
         readonly NOT_FOUND: "Payment not found";
         readonly INVALID_AMOUNT: "Invalid payment amount";
+    };
+    readonly PROJECT_APPLICATION: {
+        readonly NOT_FOUND: "Application not found";
+        readonly ALREADY_APPLIED: "You have already applied to this project";
+        readonly CANNOT_APPLY_OWN: "Cannot apply to your own project";
+        readonly PROJECT_NOT_OPEN: "Project is not accepting applications";
+        readonly UNAUTHORIZED: "You are not authorized to perform this action";
+    };
+    readonly PROJECT: {
+        readonly NOT_FOUND: "Project not found";
+        readonly CREATION_FAILED: "Failed to create project";
+        readonly UPDATE_FAILED: "Failed to update project";
     };
     readonly USER: {
         readonly NOT_FOUND: "User not found";
@@ -187,6 +224,12 @@ export declare const ERROR_MESSAGES: {
         readonly IN_USE: "Feature is in use by subscription plans and cannot be deleted";
         readonly INVALID_TYPE: "Invalid feature type";
         readonly LIMIT_REQUIRED: "Limit value is required for numeric limit features";
+    };
+    readonly REVIEW: {
+        readonly CREATED: "Review submitted successfully";
+        readonly NOT_FOUND: "Review not found";
+        readonly ALREADY_EXISTS: "Review already exists for this session";
+        readonly CREATION_FAILED: "Failed to submit review";
     };
     readonly COMMUNITY: {
         readonly NOT_FOUND: "Community not found";

@@ -9,6 +9,7 @@ export declare class ProjectRepository extends BaseRepository<Project> implement
     findByClientId(clientId: string): Promise<Project[]>;
     findByClientIdAndStatus(clientId: string, status: ProjectStatus): Promise<Project[]>;
     findByPaymentId(paymentId: string): Promise<Project | null>;
+    findContributingProjects(userId: string): Promise<Project[]>;
     listProjects(filters: ListProjectsFilters): Promise<ListProjectsResult>;
     create(project: Project): Promise<Project>;
     update(project: Project): Promise<Project>;

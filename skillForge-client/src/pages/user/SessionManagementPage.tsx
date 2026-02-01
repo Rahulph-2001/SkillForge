@@ -17,6 +17,7 @@ import { sessionManagementService } from '../../services/sessionManagementServic
 import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
+import JoinSessionButton from '../../components/session/JoinSessionButton';
 
 interface UserSession {
   id: string;
@@ -177,9 +178,7 @@ export default function SessionManagementPage() {
     }
   };
 
-  const handleJoinSession = (_sessionId: string) => {
-    toast('Join session functionality coming soon');
-  };
+
 
   const getFilteredSessions = () => {
     if (activeFilter === 'all') return sessions;
@@ -215,14 +214,17 @@ export default function SessionManagementPage() {
       cancelled: 'bg-gray-100 text-gray-700 border-gray-200',
       rejected: 'bg-red-100 text-red-700 border-red-200',
       'reschedule requested': 'bg-orange-100 text-orange-700 border-orange-200',
+      in_session: 'bg-purple-100 text-purple-700 border-purple-200 animate-pulse',
     };
+
+    const displayText = statusLower === 'in_session' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1);
 
     return (
       <span
         className={`px-3 py-1 rounded-full text-xs font-semibold border ${styles[statusLower as keyof typeof styles] || styles.pending
           }`}
       >
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {displayText}
       </span>
     );
   };
@@ -236,6 +238,16 @@ export default function SessionManagementPage() {
       .join('')
       .toUpperCase()
       .slice(0, 2) || 'UP';
+  };
+
+  // Helper: Check if session has started or is within 15-minute join window
+  const isSessionStarted = (session: any) => {
+    if (session.status.toLowerCase() !== 'confirmed') return false;
+    const [hours, minutes] = session.preferredTime.split(':').map(Number);
+    const sessionStart = new Date(session.preferredDate);
+    sessionStart.setHours(hours, minutes, 0, 0);
+    const joinWindowStart = new Date(sessionStart.getTime() - 15 * 60 * 1000); // 15 min before
+    return new Date() >= joinWindowStart;
   };
 
   if (loading) {
@@ -462,34 +474,60 @@ export default function SessionManagementPage() {
                       )}
 
                       {session.status.toLowerCase() === 'confirmed' && (
-                        <>
-                          <button
-                            onClick={() => handleJoinSession(session.id)}
-                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 text-sm font-medium"
-                          >
-                            <Video className="w-4 h-4" />
-                            Join
-                          </button>
-                          <button
-                            onClick={() => handleRescheduleSession(session.id)}
-                            className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 text-sm font-medium"
-                          >
-                            <CalendarClock className="w-4 h-4" />
-                            Reschedule
-                          </button>
-                          <button
-                            onClick={() => handleCancelSession(session.id)}
-                            disabled={actionLoading === session.id}
-                            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
-                          >
-                            {actionLoading === session.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <X className="w-4 h-4" />
-                            )}
-                            Cancel
-                          </button>
-                        </>
+                        isSessionStarted(session) ? (
+                          // Session has started - only show Join button
+                          <>
+                            <JoinSessionButton
+                              sessionId={session.id}
+                              preferredDate={session.preferredDate}
+                              preferredTime={session.preferredTime}
+                              duration={session.duration}
+                              status={session.status}
+                            />
+                            <span className="text-xs text-purple-600 text-center font-medium">Session in progress</span>
+                          </>
+                        ) : (
+                          // Session not started - show all buttons
+                          <>
+                            <JoinSessionButton
+                              sessionId={session.id}
+                              preferredDate={session.preferredDate}
+                              preferredTime={session.preferredTime}
+                              duration={session.duration}
+                              status={session.status}
+                            />
+                            <button
+                              onClick={() => handleRescheduleSession(session.id)}
+                              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2 text-sm font-medium"
+                            >
+                              <CalendarClock className="w-4 h-4" />
+                              Reschedule
+                            </button>
+                            <button
+                              onClick={() => handleCancelSession(session.id)}
+                              disabled={actionLoading === session.id}
+                              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 text-sm font-medium"
+                            >
+                              {actionLoading === session.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <X className="w-4 h-4" />
+                              )}
+                              Cancel
+                            </button>
+                          </>
+                        )
+                      )}
+
+                      {/* IN_SESSION: Only show Join button, no reschedule/cancel */}
+                      {session.status.toLowerCase() === 'in_session' && (
+                        <JoinSessionButton
+                          sessionId={session.id}
+                          preferredDate={session.preferredDate}
+                          preferredTime={session.preferredTime}
+                          duration={session.duration}
+                          status={session.status}
+                        />
                       )}
                     </div>
                   </div>

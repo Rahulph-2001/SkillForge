@@ -20,6 +20,7 @@ const UserSubscriptionRepository_1 = require("../../database/repositories/UserSu
 const UsageRecordRepository_1 = require("../../database/repositories/UsageRecordRepository");
 const AvailabilityRepository_1 = require("../../database/repositories/AvailabilityRepository");
 const PaymentRepository_1 = require("../../database/repositories/PaymentRepository");
+const WalletTransactionRepository_1 = require("../../database/repositories/WalletTransactionRepository");
 /**
  * Binds all repository interfaces to their implementations
  */
@@ -48,6 +49,7 @@ const bindRepositoryModule = (container) => {
     container.bind(types_1.TYPES.IMessageReactionRepository).to(MessageReactionRepository_1.MessageReactionRepository);
     // Payment Repository
     container.bind(types_1.TYPES.IPaymentRepository).to(PaymentRepository_1.PrismaPaymentRepository).inSingletonScope();
+    container.bind(types_1.TYPES.IWalletTransactionRepository).to(WalletTransactionRepository_1.WalletTransactionRepository);
 };
 exports.bindRepositoryModule = bindRepositoryModule;
 //# sourceMappingURL=repository.bindings.js.map

@@ -49,14 +49,23 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
             throw new AppError_1.NotFoundError('Community creator not found');
         }
         // 5. Use transaction service for atomic operations
+        console.log(`[JoinCommunity] Starting transaction for user ${userId} joining community ${communityId}`);
+        console.log(`[JoinCommunity] User credits before: ${user.credits}, Community cost: ${community.creditsCost}`);
+        console.log(`[JoinCommunity] Creator credits before: ${creator.credits}`);
         const member = await this.transactionService.execute(async (repos) => {
             // Deduct credits from joining user
+            const userCreditsBefore = user.credits;
             user.deductCredits(community.creditsCost);
-            await repos.userRepository.update(user);
+            console.log(`[JoinCommunity] User credits after deduction: ${user.credits} (deducted ${community.creditsCost})`);
+            const updatedUser = await repos.userRepository.update(user);
+            console.log(`[JoinCommunity] User updated in DB. Credits in DB: ${updatedUser.credits}`);
             // Credit creator (if not joining own community)
             if (community.creditsCost > 0 && creator.id !== userId) {
+                const creatorCreditsBefore = creator.credits;
                 creator.addCredits(community.creditsCost, 'earned');
-                await repos.userRepository.update(creator);
+                console.log(`[JoinCommunity] Creator credits after addition: ${creator.credits} (added ${community.creditsCost})`);
+                const updatedCreator = await repos.userRepository.update(creator);
+                console.log(`[JoinCommunity] Creator updated in DB. Credits in DB: ${updatedCreator.credits}`);
             }
             // Calculate subscription end date
             const subscriptionEndsAt = new Date();
@@ -69,11 +78,17 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
                 subscriptionEndsAt,
             });
             const upsertedMember = await repos.communityRepository.upsertMember(newMember);
+            console.log(`[JoinCommunity] Member record created/updated`);
             // Increment member count
             await repos.communityRepository.incrementMembersCount(communityId);
+            console.log(`[JoinCommunity] Member count incremented`);
             return upsertedMember;
         });
-        // 6. Broadcast WebSocket event (outside transaction - non-critical)
+        console.log(`[JoinCommunity] Transaction completed successfully`);
+        // 6. Fetch fresh user data to get updated credits from DB
+        const updatedUser = await this.userRepository.findById(userId);
+        console.log(`[JoinCommunity] Fresh user data fetched. Credits: ${updatedUser?.credits}`);
+        // 7. Broadcast WebSocket events (outside transaction - non-critical)
         setImmediate(() => {
             this.webSocketService.sendToCommunity(communityId, {
                 type: 'member_joined',
@@ -81,6 +96,16 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
                 data: {
                     userId,
                     userName: user.name,
+                    timestamp: new Date().toISOString(),
+                },
+            });
+            // Notify user about balance update with fresh data
+            console.log(`[JoinCommunity] Sending balance update via WebSocket to user ${userId}`);
+            this.webSocketService.sendToUser(userId, {
+                type: 'balance_updated',
+                data: {
+                    credits: updatedUser?.credits || user.credits,
+                    walletBalance: updatedUser?.walletBalance || user.walletBalance,
                     timestamp: new Date().toISOString(),
                 },
             });

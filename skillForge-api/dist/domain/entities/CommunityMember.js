@@ -33,6 +33,10 @@ class CommunityMember {
         this._isActive = false;
         this._leftAt = new Date();
     }
+    expireMembership() {
+        this._isActive = false;
+        this._leftAt = new Date();
+    }
     updateSubscription(endsAt) {
         this._subscriptionEndsAt = endsAt;
     }
@@ -50,6 +54,14 @@ class CommunityMember {
             userName: this._userName,
             userAvatar: this._userAvatar,
         };
+    }
+    renewSubscription(days) {
+        const newEndsAt = new Date();
+        newEndsAt.setDate(newEndsAt.getDate() + days);
+        this._subscriptionEndsAt = newEndsAt;
+    }
+    hasAutoRenewEnabled() {
+        return this._isAutoRenew;
     }
     static fromDatabaseRow(row) {
         const member = new CommunityMember({

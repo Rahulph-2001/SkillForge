@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus } from 'lucide-react';
 import ProjectCard from '../../components/projects/ProjectCard';
+import Pagination from '../../components/common/Pagination';
 import projectService, { Project } from '../../services/projectService';
 import { toast } from 'react-hot-toast';
 
@@ -16,10 +17,11 @@ export default function ProjectsPage() {
     const [total, setTotal] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [limit, setLimit] = useState(20);
 
     useEffect(() => {
         fetchProjects();
-    }, [searchQuery, statusFilter, categoryFilter, currentPage]);
+    }, [searchQuery, statusFilter, categoryFilter, currentPage, limit]);
 
     const fetchProjects = async () => {
         try {
@@ -29,7 +31,7 @@ export default function ProjectsPage() {
                 category: categoryFilter !== 'All' ? categoryFilter : undefined,
                 status: statusFilter !== 'All Status' ? statusFilter as 'Open' | 'In_Progress' | 'Completed' | 'Cancelled' : undefined,
                 page: currentPage,
-                limit: 20,
+                limit: limit,
             });
 
             setProjects(response.projects);
@@ -44,6 +46,16 @@ export default function ProjectsPage() {
         }
     };
 
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit);
+        setCurrentPage(1); // Reset to first page when limit changes
+    };
+
     return (
         <div className="min-h-screen bg-gray-50 pt-6 pb-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,7 +66,10 @@ export default function ProjectsPage() {
                         <p className="text-gray-600 text-sm">Find freelance opportunities and showcase your skills</p>
                     </div>
                     <div className="flex gap-3">
-                        <button className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <button
+                            onClick={() => navigate('/my-projects')}
+                            className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        >
                             My Projects
                         </button>
                         <button
@@ -153,26 +168,21 @@ export default function ProjectsPage() {
                                 ))
                             )}
 
-                            {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="flex justify-center gap-2 mt-8">
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                        disabled={currentPage === 1}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Previous
-                                    </button>
-                                    <span className="px-4 py-2 text-gray-700">
-                                        Page {currentPage} of {totalPages}
-                                    </span>
-                                    <button
-                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        Next
-                                    </button>
+                            {/* Pagination Component */}
+                            {totalPages > 0 && total > 0 && (
+                                <div className="mt-8 bg-white p-4 rounded-xl border border-gray-200">
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        totalItems={total}
+                                        limit={limit}
+                                        onPageChange={handlePageChange}
+                                        onLimitChange={handleLimitChange}
+                                        showLimitSelector={true}
+                                        limitOptions={[10, 20, 50, 100]}
+                                        showInfo={true}
+                                        disabled={loading}
+                                    />
                                 </div>
                             )}
                         </>

@@ -5,7 +5,10 @@ export declare class UserSubscriptionMapper implements IUserSubscriptionMapper {
     /**
      * Map UserSubscription entity to UserSubscriptionResponseDTO with computed fields
      */
-    toDTO(subscription: UserSubscription, planName?: string): UserSubscriptionResponseDTO;
+    /**
+     * Map UserSubscription entity to UserSubscriptionResponseDTO with computed fields
+     */
+    toDTO(subscription: UserSubscription, planName?: string, usageRecords?: any[], planLimits?: any): UserSubscriptionResponseDTO;
     /**
      * Map array of UserSubscription entities to DTOs
      */

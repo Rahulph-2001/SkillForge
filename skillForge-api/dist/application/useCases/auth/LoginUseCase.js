@@ -35,7 +35,7 @@ let LoginUseCase = class LoginUseCase {
             throw new AppError_1.UnauthorizedError(messages_1.ERROR_MESSAGES.AUTH.INVALID_CREDENTIALS);
         }
         if (!user.isActive || user.isDeleted) {
-            throw new AppError_1.UnauthorizedError(messages_1.ERROR_MESSAGES.AUTH.ACCOUNT_INACTIVE);
+            throw new AppError_1.ForbiddenError('Your account has been suspended. Please contact support.');
         }
         user.updateLastLogin(ipAddress || 'unknown');
         await this.userRepository.update(user);

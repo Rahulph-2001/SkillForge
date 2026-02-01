@@ -20,9 +20,12 @@ import { bindProjectModule } from './modules/project.bindings';
 import { bindAdminSessionModule } from './modules/adminSession.bindings';
 import { escrowModule } from './modules/escrow.bindings';
 import { registerVideoCallBindings } from './modules/videoCall.bindings';
+import { registerReviewBindings } from './modules/review.bindings';
+import { registerProjectApplicationBindings } from './modules/projectApplication.bindings';
+import { registerInterviewBindings } from './modules/interview.bindings';
+import { CronScheduler } from '../scheduler/CronScheduler';
 
 export { container };
-
 
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
@@ -42,8 +45,13 @@ bindAdminModule(container);
 bindProjectModule(container);
 bindAdminSessionModule(container);
 registerVideoCallBindings(container);
+registerReviewBindings(container);
+registerProjectApplicationBindings(container);
+registerInterviewBindings(container);
 
-container.load(escrowModule)
+container.bind(TYPES.CronScheduler).to(CronScheduler).inSingletonScope();
+
+container.load(escrowModule);
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);

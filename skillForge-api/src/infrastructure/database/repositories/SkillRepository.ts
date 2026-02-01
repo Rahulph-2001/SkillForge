@@ -128,6 +128,43 @@ export class SkillRepository extends BaseRepository<Skill> implements ISkillRepo
     return skills.map((s: any) => this.toDomain(s));
   }
 
+  async findByProviderIdWithPagination(
+    providerId: string,
+    filters: { page?: number; limit?: number; status?: string }
+  ): Promise<{ skills: Skill[]; total: number; page: number; limit: number; totalPages: number }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 12;
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      providerId,
+      isDeleted: false,
+    };
+
+    // Status filter
+    if (filters.status && filters.status !== 'all') {
+      where.status = filters.status;
+    }
+
+    const [skills, total] = await Promise.all([
+      this.prisma.skill.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.skill.count({ where }),
+    ]);
+
+    return {
+      skills: skills.map((s: any) => this.toDomain(s)),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
   async findByProviderIdAndStatus(providerId: string, status: string): Promise<Skill[]> {
     const skills = await this.prisma.skill.findMany({
       where: {

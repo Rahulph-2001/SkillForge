@@ -17,14 +17,22 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 let BrowseSkillsUseCase = class BrowseSkillsUseCase {
-    constructor(skillRepository, userRepository, availabilityRepository, browseSkillMapper) {
+    constructor(skillRepository, userRepository, availabilityRepository, browseSkillMapper, paginationService) {
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
         this.availabilityRepository = availabilityRepository;
         this.browseSkillMapper = browseSkillMapper;
+        this.paginationService = paginationService;
     }
     async execute(filters) {
-        const { skills, total } = await this.skillRepository.browse(filters);
+        const paginationParams = this.paginationService.createParams(filters.page || 1, filters.limit || 12);
+        // Update filters with validated params
+        const queryFilters = {
+            ...filters,
+            page: paginationParams.page,
+            limit: paginationParams.limit
+        };
+        const { skills, total } = await this.skillRepository.browse(queryFilters);
         // Collect provider IDs
         const providerIds = [...new Set(skills.map(s => s.providerId))];
         // Fetch providers
@@ -41,14 +49,13 @@ let BrowseSkillsUseCase = class BrowseSkillsUseCase {
             const availability = availabilityMap.get(skill.providerId);
             return this.browseSkillMapper.toDTO(skill, provider, availability);
         });
-        const page = filters.page || 1;
-        const limit = filters.limit || 12;
+        const paginationResult = this.paginationService.createResult(skillDTOs, total, paginationParams.page, paginationParams.limit);
         return {
-            skills: skillDTOs,
-            total,
-            page,
-            limit,
-            totalPages: Math.ceil(total / limit),
+            skills: paginationResult.data,
+            total: paginationResult.total,
+            page: paginationResult.page,
+            limit: paginationResult.limit,
+            totalPages: paginationResult.totalPages
         };
     }
 };
@@ -59,6 +66,7 @@ exports.BrowseSkillsUseCase = BrowseSkillsUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IBrowseSkillMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], BrowseSkillsUseCase);
 //# sourceMappingURL=BrowseSkillsUseCase.js.map

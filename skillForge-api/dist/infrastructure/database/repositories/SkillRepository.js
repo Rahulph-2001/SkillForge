@@ -125,6 +125,35 @@ let SkillRepository = class SkillRepository extends BaseRepository_1.BaseReposit
         });
         return skills.map((s) => this.toDomain(s));
     }
+    async findByProviderIdWithPagination(providerId, filters) {
+        const page = filters.page || 1;
+        const limit = filters.limit || 12;
+        const skip = (page - 1) * limit;
+        const where = {
+            providerId,
+            isDeleted: false,
+        };
+        // Status filter
+        if (filters.status && filters.status !== 'all') {
+            where.status = filters.status;
+        }
+        const [skills, total] = await Promise.all([
+            this.prisma.skill.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.skill.count({ where }),
+        ]);
+        return {
+            skills: skills.map((s) => this.toDomain(s)),
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
     async findByProviderIdAndStatus(providerId, status) {
         const skills = await this.prisma.skill.findMany({
             where: {

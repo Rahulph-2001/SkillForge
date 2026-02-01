@@ -11,11 +11,34 @@ export declare class CommunityRepository extends BaseRepository<Community> imple
         category?: string;
         isActive?: boolean;
     }): Promise<Community[]>;
+    findAllWithPagination(filters: {
+        search?: string;
+        category?: string;
+        isActive?: boolean;
+    }, pagination: {
+        skip: number;
+        take: number;
+    }): Promise<{
+        communities: Community[];
+        total: number;
+    }>;
     findByAdminId(adminId: string): Promise<Community[]>;
     update(id: string, community: Community): Promise<Community>;
     delete(id: string): Promise<void>;
+    /**
+     * Block a community (set isActive to false)
+     * Following Single Responsibility Principle
+     */
+    blockCommunity(id: string): Promise<void>;
+    /**
+     * Unblock a community (set isActive to true)
+     * Following Single Responsibility Principle
+     */
+    unblockCommunity(id: string): Promise<void>;
     findMembersByCommunityId(communityId: string): Promise<CommunityMember[]>;
-    findMemberByUserAndCommunity(communityId: string, userId: string): Promise<CommunityMember | null>;
+    findMemberByUserAndCommunity(userId: string, communityId: string): Promise<CommunityMember | null>;
+    isMember(communityId: string, userId: string): Promise<boolean>;
+    getMembersCount(communityId: string): Promise<number>;
     createMember(member: CommunityMember): Promise<CommunityMember>;
     updateMember(member: CommunityMember): Promise<CommunityMember>;
     upsertMember(member: CommunityMember): Promise<CommunityMember>;
@@ -23,5 +46,8 @@ export declare class CommunityRepository extends BaseRepository<Community> imple
     removeMember(communityId: string, userId: string): Promise<void>;
     findMembershipsByUserId(userId: string): Promise<CommunityMember[]>;
     incrementMembersCount(communityId: string): Promise<void>;
+    decrementMembersCount(communityId: string): Promise<void>;
+    findExpiredMemberships(currentDate: Date): Promise<CommunityMember[]>;
+    findExpiredMembershipsWithAutoRenew(currentDate: Date): Promise<CommunityMember[]>;
 }
 //# sourceMappingURL=CommunityRepository.d.ts.map

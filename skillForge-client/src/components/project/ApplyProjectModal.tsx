@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { X, Send, Loader2 } from 'lucide-react';
-import projectService, { Project } from '../../services/projectService';
-// import api from '../../services/api';
+import { Project } from '../../services/projectService';
+import projectApplicationService from '../../services/projectApplicationService';
 import { toast } from 'react-hot-toast';
 
 interface ApplyProjectModalProps {
@@ -19,9 +19,8 @@ export default function ApplyProjectModal({
 }: ApplyProjectModalProps) {
     const [formData, setFormData] = useState({
         coverLetter: '',
-        proposedTimeline: '',
+        proposedDuration: '',
         proposedBudget: project.budget,
-        portfolioLinks: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -33,18 +32,22 @@ export default function ApplyProjectModal({
             return;
         }
 
-        if (!formData.proposedTimeline.trim()) {
-            toast.error('Please provide a proposed timeline');
+        if (formData.coverLetter.length < 50) {
+            toast.error('Cover letter must be at least 50 characters');
+            return;
+        }
+
+        if (!formData.proposedDuration.trim()) {
+            toast.error('Please provide a proposed duration');
             return;
         }
 
         try {
             setIsSubmitting(true);
-            await projectService.applyToProject(project.id, {
+            await projectApplicationService.applyToProject(project.id, {
                 coverLetter: formData.coverLetter.trim(),
-                proposedTimeline: formData.proposedTimeline.trim(),
+                proposedDuration: formData.proposedDuration.trim(),
                 proposedBudget: formData.proposedBudget,
-                portfolioLinks: formData.portfolioLinks.trim() || undefined,
             });
 
             toast.success('Application submitted successfully!');
@@ -54,9 +57,8 @@ export default function ApplyProjectModal({
             // Reset form
             setFormData({
                 coverLetter: '',
-                proposedTimeline: '',
+                proposedDuration: '',
                 proposedBudget: project.budget,
-                portfolioLinks: '',
             });
         } catch (error: any) {
             console.error('Failed to submit application:', error);
@@ -99,22 +101,25 @@ export default function ApplyProjectModal({
                             onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
                             placeholder="Explain why you're the best fit for this project. Highlight your relevant experience and skills..."
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            minLength={50}
+                            maxLength={5000}
                         />
-                        <p className="text-sm text-gray-500 mt-1">
-                            {formData.coverLetter.length}/2000 characters
-                        </p>
+                        <div className="flex justify-between text-sm text-gray-500 mt-1">
+                            <span>Min 50 characters</span>
+                            <span>{formData.coverLetter.length}/5000</span>
+                        </div>
                     </div>
 
-                    {/* Proposed Timeline */}
+                    {/* Proposed Duration */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Proposed Timeline <span className="text-red-500">*</span>
+                            Proposed Duration <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             required
-                            value={formData.proposedTimeline}
-                            onChange={(e) => setFormData({ ...formData, proposedTimeline: e.target.value })}
+                            value={formData.proposedDuration}
+                            onChange={(e) => setFormData({ ...formData, proposedDuration: e.target.value })}
                             placeholder="e.g., 4 weeks, 2 months"
                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
@@ -140,25 +145,11 @@ export default function ApplyProjectModal({
                         </p>
                     </div>
 
-                    {/* Portfolio Links */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Portfolio Links (Optional)
-                        </label>
-                        <textarea
-                            rows={3}
-                            value={formData.portfolioLinks}
-                            onChange={(e) => setFormData({ ...formData, portfolioLinks: e.target.value })}
-                            placeholder="Add links to your portfolio, GitHub, or relevant work samples (one per line)"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                        />
-                    </div>
-
                     {/* Info Box */}
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                         <p className="text-sm text-blue-900">
                             <strong>Note:</strong> Your application will be reviewed by the project creator.
-                            Make sure to highlight your relevant skills and experience.
+                            We use advanced AI to highlight your most relevant skills to the employer.
                         </p>
                     </div>
 

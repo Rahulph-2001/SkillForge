@@ -57,6 +57,10 @@ let GoogleAuthUseCase = class GoogleAuthUseCase {
             user = await this.userRepository.save(newUser);
         }
         else {
+            // Check if existing user is suspended or deleted
+            if (!user.isActive || user.isDeleted) {
+                throw new AppError_1.ForbiddenError('Your account has been suspended. Please contact support.');
+            }
             // Existing user - update avatar if changed and update login time
             if (avatarUrl && user.avatarUrl !== avatarUrl) {
                 user.updateAvatar(avatarUrl);

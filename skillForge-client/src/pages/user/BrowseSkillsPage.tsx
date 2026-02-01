@@ -269,7 +269,7 @@ export default function BrowseSkillsPage() {
                                                     <div className="flex items-center gap-1 ml-2 bg-yellow-50 px-2 py-1 rounded-lg">
                                                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                                                         <span className="text-sm font-bold text-gray-900">
-                                                            {skill.rating.toFixed(1)}
+                                                            {Number(skill.rating).toFixed(1)}
                                                         </span>
                                                     </div>
                                                 )}

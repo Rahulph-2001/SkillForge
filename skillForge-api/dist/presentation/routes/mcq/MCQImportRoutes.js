@@ -23,11 +23,24 @@ const multer_1 = require("../../../config/multer");
 let MCQImportRoutes = class MCQImportRoutes {
     constructor(mcqImportController) {
         this.mcqImportController = mcqImportController;
+        console.log('[MCQImportRoutes] Constructor called - initializing routes');
         this.router = (0, express_1.Router)();
         this.setupRoutes();
+        console.log('[MCQImportRoutes] Routes setup complete');
     }
     setupRoutes() {
+        console.log('[MCQImportRoutes] Setting up MCQ import routes');
         this.router.use(authMiddleware_1.authMiddleware, adminMiddleware_1.adminMiddleware);
+        // Add logging middleware to track requests
+        this.router.use((req, _res, next) => {
+            console.log('[MCQImportRoutes] Request received:', {
+                method: req.method,
+                path: req.path,
+                params: req.params,
+                hasFile: !!req.file
+            });
+            next();
+        });
         this.router.post('/:templateId/import', multer_1.uploadImportFile.single('csvFile'), this.mcqImportController.startImport);
         this.router.get('/:templateId/status', this.mcqImportController.listJobs);
         this.router.get('/errors/:jobId/download', this.mcqImportController.downloadErrors);

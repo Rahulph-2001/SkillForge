@@ -14,6 +14,9 @@ export declare class ConflictError extends AppError {
 export declare class ValidationError extends AppError {
     constructor(message?: string);
 }
+export declare class BadRequestError extends AppError {
+    constructor(message?: string);
+}
 export declare class UnauthorizedError extends AppError {
     constructor(message?: string);
 }

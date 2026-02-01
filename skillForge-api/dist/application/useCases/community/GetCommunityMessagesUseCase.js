@@ -28,8 +28,8 @@ let GetCommunityMessagesUseCase = class GetCommunityMessagesUseCase {
             throw new AppError_1.ForbiddenError('Community not found');
         }
         if (community.adminId !== userId) {
-            // Check active membership (note: argument order is communityId, userId)
-            const member = await this.communityRepository.findMemberByUserAndCommunity(communityId, userId);
+            // Check active membership
+            const member = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
             if (!member || !member.isActive) {
                 throw new AppError_1.ForbiddenError('You are not a member of this community');
             }

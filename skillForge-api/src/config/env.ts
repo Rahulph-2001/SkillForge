@@ -83,4 +83,5 @@ export const env = {
   TURN_SERVER: process.env.TURN_SERVER || '',
   TURN_USERNAME: process.env.TURN_USERNAME || '',
   TURN_CREDENTIAL: process.env.TURN_CREDENTIAL || '',
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || ''
 } as const;

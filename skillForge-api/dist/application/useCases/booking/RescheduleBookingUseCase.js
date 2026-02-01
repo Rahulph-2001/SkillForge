@@ -17,9 +17,11 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const BookingValidator_1 = require("../../../shared/validators/BookingValidator");
+const DateTimeUtils_1 = require("../../../shared/utils/DateTimeUtils");
 let RescheduleBookingUseCase = class RescheduleBookingUseCase {
-    constructor(bookingRepository) {
+    constructor(bookingRepository, skillRepository) {
         this.bookingRepository = bookingRepository;
+        this.skillRepository = skillRepository;
     }
     async execute(request) {
         // 1. Validate date and time format
@@ -47,23 +49,50 @@ let RescheduleBookingUseCase = class RescheduleBookingUseCase {
         if (!booking.canBeRescheduled()) {
             throw new AppError_1.ValidationError(`Cannot reschedule booking with status: ${booking.status}`);
         }
-        // 6. Create reschedule info
+        // 5b. Time-based validation: Block rescheduling if session time window has started
+        const RESCHEDULE_CUTOFF_MINUTES = 15; // Same as join window
+        const sessionStart = this.parseDateTime(booking.preferredDate, booking.preferredTime);
+        const rescheduleCutoff = new Date(sessionStart.getTime() - RESCHEDULE_CUTOFF_MINUTES * 60 * 1000);
+        const now = new Date();
+        if (now >= rescheduleCutoff) {
+            throw new AppError_1.ValidationError('Cannot reschedule: Session is about to start or has already started');
+        }
+        // 6. Get skill to calculate duration
+        const skill = await this.skillRepository.findById(booking.skillId);
+        if (!skill) {
+            throw new AppError_1.NotFoundError('Skill not found');
+        }
+        // 7. Calculate new start and end times
+        const [startHours, startMinutes] = request.newTime.split(':').map(Number);
+        const newStartAt = new Date(request.newDate);
+        newStartAt.setHours(startHours, startMinutes, 0, 0);
+        const newEndAt = DateTimeUtils_1.DateTimeUtils.addHours(newStartAt, skill.durationHours);
+        // 8. Create reschedule info with calculated times
         const rescheduleInfo = {
             newDate: request.newDate,
             newTime: request.newTime,
             reason: request.reason,
             requestedBy: isLearner ? 'learner' : 'provider',
             requestedAt: new Date(),
+            newStartAt,
+            newEndAt,
         };
-        // 7. Update booking with reschedule request
+        // 9. Update booking with reschedule request
         await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
         // TODO: Send notification to the other party (learner or provider)
+    }
+    parseDateTime(dateString, timeString) {
+        const [hours, minutes] = timeString.split(':').map(Number);
+        const date = new Date(dateString);
+        date.setHours(hours, minutes, 0, 0);
+        return date;
     }
 };
 exports.RescheduleBookingUseCase = RescheduleBookingUseCase;
 exports.RescheduleBookingUseCase = RescheduleBookingUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], RescheduleBookingUseCase);
 //# sourceMappingURL=RescheduleBookingUseCase.js.map

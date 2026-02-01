@@ -16,10 +16,10 @@ const initialState: SkillState = {
 
 export const fetchMySkills = createAsyncThunk(
     'skills/fetchMySkills',
-    async (_, { rejectWithValue }) => {
+    async (params: { page?: number; limit?: number; status?: string } = {}, { rejectWithValue }) => {
         try {
-            const response = await skillService.getMySkills();
-            return response.data;
+            const response = await skillService.getMySkills(params);
+            return response.data.skills; // Extract skills array from paginated response
         } catch (error: any) {
             return rejectWithValue(error.message || 'Failed to fetch skills')
         }

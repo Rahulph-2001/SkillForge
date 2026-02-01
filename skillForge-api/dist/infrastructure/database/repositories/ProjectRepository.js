@@ -39,9 +39,19 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             case 'Cancelled':
                 status = Project_1.ProjectStatus.CANCELLED;
                 break;
+            case 'Pending_Completion':
+                status = Project_1.ProjectStatus.PENDING_COMPLETION;
+                break;
             default:
                 status = Project_1.ProjectStatus.OPEN; // Default fallback
         }
+        // Find accepted applicant if present
+        const acceptedApp = data.applications?.find((app) => app.status === 'ACCEPTED');
+        const acceptedContributor = acceptedApp?.applicant ? {
+            id: acceptedApp.applicant.id,
+            name: acceptedApp.applicant.name,
+            avatarUrl: acceptedApp.applicant.avatarUrl
+        } : undefined;
         return Project_1.Project.create({
             id: data.id,
             clientId: data.clientId,
@@ -57,6 +67,12 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             applicationsCount: data.applicationsCount || 0,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
+            client: data.client ? {
+                id: data.client.id,
+                name: data.client.name,
+                avatarUrl: data.client.avatarUrl
+            } : undefined,
+            acceptedContributor,
         });
     }
     // --- Read Operations ---
@@ -69,6 +85,12 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
     async findByClientId(clientId) {
         const projects = await this.prisma.project.findMany({
             where: { clientId, isDeleted: false },
+            include: {
+                applications: {
+                    where: { status: 'ACCEPTED' },
+                    include: { applicant: true }
+                }
+            },
             orderBy: { createdAt: 'desc' },
         });
         return projects.map((p) => this.mapToDomain(p));
@@ -85,6 +107,25 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             where: { paymentId, isDeleted: false },
         });
         return project ? this.mapToDomain(project) : null;
+    }
+    async findContributingProjects(userId) {
+        const applications = await this.prisma.projectApplication.findMany({
+            where: {
+                applicantId: userId,
+                status: 'ACCEPTED',
+            },
+            include: {
+                project: {
+                    include: {
+                        client: true,
+                    }
+                },
+            },
+        });
+        const projects = applications
+            .map((app) => app.project)
+            .filter((project) => project !== null && (project.status === 'In_Progress' || project.status === 'Open' || project.status === 'Pending_Completion'));
+        return projects.map((p) => this.mapToDomain(p));
     }
     // --- List Operations ---
     async listProjects(filters) {
@@ -144,6 +185,9 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             case Project_1.ProjectStatus.CANCELLED:
                 prismaStatus = 'Cancelled';
                 break;
+            case Project_1.ProjectStatus.PENDING_COMPLETION:
+                prismaStatus = 'Pending_Completion';
+                break;
             default:
                 prismaStatus = 'Open';
         }
@@ -183,6 +227,9 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             case Project_1.ProjectStatus.CANCELLED:
                 prismaStatus = 'Cancelled';
                 break;
+            case Project_1.ProjectStatus.PENDING_COMPLETION:
+                prismaStatus = 'Pending_Completion';
+                break;
             default:
                 prismaStatus = 'Open';
         }
@@ -221,6 +268,9 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
                 break;
             case Project_1.ProjectStatus.CANCELLED:
                 prismaStatus = 'Cancelled';
+                break;
+            case Project_1.ProjectStatus.PENDING_COMPLETION:
+                prismaStatus = 'Pending_Completion';
                 break;
             default:
                 prismaStatus = 'Open';

@@ -29,9 +29,20 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       case 'Cancelled':
         status = ProjectStatus.CANCELLED;
         break;
+      case 'Pending_Completion':
+        status = ProjectStatus.PENDING_COMPLETION;
+        break;
       default:
         status = ProjectStatus.OPEN; // Default fallback
     }
+
+    // Find accepted applicant if present
+    const acceptedApp = data.applications?.find((app: any) => app.status === 'ACCEPTED');
+    const acceptedContributor = acceptedApp?.applicant ? {
+      id: acceptedApp.applicant.id,
+      name: acceptedApp.applicant.name,
+      avatarUrl: acceptedApp.applicant.avatarUrl
+    } : undefined;
 
     return Project.create({
       id: data.id,
@@ -48,6 +59,12 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       applicationsCount: data.applicationsCount || 0,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
+      client: data.client ? {
+        id: data.client.id,
+        name: data.client.name,
+        avatarUrl: data.client.avatarUrl
+      } : undefined,
+      acceptedContributor,
     });
   }
 
@@ -64,6 +81,12 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
   async findByClientId(clientId: string): Promise<Project[]> {
     const projects = await this.prisma.project.findMany({
       where: { clientId, isDeleted: false },
+      include: {
+        applications: {
+          where: { status: 'ACCEPTED' },
+          include: { applicant: true }
+        }
+      },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -85,6 +108,28 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     });
 
     return project ? this.mapToDomain(project) : null;
+  }
+
+  async findContributingProjects(userId: string): Promise<Project[]> {
+    const applications = await this.prisma.projectApplication.findMany({
+      where: {
+        applicantId: userId,
+        status: 'ACCEPTED',
+      },
+      include: {
+        project: {
+          include: {
+            client: true,
+          }
+        },
+      },
+    });
+
+    const projects = applications
+      .map((app) => app.project)
+      .filter((project) => project !== null && (project.status === 'In_Progress' || project.status === 'Open' || project.status === 'Pending_Completion'));
+
+    return projects.map((p) => this.mapToDomain(p));
   }
 
   // --- List Operations ---
@@ -156,9 +201,13 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       case ProjectStatus.CANCELLED:
         prismaStatus = 'Cancelled';
         break;
+      case ProjectStatus.PENDING_COMPLETION:
+        prismaStatus = 'Pending_Completion';
+        break;
       default:
         prismaStatus = 'Open';
     }
+
 
     const created = await this.prisma.project.create({
       data: {
@@ -197,6 +246,9 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
         break;
       case ProjectStatus.CANCELLED:
         prismaStatus = 'Cancelled';
+        break;
+      case ProjectStatus.PENDING_COMPLETION:
+        prismaStatus = 'Pending_Completion';
         break;
       default:
         prismaStatus = 'Open';
@@ -240,6 +292,9 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
         break;
       case ProjectStatus.CANCELLED:
         prismaStatus = 'Cancelled';
+        break;
+      case ProjectStatus.PENDING_COMPLETION:
+        prismaStatus = 'Pending_Completion';
         break;
       default:
         prismaStatus = 'Open';

@@ -59,9 +59,18 @@ export const skillService = {
     }
   },
 
-  getMySkills: async (): Promise<{ success: boolean; data: SkillResponse[] }> => {
+  getMySkills: async (params?: { page?: number; limit?: number; status?: string }): Promise<{
+    success: boolean;
+    data: {
+      skills: SkillResponse[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  }> => {
     try {
-      const response = await api.get('/skills/me');
+      const response = await api.get('/skills/me', { params });
       return response.data;
     } catch (error: any) {
       throw error.response?.data || error;

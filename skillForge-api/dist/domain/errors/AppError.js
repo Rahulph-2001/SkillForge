@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.InternalServerError = exports.ForbiddenError = exports.UnauthorizedError = exports.ValidationError = exports.ConflictError = exports.NotFoundError = exports.AppError = void 0;
+exports.InternalServerError = exports.ForbiddenError = exports.UnauthorizedError = exports.BadRequestError = exports.ValidationError = exports.ConflictError = exports.NotFoundError = exports.AppError = void 0;
 const HttpStatusCode_1 = require("../enums/HttpStatusCode");
 const messages_1 = require("../../config/messages");
 class AppError extends Error {
@@ -34,6 +34,13 @@ class ValidationError extends AppError {
     }
 }
 exports.ValidationError = ValidationError;
+class BadRequestError extends AppError {
+    constructor(message = 'Bad request') {
+        super(message, HttpStatusCode_1.HttpStatusCode.BAD_REQUEST);
+        this.name = 'BadRequestError';
+    }
+}
+exports.BadRequestError = BadRequestError;
 class UnauthorizedError extends AppError {
     constructor(message = messages_1.ERROR_MESSAGES.GENERAL.UNAUTHORIZED) {
         super(message, HttpStatusCode_1.HttpStatusCode.UNAUTHORIZED);

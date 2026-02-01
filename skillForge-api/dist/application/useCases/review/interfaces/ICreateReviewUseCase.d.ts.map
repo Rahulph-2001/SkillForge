@@ -1,0 +1,1 @@
+{"version":3,"file":"ICreateReviewUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/review/interfaces/ICreateReviewUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,iBAAiB,EAAE,MAAM,qCAAqC,CAAC;AAEzF,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,OAAO,EAAE,eAAe,GAAG,OAAO,CAAC,iBAAiB,CAAC,CAAC;CACjF"}

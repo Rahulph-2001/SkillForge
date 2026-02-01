@@ -69,58 +69,94 @@ let StartMCQImportUseCase = class StartMCQImportUseCase {
     }
     async execute(request, file) {
         const { templateId, adminId } = request;
+        console.log('[StartMCQImportUseCase] Starting import process:', {
+            templateId,
+            adminId,
+            fileName: file.originalname,
+            fileSize: file.size,
+            mimeType: file.mimetype
+        });
         // 1. Authorization Check
+        console.log('[StartMCQImportUseCase] Checking admin authorization');
         const admin = await this.userRepository.findById(adminId);
         if (!admin || admin.role !== UserRole_1.UserRole.ADMIN) {
+            console.error('[StartMCQImportUseCase] Authorization failed:', { adminId, hasAdmin: !!admin, role: admin?.role });
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
         }
+        console.log('[StartMCQImportUseCase] Admin authorized:', { adminId, adminName: admin.name });
         // 2. Template Existence Check
+        console.log('[StartMCQImportUseCase] Checking template existence:', { templateId });
         const template = await this.templateRepository.findById(templateId);
         if (!template) {
+            console.error('[StartMCQImportUseCase] Template not found:', { templateId });
             throw new AppError_1.NotFoundError('Skill template not found');
         }
+        console.log('[StartMCQImportUseCase] Template found:', { templateId });
+        // 3. File Type Validation
+        console.log('[StartMCQImportUseCase] Validating file type:', { mimeType: file.mimetype, fileName: file.originalname });
         const allowedMimes = [
             'text/csv',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         ];
         if (!allowedMimes.includes(file.mimetype)) {
+            console.error('[StartMCQImportUseCase] Invalid file type:', { mimeType: file.mimetype, allowedMimes });
             throw new AppError_1.ValidationError('Only CSV and Excel (.xlsx, .xls) files are supported');
         }
+        console.log('[StartMCQImportUseCase] File type validation passed');
         // 4. Count Rows for Context (Pre-pass)
+        console.log('[StartMCQImportUseCase] Counting rows in file');
         const rowCount = await this.countRows(file.buffer, file.originalname);
+        console.log('[StartMCQImportUseCase] Row count:', { rowCount });
         if (rowCount === 0) {
-            throw new AppError_1.ValidationError('The uploaded  file is empty or contains no data');
+            console.error('[StartMCQImportUseCase] File is empty');
+            throw new AppError_1.ValidationError('The uploaded file is empty or contains no data');
         }
         // 5. Upload File to S3
         const key = `mcq-imports/${templateId}/${Date.now()}-${file.originalname}`;
-        const filePath = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
-        // 6. Create Pending Import Job Record
-        const job = new MCQImportJob_1.MCQImportJob({
-            templateId,
-            adminId,
-            fileName: file.originalname,
-            filePath,
-            status: MCQImportJob_1.ImportStatus.PENDING,
-            totalRows: rowCount,
-            processedRows: 0,
-            successfulRows: 0,
-            failedRows: 0,
-            errorFilePath: null,
-        });
-        const createdJob = await this.jobRepository.create(job);
-        // 7. Queue the Job
-        await this.jobQueueService.addJob(IJobQueueService_1.JobQueueName.MCQ_IMPORT, {
-            jobId: createdJob.id,
-            filePath: createdJob.filePath,
-            templateId: createdJob.templateId,
-        });
-        return {
-            jobId: createdJob.id,
-            fileName: createdJob.fileName,
-            status: 'PENDING',
-            message: 'Import job initiated. Check status endpoint for progress.',
-        };
+        console.log('[StartMCQImportUseCase] Uploading file to S3:', { key, size: file.size });
+        try {
+            const filePath = await this.storageService.uploadFile(file.buffer, key, file.mimetype);
+            console.log('[StartMCQImportUseCase] File uploaded successfully to S3:', { filePath });
+            // 6. Create Pending Import Job Record
+            console.log('[StartMCQImportUseCase] Creating job record in database');
+            const job = new MCQImportJob_1.MCQImportJob({
+                templateId,
+                adminId,
+                fileName: file.originalname,
+                filePath,
+                status: MCQImportJob_1.ImportStatus.PENDING,
+                totalRows: rowCount,
+                processedRows: 0,
+                successfulRows: 0,
+                failedRows: 0,
+                errorFilePath: null,
+            });
+            const createdJob = await this.jobRepository.create(job);
+            console.log('[StartMCQImportUseCase] Job record created:', { jobId: createdJob.id });
+            // 7. Queue the Job
+            console.log('[StartMCQImportUseCase] Adding job to queue:', { jobId: createdJob.id });
+            await this.jobQueueService.addJob(IJobQueueService_1.JobQueueName.MCQ_IMPORT, {
+                jobId: createdJob.id,
+                filePath: createdJob.filePath,
+                templateId: createdJob.templateId,
+            });
+            console.log('[StartMCQImportUseCase] Job queued successfully');
+            return {
+                jobId: createdJob.id,
+                fileName: createdJob.fileName,
+                status: 'PENDING',
+                message: 'Import job initiated. Check status endpoint for progress.',
+            };
+        }
+        catch (error) {
+            console.error('[StartMCQImportUseCase] Error uploading file to S3:', {
+                message: error.message,
+                stack: error.stack,
+                key
+            });
+            throw error;
+        }
     }
     async countRows(buffer, fileName) {
         if (fileName.endsWith('xlsx') || fileName.endsWith('.xls')) {

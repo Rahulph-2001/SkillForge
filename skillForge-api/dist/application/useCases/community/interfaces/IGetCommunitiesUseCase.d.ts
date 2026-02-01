@@ -1,7 +1,9 @@
 import { Community } from '../../../../domain/entities/Community';
+import { IPaginationResult } from '../../../../domain/types/IPaginationParams';
 export interface IGetCommunitiesUseCase {
     execute(filters?: {
         category?: string;
-    }, userId?: string): Promise<Community[]>;
+        search?: string;
+    }, userId?: string, page?: number, limit?: number): Promise<IPaginationResult<Community>>;
 }
 //# sourceMappingURL=IGetCommunitiesUseCase.d.ts.map

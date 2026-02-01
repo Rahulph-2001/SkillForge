@@ -34,10 +34,10 @@ let GetProviderProfileUseCase = class GetProviderProfileUseCase {
             avatarUrl: user.avatarUrl || userData.avatarUrl || userData.avatar_url || null,
             bio: userData.bio,
             location: userData.location,
-            rating: userData.rating,
-            reviewCount: userData.reviewCount || 0,
-            totalSessionsCompleted: userData.totalSessionsCompleted || 0,
-            memberSince: userData.memberSince,
+            rating: Number(userData.rating) || 0,
+            reviewCount: userData.review_count || 0,
+            totalSessionsCompleted: userData.total_sessions_completed || 0,
+            memberSince: userData.member_since || new Date(),
             verification: {
                 isEmailVerified: verificationData.email_verified || false,
                 isPhoneVerified: false, // Phone verification not implemented yet

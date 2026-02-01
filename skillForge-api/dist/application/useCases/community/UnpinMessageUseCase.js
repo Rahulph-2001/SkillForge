@@ -39,7 +39,7 @@ let UnpinMessageUseCase = class UnpinMessageUseCase {
         const updatedMessage = await this.messageRepository.update(message);
         const messageDTO = await this.messageMapper.toDTO(updatedMessage);
         this.webSocketService.sendToCommunity(message.communityId, {
-            type: 'unpin',
+            type: 'message_unpinned',
             communityId: message.communityId,
             data: messageDTO,
         });

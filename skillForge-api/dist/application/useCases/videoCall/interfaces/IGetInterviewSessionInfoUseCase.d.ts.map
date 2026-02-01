@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetInterviewSessionInfoUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/videoCall/interfaces/IGetInterviewSessionInfoUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,cAAc,EAAE,MAAM,uCAAuC,CAAC;AAEvE,MAAM,WAAW,+BAA+B;IAC5C,OAAO,CAAC,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,cAAc,CAAC,CAAC;CACzD"}

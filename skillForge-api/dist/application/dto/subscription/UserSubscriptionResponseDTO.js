@@ -28,5 +28,10 @@ exports.UserSubscriptionResponseDTOSchema = zod_1.z.object({
     stripeCustomerId: zod_1.z.string().optional(),
     createdAt: zod_1.z.coerce.date(),
     updatedAt: zod_1.z.coerce.date(),
+    usage: zod_1.z.array(zod_1.z.object({
+        feature: zod_1.z.string(),
+        used: zod_1.z.number(),
+        limit: zod_1.z.number().nullable(),
+    })).optional(),
 });
 //# sourceMappingURL=UserSubscriptionResponseDTO.js.map

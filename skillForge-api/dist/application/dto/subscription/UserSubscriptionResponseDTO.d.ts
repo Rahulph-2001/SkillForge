@@ -23,6 +23,11 @@ export declare const UserSubscriptionResponseDTOSchema: z.ZodObject<{
     stripeCustomerId: z.ZodOptional<z.ZodString>;
     createdAt: z.ZodCoercedDate<unknown>;
     updatedAt: z.ZodCoercedDate<unknown>;
+    usage: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        feature: z.ZodString;
+        used: z.ZodNumber;
+        limit: z.ZodNullable<z.ZodNumber>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type UserSubscriptionResponseDTO = z.infer<typeof UserSubscriptionResponseDTOSchema>;
 //# sourceMappingURL=UserSubscriptionResponseDTO.d.ts.map

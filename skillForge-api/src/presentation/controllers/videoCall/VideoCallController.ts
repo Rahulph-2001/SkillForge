@@ -7,6 +7,8 @@ import { ILeaveVideoRoomUseCase } from '../../../application/useCases/videoCall/
 import { IGetRoomInfoUseCase } from '../../../application/useCases/videoCall/interfaces/IGetRoomInfoUseCase';
 import { IEndVideoRoomUseCase } from '../../../application/useCases/videoCall/interfaces/IEndVideoRoomUseCase';
 import { IGetSessionInfoUseCase } from '../../../application/useCases/videoCall/interfaces/IGetSessionInfoUseCase';
+import { IGetInterviewSessionInfoUseCase } from '../../../application/useCases/videoCall/interfaces/IGetInterviewSessionInfoUseCase';
+import { IValidateSessionTimeUseCase } from '../../../application/useCases/videoCall/interfaces/IValidateSessionTimeUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
@@ -20,6 +22,8 @@ export class VideoCallController {
     @inject(TYPES.IGetRoomInfoUseCase) private getRoomInfoUseCase: IGetRoomInfoUseCase,
     @inject(TYPES.IEndVideoRoomUseCase) private endRoomUseCase: IEndVideoRoomUseCase,
     @inject(TYPES.IGetSessionInfoUseCase) private getSessionInfoUseCase: IGetSessionInfoUseCase,
+    @inject(TYPES.IGetInterviewSessionInfoUseCase) private getInterviewSessionInfoUseCase: IGetInterviewSessionInfoUseCase,
+    @inject(TYPES.IValidateSessionTimeUseCase) private validateSessionTimeUseCase: IValidateSessionTimeUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 
@@ -57,37 +61,49 @@ export class VideoCallController {
 
   getRoomForBooking = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('[VideoCallController] getRoomForBooking called');
-      console.log('[VideoCallController] bookingId:', req.params.bookingId);
-      console.log('[VideoCallController] userId:', req.user?.id);
+      // Create or get existing room
       const room = await this.createRoomUseCase.execute(req.user!.id, { bookingId: req.params.bookingId });
-      console.log('[VideoCallController] Room created/retrieved:', room);
+
+      // Also call joinRoom to update booking status to IN_SESSION (blocks cancel/reschedule)
+      console.log(`[VideoCallController] Calling joinRoomUseCase for booking ${req.params.bookingId}`);
+      await this.joinRoomUseCase.execute(req.user!.id, { bookingId: req.params.bookingId });
+      console.log(`[VideoCallController] joinRoomUseCase completed for booking ${req.params.bookingId}`);
+
       const response = this.responseBuilder.success(room, SUCCESS_MESSAGES.VIDEO_CALL.ROOM_CREATED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error) {
-      console.error('[VideoCallController] getRoomForBooking ERROR:', error);
-      next(error);
-    }
+    } catch (error) { next(error); }
   };
 
   getSessionInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      console.log('[VideoCallController] getSessionInfo called');
-      console.log('[VideoCallController] bookingId:', req.params.bookingId);
       const info = await this.getSessionInfoUseCase.execute(req.params.bookingId);
-      console.log('[VideoCallController] Session info retrieved:', info);
       const response = this.responseBuilder.success(info, 'Session info retrieved', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error) {
-      console.error('[VideoCallController] getSessionInfo ERROR:', error);
-      next(error);
-    }
+    } catch (error) { next(error); }
+  };
+
+  validateSessionTime = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = req.user!.id;
+      const { bookingId } = req.params;
+      const result = await this.validateSessionTimeUseCase.execute(userId, bookingId);
+      const response = this.responseBuilder.success(result, SUCCESS_MESSAGES.SESSION.TIME_VALIDATED, HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
+    } catch (error) { next(error); }
   };
 
   endRoom = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       await this.endRoomUseCase.execute(req.user!.id, req.params.roomId);
       const response = this.responseBuilder.success(null, SUCCESS_MESSAGES.VIDEO_CALL.ENDED, HttpStatusCode.OK);
+      res.status(response.statusCode).json(response.body);
+    } catch (error) { next(error); }
+  };
+
+  getInterviewSessionInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const info = await this.getInterviewSessionInfoUseCase.execute(req.params.interviewId);
+      const response = this.responseBuilder.success(info, 'Session info retrieved', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
     } catch (error) { next(error); }
   };

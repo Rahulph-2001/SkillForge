@@ -125,8 +125,18 @@ let AssignSubscriptionUseCase = class AssignSubscriptionUseCase {
         try {
             const user = await this.userRepository.findById(dto.userId);
             if (user) {
-                const planName = plan.name.toLowerCase();
-                user.activateSubscription(planName, periodEnd, periodStart, true // autoRenew
+                // Map plan badge to subscription plan type (Safe Enum Mapping)
+                let planType = 'free';
+                const lowerBadge = plan.badge.toLowerCase();
+                if (lowerBadge === 'starter')
+                    planType = 'starter';
+                else if (lowerBadge === 'professional')
+                    planType = 'professional';
+                else if (lowerBadge === 'enterprise')
+                    planType = 'enterprise';
+                else
+                    planType = 'free';
+                user.activateSubscription(planType, periodEnd, periodStart, true // autoRenew
                 );
                 await this.userRepository.update(user);
                 // User entity subscription data synced

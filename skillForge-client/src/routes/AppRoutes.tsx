@@ -38,10 +38,14 @@ import { useAppSelector } from '../store/hooks';
 import { isAdmin } from '../config/userRole';
 import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
-import VideoCallPage from '../pages/user/VideoCallPage';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
 import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
 import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPage';
+import MyApplicationsPage from '../pages/user/MyApplicationsPage';
+import ManageApplicationsPage from '../pages/user/ManageApplicationsPage';
+import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
+import SessionVideoCallPage from '../pages/user/SessionVideoCallPage';
+import InterviewVideoCallPage from '../pages/user/InterviewVideoCallPage';
 
 
 const AppRoutes = () => {
@@ -194,6 +198,22 @@ const AppRoutes = () => {
                     }
                 />
                 <Route
+                    path="/projects/:id/applications"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <ManageApplicationsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/projects/:id/manage"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <ManageApplicationsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/provider/availability"
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
@@ -222,6 +242,22 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
                             <div>Dashboard Page</div>
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/my-applications"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <MyApplicationsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/my-projects"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <MyProjectsDashboardPage />
                         </ProtectedRoute>
                     }
                 />
@@ -363,7 +399,15 @@ const AppRoutes = () => {
                 path="/session/:bookingId/call"
                 element={
                     <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
-                        <VideoCallPage />
+                        <SessionVideoCallPage />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/session/interview/:interviewId/call"
+                element={
+                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <InterviewVideoCallPage />
                     </ProtectedRoute>
                 }
             />

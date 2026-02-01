@@ -19,6 +19,11 @@ import { PaymentRoutes } from './routes/payment/paymentRoutes';
 import { UserSubscriptionRoutes } from './routes/subscription/userSubscriptionRoutes';
 import { ProjectRoutes } from './routes/project/projectRoutes';
 import { AdminWalletRoutes } from './routes/admin/AdminWalletRoutes';
+import { AdminSessionRoutes } from './routes/admin/adminSessionRoutes';
+import { VideoCallRoutes } from './routes/videoCall/VideoCallRoutes';
+import { ReviewRoutes } from './routes/review/ReviewRoutes';
+import { ProjectApplicationRoutes } from './routes/projectApplication/ProjectApplicationRoutes';
+import { InterviewRoutes } from './routes/interview/InterviewRoutes';
 export declare class App {
     private readonly authRoutes;
     private readonly adminRoutes;
@@ -39,9 +44,14 @@ export declare class App {
     private readonly userSubscriptionRoutes;
     private readonly projectRoutes;
     private readonly adminWalletRoutes;
+    private readonly adminSessionRoutes;
+    private readonly videoCallRoutes;
+    private readonly reviewRoutes;
+    private readonly projectApplicationRoutes;
+    private readonly interviewRoutes;
     private readonly passportService;
     private app;
-    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, availabilityRoutes: AvailabilityRoutes, communityRoutes: CommunityRoutes, paymentRoutes: PaymentRoutes, userSubscriptionRoutes: UserSubscriptionRoutes, projectRoutes: ProjectRoutes, adminWalletRoutes: AdminWalletRoutes, passportService: PassportService);
+    constructor(authRoutes: AuthRoutes, adminRoutes: AdminRoutes, publicSubscriptionRoutes: PublicSubscriptionRoutes, skillRoutes: SkillRoutes, browseSkillsRoutes: BrowseSkillsRoutes, skillTemplateRoutes: SkillTemplateRoutes, publicSkillTemplateRoutes: PublicSkillTemplateRoutes, templateQuestionRoutes: TemplateQuestionRoutes, mcqTestRoutes: MCQTestRoutes, adminSkillRoutes: AdminSkillRoutes, bookingRoutes: BookingRoutes, userProfileRoutes: UserProfileRoutes, mcqImportRoutes: MCQImportRoutes, availabilityRoutes: AvailabilityRoutes, communityRoutes: CommunityRoutes, paymentRoutes: PaymentRoutes, userSubscriptionRoutes: UserSubscriptionRoutes, projectRoutes: ProjectRoutes, adminWalletRoutes: AdminWalletRoutes, adminSessionRoutes: AdminSessionRoutes, videoCallRoutes: VideoCallRoutes, reviewRoutes: ReviewRoutes, projectApplicationRoutes: ProjectApplicationRoutes, interviewRoutes: InterviewRoutes, passportService: PassportService);
     private setupMiddlewares;
     private setupRoutes;
     private setupErrorHandlers;

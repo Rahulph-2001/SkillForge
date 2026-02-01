@@ -1,6 +1,7 @@
 export declare enum ProjectStatus {
     OPEN = "Open",
     IN_PROGRESS = "In_Progress",
+    PENDING_COMPLETION = "Pending_Completion",
     COMPLETED = "Completed",
     CANCELLED = "Cancelled"
 }
@@ -19,6 +20,16 @@ export interface ProjectProps {
     applicationsCount?: number;
     createdAt: Date;
     updatedAt: Date;
+    client?: {
+        id: string;
+        name: string;
+        avatarUrl?: string | null;
+    };
+    acceptedContributor?: {
+        id: string;
+        name: string;
+        avatarUrl?: string | null;
+    };
 }
 export declare class Project {
     private readonly props;
@@ -43,10 +54,22 @@ export declare class Project {
     canBeCancelled(): boolean;
     canBeCompleted(): boolean;
     markAsInProgress(): void;
+    markAsPendingCompletion(): void;
+    requestModifications(): void;
     markAsCompleted(): void;
     markAsCancelled(): void;
     incrementApplicationsCount(): void;
+    get acceptedContributor(): {
+        id: string;
+        name: string;
+        avatarUrl?: string | null;
+    } | undefined;
     toJSON(): ProjectProps;
+    get client(): {
+        id: string;
+        name: string;
+        avatarUrl?: string | null;
+    } | undefined;
     toObject(): ProjectProps;
 }
 //# sourceMappingURL=Project.d.ts.map

@@ -1,4 +1,4 @@
-import { DeleteCommunityRequestDTO } from '../../dto/admin/DeleteCommunityRequestDTO';
+import { DeleteCommunityRequestDTO } from '../../../dto/admin/DeleteCommunityRequestDTO';
 
 /**
  * Interface for Delete Community Use Case (Admin)

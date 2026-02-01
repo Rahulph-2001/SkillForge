@@ -61,7 +61,7 @@ let SendMessageUseCase = class SendMessageUseCase {
         const messageDTO = await this.messageMapper.toDTO(createdMessage);
         // Broadcast via WebSocket
         this.webSocketService.sendToCommunity(dto.communityId, {
-            type: 'message',
+            type: 'message_sent',
             communityId: dto.communityId,
             data: messageDTO,
         });

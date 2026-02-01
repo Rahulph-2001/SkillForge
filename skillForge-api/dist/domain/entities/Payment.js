@@ -60,6 +60,10 @@ class Payment {
         this._refundedAmount = amount;
         this._updatedAt = new Date();
     }
+    markAsReleased() {
+        this._status = PaymentEnums_1.PaymentStatus.RELEASED;
+        this._updatedAt = new Date();
+    }
     toJSON() {
         return {
             id: this._id,

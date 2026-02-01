@@ -5,6 +5,7 @@ var ProjectStatus;
 (function (ProjectStatus) {
     ProjectStatus["OPEN"] = "Open";
     ProjectStatus["IN_PROGRESS"] = "In_Progress";
+    ProjectStatus["PENDING_COMPLETION"] = "Pending_Completion";
     ProjectStatus["COMPLETED"] = "Completed";
     ProjectStatus["CANCELLED"] = "Cancelled";
 })(ProjectStatus || (exports.ProjectStatus = ProjectStatus = {}));
@@ -84,7 +85,9 @@ class Project {
         return this.props.status === ProjectStatus.OPEN || this.props.status === ProjectStatus.IN_PROGRESS;
     }
     canBeCancelled() {
-        return this.props.status === ProjectStatus.OPEN || this.props.status === ProjectStatus.IN_PROGRESS;
+        return this.props.status === ProjectStatus.OPEN ||
+            this.props.status === ProjectStatus.IN_PROGRESS ||
+            this.props.status === ProjectStatus.PENDING_COMPLETION;
     }
     canBeCompleted() {
         return this.props.status === ProjectStatus.IN_PROGRESS;
@@ -96,9 +99,23 @@ class Project {
         this.props.status = ProjectStatus.IN_PROGRESS;
         this.props.updatedAt = new Date();
     }
+    markAsPendingCompletion() {
+        if (this.props.status !== ProjectStatus.IN_PROGRESS) {
+            throw new Error('Project must be in progress to be marked as pending completion');
+        }
+        this.props.status = ProjectStatus.PENDING_COMPLETION;
+        this.props.updatedAt = new Date();
+    }
+    requestModifications() {
+        if (this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+            throw new Error('Can only request modifications for projects pending completion');
+        }
+        this.props.status = ProjectStatus.IN_PROGRESS;
+        this.props.updatedAt = new Date();
+    }
     markAsCompleted() {
-        if (!this.canBeCompleted()) {
-            throw new Error('Project must be in progress to be marked as completed');
+        if (this.props.status !== ProjectStatus.IN_PROGRESS && this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+            throw new Error('Project must be in progress or pending completion to be marked as completed');
         }
         this.props.status = ProjectStatus.COMPLETED;
         this.props.updatedAt = new Date();
@@ -113,6 +130,9 @@ class Project {
     incrementApplicationsCount() {
         this.props.applicationsCount = (this.props.applicationsCount || 0) + 1;
         this.props.updatedAt = new Date();
+    }
+    get acceptedContributor() {
+        return this.props.acceptedContributor;
     }
     toJSON() {
         return {
@@ -130,7 +150,12 @@ class Project {
             applicationsCount: this.props.applicationsCount || 0,
             createdAt: this.props.createdAt,
             updatedAt: this.props.updatedAt,
+            client: this.props.client,
+            acceptedContributor: this.props.acceptedContributor,
         };
+    }
+    get client() {
+        return this.props.client;
     }
     toObject() {
         return this.toJSON();

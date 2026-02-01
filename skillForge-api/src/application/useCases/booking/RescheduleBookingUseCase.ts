@@ -54,6 +54,16 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
       throw new ValidationError(`Cannot reschedule booking with status: ${booking.status}`);
     }
 
+    // 5b. Time-based validation: Block rescheduling if session time window has started
+    const RESCHEDULE_CUTOFF_MINUTES = 15; // Same as join window
+    const sessionStart = this.parseDateTime(booking.preferredDate, booking.preferredTime);
+    const rescheduleCutoff = new Date(sessionStart.getTime() - RESCHEDULE_CUTOFF_MINUTES * 60 * 1000);
+    const now = new Date();
+
+    if (now >= rescheduleCutoff) {
+      throw new ValidationError('Cannot reschedule: Session is about to start or has already started');
+    }
+
     // 6. Get skill to calculate duration
     const skill = await this.skillRepository.findById(booking.skillId);
     if (!skill) {
@@ -81,5 +91,12 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
     await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
 
     // TODO: Send notification to the other party (learner or provider)
+  }
+
+  private parseDateTime(dateString: string, timeString: string): Date {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    const date = new Date(dateString);
+    date.setHours(hours, minutes, 0, 0);
+    return date;
   }
 }

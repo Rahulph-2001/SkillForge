@@ -3,8 +3,13 @@ import { Database } from './Database';
 type ModelName = keyof Omit<PrismaClient, '$connect' | '$disconnect' | '$transaction' | '$queryRaw' | '$executeRaw'>;
 export declare abstract class BaseRepository<T> {
     protected model: ModelName;
-    protected prisma: PrismaClient;
+    protected prisma: PrismaClient | Prisma.TransactionClient;
     constructor(db: Database, model: ModelName);
+    /**
+     * Set transaction client for atomic operations
+     * @internal Used by TransactionService
+     */
+    setTransactionClient(client: Prisma.TransactionClient): void;
     protected create(data: Prisma.SelectSubset<T, Prisma.Args<T, 'create'>>): Promise<T>;
     protected findById(id: string): Promise<T | null>;
     protected findByEmail(email: string): Promise<T | null>;

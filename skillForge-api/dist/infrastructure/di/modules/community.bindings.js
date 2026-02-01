@@ -17,8 +17,10 @@ const RemoveCommunityMemberUseCase_1 = require("../../../application/useCases/co
 const AddReactionUseCase_1 = require("../../../application/useCases/community/AddReactionUseCase");
 const RemoveReactionUseCase_1 = require("../../../application/useCases/community/RemoveReactionUseCase");
 const GetCommunityMembersUseCase_1 = require("../../../application/useCases/community/GetCommunityMembersUseCase");
+const CheckCommunityMembershipExpiryUseCase_1 = require("../../../application/useCases/community/CheckCommunityMembershipExpiryUseCase");
 const CommunityController_1 = require("../../../presentation/controllers/community/CommunityController");
 const communityRoutes_1 = require("../../../presentation/routes/community/communityRoutes");
+const ProcessAutoRenewMembershipsUseCase_1 = require("../../../application/useCases/community/ProcessAutoRenewMembershipsUseCase");
 /**
  * Binds all community-related use cases, controllers, and routes
  */
@@ -32,6 +34,7 @@ const bindCommunityModule = (container) => {
     container.bind(types_1.TYPES.ILeaveCommunityUseCase).to(LeaveCommunityUseCase_1.LeaveCommunityUseCase);
     container.bind(types_1.TYPES.IGetCommunityMembersUseCase).to(GetCommunityMembersUseCase_1.GetCommunityMembersUseCase);
     container.bind(types_1.TYPES.IRemoveCommunityMemberUseCase).to(RemoveCommunityMemberUseCase_1.RemoveCommunityMemberUseCase);
+    container.bind(types_1.TYPES.ICheckCommunityMembershipExpiryUseCase).to(CheckCommunityMembershipExpiryUseCase_1.CheckCommunityMembershipExpiryUseCase);
     // Message Use Cases
     container.bind(types_1.TYPES.ISendMessageUseCase).to(SendMessageUseCase_1.SendMessageUseCase);
     container.bind(types_1.TYPES.IGetCommunityMessagesUseCase).to(GetCommunityMessagesUseCase_1.GetCommunityMessagesUseCase);
@@ -40,6 +43,7 @@ const bindCommunityModule = (container) => {
     container.bind(types_1.TYPES.IDeleteMessageUseCase).to(DeleteMessageUseCase_1.DeleteMessageUseCase);
     container.bind(types_1.TYPES.IAddReactionUseCase).to(AddReactionUseCase_1.AddReactionUseCase);
     container.bind(types_1.TYPES.IRemoveReactionUseCase).to(RemoveReactionUseCase_1.RemoveReactionUseCase);
+    container.bind(types_1.TYPES.IProcessAutoRenewMembershipsUseCase).to(ProcessAutoRenewMembershipsUseCase_1.ProcessAutoRenewMembershipsUseCase);
     // Controllers & Routes
     container.bind(types_1.TYPES.CommunityController).to(CommunityController_1.CommunityController);
     container.bind(types_1.TYPES.CommunityRoutes).to(communityRoutes_1.CommunityRoutes);

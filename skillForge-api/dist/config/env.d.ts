@@ -38,5 +38,10 @@ export declare const env: {
     readonly STRIPE_SECRET_KEY: string;
     readonly STRIPE_PUBLISHABLE_KEY: string;
     readonly STRIPE_WEBHOOK_SECRET: string;
+    readonly STUN_SERVER: string;
+    readonly TURN_SERVER: string;
+    readonly TURN_USERNAME: string;
+    readonly TURN_CREDENTIAL: string;
+    readonly GEMINI_API_KEY: string;
 };
 //# sourceMappingURL=env.d.ts.map

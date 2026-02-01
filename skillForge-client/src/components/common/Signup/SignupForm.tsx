@@ -306,8 +306,8 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             <div className="flex items-center justify-between mb-1">
                                 <span className="text-xs text-gray-600">Password strength:</span>
                                 <span className={`text-xs font-semibold ${passwordStrength.label === 'Weak' ? 'text-red-600' :
-                                        passwordStrength.label === 'Fair' ? 'text-yellow-600' :
-                                            passwordStrength.label === 'Good' ? 'text-blue-600' : 'text-green-600'
+                                    passwordStrength.label === 'Fair' ? 'text-yellow-600' :
+                                        passwordStrength.label === 'Good' ? 'text-blue-600' : 'text-green-600'
                                     }`}>{passwordStrength.label}</span>
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -334,8 +334,8 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             onBlur={handleBlur}
                             placeholder="••••••••"
                             className={`w-full pl-10 pr-12 py-3 border ${errors.confirmPassword && touched.confirmPassword ? 'border-red-500 bg-red-50' :
-                                    !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'border-green-500 bg-green-50' :
-                                        'border-gray-200'
+                                !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'border-green-500 bg-green-50' :
+                                    'border-gray-200'
                                 } rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword && touched.confirmPassword ? 'focus:ring-red-500' :
                                     !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'focus:ring-green-500' :
                                         'focus:ring-blue-500'

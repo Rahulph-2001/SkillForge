@@ -1,0 +1,39 @@
+import { z } from 'zod';
+export declare const ProjectApplicationResponseDTOSchema: z.ZodObject<{
+    id: z.ZodString;
+    projectId: z.ZodString;
+    applicantId: z.ZodString;
+    coverLetter: z.ZodString;
+    proposedBudget: z.ZodNullable<z.ZodNumber>;
+    proposedDuration: z.ZodNullable<z.ZodString>;
+    status: z.ZodString;
+    matchScore: z.ZodNullable<z.ZodNumber>;
+    matchAnalysis: z.ZodNullable<z.ZodAny>;
+    applicant: z.ZodOptional<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        avatarUrl: z.ZodNullable<z.ZodString>;
+        rating: z.ZodNumber;
+        reviewCount: z.ZodNumber;
+        skillsOffered: z.ZodArray<z.ZodString>;
+    }, z.core.$strip>>;
+    project: z.ZodOptional<z.ZodObject<{
+        id: z.ZodString;
+        title: z.ZodString;
+        budget: z.ZodNumber;
+        duration: z.ZodString;
+    }, z.core.$strip>>;
+    interviews: z.ZodOptional<z.ZodArray<z.ZodObject<{
+        id: z.ZodString;
+        scheduledAt: z.ZodCoercedDate<unknown>;
+        durationMinutes: z.ZodNumber;
+        status: z.ZodString;
+        videoCallRoomId: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    }, z.core.$strip>>>;
+    appliedAt: z.ZodCoercedDate<unknown>;
+    createdAt: z.ZodCoercedDate<unknown>;
+    updatedAt: z.ZodCoercedDate<unknown>;
+    reviewedAt: z.ZodNullable<z.ZodCoercedDate<unknown>>;
+}, z.core.$strip>;
+export type ProjectApplicationResponseDTO = z.infer<typeof ProjectApplicationResponseDTOSchema>;
+//# sourceMappingURL=ProjectApplicationResponseDTO.d.ts.map

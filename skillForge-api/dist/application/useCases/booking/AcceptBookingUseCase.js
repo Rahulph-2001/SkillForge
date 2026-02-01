@@ -16,6 +16,7 @@ exports.AcceptBookingUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Booking_1 = require("../../../domain/entities/Booking");
 let AcceptBookingUseCase = class AcceptBookingUseCase {
     constructor(bookingRepository, bookingMapper) {
         this.bookingRepository = bookingRepository;
@@ -35,11 +36,10 @@ let AcceptBookingUseCase = class AcceptBookingUseCase {
         if (!booking.canBeAccepted()) {
             throw new AppError_1.ValidationError(`Cannot accept booking with status: ${booking.status}`);
         }
-        // 4. Update booking status to confirmed (Transactional: Credits Provider)
-        const updatedBooking = await this.bookingRepository.confirmTransactional(request.bookingId);
-        // TODO: Send notification to learner
-        // TODO: Add to calendar
-        // TODO: Update provider statistics
+        // 4. Update booking status to confirmed
+        // NOTE: Credits remain in escrow - NOT transferred to provider yet
+        // Credits will be released when session is marked as completed
+        const updatedBooking = await this.bookingRepository.updateStatus(request.bookingId, Booking_1.BookingStatus.CONFIRMED);
         return this.bookingMapper.toDTO(updatedBooking);
     }
 };

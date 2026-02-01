@@ -40,11 +40,13 @@ enum BookingStatus {
   completed
   cancelled
   reschedule_requested
+  in_session
 }
 
 enum ProjectStatus {
   Open
   In_Progress
+  Pending_Completion
   Completed
   Cancelled
 }
@@ -76,6 +78,15 @@ enum EscrowStatus {
   HELD
   RELEASED
   REFUNDED
+}
+
+enum ProjectApplicationStatus {
+  PENDING
+  REVIEWED
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
 }
 
 // --- Models ---
@@ -119,6 +130,7 @@ model Skill {
   provider             User                       @relation(fields: [providerId], references: [id])
   verificationAttempts SkillVerificationAttempt[]
   bookings             Booking[]
+  reviews              Review[]
 
   @@index([providerId])
   @@index([category])
@@ -442,6 +454,7 @@ model User {
   payments            Payment[]
   projects            Project[]             @relation("ClientProjects")
   hostedVideoRooms    VideoCallRoom[]       @relation("VideoCallHost")
+  projectApplications ProjectApplication[] @relation("ApplicantApplications")
 
   adminCommunities     Community[]        @relation("CommunityAdmin")
   communityMemberships CommunityMember[]  @relation("CommunityMemberships")
@@ -451,6 +464,8 @@ model User {
   walletTransactions  WalletTransaction[] @relation("AdminWalletTransactions")
   escrowAsLearner     EscrowTransaction[] @relation("LearnerEscrow")
   escrowAsProvider    EscrowTransaction[] @relation("ProviderEscrow")
+  providerReviews     Review[]            @relation("ProviderReviews")
+  learnerReviews      Review[]            @relation("LearnerReviews")
 
   @@index([role])
   @@index([isActive])
@@ -519,6 +534,34 @@ model SubscriptionPlanModel {
   @@index([price])
   @@index([billingInterval])
   @@map("subscription_plans")
+}
+
+model ProjectApplication {
+  id            String                   @id @default(uuid()) @db.Uuid
+  projectId     String                   @map("project_id") @db.Uuid
+  applicantId   String                   @map("applicant_id") @db.Uuid
+  coverLetter   String                   @map("cover_letter") @db.Text
+  proposedBudget Decimal?               @map("proposed_budget") @db.Decimal(10, 2)
+  proposedDuration String?              @map("proposed_duration") @db.VarChar(100)
+  status        ProjectApplicationStatus @default(PENDING)
+  // LLM Match Analysis
+  matchScore    Decimal?               @map("match_score") @db.Decimal(5, 2) // 0-100 score
+  matchAnalysis Json?                  @map("match_analysis") // Detailed LLM analysis
+  // Metadata
+  createdAt     DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  reviewedAt    DateTime?              @map("reviewed_at") @db.Timestamptz(6)
+  // Relations
+  project       Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  applicant     User                   @relation("ApplicantApplications", fields: [applicantId], references: [id], onDelete: Cascade)
+  @@unique([projectId, applicantId])
+  @@index([projectId])
+  @@index([applicantId])
+  @@index([status])
+  @@index([matchScore])
+  @@index([createdAt])
+  @@map("project_applications")
+  interviews Interview[]
 }
 
 // Feature Management
@@ -644,9 +687,10 @@ model Booking {
   endAt   DateTime? @map("end_at") @db.Timestamptz(6)
 
   // Relations
-  learner  User  @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
-  provider User  @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
-  skill    Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  learner  User    @relation("LearnerBookings", fields: [learnerId], references: [id], onDelete: Cascade)
+  provider User    @relation("ProviderBookings", fields: [providerId], references: [id], onDelete: Cascade)
+  skill    Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  review   Review?
 
   @@index([learnerId])
   @@index([skillId])
@@ -737,6 +781,7 @@ model Project {
   // Relations
   client User @relation("ClientProjects", fields: [clientId], references: [id], onDelete: Cascade)
   payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
+  applications  ProjectApplication[]
 
   @@index([clientId])
   @@index([status])
@@ -757,9 +802,30 @@ model VideoCallRoom {
 
   booking Booking? @relation(fields: [bookingId], references: [id])
   host    User     @relation("VideoCallHost", fields: [hostId], references: [id])
+  interviewId String? @unique @map("interview_id") @db.Uuid
+  interview   Interview? @relation(fields: [interviewId], references: [id])
 
   @@index([hostId])
   @@index([status])
+}
+
+model Interview {
+  id              String   @id @default(uuid()) @db.Uuid
+  applicationId   String   @map("application_id") @db.Uuid
+  scheduledAt     DateTime @map("scheduled_at") @db.Timestamptz(6)
+  durationMinutes Int      @default(30) @map("duration_minutes")
+  status          String   @default("SCHEDULED") // SCHEDULED, COMPLETED, CANCELLED
+  meetingLink     String?  @map("meeting_link")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  application   ProjectApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  videoCallRoom VideoCallRoom?
+
+  @@index([applicationId])
+  @@index([scheduledAt])
+  @@map("interviews")
 }
 
 // Admin Wallet Transaction Tracking
@@ -791,4 +857,28 @@ model WalletTransaction {
   @@index([status])
   @@index([createdAt])
   @@map("wallet_transactions")
+}
+
+// Review model for learner reviews after sessions
+model Review {
+  id          String   @id @default(uuid()) @db.Uuid
+  bookingId   String   @unique @map("booking_id") @db.Uuid
+  providerId  String   @map("provider_id") @db.Uuid
+  learnerId   String   @map("learner_id") @db.Uuid
+  skillId     String   @map("skill_id") @db.Uuid
+  rating      Int      @db.SmallInt // 1-5
+  review      String   @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  booking  Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  provider User    @relation("ProviderReviews", fields: [providerId], references: [id], onDelete: Cascade)
+  learner  User    @relation("LearnerReviews", fields: [learnerId], references: [id], onDelete: Cascade)
+  skill    Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@index([providerId])
+  @@index([learnerId])
+  @@index([skillId])
+  @@index([rating])
+  @@map("reviews")
 }

@@ -12,6 +12,7 @@ export interface ICommunityRepository {
   ): Promise<{ communities: Community[]; total: number }>;
   findByAdminId(adminId: string): Promise<Community[]>;
   update(id: string, community: Community): Promise<Community>;
+  delete(id: string): Promise<void>;
   blockCommunity(id: string): Promise<void>;
   unblockCommunity(id: string): Promise<void>;
 

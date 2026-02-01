@@ -10,8 +10,7 @@ export declare class BookingRepository extends BaseRepository<Booking> implement
     findByLearnerId(learnerId: string): Promise<Booking[]>;
     findDuplicateBooking(learnerId: string, skillId: string, preferredDate: string, preferredTime: string): Promise<Booking | null>;
     create(booking: Booking): Promise<Booking>;
-    createTransactional(booking: Booking, sessionCost: number): Promise<Booking>;
-    cancelTransactional(bookingId: string, _cancelledBy: string, reason: string): Promise<Booking>;
+    createWithEscrow(booking: Booking, sessionCost: number): Promise<Booking>;
     acceptBooking(bookingId: string): Promise<Booking>;
     declineBooking(bookingId: string, reason: string): Promise<Booking>;
     rescheduleBooking(bookingId: string, rescheduleInfo: RescheduleInfo): Promise<Booking>;
@@ -22,7 +21,6 @@ export declare class BookingRepository extends BaseRepository<Booking> implement
     findInDateRange(providerId: string, startDate: Date, endDate: Date): Promise<Booking[]>;
     findOverlappingWithBuffer(providerId: string, date: Date, startTime: string, endTime: string, bufferMinutes: number): Promise<Booking[]>;
     countActiveBookingsByProviderAndDate(providerId: string, dateString: string): Promise<number>;
-    confirmTransactional(bookingId: string): Promise<Booking>;
     updateStatus(bookingId: string, status: BookingStatus, reason?: string): Promise<Booking>;
     updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking>;
     acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking>;
@@ -32,6 +30,16 @@ export declare class BookingRepository extends BaseRepository<Booking> implement
         confirmed: number;
         reschedule: number;
         completed: number;
+        cancelled: number;
+    }>;
+    listAll(page: number, limit: number, search?: string): Promise<{
+        data: Booking[];
+        total: number;
+    }>;
+    getGlobalStats(): Promise<{
+        totalSessions: number;
+        completed: number;
+        upcoming: number;
         cancelled: number;
     }>;
 }

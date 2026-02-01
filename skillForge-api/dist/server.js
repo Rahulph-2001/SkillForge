@@ -21,6 +21,14 @@ async function startServer() {
         const jobQueueService = container_1.container.get(types_1.TYPES.IJobQueueService);
         await jobQueueService.startWorker();
         console.log('Job Queue Worker started');
+        // Start Interview Scheduler
+        const interviewScheduler = container_1.container.get(types_1.TYPES.InterviewScheduler);
+        interviewScheduler.start();
+        console.log('Interview Scheduler started');
+        // Start Cron Scheduler (Subscription Management)
+        const cronScheduler = container_1.container.get(types_1.TYPES.CronScheduler);
+        cronScheduler.start();
+        console.log('Cron Scheduler started');
         const server = appInstance.listen(port, () => {
             console.log(`Server running on port ${port} in ${env_1.env.NODE_ENV} mode`);
         });

@@ -23,15 +23,16 @@ export interface IProjectRepository {
   findByClientId(clientId: string): Promise<Project[]>;
   findByClientIdAndStatus(clientId: string, status: ProjectStatus): Promise<Project[]>;
   findByPaymentId(paymentId: string): Promise<Project | null>;
-  
+  findContributingProjects(userId: string): Promise<Project[]>;
+
   // List Operations with filters
   listProjects(filters: ListProjectsFilters): Promise<ListProjectsResult>;
-  
+
   // Standard CRUD
   create(project: Project): Promise<Project>;
   update(project: Project): Promise<Project>;
   delete(projectId: string): Promise<void>;
-  
+
   // Status Updates
   updateStatus(projectId: string, status: ProjectStatus): Promise<Project>;
   incrementApplicationsCount(projectId: string): Promise<Project>;

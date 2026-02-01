@@ -12,9 +12,31 @@ let UserSubscriptionMapper = class UserSubscriptionMapper {
     /**
      * Map UserSubscription entity to UserSubscriptionResponseDTO with computed fields
      */
-    toDTO(subscription, planName) {
+    /**
+     * Map UserSubscription entity to UserSubscriptionResponseDTO with computed fields
+     */
+    toDTO(subscription, planName, usageRecords = [], planLimits = {}) {
         const now = new Date();
         const daysUntilRenewal = Math.ceil((subscription.currentPeriodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        // Map usage
+        const usageStats = Object.keys(planLimits).map(featureKey => {
+            const record = usageRecords.find(r => r.featureKey === featureKey);
+            return {
+                feature: featureKey,
+                used: record ? record.usageCount : 0,
+                limit: planLimits[featureKey]
+            };
+        });
+        // Also add records that might not be in plan limits (custom features)
+        usageRecords.forEach(record => {
+            if (!usageStats.find(s => s.feature === record.featureKey)) {
+                usageStats.push({
+                    feature: record.featureKey,
+                    used: record.usageCount,
+                    limit: record.limitValue
+                });
+            }
+        });
         return {
             id: subscription.id,
             userId: subscription.userId,
@@ -35,6 +57,7 @@ let UserSubscriptionMapper = class UserSubscriptionMapper {
             stripeCustomerId: subscription.stripeCustomerId,
             createdAt: subscription.createdAt,
             updatedAt: subscription.updatedAt,
+            usage: usageStats
         };
     }
     /**

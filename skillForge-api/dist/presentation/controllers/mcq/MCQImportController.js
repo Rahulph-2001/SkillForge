@@ -29,22 +29,43 @@ let MCQImportController = class MCQImportController {
          */
         this.startImport = async (req, res, next) => {
             try {
+                console.log('[MCQImportController] Starting MCQ import process');
                 const adminId = req.user.userId;
                 const { templateId } = req.params;
                 const file = req.file;
+                console.log('[MCQImportController] Request details:', {
+                    adminId,
+                    templateId,
+                    hasFile: !!file,
+                    fileName: file?.originalname,
+                    fileSize: file?.size,
+                    mimeType: file?.mimetype
+                });
                 if (!file) {
-                    throw new AppError_1.ValidationError('CSV file is required for import');
+                    console.error('[MCQImportController] No file uploaded');
+                    throw new AppError_1.ValidationError('CSV or Excel file is required for import');
                 }
+                console.log('[MCQImportController] File validation passed, executing use case');
                 const result = await this.startImportUseCase.execute({
                     templateId,
                     adminId,
                     fileName: file.originalname,
                     filePath: '' // Will be set by the use case after upload
                 }, file);
+                console.log('[MCQImportController] Import job created successfully:', {
+                    jobId: result.jobId,
+                    fileName: result.fileName,
+                    status: result.status
+                });
                 const response = this.responseBuilder.success(result, result.message, HttpStatusCode_1.HttpStatusCode.ACCEPTED);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
+                console.error('[MCQImportController] Error during import:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
                 next(error);
             }
         };

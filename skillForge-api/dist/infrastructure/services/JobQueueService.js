@@ -21,10 +21,12 @@ const bullmq_1 = require("bullmq");
 const MCQImportJobProcessor_1 = require("../../application/useCases/mcq/MCQImportJobProcessor");
 const AppError_1 = require("../../domain/errors/AppError");
 let JobQueueService = class JobQueueService {
-    constructor(redisService, mcqImportJobProcessor, checkSubscriptionExpiryUseCase) {
+    constructor(redisService, mcqImportJobProcessor, checkSubscriptionExpiryUseCase, checkCommunityMembershipExpiryUseCase, processAutoRenewUseCase) {
         this.redisService = redisService;
         this.mcqImportJobProcessor = mcqImportJobProcessor;
         this.checkSubscriptionExpiryUseCase = checkSubscriptionExpiryUseCase;
+        this.checkCommunityMembershipExpiryUseCase = checkCommunityMembershipExpiryUseCase;
+        this.processAutoRenewUseCase = processAutoRenewUseCase;
         this.queues = new Map();
         this.workers = new Map();
         this.initializeQueues();
@@ -41,6 +43,24 @@ let JobQueueService = class JobQueueService {
         expiryQueue.add(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, {}, {
             repeat: {
                 pattern: '0 0 * * *', // Daily at midnight
+            },
+            removeOnComplete: true,
+        });
+        // Initialize Community Membership Expiry Queue
+        const membershipExpiryQueue = new bullmq_1.Queue(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, { connection: connectionOptions });
+        this.queues.set(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, membershipExpiryQueue);
+        // Schedule the daily check at 1 AM (offset from subscription check)
+        membershipExpiryQueue.add(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, {}, {
+            repeat: {
+                pattern: '0 1 * * *', // Daily at 1 AM
+            },
+            removeOnComplete: true,
+        });
+        const autoRenewQueue = new bullmq_1.Queue(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW, { connection: connectionOptions });
+        this.queues.set(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW, autoRenewQueue);
+        autoRenewQueue.add(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW, {}, {
+            repeat: {
+                pattern: '0 0 * * *',
             },
             removeOnComplete: true,
         });
@@ -90,6 +110,38 @@ let JobQueueService = class JobQueueService {
             this.setupWorkerListeners(worker, IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY);
             this.workers.set(IJobQueueService_1.JobQueueName.SUBSCRIPTION_EXPIRY, worker);
         }
+        // Start Community Auto-Renew Worker
+        if (!this.workers.has(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW)) {
+            const worker = new bullmq_1.Worker(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW, async (job) => {
+                console.log(`[Worker] Processing job ${job.id} from ${IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW}`);
+                try {
+                    await this.processAutoRenewUseCase.execute();
+                    console.log(`[Worker] Job ${job.id} completed`);
+                }
+                catch (error) {
+                    console.error(`[Worker] Job ${job.id} failed:`, error);
+                    throw error;
+                }
+            }, { connection: connectionOptions });
+            this.setupWorkerListeners(worker, IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW);
+            this.workers.set(IJobQueueService_1.JobQueueName.COMMUNITY_AUTO_RENEW, worker);
+        }
+        // Start Community Membership Expiry Worker
+        if (!this.workers.has(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY)) {
+            const worker = new bullmq_1.Worker(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, async (job) => {
+                console.log(`[Worker] Processing job ${job.id} from ${IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY}`);
+                try {
+                    await this.checkCommunityMembershipExpiryUseCase.execute();
+                    console.log(`[Worker] Job ${job.id} completed`);
+                }
+                catch (error) {
+                    console.error(`[Worker] Job ${job.id} failed:`, error);
+                    throw error;
+                }
+            }, { connection: connectionOptions });
+            this.setupWorkerListeners(worker, IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY);
+            this.workers.set(IJobQueueService_1.JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, worker);
+        }
     }
     setupWorkerListeners(worker, queueName) {
         worker.on('completed', (job) => {
@@ -107,7 +159,9 @@ exports.JobQueueService = JobQueueService = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.RedisService)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.MCQImportJobProcessor)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.ICheckSubscriptionExpiryUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ICheckCommunityMembershipExpiryUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IProcessAutoRenewMembershipsUseCase)),
     __metadata("design:paramtypes", [RedisService_1.RedisService,
-        MCQImportJobProcessor_1.MCQImportJobProcessor, Object])
+        MCQImportJobProcessor_1.MCQImportJobProcessor, Object, Object, Object])
 ], JobQueueService);
 //# sourceMappingURL=JobQueueService.js.map

@@ -72,6 +72,7 @@ export default function ProjectDetailsPage() {
     const statusColors = {
         Open: 'bg-green-100 text-green-800',
         In_Progress: 'bg-blue-100 text-blue-800',
+        Pending_Completion: 'bg-yellow-100 text-yellow-800',
         Completed: 'bg-gray-100 text-gray-800',
         Cancelled: 'bg-red-100 text-red-800',
     };
@@ -201,13 +202,13 @@ export default function ProjectDetailsPage() {
                                 </div>
                                 <div className="space-y-3">
                                     <button
-                                        onClick={() => navigate(`/projects/${id}/manage`)}
+                                        onClick={() => navigate(`/my-projects?tab=created`)}
                                         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors shadow-sm"
                                     >
                                         Manage Project
                                     </button>
                                     <button
-                                        onClick={() => navigate(`/projects/${id}/applications`)}
+                                        onClick={() => navigate(`/my-projects?tab=applicants`)}
                                         className="w-full bg-white hover:bg-gray-50 text-blue-600 font-semibold py-3 px-4 rounded-lg border-2 border-blue-200 transition-colors"
                                     >
                                         View Applications ({project.applicationsCount})
@@ -238,9 +239,9 @@ export default function ProjectDetailsPage() {
                                 <h3 className="text-sm font-semibold text-gray-900 mb-4">Posted By</h3>
                                 <div className="flex items-start gap-3">
                                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0">
-                                        {project.client.avatar ? (
+                                        {project.client.avatarUrl ? (
                                             <img
-                                                src={project.client.avatar}
+                                                src={project.client.avatarUrl}
                                                 alt={project.client.name}
                                                 className="w-full h-full rounded-full object-cover"
                                             />
@@ -261,7 +262,7 @@ export default function ProjectDetailsPage() {
                                             <div className="flex items-center gap-1 mt-1">
                                                 <Star className="w-4 h-4 text-yellow-400 fill-current" />
                                                 <span className="text-sm font-medium text-gray-700">
-                                                    {project.client.rating.toFixed(1)}
+                                                    {Number(project.client.rating).toFixed(1)}
                                                 </span>
                                             </div>
                                         )}

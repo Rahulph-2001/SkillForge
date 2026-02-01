@@ -207,7 +207,7 @@ let AuthController = class AuthController {
             next(error);
         }
     }
-    async googleCallback(req, res, next) {
+    async googleCallback(req, res, _next) {
         try {
             const googleProfile = req.user;
             if (!googleProfile) {
@@ -238,7 +238,14 @@ let AuthController = class AuthController {
             res.redirect(redirectUrl);
         }
         catch (error) {
-            next(error);
+            // Handle suspended user error - redirect to login with message
+            if (error.name === 'ForbiddenError' || error.statusCode === 403) {
+                const errorMessage = encodeURIComponent(error.message || 'Account suspended');
+                res.redirect(`${env_1.env.FRONTEND_URL}/login?error=account_suspended&message=${errorMessage}`);
+                return;
+            }
+            // For other errors, redirect to login with generic error
+            res.redirect(`${env_1.env.FRONTEND_URL}/login?error=google_auth_failed`);
         }
     }
     async forgotPassword(req, res, next) {

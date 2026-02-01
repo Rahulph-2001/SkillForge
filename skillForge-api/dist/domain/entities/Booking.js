@@ -9,6 +9,7 @@ var BookingStatus;
     BookingStatus["COMPLETED"] = "completed";
     BookingStatus["CANCELLED"] = "cancelled";
     BookingStatus["RESCHEDULE_REQUESTED"] = "reschedule_requested";
+    BookingStatus["IN_SESSION"] = "in_session";
 })(BookingStatus || (exports.BookingStatus = BookingStatus = {}));
 var SessionType;
 (function (SessionType) {
@@ -119,13 +120,18 @@ class Booking {
     canBeCancelled() {
         return (this.props.status === BookingStatus.PENDING ||
             this.props.status === BookingStatus.CONFIRMED);
+        // Note: IN_SESSION status explicitly blocks cancellation
     }
     canBeRescheduled() {
         return (this.props.status === BookingStatus.CONFIRMED ||
             this.props.status === BookingStatus.PENDING);
     }
     canBeCompleted() {
-        return this.props.status === BookingStatus.CONFIRMED;
+        return (this.props.status === BookingStatus.CONFIRMED ||
+            this.props.status === BookingStatus.IN_SESSION);
+    }
+    isInSession() {
+        return this.props.status === BookingStatus.IN_SESSION;
     }
     isRescheduleRequest() {
         return this.props.status === BookingStatus.RESCHEDULE_REQUESTED;

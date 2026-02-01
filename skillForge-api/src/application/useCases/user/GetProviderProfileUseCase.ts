@@ -9,7 +9,7 @@ import { NotFoundError } from '../../../domain/errors/AppError';
 export class GetProviderProfileUseCase implements IGetProviderProfileUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
-  ) {}
+  ) { }
 
   async execute(userId: string): Promise<ProviderProfileResponseDTO> {
     const user = await this.userRepository.findById(userId);
@@ -28,10 +28,10 @@ export class GetProviderProfileUseCase implements IGetProviderProfileUseCase {
       avatarUrl: user.avatarUrl || (userData.avatarUrl as string | null) || (userData.avatar_url as string | null) || null,
       bio: userData.bio as string | null,
       location: userData.location as string | null,
-      rating: userData.rating as number | null,
-      reviewCount: userData.reviewCount as number || 0,
-      totalSessionsCompleted: userData.totalSessionsCompleted as number || 0,
-      memberSince: userData.memberSince as Date,
+      rating: Number(userData.rating) || 0,
+      reviewCount: (userData.review_count as number) || 0,
+      totalSessionsCompleted: (userData.total_sessions_completed as number) || 0,
+      memberSince: (userData.member_since as Date) || new Date(),
       verification: {
         isEmailVerified: verificationData.email_verified || false,
         isPhoneVerified: false, // Phone verification not implemented yet

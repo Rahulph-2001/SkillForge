@@ -20,7 +20,11 @@ import { IEndVideoRoomUseCase } from '../../../application/useCases/videoCall/in
 import { EndVideoRoomUseCase } from '../../../application/useCases/videoCall/EndVideoRoomUseCase';
 import { IGetSessionInfoUseCase } from '../../../application/useCases/videoCall/interfaces/IGetSessionInfoUseCase';
 import { GetSessionInfoUseCase } from '../../../application/useCases/videoCall/GetSessionInfoUseCase';
+import { IValidateSessionTimeUseCase } from '../../../application/useCases/videoCall/interfaces/IValidateSessionTimeUseCase';
+import { ValidateSessionTimeUseCase } from '../../../application/useCases/videoCall/ValidateSessionTimeUseCase';
 import { VideoCallController } from '../../../presentation/controllers/videoCall/VideoCallController';
+import { IGetInterviewSessionInfoUseCase } from '../../../application/useCases/videoCall/interfaces/IGetInterviewSessionInfoUseCase';
+import { GetInterviewSessionInfoUseCase } from '../../../application/useCases/videoCall/GetInterviewSessionInfoUseCase';
 import { VideoCallRoutes } from '../../../presentation/routes/videoCall/VideoCallRoutes';
 
 export function registerVideoCallBindings(container: Container): void {
@@ -34,6 +38,8 @@ export function registerVideoCallBindings(container: Container): void {
   container.bind<IGetRoomInfoUseCase>(TYPES.IGetRoomInfoUseCase).to(GetRoomInfoUseCase).inSingletonScope();
   container.bind<IEndVideoRoomUseCase>(TYPES.IEndVideoRoomUseCase).to(EndVideoRoomUseCase).inSingletonScope();
   container.bind<IGetSessionInfoUseCase>(TYPES.IGetSessionInfoUseCase).to(GetSessionInfoUseCase).inSingletonScope();
+  container.bind<IValidateSessionTimeUseCase>(TYPES.IValidateSessionTimeUseCase).to(ValidateSessionTimeUseCase).inSingletonScope();
+  container.bind<IGetInterviewSessionInfoUseCase>(TYPES.IGetInterviewSessionInfoUseCase).to(GetInterviewSessionInfoUseCase).inSingletonScope();
   container.bind<VideoCallController>(TYPES.VideoCallController).to(VideoCallController).inSingletonScope();
   container.bind<VideoCallRoutes>(TYPES.VideoCallRoutes).to(VideoCallRoutes).inSingletonScope();
 }

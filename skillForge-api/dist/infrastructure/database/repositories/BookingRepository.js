@@ -156,7 +156,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
         return this.mapToDomain(created);
     }
     // --- Transactional Writes (Industrial Level) ---
-    async createTransactional(booking, sessionCost) {
+    async createWithEscrow(booking, sessionCost) {
         const domainBooking = booking.toObject();
         return await this.prisma.$transaction(async (tx) => {
             // 1. Lock & Check Learner Balance
@@ -177,7 +177,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
             const existingCount = await tx.booking.count({
                 where: {
                     providerId: domainBooking.providerId,
-                    status: { in: ['pending', 'confirmed'] },
+                    status: { in: ['pending', 'confirmed', 'reschedule_requested'] },
                     isDeleted: false,
                     AND: [
                         { startAt: { lt: endAt } },
@@ -188,14 +188,17 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
             if (existingCount > 0) {
                 throw new AppError_1.ConflictError('Slot was just taken by another user');
             }
-            // 3. Process Credits (Debit Learner Only)
+            // 3. Hold Credits in Escrow (Move from available to held)
             await tx.user.update({
                 where: { id: domainBooking.learnerId },
-                data: { credits: { decrement: sessionCost } }
+                data: {
+                    credits: { decrement: sessionCost },
+                    heldCredits: { increment: sessionCost }
+                }
             });
-            // 4. Create Booking
             // Convert preferredDate string to Date object for Prisma
             const preferredDateObj = new Date(domainBooking.preferredDate);
+            // 4. Create Booking
             const created = await tx.booking.create({
                 data: {
                     id: domainBooking.id,
@@ -217,42 +220,22 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                     learner: { select: { name: true, avatarUrl: true } },
                 },
             });
+            // 5. Create Escrow Transaction Record
+            await tx.escrowTransaction.create({
+                data: {
+                    bookingId: created.id,
+                    learnerId: domainBooking.learnerId,
+                    providerId: domainBooking.providerId,
+                    amount: sessionCost,
+                    status: 'HELD',
+                    heldAt: new Date(),
+                }
+            });
             return this.mapToDomain(created);
         });
     }
-    async cancelTransactional(bookingId, _cancelledBy, reason) {
-        return await this.prisma.$transaction(async (tx) => {
-            const booking = await tx.booking.findUnique({
-                where: { id: bookingId },
-                include: { skill: true }
-            });
-            if (!booking)
-                throw new AppError_1.NotFoundError('Booking not found');
-            // Refund credits to learner
-            if (booking.status === 'confirmed' || booking.status === 'pending') {
-                await tx.user.update({
-                    where: { id: booking.learnerId },
-                    data: { credits: { increment: booking.sessionCost } }
-                });
-            }
-            // Update booking status
-            const updated = await tx.booking.update({
-                where: { id: bookingId },
-                data: {
-                    status: 'cancelled',
-                    rejectionReason: reason,
-                    updatedAt: new Date(),
-                },
-                include: {
-                    skill: { select: { title: true, durationHours: true } },
-                    provider: { select: { name: true, avatarUrl: true } },
-                    learner: { select: { name: true, avatarUrl: true } },
-                },
-            });
-            return this.mapToDomain(updated);
-        });
-    }
     async acceptBooking(bookingId) {
+        // This method is non-transactional - use confirmTransactional for credit handling
         const booking = await this.prisma.booking.update({
             where: { id: bookingId },
             data: { status: 'confirmed', updatedAt: new Date() },
@@ -265,30 +248,49 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
         return this.mapToDomain(booking);
     }
     async declineBooking(bookingId, reason) {
-        // Refund credits
-        const booking = await this.prisma.booking.findUnique({
-            where: { id: bookingId }
-        });
-        if (booking) {
-            await this.prisma.user.update({
-                where: { id: booking.learnerId },
-                data: { credits: { increment: booking.sessionCost } }
+        return await this.prisma.$transaction(async (tx) => {
+            // 1. Fetch booking
+            const booking = await tx.booking.findUnique({
+                where: { id: bookingId },
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
             });
-        }
-        const declined = await this.prisma.booking.update({
-            where: { id: bookingId },
-            data: {
-                status: 'declined',
-                rejectionReason: reason,
-                updatedAt: new Date(),
-            },
-            include: {
-                skill: { select: { title: true, durationHours: true } },
-                provider: { select: { name: true, avatarUrl: true } },
-                learner: { select: { name: true, avatarUrl: true } },
-            },
+            if (!booking) {
+                throw new AppError_1.NotFoundError('Booking not found');
+            }
+            // 2. Refund credits to learner (if booking was pending or confirmed)
+            if (booking.status === 'pending' || booking.status === 'confirmed') {
+                await tx.user.update({
+                    where: { id: booking.learnerId },
+                    data: { credits: { increment: booking.sessionCost } }
+                });
+                // If booking was confirmed, also deduct from provider (reverse the credit)
+                if (booking.status === 'confirmed') {
+                    await tx.user.update({
+                        where: { id: booking.providerId },
+                        data: { credits: { decrement: booking.sessionCost } }
+                    });
+                }
+            }
+            // 3. Update booking status to rejected
+            const declined = await tx.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: 'rejected',
+                    rejectionReason: reason,
+                    updatedAt: new Date(),
+                },
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+            });
+            return this.mapToDomain(declined);
         });
-        return this.mapToDomain(declined);
     }
     async rescheduleBooking(bookingId, rescheduleInfo) {
         const updated = await this.prisma.booking.update({
@@ -382,6 +384,10 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                     lte: endOfDay.toISOString(),
                 },
                 isDeleted: false,
+                // Exclude rejected, cancelled, and completed bookings from schedule
+                status: {
+                    notIn: ['rejected', 'cancelled', 'completed']
+                }
             },
             include: {
                 skill: { select: { title: true, durationHours: true } },
@@ -411,7 +417,8 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                     gte: startOfDay.toISOString(),
                     lte: endOfDay.toISOString(),
                 },
-                status: { in: ['pending', 'confirmed'] },
+                // Include reschedule_requested since those bookings still occupy their old slots
+                status: { in: ['pending', 'confirmed', 'reschedule_requested'] },
                 isDeleted: false,
                 AND: [
                     { startAt: { lt: bufferedEnd } },
@@ -441,61 +448,126 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                     gte: startOfDay,
                     lte: endOfDay.toISOString(),
                 },
-                status: { in: ['pending', 'confirmed'] },
+                // Include reschedule_requested since those bookings still occupy their slots
+                status: { in: ['pending', 'confirmed', 'reschedule_requested'] },
                 isDeleted: false,
             },
         });
     }
-    async confirmTransactional(bookingId) {
-        return await this.acceptBooking(bookingId);
-    }
     async updateStatus(bookingId, status, reason) {
-        const updated = await this.prisma.booking.update({
-            where: { id: bookingId },
-            data: {
+        return await this.prisma.$transaction(async (tx) => {
+            // 1. Fetch current booking state
+            const booking = await tx.booking.findUnique({
+                where: { id: bookingId },
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+            });
+            if (!booking) {
+                throw new AppError_1.NotFoundError('Booking not found');
+            }
+            const previousStatus = booking.status;
+            // 2. (Refactored) Credit refunds are now handled by specific Use Cases via EscrowRepository
+            // This ensures Single Responsibility and prevents double-refunds.
+            // 3. Update booking status with appropriate reason field
+            const updateData = {
                 status: status,
-                rejectionReason: reason,
                 updatedAt: new Date(),
-            },
-            include: {
-                skill: { select: { title: true, durationHours: true } },
-                provider: { select: { name: true, avatarUrl: true } },
-                learner: { select: { name: true, avatarUrl: true } },
-            },
+            };
+            // Set the correct reason field based on status
+            if (status === Booking_1.BookingStatus.REJECTED) {
+                updateData.rejectionReason = reason;
+            }
+            else if (status === Booking_1.BookingStatus.CANCELLED) {
+                updateData.cancelledReason = reason;
+            }
+            const updated = await tx.booking.update({
+                where: { id: bookingId },
+                data: updateData,
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+            });
+            return this.mapToDomain(updated);
         });
-        return this.mapToDomain(updated);
     }
     async updateWithReschedule(bookingId, rescheduleInfo) {
         return await this.rescheduleBooking(bookingId, rescheduleInfo);
     }
     async acceptReschedule(bookingId, newDate, newTime) {
-        const booking = await this.prisma.booking.findUnique({
-            where: { id: bookingId }
+        return await this.prisma.$transaction(async (tx) => {
+            // 1. Fetch booking with reschedule info
+            const booking = await tx.booking.findUnique({
+                where: { id: bookingId },
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+            });
+            if (!booking || !booking.rescheduleInfo) {
+                throw new AppError_1.NotFoundError('Booking or reschedule info not found');
+            }
+            const rescheduleInfo = booking.rescheduleInfo;
+            // 2. Calculate new start/end times (use provided or calculate from skill duration)
+            let newStartAt;
+            let newEndAt;
+            if (rescheduleInfo.newStartAt && rescheduleInfo.newEndAt) {
+                newStartAt = new Date(rescheduleInfo.newStartAt);
+                newEndAt = new Date(rescheduleInfo.newEndAt);
+            }
+            else {
+                // Calculate from newDate, newTime, and skill duration
+                const [startHours, startMinutes] = newTime.split(':').map(Number);
+                newStartAt = new Date(newDate);
+                newStartAt.setHours(startHours, startMinutes, 0, 0);
+                const durationHours = booking.skill?.durationHours || 1; // Default to 1 hour if not found
+                newEndAt = new Date(newStartAt);
+                newEndAt.setHours(newEndAt.getHours() + durationHours);
+            }
+            // 3. Validate new slot doesn't conflict with existing bookings
+            // Include reschedule_requested status to prevent conflicts with other reschedule requests
+            const conflictingBooking = await tx.booking.findFirst({
+                where: {
+                    providerId: booking.providerId,
+                    id: { not: bookingId }, // Exclude current booking
+                    status: { in: ['pending', 'confirmed', 'reschedule_requested'] },
+                    isDeleted: false,
+                    AND: [
+                        { startAt: { lt: newEndAt } },
+                        { endAt: { gt: newStartAt } }
+                    ]
+                }
+            });
+            if (conflictingBooking) {
+                throw new AppError_1.ConflictError('New time slot conflicts with an existing booking');
+            }
+            // 4. Convert preferredDate string to Date object for Prisma
+            const preferredDateObj = new Date(newDate);
+            // 5. Update booking with new date/time and clear reschedule info
+            const updated = await tx.booking.update({
+                where: { id: bookingId },
+                data: {
+                    status: 'confirmed',
+                    preferredDate: preferredDateObj,
+                    preferredTime: newTime,
+                    startAt: newStartAt,
+                    endAt: newEndAt,
+                    rescheduleInfo: client_1.Prisma.JsonNull,
+                    updatedAt: new Date(),
+                },
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+            });
+            return this.mapToDomain(updated);
         });
-        if (!booking || !booking.rescheduleInfo) {
-            throw new AppError_1.NotFoundError('Booking or reschedule info not found');
-        }
-        const rescheduleInfo = booking.rescheduleInfo;
-        // Convert preferredDate string to Date object for Prisma
-        const preferredDateObj = new Date(newDate);
-        const updated = await this.prisma.booking.update({
-            where: { id: bookingId },
-            data: {
-                status: 'confirmed',
-                preferredDate: preferredDateObj,
-                preferredTime: newTime,
-                startAt: rescheduleInfo.newStartAt ? new Date(rescheduleInfo.newStartAt) : null,
-                endAt: rescheduleInfo.newEndAt ? new Date(rescheduleInfo.newEndAt) : null,
-                rescheduleInfo: client_1.Prisma.JsonNull,
-                updatedAt: new Date(),
-            },
-            include: {
-                skill: { select: { title: true, durationHours: true } },
-                provider: { select: { name: true, avatarUrl: true } },
-                learner: { select: { name: true, avatarUrl: true } },
-            },
-        });
-        return this.mapToDomain(updated);
     }
     async declineReschedule(bookingId, _reason) {
         const updated = await this.prisma.booking.update({
@@ -522,6 +594,46 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
             this.prisma.booking.count({ where: { providerId, status: 'cancelled', isDeleted: false } }),
         ]);
         return { pending, confirmed, reschedule, completed, cancelled };
+    }
+    // --- Admin Operations ---
+    async listAll(page, limit, search) {
+        const skip = (page - 1) * limit;
+        const where = {
+            isDeleted: false,
+        };
+        if (search) {
+            where.OR = [
+                { skill: { title: { contains: search, mode: 'insensitive' } } },
+                { provider: { name: { contains: search, mode: 'insensitive' } } },
+            ];
+        }
+        const [bookings, total] = await Promise.all([
+            this.prisma.booking.findMany({
+                where,
+                skip,
+                take: limit,
+                include: {
+                    skill: { select: { title: true, durationHours: true } },
+                    provider: { select: { name: true, avatarUrl: true } },
+                    learner: { select: { name: true, avatarUrl: true } },
+                },
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.booking.count({ where }),
+        ]);
+        return {
+            data: bookings.map((b) => this.mapToDomain(b)),
+            total,
+        };
+    }
+    async getGlobalStats() {
+        const [totalSessions, completed, upcoming, cancelled] = await Promise.all([
+            this.prisma.booking.count({ where: { isDeleted: false } }),
+            this.prisma.booking.count({ where: { status: 'completed', isDeleted: false } }),
+            this.prisma.booking.count({ where: { status: { in: ['pending', 'confirmed'] }, isDeleted: false } }),
+            this.prisma.booking.count({ where: { status: 'cancelled', isDeleted: false } }),
+        ]);
+        return { totalSessions, completed, upcoming, cancelled };
     }
 };
 exports.BookingRepository = BookingRepository;

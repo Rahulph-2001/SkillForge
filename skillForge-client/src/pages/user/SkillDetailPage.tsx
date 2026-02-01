@@ -178,7 +178,7 @@ export default function SkillDetailPage() {
                         className="fill-yellow-400 text-yellow-400"
                       />
                       <span className="font-semibold text-gray-900">
-                        {skill.rating.toFixed(1)}
+                        {Number(skill.rating).toFixed(1)}
                       </span>
                       <span className="text-gray-600">
                         ({skill.totalSessions} sessions)
@@ -346,7 +346,7 @@ export default function SkillDetailPage() {
                       }}
                     />
                   ) : null}
-                  <div 
+                  <div
                     className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md ${skill.provider.avatarUrl ? 'hidden' : ''}`}
                   >
                     <span className="text-white font-bold text-xl">
@@ -366,7 +366,7 @@ export default function SkillDetailPage() {
                         className="fill-yellow-400 text-yellow-400"
                       />
                       <span className="text-sm font-semibold text-gray-900">
-                        {skill.provider.rating.toFixed(1)}
+                        {Number(skill.provider.rating).toFixed(1)}
                       </span>
                       <span className="text-sm text-gray-600">
                         ({skill.provider.reviewCount} reviews)

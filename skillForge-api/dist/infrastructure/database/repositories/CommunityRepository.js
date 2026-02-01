@@ -64,6 +64,39 @@ let CommunityRepository = class CommunityRepository extends BaseRepository_1.Bas
         });
         return communities.map(c => Community_1.Community.fromDatabaseRow(c));
     }
+    async findAllWithPagination(filters, pagination) {
+        // Build dynamic where clause
+        const where = {};
+        // Search filter - case-insensitive search on name and description
+        if (filters.search && filters.search.trim()) {
+            where.OR = [
+                { name: { contains: filters.search.trim(), mode: 'insensitive' } },
+                { description: { contains: filters.search.trim(), mode: 'insensitive' } },
+            ];
+        }
+        // Category filter
+        if (filters.category) {
+            where.category = filters.category;
+        }
+        // Active status filter
+        if (filters.isActive !== undefined) {
+            where.isActive = filters.isActive;
+        }
+        // Execute queries in parallel for better performance
+        const [communities, total] = await Promise.all([
+            this.prisma.community.findMany({
+                where,
+                skip: pagination.skip,
+                take: pagination.take,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.community.count({ where }),
+        ]);
+        return {
+            communities: communities.map(c => Community_1.Community.fromDatabaseRow(c)),
+            total,
+        };
+    }
     async findByAdminId(adminId) {
         const communities = await this.prisma.community.findMany({
             where: { adminId },
@@ -91,7 +124,40 @@ let CommunityRepository = class CommunityRepository extends BaseRepository_1.Bas
         return Community_1.Community.fromDatabaseRow(updated);
     }
     async delete(id) {
-        await super.delete(id);
+        await this.prisma.community.update({
+            where: { id },
+            data: {
+                isDeleted: true,
+                isActive: false,
+                updatedAt: new Date(),
+            },
+        });
+    }
+    /**
+     * Block a community (set isActive to false)
+     * Following Single Responsibility Principle
+     */
+    async blockCommunity(id) {
+        await this.prisma.community.update({
+            where: { id },
+            data: {
+                isActive: false,
+                updatedAt: new Date(),
+            },
+        });
+    }
+    /**
+     * Unblock a community (set isActive to true)
+     * Following Single Responsibility Principle
+     */
+    async unblockCommunity(id) {
+        await this.prisma.community.update({
+            where: { id },
+            data: {
+                isActive: true,
+                updatedAt: new Date(),
+            },
+        });
     }
     async findMembersByCommunityId(communityId) {
         const members = await this.prisma.communityMember.findMany({
@@ -116,31 +182,35 @@ let CommunityRepository = class CommunityRepository extends BaseRepository_1.Bas
             return member;
         });
     }
-    async findMemberByUserAndCommunity(communityId, userId) {
+    async findMemberByUserAndCommunity(userId, communityId) {
+        const member = await this.prisma.communityMember.findFirst({
+            where: {
+                userId,
+                communityId,
+                isActive: true,
+            },
+        });
+        if (!member)
+            return null;
+        return CommunityMember_1.CommunityMember.fromDatabaseRow(member);
+    }
+    async isMember(communityId, userId) {
         const member = await this.prisma.communityMember.findFirst({
             where: {
                 communityId,
                 userId,
                 isActive: true,
             },
-            include: {
-                user: {
-                    select: {
-                        name: true,
-                        avatarUrl: true,
-                    },
-                },
+        });
+        return member !== null;
+    }
+    async getMembersCount(communityId) {
+        return await this.prisma.communityMember.count({
+            where: {
+                communityId,
+                isActive: true,
             },
         });
-        if (!member)
-            return null;
-        const domainMember = CommunityMember_1.CommunityMember.fromDatabaseRow(member);
-        const memberAny = domainMember;
-        if (member.user) {
-            memberAny._userName = member.user.name;
-            memberAny._userAvatar = member.user.avatarUrl;
-        }
-        return domainMember;
     }
     async createMember(member) {
         const data = member.toJSON();
@@ -246,6 +316,94 @@ let CommunityRepository = class CommunityRepository extends BaseRepository_1.Bas
                 membersCount: { increment: 1 },
                 updatedAt: new Date(),
             },
+        });
+    }
+    async decrementMembersCount(communityId) {
+        await this.prisma.community.update({
+            where: { id: communityId },
+            data: {
+                membersCount: { decrement: 1 },
+                updatedAt: new Date(),
+            },
+        });
+    }
+    async findExpiredMemberships(currentDate) {
+        const expiredMembers = await this.prisma.communityMember.findMany({
+            where: {
+                isActive: true,
+                isAutoRenew: false,
+                subscriptionEndsAt: {
+                    lte: currentDate,
+                    not: null,
+                },
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        avatarUrl: true,
+                    },
+                },
+                community: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+        return expiredMembers.map(m => {
+            const member = CommunityMember_1.CommunityMember.fromDatabaseRow(m);
+            const memberAny = member;
+            if (m.user) {
+                memberAny._userName = m.user.name;
+                memberAny._userAvatar = m.user.avatarUrl;
+            }
+            return member;
+        });
+    }
+    async findExpiredMembershipsWithAutoRenew(currentDate) {
+        const expiredMembers = await this.prisma.communityMember.findMany({
+            where: {
+                isActive: true,
+                isAutoRenew: true,
+                subscriptionEndsAt: {
+                    lte: currentDate,
+                    not: null,
+                },
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        name: true,
+                        avatarUrl: true,
+                        credits: true,
+                    },
+                },
+                community: {
+                    select: {
+                        id: true,
+                        name: true,
+                        creditsCost: true,
+                        adminId: true,
+                    },
+                },
+            },
+        });
+        return expiredMembers.map(m => {
+            const member = CommunityMember_1.CommunityMember.fromDatabaseRow(m);
+            const memberAny = member;
+            if (m.user) {
+                memberAny._userName = m.user.name;
+                memberAny._userAvatar = m.user.avatarUrl;
+                memberAny._userCredits = m.user.credits;
+            }
+            if (m.community) {
+                memberAny._communityName = m.community.name;
+                memberAny._communityCost = m.community.creditsCost;
+                memberAny._communityAdminId = m.community.adminId;
+            }
+            return member;
         });
     }
 };

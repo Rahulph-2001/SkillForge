@@ -16,10 +16,17 @@ exports.ProjectController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../domain/enums/HttpStatusCode");
+const GetMyProjectsUseCase_1 = require("../../application/useCases/project/GetMyProjectsUseCase");
+const GetContributingProjectsUseCase_1 = require("../../application/useCases/project/GetContributingProjectsUseCase");
 let ProjectController = class ProjectController {
-    constructor(createProjectUseCase, listProjectsUseCase, responseBuilder) {
+    constructor(createProjectUseCase, listProjectsUseCase, getProjectUseCase, getMyProjectsUseCase, getContributingProjectsUseCase, requestProjectCompletionUseCase, reviewProjectCompletionUseCase, responseBuilder) {
         this.createProjectUseCase = createProjectUseCase;
         this.listProjectsUseCase = listProjectsUseCase;
+        this.getProjectUseCase = getProjectUseCase;
+        this.getMyProjectsUseCase = getMyProjectsUseCase;
+        this.getContributingProjectsUseCase = getContributingProjectsUseCase;
+        this.requestProjectCompletionUseCase = requestProjectCompletionUseCase;
+        this.reviewProjectCompletionUseCase = reviewProjectCompletionUseCase;
         this.responseBuilder = responseBuilder;
         this.listProjects = async (req, res, next) => {
             try {
@@ -38,6 +45,65 @@ let ProjectController = class ProjectController {
                 next(error);
             }
         };
+        this.getProject = async (req, res, next) => {
+            try {
+                const { id } = req.params;
+                const project = await this.getProjectUseCase.execute(id);
+                const response = this.responseBuilder.success(project, 'Project details fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.getMyProjects = async (req, res, next) => {
+            try {
+                // Assuming Request is extended with user, usually req.user.id
+                const userId = req.user.id;
+                const projects = await this.getMyProjectsUseCase.execute(userId);
+                const response = this.responseBuilder.success(projects, 'My projects fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.getContributingProjects = async (req, res, next) => {
+            try {
+                const userId = req.user.id;
+                const projects = await this.getContributingProjectsUseCase.execute(userId);
+                const response = this.responseBuilder.success(projects, 'Contributing projects fetched successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.requestCompletion = async (req, res, next) => {
+            try {
+                const { id } = req.params;
+                const userId = req.user.id;
+                await this.requestProjectCompletionUseCase.execute(id, userId);
+                const response = this.responseBuilder.success(null, 'Project completion requested successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        this.reviewCompletion = async (req, res, next) => {
+            try {
+                const { id } = req.params;
+                const { decision } = req.body;
+                const userId = req.user.id;
+                await this.reviewProjectCompletionUseCase.execute(id, userId, decision);
+                const response = this.responseBuilder.success(null, 'Project review submitted successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
     }
 };
 exports.ProjectController = ProjectController;
@@ -45,7 +111,13 @@ exports.ProjectController = ProjectController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICreateProjectUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IListProjectsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetProjectUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.GetMyProjectsUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.GetContributingProjectsUseCase)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IRequestProjectCompletionUseCase)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IReviewProjectCompletionUseCase)),
+    __param(7, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, GetMyProjectsUseCase_1.GetMyProjectsUseCase,
+        GetContributingProjectsUseCase_1.GetContributingProjectsUseCase, Object, Object, Object])
 ], ProjectController);
 //# sourceMappingURL=ProjectController.js.map
