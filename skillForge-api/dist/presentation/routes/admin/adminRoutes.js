@@ -19,13 +19,17 @@ const types_1 = require("../../../infrastructure/di/types");
 const AdminController_1 = require("../../controllers/admin/AdminController");
 const subscriptionRoutes_1 = require("../subscription/subscriptionRoutes");
 const featureRoutes_1 = require("../feature/featureRoutes");
+const ProjectPaymentRequestController_1 = require("../../controllers/admin/ProjectPaymentRequestController");
+const AdminProjectController_1 = require("../../controllers/admin/AdminProjectController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
 let AdminRoutes = class AdminRoutes {
-    constructor(adminController, subscriptionRoutes, featureRoutes) {
+    constructor(adminController, subscriptionRoutes, featureRoutes, paymentRequestController, adminProjectController) {
         this.adminController = adminController;
         this.subscriptionRoutes = subscriptionRoutes;
         this.featureRoutes = featureRoutes;
+        this.paymentRequestController = paymentRequestController;
+        this.adminProjectController = adminProjectController;
         this.router = (0, express_1.Router)();
         this.initializeRoutes();
     }
@@ -55,6 +59,16 @@ let AdminRoutes = class AdminRoutes {
         // Feature Management Routes
         // Mount feature routes at /api/v1/admin/features
         this.router.use('/features', this.featureRoutes.router);
+        // Project Management Routes
+        // GET /api/v1/admin/projects - List all projects
+        this.router.get('/projects', this.adminProjectController.listProjects.bind(this.adminProjectController));
+        // GET /api/v1/admin/projects/stats - Get project statistics
+        this.router.get('/projects/stats', this.adminProjectController.getProjectStats.bind(this.adminProjectController));
+        // Project Payment Requests
+        // GET /api/v1/admin/payment-requests/pending
+        this.router.get('/payment-requests/pending', this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));
+        // POST /api/v1/admin/payment-requests/:id/process
+        this.router.post('/payment-requests/:id/process', this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
     }
 };
 exports.AdminRoutes = AdminRoutes;
@@ -63,8 +77,12 @@ exports.AdminRoutes = AdminRoutes = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.AdminController)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.SubscriptionRoutes)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.FeatureRoutes)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ProjectPaymentRequestController)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.AdminProjectController)),
     __metadata("design:paramtypes", [AdminController_1.AdminController,
         subscriptionRoutes_1.SubscriptionRoutes,
-        featureRoutes_1.FeatureRoutes])
+        featureRoutes_1.FeatureRoutes,
+        ProjectPaymentRequestController_1.ProjectPaymentRequestController,
+        AdminProjectController_1.AdminProjectController])
 ], AdminRoutes);
 //# sourceMappingURL=adminRoutes.js.map

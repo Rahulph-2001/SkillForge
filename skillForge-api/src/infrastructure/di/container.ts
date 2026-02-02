@@ -18,12 +18,15 @@ import { bindCommunityModule } from './modules/community.bindings';
 import { bindAdminModule } from './modules/admin.bindings';
 import { bindProjectModule } from './modules/project.bindings';
 import { bindAdminSessionModule } from './modules/adminSession.bindings';
+import { bindReportModule } from './modules/report.bindings';
 import { escrowModule } from './modules/escrow.bindings';
 import { registerVideoCallBindings } from './modules/videoCall.bindings';
 import { registerReviewBindings } from './modules/review.bindings';
 import { registerProjectApplicationBindings } from './modules/projectApplication.bindings';
 import { registerInterviewBindings } from './modules/interview.bindings';
 import { projectPaymentRequestBindings } from './modules/projectPaymentRequest.bindings';
+import { walletBindings } from './modules/wallet.bindings';
+import { projectChatBindings } from './modules/project_chat.bindings';
 import { CronScheduler } from '../scheduler/CronScheduler';
 
 export { container };
@@ -45,6 +48,7 @@ bindCommunityModule(container);
 bindAdminModule(container);
 bindProjectModule(container);
 bindAdminSessionModule(container);
+bindReportModule(container);
 registerVideoCallBindings(container);
 registerReviewBindings(container);
 registerProjectApplicationBindings(container);
@@ -54,6 +58,9 @@ container.bind(TYPES.CronScheduler).to(CronScheduler).inSingletonScope();
 
 container.load(escrowModule);
 container.load(projectPaymentRequestBindings);
+container.load(walletBindings);
+container.load(projectChatBindings);
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);
+

@@ -25,6 +25,8 @@ const videoCall_bindings_1 = require("./modules/videoCall.bindings");
 const review_bindings_1 = require("./modules/review.bindings");
 const projectApplication_bindings_1 = require("./modules/projectApplication.bindings");
 const interview_bindings_1 = require("./modules/interview.bindings");
+const projectPaymentRequest_bindings_1 = require("./modules/projectPaymentRequest.bindings");
+const wallet_bindings_1 = require("./modules/wallet.bindings");
 const CronScheduler_1 = require("../scheduler/CronScheduler");
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
@@ -48,6 +50,8 @@ const CronScheduler_1 = require("../scheduler/CronScheduler");
 (0, interview_bindings_1.registerInterviewBindings)(di_1.container);
 di_1.container.bind(types_1.TYPES.CronScheduler).to(CronScheduler_1.CronScheduler).inSingletonScope();
 di_1.container.load(escrow_bindings_1.escrowModule);
+di_1.container.load(projectPaymentRequest_bindings_1.projectPaymentRequestBindings);
+di_1.container.load(wallet_bindings_1.walletBindings);
 // 3. Application entry point
 di_1.container.bind(types_1.TYPES.App).to(server_1.App);
 //# sourceMappingURL=container.js.map

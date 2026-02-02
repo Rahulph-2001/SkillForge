@@ -158,6 +158,7 @@ export declare const TYPES: {
     IUsageRecordMapper: symbol;
     IUserSubscriptionMapper: symbol;
     IFeatureMapper: symbol;
+    IWalletTransactionMapper: symbol;
     IMCQImportJobRepository: symbol;
     IJobQueueService: symbol;
     MCQImportJobProcessor: symbol;
@@ -241,6 +242,14 @@ export declare const TYPES: {
     PaymentRoutes: symbol;
     ICheckSubscriptionExpiryUseCase: symbol;
     ICheckCommunityMembershipExpiryUseCase: symbol;
+    IProjectPaymentRequestRepository: symbol;
+    IDebitAdminWalletUseCase: symbol;
+    DebitAdminWalletUseCase: symbol;
+    IProcessProjectPaymentRequestUseCase: symbol;
+    ProcessProjectPaymentRequestUseCase: symbol;
+    IGetPendingPaymentRequestsUseCase: symbol;
+    GetPendingPaymentRequestsUseCase: symbol;
+    ProjectPaymentRequestController: symbol;
     IProjectRepository: symbol;
     ICreateProjectUseCase: symbol;
     IListProjectsUseCase: symbol;
@@ -251,9 +260,13 @@ export declare const TYPES: {
     ProjectRoutes: symbol;
     ProjectRepository: symbol;
     GetMyProjectsUseCase: symbol;
+    IGetMyProjectsUseCase: symbol;
     GetContributingProjectsUseCase: symbol;
+    IGetContributingProjectsUseCase: symbol;
     RequestProjectCompletionUseCase: symbol;
+    IRequestProjectCompletionUseCase: symbol;
     ReviewProjectCompletionUseCase: symbol;
+    IReviewProjectCompletionUseCase: symbol;
     ICancelBookingUseCase: symbol;
     IGetMyBookingsUseCase: symbol;
     IGetUpcomingSessionsUseCase: symbol;
@@ -329,9 +342,14 @@ export declare const TYPES: {
     InterviewRoutes: symbol;
     InterviewScheduler: symbol;
     CronScheduler: symbol;
-    IRequestProjectCompletionUseCase: symbol;
-    IApproveProjectCompletionUseCase: symbol;
-    IRejectProjectCompletionUseCase: symbol;
-    IReviewProjectCompletionUseCase: symbol;
+    IAdminListProjectsUseCase: symbol;
+    IAdminGetProjectStatsUseCase: symbol;
+    AdminProjectController: symbol;
+    AdminProjectRoutes: symbol;
+    IUserWalletTransactionRepository: symbol;
+    IGetUserWalletDataUseCase: symbol;
+    IGetUserWalletTransactionsUseCase: symbol;
+    WalletController: symbol;
+    WalletRoutes: symbol;
 };
 //# sourceMappingURL=types.d.ts.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetUserWalletDataUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/wallet/interfaces/IGetUserWalletDataUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,iBAAiB,EAAE,MAAM,8CAA8C,CAAC;AAEjF,MAAM,WAAW,yBAAyB;IACtC,OAAO,CAAC,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,iBAAiB,CAAC,CAAC;CACvD"}

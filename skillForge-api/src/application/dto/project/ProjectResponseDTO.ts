@@ -25,6 +25,12 @@ export const ProjectResponseDTOSchema = z.object({
     rating: z.number().nullable().optional(),
     isVerified: z.boolean().optional(),
   }).optional(),
+  // Accepted Contributor information (optional)
+  acceptedContributor: z.object({
+    id: z.string(),
+    name: z.string(),
+    avatarUrl: z.string().nullable().optional(),
+  }).optional(),
 });
 
 export type ProjectResponseDTO = z.infer<typeof ProjectResponseDTOSchema>;

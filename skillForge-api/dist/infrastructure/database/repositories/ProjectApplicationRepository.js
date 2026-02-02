@@ -78,6 +78,16 @@ let ProjectApplicationRepository = class ProjectApplicationRepository extends Ba
         });
         return data ? this.toDomain(data) : null;
     }
+    async findAcceptedByProject(projectId) {
+        const prisma = this.prisma;
+        const data = await prisma.projectApplication.findFirst({
+            where: {
+                projectId,
+                status: ProjectApplication_1.ProjectApplicationStatus.ACCEPTED
+            },
+        });
+        return data ? this.toDomain(data) : null;
+    }
     async findReceivedApplications(userId) {
         const prisma = this.prisma;
         const data = await prisma.projectApplication.findMany({

@@ -35,6 +35,10 @@ import { VideoCallRoutes } from './routes/videoCall/VideoCallRoutes';
 import { ReviewRoutes } from './routes/review/ReviewRoutes';
 import { ProjectApplicationRoutes } from './routes/projectApplication/ProjectApplicationRoutes';
 import { InterviewRoutes } from './routes/interview/InterviewRoutes';
+import { WalletRoutes } from './routes/wallet/walletRoutes';
+import { ReportRoutes } from './routes/ReportRoutes';
+import { AdminReportRoutes } from './routes/admin/AdminReportRoutes';
+import { ProjectMessageRoutes } from './routes/project/ProjectMessageRoutes';
 
 @injectable()
 export class App {
@@ -65,6 +69,10 @@ export class App {
         @inject(TYPES.ReviewRoutes) private readonly reviewRoutes: ReviewRoutes,
         @inject(TYPES.ProjectApplicationRoutes) private readonly projectApplicationRoutes: ProjectApplicationRoutes,
         @inject(TYPES.InterviewRoutes) private readonly interviewRoutes: InterviewRoutes,
+        @inject(TYPES.WalletRoutes) private readonly walletRoutes: WalletRoutes,
+        @inject(TYPES.ReportRoutes) private readonly reportRoutes: ReportRoutes,
+        @inject(TYPES.AdminReportRoutes) private readonly adminReportRoutes: AdminReportRoutes,
+        @inject(TYPES.ProjectMessageRoutes) private readonly projectMessageRoutes: ProjectMessageRoutes,
         @inject(TYPES.PassportService) private readonly passportService: PassportService
 
     ) {
@@ -143,6 +151,10 @@ export class App {
         this.app.use('/api/v1/reviews', this.reviewRoutes.router);
         this.app.use('/api/v1/project-applications', this.projectApplicationRoutes.router);
         this.app.use('/api/v1/interviews', this.interviewRoutes.router);
+        this.app.use('/api/v1/wallet', this.walletRoutes.router);
+        this.app.use('/api/v1/reports', this.reportRoutes.router);
+        this.app.use('/api/v1/admin/reports', this.adminReportRoutes.router);
+        this.app.use('/api/v1', this.projectMessageRoutes.router); // Mounts at /api/v1/projects/:projectId/messages
         this.app.all('*', notFoundHandler);
     }
 

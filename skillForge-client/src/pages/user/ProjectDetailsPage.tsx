@@ -10,10 +10,13 @@ import {
     Star,
     CheckCircle,
     Shield,
-    Sparkles
+    Sparkles,
+    MessageSquare
 } from 'lucide-react';
 import projectService, { Project } from '../../services/projectService';
 import ApplyProjectModal from '../../components/project/ApplyProjectModal';
+import ProjectChatModal from '../../components/project/ProjectChatModal';
+import { useSearchParams } from 'react-router-dom';
 import { RootState } from '../../store/store';
 // import api from '../../services/api'; // Removed as we use service now
 import { toast } from 'react-hot-toast';
@@ -26,12 +29,20 @@ export default function ProjectDetailsPage() {
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
     const [showApplyModal, setShowApplyModal] = useState(false);
+    const [isChatOpen, setIsChatOpen] = useState(false);
+    const [searchParams] = useSearchParams();
 
     useEffect(() => {
         if (id) {
             fetchProjectDetails();
         }
     }, [id]);
+
+    useEffect(() => {
+        if (searchParams.get('chat') === 'true') {
+            setIsChatOpen(true);
+        }
+    }, [searchParams]);
 
     const fetchProjectDetails = async () => {
         try {
@@ -69,10 +80,12 @@ export default function ProjectDetailsPage() {
     }
 
     const isCreator = user?.id === project.clientId;
-    const statusColors = {
+    const statusColors: Record<string, string> = {
         Open: 'bg-green-100 text-green-800',
         In_Progress: 'bg-blue-100 text-blue-800',
         Pending_Completion: 'bg-yellow-100 text-yellow-800',
+        Payment_Pending: 'bg-orange-100 text-orange-800',
+        Refund_Pending: 'bg-red-100 text-red-800',
         Completed: 'bg-gray-100 text-gray-800',
         Cancelled: 'bg-red-100 text-red-800',
     };
@@ -188,6 +201,30 @@ export default function ProjectDetailsPage() {
                                     ))}
                                 </div>
                             </div>
+                        )}
+
+                        {/* Chat Button for Participants */}
+                        {(isCreator || (user?.id === project.acceptedContributor?.id)) && (
+                            <div className="mt-8 flex justify-end">
+                                <button
+                                    onClick={() => setIsChatOpen(true)}
+                                    className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium shadow-lg shadow-blue-600/20 transition-all hover:-translate-y-1"
+                                >
+                                    <MessageSquare className="w-5 h-5" />
+                                    Open Project Chat
+                                </button>
+                            </div>
+                        )}
+
+                        {/* Chat Modal */}
+                        {project && (
+                            <ProjectChatModal
+                                isOpen={isChatOpen}
+                                onClose={() => setIsChatOpen(false)}
+                                projectId={project.id}
+                                currentUserId={user?.id || ''}
+                                isClient={isCreator}
+                            />
                         )}
                     </div>
 
@@ -308,18 +345,20 @@ export default function ProjectDetailsPage() {
             </div>
 
             {/* Apply Modal */}
-            {project && (
-                <ApplyProjectModal
-                    isOpen={showApplyModal}
-                    onClose={() => setShowApplyModal(false)}
-                    project={project}
-                    onSuccess={() => {
-                        setShowApplyModal(false);
-                        toast.success('Application submitted successfully!');
-                        fetchProjectDetails(); // Refresh to update application count
-                    }}
-                />
-            )}
-        </div>
+            {
+                project && (
+                    <ApplyProjectModal
+                        isOpen={showApplyModal}
+                        onClose={() => setShowApplyModal(false)}
+                        project={project}
+                        onSuccess={() => {
+                            setShowApplyModal(false);
+                            toast.success('Application submitted successfully!');
+                            fetchProjectDetails(); // Refresh to update application count
+                        }}
+                    />
+                )
+            }
+        </div >
     );
 }

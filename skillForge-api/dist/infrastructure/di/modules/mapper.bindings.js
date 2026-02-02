@@ -16,6 +16,7 @@ const UserSubscriptionMapper_1 = require("../../../application/mappers/UserSubsc
 const FeatureMapper_1 = require("../../../application/mappers/FeatureMapper");
 const CommunityMapper_1 = require("../../../application/mappers/CommunityMapper");
 const CommunityMessageMapper_1 = require("../../../application/mappers/CommunityMessageMapper");
+const WalletTransactionMapper_1 = require("../../../application/mappers/WalletTransactionMapper");
 /**
  * Binds all mapper interfaces to their implementations
  */
@@ -34,6 +35,7 @@ const bindMapperModule = (container) => {
     container.bind(types_1.TYPES.IFeatureMapper).to(FeatureMapper_1.FeatureMapper);
     container.bind(types_1.TYPES.ICommunityMapper).to(CommunityMapper_1.CommunityMapper);
     container.bind(types_1.TYPES.ICommunityMessageMapper).to(CommunityMessageMapper_1.CommunityMessageMapper);
+    container.bind(types_1.TYPES.IWalletTransactionMapper).to(WalletTransactionMapper_1.WalletTransactionMapper);
 };
 exports.bindMapperModule = bindMapperModule;
 //# sourceMappingURL=mapper.bindings.js.map

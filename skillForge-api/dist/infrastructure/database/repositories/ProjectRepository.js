@@ -22,7 +22,27 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
     constructor(db) {
         super(db, 'project');
     }
-    // --- Helper: Mapper ---
+    // --- Helper: Mappers ---
+    mapToPrismaStatus(status) {
+        switch (status) {
+            case Project_1.ProjectStatus.OPEN:
+                return 'Open';
+            case Project_1.ProjectStatus.IN_PROGRESS:
+                return 'In_Progress';
+            case Project_1.ProjectStatus.PENDING_COMPLETION:
+                return 'Pending_Completion';
+            case Project_1.ProjectStatus.PAYMENT_PENDING:
+                return 'Payment_Pending';
+            case Project_1.ProjectStatus.REFUND_PENDING:
+                return 'Refund_Pending';
+            case Project_1.ProjectStatus.COMPLETED:
+                return 'Completed';
+            case Project_1.ProjectStatus.CANCELLED:
+                return 'Cancelled';
+            default:
+                return 'Open';
+        }
+    }
     mapToDomain(data) {
         // Map Prisma enum value to ProjectStatus enum
         let status;
@@ -41,6 +61,12 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
                 break;
             case 'Pending_Completion':
                 status = Project_1.ProjectStatus.PENDING_COMPLETION;
+                break;
+            case 'Payment_Pending':
+                status = Project_1.ProjectStatus.PAYMENT_PENDING;
+                break;
+            case 'Refund_Pending':
+                status = Project_1.ProjectStatus.REFUND_PENDING;
                 break;
             default:
                 status = Project_1.ProjectStatus.OPEN; // Default fallback
@@ -96,8 +122,9 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
         return projects.map((p) => this.mapToDomain(p));
     }
     async findByClientIdAndStatus(clientId, status) {
+        const prismaStatus = this.mapToPrismaStatus(status);
         const projects = await this.prisma.project.findMany({
-            where: { clientId, status, isDeleted: false },
+            where: { clientId, status: prismaStatus, isDeleted: false },
             orderBy: { createdAt: 'desc' },
         });
         return projects.map((p) => this.mapToDomain(p));
@@ -124,7 +151,11 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
         });
         const projects = applications
             .map((app) => app.project)
-            .filter((project) => project !== null && (project.status === 'In_Progress' || project.status === 'Open' || project.status === 'Pending_Completion'));
+            .filter((project) => project !== null && (project.status === 'In_Progress' ||
+            project.status === 'Open' ||
+            project.status === 'Pending_Completion' ||
+            project.status === 'Payment_Pending' ||
+            project.status === 'Refund_Pending'));
         return projects.map((p) => this.mapToDomain(p));
     }
     // --- List Operations ---
@@ -148,7 +179,7 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             where.category = { contains: filters.category, mode: 'insensitive' };
         }
         if (filters.status) {
-            where.status = filters.status;
+            where.status = this.mapToPrismaStatus(filters.status);
         }
         // Get total count
         const total = await this.prisma.project.count({ where });
@@ -170,27 +201,7 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
     // --- Write Operations ---
     async create(project) {
         const data = project.toJSON();
-        // Map ProjectStatus enum to Prisma enum value
-        let prismaStatus;
-        switch (project.status) {
-            case Project_1.ProjectStatus.OPEN:
-                prismaStatus = 'Open';
-                break;
-            case Project_1.ProjectStatus.IN_PROGRESS:
-                prismaStatus = 'In_Progress';
-                break;
-            case Project_1.ProjectStatus.COMPLETED:
-                prismaStatus = 'Completed';
-                break;
-            case Project_1.ProjectStatus.CANCELLED:
-                prismaStatus = 'Cancelled';
-                break;
-            case Project_1.ProjectStatus.PENDING_COMPLETION:
-                prismaStatus = 'Pending_Completion';
-                break;
-            default:
-                prismaStatus = 'Open';
-        }
+        const prismaStatus = this.mapToPrismaStatus(project.status);
         const created = await this.prisma.project.create({
             data: {
                 id: project.id,
@@ -212,27 +223,7 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
         return this.mapToDomain(created);
     }
     async update(project) {
-        // Map ProjectStatus enum to Prisma enum value
-        let prismaStatus;
-        switch (project.status) {
-            case Project_1.ProjectStatus.OPEN:
-                prismaStatus = 'Open';
-                break;
-            case Project_1.ProjectStatus.IN_PROGRESS:
-                prismaStatus = 'In_Progress';
-                break;
-            case Project_1.ProjectStatus.COMPLETED:
-                prismaStatus = 'Completed';
-                break;
-            case Project_1.ProjectStatus.CANCELLED:
-                prismaStatus = 'Cancelled';
-                break;
-            case Project_1.ProjectStatus.PENDING_COMPLETION:
-                prismaStatus = 'Pending_Completion';
-                break;
-            default:
-                prismaStatus = 'Open';
-        }
+        const prismaStatus = this.mapToPrismaStatus(project.status);
         const updated = await this.prisma.project.update({
             where: { id: project.id },
             data: {
@@ -254,27 +245,7 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
         await super.delete(id);
     }
     async updateStatus(projectId, status) {
-        // Map ProjectStatus enum to Prisma enum value
-        let prismaStatus;
-        switch (status) {
-            case Project_1.ProjectStatus.OPEN:
-                prismaStatus = 'Open';
-                break;
-            case Project_1.ProjectStatus.IN_PROGRESS:
-                prismaStatus = 'In_Progress';
-                break;
-            case Project_1.ProjectStatus.COMPLETED:
-                prismaStatus = 'Completed';
-                break;
-            case Project_1.ProjectStatus.CANCELLED:
-                prismaStatus = 'Cancelled';
-                break;
-            case Project_1.ProjectStatus.PENDING_COMPLETION:
-                prismaStatus = 'Pending_Completion';
-                break;
-            default:
-                prismaStatus = 'Open';
-        }
+        const prismaStatus = this.mapToPrismaStatus(status);
         const updated = await this.prisma.project.update({
             where: { id: projectId },
             data: {
@@ -293,6 +264,92 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
             },
         });
         return this.mapToDomain(updated);
+    }
+    // --- Admin Operations ---
+    async findAllAdmin(filters) {
+        const page = filters.page || 1;
+        const limit = filters.limit || 20;
+        const skip = (page - 1) * limit;
+        // Build where clause
+        const where = {
+            isDeleted: false,
+        };
+        if (filters.search) {
+            where.OR = [
+                { title: { contains: filters.search, mode: 'insensitive' } },
+                { description: { contains: filters.search, mode: 'insensitive' } },
+                { category: { contains: filters.search, mode: 'insensitive' } },
+            ];
+        }
+        if (filters.category) {
+            where.category = { contains: filters.category, mode: 'insensitive' };
+        }
+        if (filters.status) {
+            where.status = this.mapToPrismaStatus(filters.status);
+        }
+        // Get total count
+        const total = await this.prisma.project.count({ where });
+        // Get projects with relations
+        const projects = await this.prisma.project.findMany({
+            where,
+            skip,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                client: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        avatarUrl: true,
+                    }
+                },
+                applications: {
+                    where: { status: 'ACCEPTED' },
+                    include: {
+                        applicant: {
+                            select: {
+                                id: true,
+                                name: true,
+                                avatarUrl: true,
+                            }
+                        }
+                    },
+                    take: 1
+                }
+            }
+        });
+        return {
+            projects: projects.map((p) => this.mapToDomain(p)),
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
+    async getStats() {
+        const [totalProjects, openProjects, inProgressProjects, completedProjects, paymentPending, refundPending, cancelledProjects, budgetSum] = await Promise.all([
+            this.prisma.project.count({ where: { isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'Open', isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'In_Progress', isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'Completed', isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'Payment_Pending', isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'Refund_Pending', isDeleted: false } }),
+            this.prisma.project.count({ where: { status: 'Cancelled', isDeleted: false } }),
+            this.prisma.project.aggregate({
+                where: { isDeleted: false },
+                _sum: { budget: true }
+            })
+        ]);
+        return {
+            totalProjects,
+            openProjects,
+            inProgressProjects,
+            completedProjects,
+            pendingApprovalProjects: paymentPending + refundPending,
+            cancelledProjects,
+            totalBudget: Number(budgetSum._sum.budget || 0)
+        };
     }
 };
 exports.ProjectRepository = ProjectRepository;

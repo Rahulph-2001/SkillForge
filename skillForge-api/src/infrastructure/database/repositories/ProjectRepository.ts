@@ -101,6 +101,12 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
   async findById(projectId: string): Promise<Project | null> {
     const project = await this.prisma.project.findUnique({
       where: { id: projectId, isDeleted: false },
+      include: {
+        applications: {
+          where: { status: 'ACCEPTED' },
+          include: { applicant: true }
+        }
+      }
     });
 
     return project ? this.mapToDomain(project) : null;
@@ -295,5 +301,133 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     });
 
     return this.mapToDomain(updated);
+  }
+
+  // --- Admin Operations ---
+
+  async findAllAdmin(filters: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: ProjectStatus;
+    category?: string;
+    includeCreator?: boolean;
+    includeContributor?: boolean;
+  }): Promise<{
+    projects: Project[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 20;
+    const skip = (page - 1) * limit;
+
+    // Build where clause
+    const where: any = {
+      isDeleted: false,
+    };
+
+    if (filters.search) {
+      where.OR = [
+        { title: { contains: filters.search, mode: 'insensitive' } },
+        { description: { contains: filters.search, mode: 'insensitive' } },
+        { category: { contains: filters.search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (filters.category) {
+      where.category = { contains: filters.category, mode: 'insensitive' };
+    }
+
+    if (filters.status) {
+      where.status = this.mapToPrismaStatus(filters.status);
+    }
+
+    // Get total count
+    const total = await this.prisma.project.count({ where });
+
+    // Get projects with relations
+    const projects = await this.prisma.project.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        client: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            avatarUrl: true,
+          }
+        },
+        applications: {
+          where: { status: 'ACCEPTED' },
+          include: {
+            applicant: {
+              select: {
+                id: true,
+                name: true,
+                avatarUrl: true,
+              }
+            }
+          },
+          take: 1
+        }
+      }
+    });
+
+    return {
+      projects: projects.map((p) => this.mapToDomain(p)),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getStats(): Promise<{
+    totalProjects: number;
+    openProjects: number;
+    inProgressProjects: number;
+    completedProjects: number;
+    pendingApprovalProjects: number;
+    cancelledProjects: number;
+    totalBudget: number;
+  }> {
+    const [
+      totalProjects,
+      openProjects,
+      inProgressProjects,
+      completedProjects,
+      paymentPending,
+      refundPending,
+      cancelledProjects,
+      budgetSum
+    ] = await Promise.all([
+      this.prisma.project.count({ where: { isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'Open', isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'In_Progress', isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'Completed', isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'Payment_Pending', isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'Refund_Pending', isDeleted: false } }),
+      this.prisma.project.count({ where: { status: 'Cancelled', isDeleted: false } }),
+      this.prisma.project.aggregate({
+        where: { isDeleted: false },
+        _sum: { budget: true }
+      })
+    ]);
+
+    return {
+      totalProjects,
+      openProjects,
+      inProgressProjects,
+      completedProjects,
+      pendingApprovalProjects: paymentPending + refundPending,
+      cancelledProjects,
+      totalBudget: Number(budgetSum._sum.budget || 0)
+    };
   }
 }

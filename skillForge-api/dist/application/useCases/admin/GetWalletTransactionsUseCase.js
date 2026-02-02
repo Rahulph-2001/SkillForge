@@ -15,13 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GetWalletTransactionsUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const WalletTransactionMapper_1 = require("../../mappers/WalletTransactionMapper");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 const AppError_1 = require("../../../domain/errors/AppError");
 let GetWalletTransactionsUseCase = class GetWalletTransactionsUseCase {
-    constructor(userRepository, walletTransactionRepository) {
+    constructor(userRepository, walletTransactionRepository, walletTransactionMapper) {
         this.userRepository = userRepository;
         this.walletTransactionRepository = walletTransactionRepository;
+        this.walletTransactionMapper = walletTransactionMapper;
     }
     async execute(page, limit, search, type, status) {
         const users = await this.userRepository.findAll();
@@ -33,7 +33,7 @@ let GetWalletTransactionsUseCase = class GetWalletTransactionsUseCase {
         // Create user map for efficient lookup
         const userMap = new Map(users.map(u => [u.id, { name: u.name, email: u.email?.value || '' }]));
         // Use mapper to convert entities to DTOs
-        const transactions = WalletTransactionMapper_1.WalletTransactionMapper.toDTOList(result.transactions, userMap);
+        const transactions = this.walletTransactionMapper.toDTOList(result.transactions, userMap);
         const totalPages = Math.ceil(result.total / limit);
         return {
             transactions,
@@ -49,6 +49,7 @@ exports.GetWalletTransactionsUseCase = GetWalletTransactionsUseCase = __decorate
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IWalletTransactionRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IWalletTransactionMapper)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], GetWalletTransactionsUseCase);
 //# sourceMappingURL=GetWalletTransactionsUseCase.js.map

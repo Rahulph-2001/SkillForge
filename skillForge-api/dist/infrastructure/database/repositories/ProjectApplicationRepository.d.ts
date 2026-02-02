@@ -9,6 +9,7 @@ export declare class ProjectApplicationRepository extends BaseRepository<Project
     findByProjectId(projectId: string): Promise<ProjectApplication[]>;
     findByApplicantId(applicantId: string): Promise<ProjectApplication[]>;
     findByProjectAndApplicant(projectId: string, applicantId: string): Promise<ProjectApplication | null>;
+    findAcceptedByProject(projectId: string): Promise<ProjectApplication | null>;
     findReceivedApplications(userId: string): Promise<ProjectApplication[]>;
     update(application: ProjectApplication): Promise<ProjectApplication>;
     updateStatus(id: string, status: ProjectApplicationStatus): Promise<ProjectApplication>;

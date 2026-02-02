@@ -85,11 +85,16 @@ class Community {
         }
         this._updatedAt = new Date();
     }
-    // ... getters and setters
+    // Getters only - no public setters on entities
     get isJoined() { return this._isJoined; }
-    set isJoined(value) { this._isJoined = value; }
     get isAdmin() { return this._isAdmin; }
-    set isAdmin(value) { this._isAdmin = value; }
+    // Domain methods to set view-model properties
+    setIsJoined(value) {
+        this._isJoined = value;
+    }
+    setIsAdmin(value) {
+        this._isAdmin = value;
+    }
     toJSON() {
         return {
             id: this._id,

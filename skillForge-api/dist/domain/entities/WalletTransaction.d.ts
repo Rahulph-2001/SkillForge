@@ -1,7 +1,7 @@
 export interface WalletTransactionProps {
     id: string;
     adminId: string;
-    type: 'CREDIT' | 'WITHDRAWAL';
+    type: 'CREDIT' | 'WITHDRAWAL' | 'DEBIT';
     amount: number;
     currency: string;
     source: string;
@@ -21,7 +21,7 @@ export declare class WalletTransaction {
     private validate;
     get id(): string;
     get adminId(): string;
-    get type(): 'CREDIT' | 'WITHDRAWAL';
+    get type(): 'CREDIT' | 'WITHDRAWAL' | 'DEBIT';
     get amount(): number;
     get currency(): string;
     get source(): string;

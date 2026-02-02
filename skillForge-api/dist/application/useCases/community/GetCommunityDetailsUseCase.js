@@ -29,8 +29,8 @@ let GetCommunityDetailsUseCase = class GetCommunityDetailsUseCase {
         if (userId) {
             const membership = await this.communityRepository.findMemberByUserAndCommunity(userId, communityId);
             // Check if membership exists AND is active
-            community.isJoined = !!membership && membership.isActive;
-            community.isAdmin = community.adminId === userId;
+            community.setIsJoined(!!membership && membership.isActive);
+            community.setIsAdmin(community.adminId === userId);
         }
         return this.communityMapper.toDTO(community, userId);
     }

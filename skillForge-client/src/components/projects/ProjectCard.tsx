@@ -16,6 +16,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
                 return 'bg-blue-100 text-blue-700';
             case 'In_Progress':
                 return 'bg-gray-100 text-gray-700';
+            case 'Pending_Completion':
+                return 'bg-yellow-100 text-yellow-700';
+            case 'Payment_Pending':
+                return 'bg-orange-100 text-orange-700';
+            case 'Refund_Pending':
+                return 'bg-red-100 text-red-700';
             case 'Completed':
                 return 'bg-green-100 text-green-700';
             case 'Cancelled':
@@ -29,6 +35,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
         switch (status) {
             case 'In_Progress':
                 return 'In Progress';
+            case 'Pending_Completion':
+                return 'Pending Completion';
+            case 'Payment_Pending':
+                return 'Payment Pending';
+            case 'Refund_Pending':
+                return 'Refund Pending';
             default:
                 return status;
         }

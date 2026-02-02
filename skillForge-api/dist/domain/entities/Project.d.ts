@@ -2,6 +2,8 @@ export declare enum ProjectStatus {
     OPEN = "Open",
     IN_PROGRESS = "In_Progress",
     PENDING_COMPLETION = "Pending_Completion",
+    PAYMENT_PENDING = "Payment_Pending",
+    REFUND_PENDING = "Refund_Pending",
     COMPLETED = "Completed",
     CANCELLED = "Cancelled"
 }
@@ -57,6 +59,9 @@ export declare class Project {
     markAsPendingCompletion(): void;
     requestModifications(): void;
     markAsCompleted(): void;
+    markAsPaymentPending(): void;
+    markAsRefundPending(): void;
+    revertToPendingCompletion(): void;
     markAsCancelled(): void;
     incrementApplicationsCount(): void;
     get acceptedContributor(): {

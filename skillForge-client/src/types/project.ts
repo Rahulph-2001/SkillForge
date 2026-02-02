@@ -2,7 +2,7 @@ export interface Project {
     id: string;
     clientId: string;
     title: string;
-    status: 'Open' | 'In_Progress' | 'Pending_Completion' | 'Completed' | 'Cancelled';
+    status: 'Open' | 'In_Progress' | 'Pending_Completion' | 'Payment_Pending' | 'Refund_Pending' | 'Completed' | 'Cancelled';
     category: string;
     description: string;
     tags: string[];

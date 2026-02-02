@@ -165,6 +165,7 @@ exports.TYPES = {
     IUsageRecordMapper: Symbol.for('IUsageRecordMapper'),
     IUserSubscriptionMapper: Symbol.for('IUserSubscriptionMapper'),
     IFeatureMapper: Symbol.for('IFeatureMapper'),
+    IWalletTransactionMapper: Symbol.for('IWalletTransactionMapper'),
     // MCQ Bulk Import
     IMCQImportJobRepository: Symbol.for('IMCQImportJobRepository'),
     IJobQueueService: Symbol.for('IJobQueueService'),
@@ -256,6 +257,15 @@ exports.TYPES = {
     PaymentRoutes: Symbol.for('PaymentRoutes'),
     ICheckSubscriptionExpiryUseCase: Symbol.for('ICheckSubscriptionExpiryUseCase'),
     ICheckCommunityMembershipExpiryUseCase: Symbol.for('ICheckCommunityMembershipExpiryUseCase'),
+    // Project Escrow & Admin
+    IProjectPaymentRequestRepository: Symbol.for('IProjectPaymentRequestRepository'),
+    IDebitAdminWalletUseCase: Symbol.for('IDebitAdminWalletUseCase'),
+    DebitAdminWalletUseCase: Symbol.for('DebitAdminWalletUseCase'),
+    IProcessProjectPaymentRequestUseCase: Symbol.for('IProcessProjectPaymentRequestUseCase'),
+    ProcessProjectPaymentRequestUseCase: Symbol.for('ProcessProjectPaymentRequestUseCase'),
+    IGetPendingPaymentRequestsUseCase: Symbol.for('IGetPendingPaymentRequestsUseCase'),
+    GetPendingPaymentRequestsUseCase: Symbol.for('GetPendingPaymentRequestsUseCase'),
+    ProjectPaymentRequestController: Symbol.for('ProjectPaymentRequestController'),
     // Project 
     IProjectRepository: Symbol.for('IProjectRepository'),
     ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
@@ -267,9 +277,13 @@ exports.TYPES = {
     ProjectRoutes: Symbol.for('ProjectRoutes'),
     ProjectRepository: Symbol.for('ProjectRepository'),
     GetMyProjectsUseCase: Symbol.for('GetMyProjectsUseCase'),
+    IGetMyProjectsUseCase: Symbol.for('IGetMyProjectsUseCase'),
     GetContributingProjectsUseCase: Symbol.for('GetContributingProjectsUseCase'),
+    IGetContributingProjectsUseCase: Symbol.for('IGetContributingProjectsUseCase'),
     RequestProjectCompletionUseCase: Symbol.for('RequestProjectCompletionUseCase'),
+    IRequestProjectCompletionUseCase: Symbol.for('IRequestProjectCompletionUseCase'),
     ReviewProjectCompletionUseCase: Symbol.for('ReviewProjectCompletionUseCase'),
+    IReviewProjectCompletionUseCase: Symbol.for('IReviewProjectCompletionUseCase'),
     // Booking Use Cases
     ICancelBookingUseCase: Symbol.for('ICancelBookingUseCase'),
     IGetMyBookingsUseCase: Symbol.for('IGetMyBookingsUseCase'),
@@ -358,10 +372,16 @@ exports.TYPES = {
     InterviewRoutes: Symbol.for('InterviewRoutes'),
     InterviewScheduler: Symbol.for('InterviewScheduler'),
     CronScheduler: Symbol.for('CronScheduler'),
-    // Project Completion
-    IRequestProjectCompletionUseCase: Symbol.for('IRequestProjectCompletionUseCase'),
-    IApproveProjectCompletionUseCase: Symbol.for('IApproveProjectCompletionUseCase'),
-    IRejectProjectCompletionUseCase: Symbol.for('IRejectProjectCompletionUseCase'),
-    IReviewProjectCompletionUseCase: Symbol.for('IReviewProjectCompletionUseCase'),
+    // Admin Project Management
+    IAdminListProjectsUseCase: Symbol.for('IAdminListProjectsUseCase'),
+    IAdminGetProjectStatsUseCase: Symbol.for('IAdminGetProjectStatsUseCase'),
+    AdminProjectController: Symbol.for('AdminProjectController'),
+    AdminProjectRoutes: Symbol.for('AdminProjectRoutes'),
+    // User Wallet Transactions
+    IUserWalletTransactionRepository: Symbol.for('IUserWalletTransactionRepository'),
+    IGetUserWalletDataUseCase: Symbol.for('IGetUserWalletDataUseCase'),
+    IGetUserWalletTransactionsUseCase: Symbol.for('IGetUserWalletTransactionsUseCase'),
+    WalletController: Symbol.for('WalletController'),
+    WalletRoutes: Symbol.for('WalletRoutes'),
 };
 //# sourceMappingURL=types.js.map

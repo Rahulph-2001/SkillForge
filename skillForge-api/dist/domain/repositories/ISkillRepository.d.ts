@@ -1,5 +1,4 @@
 import { Skill } from '../entities/Skill';
-import { BrowseSkillsRequestDTO } from '../../application/dto/skill/BrowseSkillsRequestDTO';
 export interface SkillPaginationFilters {
     page?: number;
     limit?: number;
@@ -12,6 +11,22 @@ export interface SkillPaginatedResult {
     limit: number;
     totalPages: number;
 }
+/**
+ * Domain-level filter interface for browsing skills
+ * This keeps the domain layer independent of the application layer
+ */
+export interface BrowseSkillsFilters {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    level?: string;
+    minCredits?: number;
+    maxCredits?: number;
+    sortBy?: 'rating' | 'credits' | 'createdAt';
+    sortOrder?: 'asc' | 'desc';
+    excludeProviderId?: string;
+}
 export interface ISkillRepository {
     create(skill: Skill): Promise<Skill>;
     findByProviderId(providerId: string): Promise<Skill[]>;
@@ -22,7 +37,7 @@ export interface ISkillRepository {
         status?: string;
     }): Promise<Skill[]>;
     findPending(): Promise<Skill[]>;
-    browse(filters: BrowseSkillsRequestDTO): Promise<{
+    browse(filters: BrowseSkillsFilters): Promise<{
         skills: Skill[];
         total: number;
     }>;

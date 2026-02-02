@@ -17,6 +17,21 @@ export interface ListProjectsResult {
   totalPages: number;
 }
 
+export interface ProjectStats {
+  totalProjects: number;
+  openProjects: number;
+  inProgressProjects: number;
+  completedProjects: number;
+  pendingApprovalProjects: number;
+  cancelledProjects: number;
+  totalBudget: number;
+}
+
+export interface AdminListProjectsFilters extends ListProjectsFilters {
+  includeCreator?: boolean;
+  includeContributor?: boolean;
+}
+
 export interface IProjectRepository {
   // Read Operations
   findById(projectId: string): Promise<Project | null>;
@@ -28,6 +43,10 @@ export interface IProjectRepository {
   // List Operations with filters
   listProjects(filters: ListProjectsFilters): Promise<ListProjectsResult>;
 
+  // Admin Operations
+  findAllAdmin(filters: AdminListProjectsFilters): Promise<ListProjectsResult>;
+  getStats(): Promise<ProjectStats>;
+
   // Standard CRUD
   create(project: Project): Promise<Project>;
   update(project: Project): Promise<Project>;
@@ -37,4 +56,3 @@ export interface IProjectRepository {
   updateStatus(projectId: string, status: ProjectStatus): Promise<Project>;
   incrementApplicationsCount(projectId: string): Promise<Project>;
 }
-

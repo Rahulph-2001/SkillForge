@@ -99,10 +99,10 @@ export class ProjectController {
   public reviewCompletion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const { decision } = req.body;
+      const { decision, reason } = req.body;
       const userId = (req as any).user.id;
 
-      await this.reviewProjectCompletionUseCase.execute(id, userId, decision);
+      await this.reviewProjectCompletionUseCase.execute(id, userId, decision, reason);
 
       const response = this.responseBuilder.success(null, SUCCESS_MESSAGES.PROJECT.COMPLETION_REVIEWED, HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);

@@ -17,31 +17,34 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const Project_1 = require("../../../domain/entities/Project");
+const ProjectApplication_1 = require("../../../domain/entities/ProjectApplication");
 let RequestProjectCompletionUseCase = class RequestProjectCompletionUseCase {
-    constructor(projectRepository) {
+    constructor(projectRepository, applicationRepository) {
         this.projectRepository = projectRepository;
+        this.applicationRepository = applicationRepository;
     }
     async execute(projectId, userId) {
         const project = await this.projectRepository.findById(projectId);
         if (!project) {
             throw new AppError_1.NotFoundError('Project not found');
         }
-        // Verify user is the accepted contributor
-        if (project.acceptedContributor?.id !== userId) {
-            throw new AppError_1.ForbiddenError('Only the assigned contributor can mark this project as completed');
+        // Verify user is an approved applicant
+        const application = await this.applicationRepository.findByProjectAndApplicant(projectId, userId);
+        if (!application || application.status !== ProjectApplication_1.ProjectApplicationStatus.ACCEPTED) {
+            throw new AppError_1.ForbiddenError('Only accepted contributors can request completion');
         }
-        // Verify status
         if (project.status !== Project_1.ProjectStatus.IN_PROGRESS) {
-            throw new AppError_1.ValidationError('Project must be In Progress to mark as completed');
+            throw new AppError_1.ValidationError('Project must be In Progress to request completion');
         }
-        // Update status
-        await this.projectRepository.updateStatus(projectId, Project_1.ProjectStatus.PENDING_COMPLETION);
+        project.markAsPendingCompletion();
+        await this.projectRepository.update(project);
     }
 };
 exports.RequestProjectCompletionUseCase = RequestProjectCompletionUseCase;
 exports.RequestProjectCompletionUseCase = RequestProjectCompletionUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationRepository)),
+    __metadata("design:paramtypes", [Object, Object])
 ], RequestProjectCompletionUseCase);
 //# sourceMappingURL=RequestProjectCompletionUseCase.js.map

@@ -1,0 +1,1 @@
+{"version":3,"file":"IDebitAdminWalletUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IDebitAdminWalletUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,0BAA0B,EAAE,MAAM,wCAAwC,CAAC;AACpF,OAAO,EAAE,sBAAsB,EAAE,MAAM,2CAA2C,CAAC;AAEnF,MAAM,WAAW,wBAAwB;IACrC,OAAO,CAAC,GAAG,EAAE,0BAA0B,GAAG,OAAO,CAAC,sBAAsB,CAAC,CAAC;CAC7E"}

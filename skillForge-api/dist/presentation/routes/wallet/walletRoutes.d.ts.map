@@ -1,0 +1,1 @@
+{"version":3,"file":"walletRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/wallet/walletRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,gBAAgB,EAAE,MAAM,oCAAoC,CAAC;AAGtE,qBACa,YAAY;IAIe,OAAO,CAAC,QAAQ,CAAC,gBAAgB;IAHrE,SAAgB,MAAM,EAAE,MAAM,CAAC;gBAGsB,gBAAgB,EAAE,gBAAgB;IAMvF,OAAO,CAAC,WAAW;CAUtB"}

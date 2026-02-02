@@ -49,7 +49,6 @@ export declare class Payment {
     markAsSucceeded(providerPaymentId: string): void;
     markAsFailed(reason: string): void;
     markAsRefunded(amount: number): void;
-    markAsReleased(): void;
     toJSON(): Record<string, unknown>;
     static fromJSON(data: any): Payment;
 }

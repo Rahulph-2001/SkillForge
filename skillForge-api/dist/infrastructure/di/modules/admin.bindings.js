@@ -18,9 +18,12 @@ const UnblockSkillUseCase_1 = require("../../../application/useCases/admin/Unblo
 const GetAdminWalletStatsUseCase_1 = require("../../../application/useCases/admin/GetAdminWalletStatsUseCase");
 const GetWalletTransactionsUseCase_1 = require("../../../application/useCases/admin/GetWalletTransactionsUseCase");
 const CreditAdminWalletUseCase_1 = require("../../../application/useCases/admin/CreditAdminWalletUseCase");
+const AdminListProjectsUseCase_1 = require("../../../application/useCases/admin/AdminListProjectsUseCase");
+const AdminGetProjectStatsUseCase_1 = require("../../../application/useCases/admin/AdminGetProjectStatsUseCase");
 const AdminController_1 = require("../../../presentation/controllers/admin/AdminController");
 const AdminSkillController_1 = require("../../../presentation/controllers/admin/AdminSkillController");
 const AdminWalletController_1 = require("../../../presentation/controllers/admin/AdminWalletController");
+const AdminProjectController_1 = require("../../../presentation/controllers/admin/AdminProjectController");
 const adminRoutes_1 = require("../../../presentation/routes/admin/adminRoutes");
 const adminSkillRoutes_1 = require("../../../presentation/routes/admin/adminSkillRoutes");
 const AdminWalletRoutes_1 = require("../../../presentation/routes/admin/AdminWalletRoutes");
@@ -50,10 +53,14 @@ const bindAdminModule = (container) => {
     container.bind(types_1.TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase_1.GetAdminWalletStatsUseCase);
     container.bind(types_1.TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase_1.GetWalletTransactionsUseCase);
     container.bind(types_1.TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase_1.CreditAdminWalletUseCase);
+    // Admin Project Management Use Cases
+    container.bind(types_1.TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase_1.AdminListProjectsUseCase);
+    container.bind(types_1.TYPES.IAdminGetProjectStatsUseCase).to(AdminGetProjectStatsUseCase_1.AdminGetProjectStatsUseCase);
     // Controllers & Routes
     container.bind(types_1.TYPES.AdminController).to(AdminController_1.AdminController);
     container.bind(types_1.TYPES.AdminSkillController).to(AdminSkillController_1.AdminSkillController);
     container.bind(types_1.TYPES.AdminWalletController).to(AdminWalletController_1.AdminWalletController);
+    container.bind(types_1.TYPES.AdminProjectController).to(AdminProjectController_1.AdminProjectController);
     container.bind(types_1.TYPES.AdminRoutes).to(adminRoutes_1.AdminRoutes);
     container.bind(types_1.TYPES.AdminSkillRoutes).to(adminSkillRoutes_1.AdminSkillRoutes);
     container.bind(types_1.TYPES.AdminWalletRoutes).to(AdminWalletRoutes_1.AdminWalletRoutes);

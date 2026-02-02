@@ -6,8 +6,9 @@ export declare const WalletTransactionSchema: z.ZodObject<{
     userName: z.ZodString;
     userEmail: z.ZodString;
     type: z.ZodEnum<{
-        CREDIT: "CREDIT";
         WITHDRAWAL: "WITHDRAWAL";
+        CREDIT: "CREDIT";
+        DEBIT: "DEBIT";
     }>;
     amount: z.ZodNumber;
     description: z.ZodString;
@@ -27,8 +28,9 @@ export declare const GetWalletTransactionsResponseSchema: z.ZodObject<{
         userName: z.ZodString;
         userEmail: z.ZodString;
         type: z.ZodEnum<{
-            CREDIT: "CREDIT";
             WITHDRAWAL: "WITHDRAWAL";
+            CREDIT: "CREDIT";
+            DEBIT: "DEBIT";
         }>;
         amount: z.ZodNumber;
         description: z.ZodString;

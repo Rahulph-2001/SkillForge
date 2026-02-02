@@ -1,11 +1,10 @@
-import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { ISkillRepository, BrowseSkillsFilters } from '../../../domain/repositories/ISkillRepository';
 import { Skill } from '../../../domain/entities/Skill';
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
-import { BrowseSkillsRequestDTO } from '../../../application/dto/skill/BrowseSkillsRequestDTO';
 export declare class SkillRepository extends BaseRepository<Skill> implements ISkillRepository {
     constructor(db: Database);
-    browse(filters: BrowseSkillsRequestDTO): Promise<{
+    browse(filters: BrowseSkillsFilters): Promise<{
         skills: Skill[];
         total: number;
     }>;

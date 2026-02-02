@@ -4,6 +4,7 @@ import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 export declare class ProjectRepository extends BaseRepository<Project> implements IProjectRepository {
     constructor(db: Database);
+    private mapToPrismaStatus;
     private mapToDomain;
     findById(projectId: string): Promise<Project | null>;
     findByClientId(clientId: string): Promise<Project[]>;
@@ -16,5 +17,29 @@ export declare class ProjectRepository extends BaseRepository<Project> implement
     delete(id: string): Promise<void>;
     updateStatus(projectId: string, status: ProjectStatus): Promise<Project>;
     incrementApplicationsCount(projectId: string): Promise<Project>;
+    findAllAdmin(filters: {
+        page?: number;
+        limit?: number;
+        search?: string;
+        status?: ProjectStatus;
+        category?: string;
+        includeCreator?: boolean;
+        includeContributor?: boolean;
+    }): Promise<{
+        projects: Project[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
+    getStats(): Promise<{
+        totalProjects: number;
+        openProjects: number;
+        inProgressProjects: number;
+        completedProjects: number;
+        pendingApprovalProjects: number;
+        cancelledProjects: number;
+        totalBudget: number;
+    }>;
 }
 //# sourceMappingURL=ProjectRepository.d.ts.map

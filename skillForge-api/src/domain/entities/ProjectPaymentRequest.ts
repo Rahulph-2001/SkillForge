@@ -17,6 +17,7 @@ export interface ProjectPaymentRequestProps {
     requestedBy: string;
     recipientId: string;
     status: ProjectPaymentRequestStatus;
+    requesterNotes?: string | null;
     adminNotes?: string | null;
     processedAt?: Date | null;
     processedBy?: string | null;
@@ -81,6 +82,10 @@ export class ProjectPaymentRequest {
 
     get status(): ProjectPaymentRequestStatus {
         return this.props.status;
+    }
+
+    get requesterNotes(): string | null | undefined {
+        return this.props.requesterNotes;
     }
 
     get adminNotes(): string | null | undefined {
@@ -163,6 +168,7 @@ export class ProjectPaymentRequest {
             requestedBy: data.requestedBy || data.requested_by,
             recipientId: data.recipientId || data.recipient_id,
             status: data.status as ProjectPaymentRequestStatus,
+            requesterNotes: data.requesterNotes || data.requester_notes || null,
             adminNotes: data.adminNotes || data.admin_notes || null,
             processedAt: data.processedAt || data.processed_at ? new Date(data.processedAt || data.processed_at) : null,
             processedBy: data.processedBy || data.processed_by || null,

@@ -218,7 +218,10 @@ export default function UserProfilePage() {
         {/* Stats Cards */}
         <div className="flex gap-3 mb-8">
           {/* Wallet Balance */}
-          <div className="flex-1 bg-teal-50 border border-teal-100 rounded-lg p-4">
+          <div
+            onClick={() => navigate('/wallet')}
+            className="flex-1 bg-teal-50 border border-teal-100 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all"
+          >
             <div className="flex items-center gap-2 mb-3">
               <Wallet className="text-teal-600" size={16} />
               <p className="text-xs text-gray-600 font-medium">Wallet Balance</p>

@@ -11,14 +11,16 @@ import {
     Phone,
     Clock,
     Video,
-    Calendar,
     CheckCircle,
     XCircle,
-    Lock
+    Lock,
+    AlertTriangle,
+    Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import projectService, { Project } from '../../services/projectService';
 import projectApplicationService, { ProjectApplication } from '../../services/projectApplicationService';
+import { createReport } from '../../services/reportService';
 import { toast } from 'react-hot-toast';
 import ScheduleInterviewModal from '../../components/projects/ScheduleInterviewModal';
 
@@ -180,21 +182,43 @@ export default function MyProjectsDashboardPage() {
 function CreatedProjectsTab({ projects }: { projects: Project[] }) {
     const navigate = useNavigate();
 
-    const handleReviewCompletion = async (projectId: string, decision: 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT') => {
+    const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [rejectionReason, setRejectionReason] = useState('');
+
+    const handleReviewCompletion = async (projectId: string, decision: 'APPROVE' | 'REQUEST_CHANGES', reason?: string) => {
         try {
-            await projectService.reviewCompletion(projectId, decision);
+            await projectService.reviewCompletion(projectId, decision, reason);
             if (decision === 'APPROVE') {
                 toast.success('Project completed and payment released!');
             } else if (decision === 'REQUEST_CHANGES') {
                 toast.success('Modifications requested from contributor');
-            } else {
-                toast.error('Project rejected and refunded');
             }
-            // Trigger refresh - simple reload for now as we don't have parent refresh prop here easily
             window.location.reload();
         } catch (error) {
             console.error(error);
             toast.error('Failed to submit review');
+        }
+    };
+
+    const handleRejectClick = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setIsRejectModalOpen(true);
+    };
+
+    const handleConfirmRejection = async () => {
+        if (!selectedProjectId || !rejectionReason.trim()) return;
+
+        try {
+            await projectService.reviewCompletion(selectedProjectId, 'REJECT', rejectionReason);
+            toast.success('Project rejected and dispute raised for admin review.');
+            setIsRejectModalOpen(false);
+            setRejectionReason('');
+            setSelectedProjectId(null);
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to submit rejection');
         }
     };
 
@@ -285,7 +309,10 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                             </div>
 
                             <div className="flex gap-2">
-                                <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                                <button
+                                    onClick={() => navigate(`/projects/${project.id}?chat=true`)}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                                >
                                     <MessageSquare className="w-4 h-4" />
                                     Chat
                                 </button>
@@ -313,11 +340,11 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                                     Approve & Release Payment
                                 </button>
                                 <button
-                                    onClick={() => handleReviewCompletion(project.id, 'REJECT')}
+                                    onClick={() => handleRejectClick(project.id)}
                                     className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
                                 >
                                     <XCircle className="w-4 h-4" />
-                                    Reject & Refund
+                                    Reject & Dispute
                                 </button>
                             </div>
                         </div>
@@ -346,12 +373,81 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
 
                 </div>
             ))}
+            {isRejectModalOpen && selectedProjectId && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Reject Project Completion</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Please provide a detailed reason for rejecting the project completion. This will be reviewed by an admin during the dispute resolution process.
+                            </p>
+
+                            <textarea
+                                value={rejectionReason}
+                                onChange={(e) => setRejectionReason(e.target.value)}
+                                placeholder="Explain why the work is not satisfactory..."
+                                className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none text-sm"
+                            />
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
+                            <button
+                                onClick={() => {
+                                    setIsRejectModalOpen(false);
+                                    setRejectionReason('');
+                                    setSelectedProjectId(null);
+                                }}
+                                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmRejection}
+                                disabled={!rejectionReason.trim()}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Confirm Rejection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
 
 function ContributingProjectsTab({ projects, refreshData }: { projects: Project[]; refreshData: () => Promise<void> }) {
+    const navigate = useNavigate();
     const [loadingProjectId, setLoadingProjectId] = useState<string | null>(null);
+    const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+    const [selectedReportProject, setSelectedReportProject] = useState<Project | null>(null);
+    const [reportDescription, setReportDescription] = useState('');
+    const [reportCategory, setReportCategory] = useState('Payment Dispute');
+
+    const handleOpenReportModal = (project: Project) => {
+        setSelectedReportProject(project);
+        setReportDescription('');
+        setIsReportModalOpen(true);
+    };
+
+    const handleSubmitReport = async () => {
+        if (!selectedReportProject) return;
+
+        try {
+            await createReport({
+                type: 'PROJECT_DISPUTE',
+                category: reportCategory,
+                description: reportDescription,
+                projectId: selectedReportProject.id,
+                targetUserId: selectedReportProject.clientId // Reporting the client
+            });
+            toast.success('Dispute reported to admin successfully');
+            setIsReportModalOpen(false);
+        } catch (error: any) {
+            console.error('Failed to submit report:', error);
+            toast.error(error?.response?.data?.message || 'Failed to submit report');
+        }
+    };
 
     if (projects.length === 0) {
         return (
@@ -388,7 +484,10 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer">
+                                <h3
+                                    onClick={() => navigate(`/projects/${project.id}`)}
+                                    className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer"
+                                >
                                     {project.title}
                                 </h3>
                                 <span className={`text-xs px-2 py-0.5 rounded font-medium 
@@ -434,7 +533,10 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                             </div>
                         </div>
                         <div className="flex gap-2">
-                            <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                            <button
+                                onClick={() => navigate(`/projects/${project.id}?chat=true`)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                            >
                                 <MessageSquare className="w-4 h-4" />
                                 Chat
                             </button>
@@ -476,15 +578,18 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                                 <Clock className="w-4 h-4" />
                                 Verification Pending
                             </div>
-                        ) : project.status === 'Payment_Pending' ? (
-                            <div className="flex items-center gap-2 text-indigo-600 font-medium text-sm bg-indigo-50 px-3 py-2 rounded-lg">
-                                <Clock className="w-4 h-4" />
-                                Payment Release Pending
-                            </div>
                         ) : project.status === 'Refund_Pending' ? (
-                            <div className="flex items-center gap-2 text-red-600 font-medium text-sm bg-red-50 px-3 py-2 rounded-lg">
-                                <Clock className="w-4 h-4" />
-                                Refund Pending
+                            <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 text-red-600 font-medium text-sm bg-red-50 px-3 py-2 rounded-lg">
+                                    <AlertTriangle className="w-4 h-4" />
+                                    Refund Requested
+                                </div>
+                                <button
+                                    onClick={() => handleOpenReportModal(project)}
+                                    className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-700 font-medium rounded-lg hover:bg-red-50 transition-colors"
+                                >
+                                    Report Dispute
+                                </button>
                             </div>
                         ) : (
                             <button
@@ -511,6 +616,60 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                     </div>
                 </div>
             ))}
+
+            {/* Report Dispute Modal */}
+            {isReportModalOpen && selectedReportProject && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-6">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">Report Dispute</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                If you believe the client's refund request is unjustified, please provide details below. An admin will review the project chat and work logic.
+                            </p>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                                <select
+                                    value={reportCategory}
+                                    onChange={(e) => setReportCategory(e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                >
+                                    <option value="Payment Dispute">Payment Dispute - Work Completed</option>
+                                    <option value="Unresponsive Client">Unresponsive Client</option>
+                                    <option value="Scope Creep">Scope Creep / Extra Work Demanded</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <textarea
+                                    value={reportDescription}
+                                    onChange={(e) => setReportDescription(e.target.value)}
+                                    placeholder="Explain your side of the story..."
+                                    className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
+                            <button
+                                onClick={() => setIsReportModalOpen(false)}
+                                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSubmitReport}
+                                disabled={!reportDescription.trim()}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                Submit Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

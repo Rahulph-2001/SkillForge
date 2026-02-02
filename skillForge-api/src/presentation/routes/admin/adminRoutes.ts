@@ -5,6 +5,7 @@ import { AdminController } from '../../controllers/admin/AdminController';
 import { SubscriptionRoutes } from '../subscription/subscriptionRoutes';
 import { FeatureRoutes } from '../feature/featureRoutes';
 import { ProjectPaymentRequestController } from '../../controllers/admin/ProjectPaymentRequestController';
+import { AdminProjectController } from '../../controllers/admin/AdminProjectController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
 
@@ -16,7 +17,8 @@ export class AdminRoutes {
     @inject(TYPES.AdminController) private readonly adminController: AdminController,
     @inject(TYPES.SubscriptionRoutes) private readonly subscriptionRoutes: SubscriptionRoutes,
     @inject(TYPES.FeatureRoutes) private readonly featureRoutes: FeatureRoutes,
-    @inject(TYPES.ProjectPaymentRequestController) private readonly paymentRequestController: ProjectPaymentRequestController
+    @inject(TYPES.ProjectPaymentRequestController) private readonly paymentRequestController: ProjectPaymentRequestController,
+    @inject(TYPES.AdminProjectController) private readonly adminProjectController: AdminProjectController
   ) {
     this.initializeRoutes();
   }
@@ -56,6 +58,13 @@ export class AdminRoutes {
     // Feature Management Routes
     // Mount feature routes at /api/v1/admin/features
     this.router.use('/features', this.featureRoutes.router);
+
+    // Project Management Routes
+    // GET /api/v1/admin/projects - List all projects
+    this.router.get('/projects', this.adminProjectController.listProjects.bind(this.adminProjectController));
+
+    // GET /api/v1/admin/projects/stats - Get project statistics
+    this.router.get('/projects/stats', this.adminProjectController.getProjectStats.bind(this.adminProjectController));
 
     // Project Payment Requests
     // GET /api/v1/admin/payment-requests/pending

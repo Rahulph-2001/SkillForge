@@ -6,6 +6,7 @@ export interface IProjectApplicationRepository {
     findByApplicantId(applicantId: string): Promise<ProjectApplication[]>;
     findByProjectAndApplicant(projectId: string, applicantId: string): Promise<ProjectApplication | null>;
     findReceivedApplications(userId: string): Promise<ProjectApplication[]>;
+    findAcceptedByProject(projectId: string): Promise<ProjectApplication | null>;
     update(application: ProjectApplication): Promise<ProjectApplication>;
     updateStatus(id: string, status: ProjectApplicationStatus): Promise<ProjectApplication>;
     delete(id: string): Promise<void>;

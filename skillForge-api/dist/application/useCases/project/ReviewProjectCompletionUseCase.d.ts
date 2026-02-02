@@ -1,10 +1,12 @@
-import { IApproveProjectCompletionUseCase } from './interfaces/IApproveProjectCompletionUseCase';
-import { IRejectProjectCompletionUseCase } from './interfaces/IRejectProjectCompletionUseCase';
-import { IReviewProjectCompletionUseCase } from './interfaces/IReviewProjectCompletionUseCase';
+import { IProjectRepository } from '../../../domain/repositories/IProjectRepository';
+import { IProjectPaymentRequestRepository } from '../../../domain/repositories/IProjectPaymentRequestRepository';
+import { IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
+import { IReviewProjectCompletionUseCase, ProjectCompletionDecision } from './interfaces/IReviewProjectCompletionUseCase';
 export declare class ReviewProjectCompletionUseCase implements IReviewProjectCompletionUseCase {
-    private readonly approveUseCase;
-    private readonly rejectUseCase;
-    constructor(approveUseCase: IApproveProjectCompletionUseCase, rejectUseCase: IRejectProjectCompletionUseCase);
-    execute(projectId: string, clientId: string, decision: 'approve' | 'reject'): Promise<void>;
+    private readonly projectRepository;
+    private readonly paymentRequestRepository;
+    private readonly applicationRepository;
+    constructor(projectRepository: IProjectRepository, paymentRequestRepository: IProjectPaymentRequestRepository, applicationRepository: IProjectApplicationRepository);
+    execute(projectId: string, userId: string, decision: ProjectCompletionDecision): Promise<void>;
 }
 //# sourceMappingURL=ReviewProjectCompletionUseCase.d.ts.map

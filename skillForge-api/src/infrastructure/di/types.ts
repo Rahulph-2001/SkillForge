@@ -417,4 +417,38 @@ export const TYPES = {
   InterviewRoutes: Symbol.for('InterviewRoutes'),
   InterviewScheduler: Symbol.for('InterviewScheduler'),
   CronScheduler: Symbol.for('CronScheduler'),
+
+  // Admin Project Management
+  IAdminListProjectsUseCase: Symbol.for('IAdminListProjectsUseCase'),
+  IAdminGetProjectStatsUseCase: Symbol.for('IAdminGetProjectStatsUseCase'),
+  AdminProjectController: Symbol.for('AdminProjectController'),
+  AdminProjectRoutes: Symbol.for('AdminProjectRoutes'),
+
+  // User Wallet Transactions
+  IUserWalletTransactionRepository: Symbol.for('IUserWalletTransactionRepository'),
+  IGetUserWalletDataUseCase: Symbol.for('IGetUserWalletDataUseCase'),
+  IGetUserWalletTransactionsUseCase: Symbol.for('IGetUserWalletTransactionsUseCase'),
+  WalletController: Symbol.for('WalletController'),
+  WalletRoutes: Symbol.for('WalletRoutes'),
+
+  // Report System
+  IReportRepository: Symbol.for('IReportRepository'),
+  CreateReportUseCase: Symbol.for('CreateReportUseCase'),
+  ICreateReportUseCase: Symbol.for('ICreateReportUseCase'),
+  AdminListReportsUseCase: Symbol.for('AdminListReportsUseCase'),
+  IAdminListReportsUseCase: Symbol.for('IAdminListReportsUseCase'),
+  AdminManageReportUseCase: Symbol.for('AdminManageReportUseCase'),
+  IAdminManageReportUseCase: Symbol.for('IAdminManageReportUseCase'),
+  ReportController: Symbol.for('ReportController'),
+  ReportRoutes: Symbol.for('ReportRoutes'),
+  AdminReportController: Symbol.for('AdminReportController'),
+  AdminReportRoutes: Symbol.for('AdminReportRoutes'),
+
+  // Project Chat System
+  IProjectMessageRepository: Symbol.for('IProjectMessageRepository'),
+  IProjectMessageMapper: Symbol.for('IProjectMessageMapper'),
+  ISendProjectMessageUseCase: Symbol.for('ISendProjectMessageUseCase'),
+  IGetProjectMessagesUseCase: Symbol.for('IGetProjectMessagesUseCase'),
+  ProjectMessageController: Symbol.for('ProjectMessageController'),
+  ProjectMessageRoutes: Symbol.for('ProjectMessageRoutes'),
 };

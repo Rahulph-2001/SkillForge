@@ -32,12 +32,18 @@ import { GetWalletTransactionsUseCase } from '../../../application/useCases/admi
 import { IGetWalletTransactionsUseCase } from '../../../application/useCases/admin/interfaces/IGetWalletTransactionsUseCase';
 import { CreditAdminWalletUseCase } from '../../../application/useCases/admin/CreditAdminWalletUseCase';
 import { ICreditAdminWalletUseCase } from '../../../application/useCases/admin/interfaces/ICreditAdminWalletUseCase';
+import { AdminListProjectsUseCase } from '../../../application/useCases/admin/AdminListProjectsUseCase';
+import { IAdminListProjectsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListProjectsUseCase';
+import { AdminGetProjectStatsUseCase } from '../../../application/useCases/admin/AdminGetProjectStatsUseCase';
+import { IAdminGetProjectStatsUseCase } from '../../../application/useCases/admin/interfaces/IAdminGetProjectStatsUseCase';
 import { AdminController } from '../../../presentation/controllers/admin/AdminController';
 import { AdminSkillController } from '../../../presentation/controllers/admin/AdminSkillController';
 import { AdminWalletController } from '../../../presentation/controllers/admin/AdminWalletController';
+import { AdminProjectController } from '../../../presentation/controllers/admin/AdminProjectController';
 import { AdminRoutes } from '../../../presentation/routes/admin/adminRoutes';
 import { AdminSkillRoutes } from '../../../presentation/routes/admin/adminSkillRoutes';
 import { AdminWalletRoutes } from '../../../presentation/routes/admin/AdminWalletRoutes';
+
 
 
 /**
@@ -70,12 +76,16 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<IGetWalletTransactionsUseCase>(TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase);
   container.bind<ICreditAdminWalletUseCase>(TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase);
 
+  // Admin Project Management Use Cases
+  container.bind<IAdminListProjectsUseCase>(TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase);
+  container.bind<IAdminGetProjectStatsUseCase>(TYPES.IAdminGetProjectStatsUseCase).to(AdminGetProjectStatsUseCase);
+
   // Controllers & Routes
   container.bind<AdminController>(TYPES.AdminController).to(AdminController);
   container.bind<AdminSkillController>(TYPES.AdminSkillController).to(AdminSkillController);
   container.bind<AdminWalletController>(TYPES.AdminWalletController).to(AdminWalletController);
+  container.bind<AdminProjectController>(TYPES.AdminProjectController).to(AdminProjectController);
   container.bind<AdminRoutes>(TYPES.AdminRoutes).to(AdminRoutes);
   container.bind<AdminSkillRoutes>(TYPES.AdminSkillRoutes).to(AdminSkillRoutes);
   container.bind<AdminWalletRoutes>(TYPES.AdminWalletRoutes).to(AdminWalletRoutes);
 };
-

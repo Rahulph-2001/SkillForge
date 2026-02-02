@@ -121,6 +121,22 @@ export declare const SUCCESS_MESSAGES: {
     readonly REVIEW: {
         readonly CREATED: "Review submitted successfully";
     };
+    readonly PROJECT: {
+        readonly CREATED: "Project created successfully";
+        readonly FETCHED: "Projects fetched successfully";
+        readonly DETAILS_FETCHED: "Project details fetched successfully";
+        readonly UPDATED: "Project updated successfully";
+        readonly DELETED: "Project deleted successfully";
+        readonly MY_PROJECTS_FETCHED: "My projects fetched successfully";
+        readonly CONTRIBUTING_FETCHED: "Contributing projects fetched successfully";
+        readonly COMPLETION_REQUESTED: "Project completion requested successfully";
+        readonly COMPLETION_REVIEWED: "Project review submitted successfully";
+    };
+    readonly INTERVIEW: {
+        readonly SCHEDULED: "Interview scheduled successfully";
+        readonly FETCHED: "Interviews retrieved successfully";
+        readonly CANCELLED: "Interview cancelled successfully";
+    };
 };
 export declare const ERROR_MESSAGES: {
     readonly AUTH: {

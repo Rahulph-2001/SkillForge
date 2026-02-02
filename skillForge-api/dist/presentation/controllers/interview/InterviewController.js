@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.InterviewController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const messages_1 = require("../../../config/messages");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 let InterviewController = class InterviewController {
     constructor(scheduleUseCase, getInterviewUseCase, responseBuilder) {
@@ -25,8 +26,7 @@ let InterviewController = class InterviewController {
             try {
                 const userId = req.user.userId;
                 const result = await this.scheduleUseCase.execute(userId, req.body);
-                const response = this.responseBuilder.success(result, 'Interview scheduled successfully', // TODO: Move to config/messages
-                HttpStatusCode_1.HttpStatusCode.CREATED);
+                const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.INTERVIEW.SCHEDULED, HttpStatusCode_1.HttpStatusCode.CREATED);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {
@@ -38,7 +38,7 @@ let InterviewController = class InterviewController {
                 const userId = req.user.userId;
                 const { applicationId } = req.params;
                 const result = await this.getInterviewUseCase.execute(userId, applicationId);
-                const response = this.responseBuilder.success(result, 'Interviews retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.INTERVIEW.FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }
             catch (error) {

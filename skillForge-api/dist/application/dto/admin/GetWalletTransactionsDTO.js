@@ -8,7 +8,7 @@ exports.WalletTransactionSchema = zod_1.z.object({
     userId: zod_1.z.string(),
     userName: zod_1.z.string(),
     userEmail: zod_1.z.string(),
-    type: zod_1.z.enum(['CREDIT', 'WITHDRAWAL']),
+    type: zod_1.z.enum(['CREDIT', 'WITHDRAWAL', 'DEBIT']),
     amount: zod_1.z.number(),
     description: zod_1.z.string(),
     date: zod_1.z.date(),

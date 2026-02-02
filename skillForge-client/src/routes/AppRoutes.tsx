@@ -41,11 +41,14 @@ import AdminLayout from '@/layouts/AdminLayout';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
 import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
 import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPage';
+import AdminProjectsPage from '../pages/admin/AdminProjectsPage';
+import AdminReportsPage from '../pages/admin/AdminReportsPage';
 import MyApplicationsPage from '../pages/user/MyApplicationsPage';
 import ManageApplicationsPage from '../pages/user/ManageApplicationsPage';
 import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
 import SessionVideoCallPage from '../pages/user/SessionVideoCallPage';
 import InterviewVideoCallPage from '../pages/user/InterviewVideoCallPage';
+import WalletPage from '../pages/user/WalletPage';
 
 
 const AppRoutes = () => {
@@ -261,6 +264,14 @@ const AppRoutes = () => {
                         </ProtectedRoute>
                     }
                 />
+                <Route
+                    path="/wallet"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <WalletPage />
+                        </ProtectedRoute>
+                    }
+                />
             </Route>
 
             {/* Admin Routes wrapped in AdminLayout */}
@@ -350,6 +361,22 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminSessionManagementPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/projects"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminProjectsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/reports"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminReportsPage />
                         </ProtectedRoute>
                     }
                 />

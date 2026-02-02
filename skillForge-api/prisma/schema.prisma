@@ -64,6 +64,19 @@ enum ProjectPaymentRequestStatus {
   REJECTED
 }
 
+enum UserWalletTransactionType {
+  PROJECT_EARNING
+  CREDIT_REDEMPTION
+  WITHDRAWAL
+  REFUND
+}
+
+enum UserWalletTransactionStatus {
+  COMPLETED
+  PENDING
+  FAILED
+}
+
 // Subscription Management Enums
 enum FeatureType {
   BOOLEAN
@@ -100,6 +113,19 @@ enum ProjectApplicationStatus {
   ACCEPTED
   REJECTED
   WITHDRAWN
+}
+
+enum ReportType {
+  USER_REPORT
+  PROJECT_DISPUTE
+  COMMUNITY_CONTENT
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWING
+  RESOLVED
+  DISMISSED
 }
 
 // --- Models ---
@@ -177,6 +203,9 @@ model Payment {
   @@index([purpose])
   @@map("payments")
 }
+
+
+
 
 model McqImportJob {
   id             String  @id @default(uuid()) @db.Uuid
@@ -479,6 +508,13 @@ model User {
   escrowAsProvider    EscrowTransaction[] @relation("ProviderEscrow")
   providerReviews     Review[]            @relation("ProviderReviews")
   learnerReviews      Review[]            @relation("LearnerReviews")
+  userWalletTransactions UserWalletTransaction[] @relation("UserWalletTransactions")
+  
+  // Reports
+  reports           Report[]            @relation("ReportedBy")
+  reportedReports   Report[]            @relation("ReportedUser")
+  resolvedReports   Report[]            @relation("ResolvedBy")
+  sentProjectMessages ProjectMessage[] @relation("ProjectMessageSender")
 
   @@index([role])
   @@index([isActive])
@@ -796,6 +832,8 @@ model Project {
   payment Payment? @relation(fields: [paymentId], references: [id], onDelete: SetNull)
   applications  ProjectApplication[]
   paymentRequests ProjectPaymentRequest[]
+  reports         Report[]
+  messages        ProjectMessage[]
 
   @@index([clientId])
   @@index([status])
@@ -813,6 +851,7 @@ model ProjectPaymentRequest {
   requestedBy   String                       @map("requested_by") @db.Uuid
   recipientId   String                       @map("recipient_id") @db.Uuid
   status        ProjectPaymentRequestStatus  @default(PENDING)
+  requesterNotes String?                    @map("requester_notes") @db.Text
   adminNotes    String?                      @map("admin_notes") @db.Text
   processedAt   DateTime?                    @map("processed_at") @db.Timestamptz(6)
   processedBy   String?                      @map("processed_by") @db.Uuid
@@ -917,4 +956,90 @@ model Review {
   @@index([skillId])
   @@index([rating])
   @@map("reviews")
+}
+
+// User Wallet Transaction Tracking
+model UserWalletTransaction {
+  id              String                       @id @default(uuid()) @db.Uuid
+  userId          String                       @map("user_id") @db.Uuid
+  type            UserWalletTransactionType
+  amount          Decimal                      @db.Decimal(10, 2)
+  currency        String                       @default("INR") @db.VarChar(10)
+  source          String                       @db.VarChar(100)
+  referenceId     String?                      @map("reference_id") @db.Uuid
+  description     String?                      @db.Text
+  metadata        Json?
+  
+  previousBalance Decimal                      @map("previous_balance") @db.Decimal(10, 2)
+  newBalance      Decimal                      @map("new_balance") @db.Decimal(10, 2)
+  
+  status          UserWalletTransactionStatus  @default(COMPLETED)
+  
+  createdAt       DateTime                     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime                     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  // Relations
+  user User @relation("UserWalletTransactions", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("user_wallet_transactions")
+}
+
+
+model Report {
+  id          String       @id @default(uuid()) @db.Uuid
+  reporterId  String       @map("reporter_id") @db.Uuid
+  type        ReportType
+  category    String       @db.VarChar(100)
+  description String       @db.Text
+  status      ReportStatus @default(PENDING)
+
+  // Targets
+  targetUserId String? @map("target_user_id") @db.Uuid
+  projectId    String? @map("project_id") @db.Uuid
+  
+  // Resolution
+  resolution String?   @db.Text
+  resolvedBy String?   @map("resolved_by") @db.Uuid
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz(6)
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  reporter   User     @relation("ReportedBy", fields: [reporterId], references: [id])
+  targetUser User?    @relation("ReportedUser", fields: [targetUserId], references: [id])
+  resolver   User?    @relation("ResolvedBy", fields: [resolvedBy], references: [id])
+  project    Project? @relation(fields: [projectId], references: [id])
+
+  @@index([reporterId])
+  @@index([targetUserId])
+  @@index([projectId])
+  @@index([status])
+  @@index([type])
+  @@map("reports")
+}
+
+model ProjectMessage {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @map("project_id") @db.Uuid
+  senderId  String   @map("sender_id") @db.Uuid
+  content   String   @db.Text
+  
+  // Metadata
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sender    User    @relation("ProjectMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([createdAt])
+  @@map("project_messages")
 }

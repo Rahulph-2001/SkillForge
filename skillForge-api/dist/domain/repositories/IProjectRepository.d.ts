@@ -14,6 +14,19 @@ export interface ListProjectsResult {
     limit: number;
     totalPages: number;
 }
+export interface ProjectStats {
+    totalProjects: number;
+    openProjects: number;
+    inProgressProjects: number;
+    completedProjects: number;
+    pendingApprovalProjects: number;
+    cancelledProjects: number;
+    totalBudget: number;
+}
+export interface AdminListProjectsFilters extends ListProjectsFilters {
+    includeCreator?: boolean;
+    includeContributor?: boolean;
+}
 export interface IProjectRepository {
     findById(projectId: string): Promise<Project | null>;
     findByClientId(clientId: string): Promise<Project[]>;
@@ -21,6 +34,8 @@ export interface IProjectRepository {
     findByPaymentId(paymentId: string): Promise<Project | null>;
     findContributingProjects(userId: string): Promise<Project[]>;
     listProjects(filters: ListProjectsFilters): Promise<ListProjectsResult>;
+    findAllAdmin(filters: AdminListProjectsFilters): Promise<ListProjectsResult>;
+    getStats(): Promise<ProjectStats>;
     create(project: Project): Promise<Project>;
     update(project: Project): Promise<Project>;
     delete(projectId: string): Promise<void>;

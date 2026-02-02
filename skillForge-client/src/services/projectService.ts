@@ -29,6 +29,22 @@ export interface Project {
   };
 }
 
+export interface ProjectMessage {
+  id: string;
+  projectId: string;
+  senderId: string;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  updatedAt: string;
+  sender?: {
+    id: string;
+    name: string;
+    avatarUrl?: string;
+  };
+  isMine?: boolean;
+}
+
 export interface CreateProjectRequest {
   title: string;
   description: string;
@@ -91,10 +107,19 @@ const projectService = {
     await api.post(`/projects/${id}/complete`);
   },
 
-  reviewCompletion: async (id: string, decision: 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT'): Promise<void> => {
-    await api.post(`/projects/${id}/review`, { decision });
+  reviewCompletion: async (id: string, decision: 'APPROVE' | 'REQUEST_CHANGES' | 'REJECT', reason?: string): Promise<void> => {
+    await api.post(`/projects/${id}/review`, { decision, reason });
+  },
+
+  getMessages: async (projectId: string): Promise<ProjectMessage[]> => {
+    const response = await api.get(`/projects/${projectId}/messages`);
+    return response.data.data;
+  },
+
+  sendMessage: async (projectId: string, content: string): Promise<ProjectMessage> => {
+    const response = await api.post(`/projects/${projectId}/messages`, { content });
+    return response.data.data;
   }
 };
 
 export default projectService;
-

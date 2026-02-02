@@ -16,7 +16,7 @@ class WalletTransaction {
         if (this.props.amount <= 0) {
             throw new Error('Amount must be positive');
         }
-        if (!['CREDIT', 'WITHDRAWAL'].includes(this.props.type)) {
+        if (!['CREDIT', 'WITHDRAWAL', 'DEBIT'].includes(this.props.type)) {
             throw new Error('Invalid transaction type');
         }
     }

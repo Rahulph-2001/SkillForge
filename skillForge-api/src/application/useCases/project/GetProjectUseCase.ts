@@ -50,6 +50,11 @@ export class GetProjectUseCase implements IGetProjectUseCase {
                 rating: undefined,
                 isVerified: false,
             },
+            acceptedContributor: project.acceptedContributor ? {
+                id: project.acceptedContributor.id,
+                name: project.acceptedContributor.name,
+                avatarUrl: project.acceptedContributor.avatarUrl || undefined,
+            } : undefined,
         };
     }
 }

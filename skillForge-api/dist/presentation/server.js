@@ -53,8 +53,9 @@ const VideoCallRoutes_1 = require("./routes/videoCall/VideoCallRoutes");
 const ReviewRoutes_1 = require("./routes/review/ReviewRoutes");
 const ProjectApplicationRoutes_1 = require("./routes/projectApplication/ProjectApplicationRoutes");
 const InterviewRoutes_1 = require("./routes/interview/InterviewRoutes");
+const walletRoutes_1 = require("./routes/wallet/walletRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, passportService) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, walletRoutes, passportService) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -79,6 +80,7 @@ let App = class App {
         this.reviewRoutes = reviewRoutes;
         this.projectApplicationRoutes = projectApplicationRoutes;
         this.interviewRoutes = interviewRoutes;
+        this.walletRoutes = walletRoutes;
         this.passportService = passportService;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
@@ -146,6 +148,7 @@ let App = class App {
         this.app.use('/api/v1/reviews', this.reviewRoutes.router);
         this.app.use('/api/v1/project-applications', this.projectApplicationRoutes.router);
         this.app.use('/api/v1/interviews', this.interviewRoutes.router);
+        this.app.use('/api/v1/wallet', this.walletRoutes.router);
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
     setupErrorHandlers() {
@@ -182,7 +185,8 @@ exports.App = App = __decorate([
     __param(21, (0, inversify_1.inject)(types_1.TYPES.ReviewRoutes)),
     __param(22, (0, inversify_1.inject)(types_1.TYPES.ProjectApplicationRoutes)),
     __param(23, (0, inversify_1.inject)(types_1.TYPES.InterviewRoutes)),
-    __param(24, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
+    __param(24, (0, inversify_1.inject)(types_1.TYPES.WalletRoutes)),
+    __param(25, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -207,6 +211,7 @@ exports.App = App = __decorate([
         ReviewRoutes_1.ReviewRoutes,
         ProjectApplicationRoutes_1.ProjectApplicationRoutes,
         InterviewRoutes_1.InterviewRoutes,
+        walletRoutes_1.WalletRoutes,
         PassportService_1.PassportService])
 ], App);
 //# sourceMappingURL=server.js.map
