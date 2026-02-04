@@ -20,6 +20,7 @@ const MCQImportController_1 = require("../../controllers/mcq/MCQImportController
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
 const multer_1 = require("../../../config/multer");
+const routes_1 = require("../../../config/routes");
 let MCQImportRoutes = class MCQImportRoutes {
     constructor(mcqImportController) {
         this.mcqImportController = mcqImportController;
@@ -41,9 +42,9 @@ let MCQImportRoutes = class MCQImportRoutes {
             });
             next();
         });
-        this.router.post('/:templateId/import', multer_1.uploadImportFile.single('csvFile'), this.mcqImportController.startImport);
-        this.router.get('/:templateId/status', this.mcqImportController.listJobs);
-        this.router.get('/errors/:jobId/download', this.mcqImportController.downloadErrors);
+        this.router.post(routes_1.ENDPOINTS.MCQ_IMPORT.START_IMPORT, multer_1.uploadImportFile.single('csvFile'), this.mcqImportController.startImport);
+        this.router.get(routes_1.ENDPOINTS.MCQ_IMPORT.STATUS, this.mcqImportController.listJobs);
+        this.router.get(routes_1.ENDPOINTS.MCQ_IMPORT.DOWNLOAD_ERRORS, this.mcqImportController.downloadErrors);
     }
     getRouter() {
         return this.router;

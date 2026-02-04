@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../infrastructure/di/types';
 import { env } from '../config/env';
+import { API_PREFIX, ROUTES } from '../config/routes';
 import { errorHandler, notFoundHandler } from './middlewares/errorHandler';
 import { HttpStatusCode } from '../domain/enums/HttpStatusCode';
 import { AuthRoutes } from './routes/auth/authRoutes';
@@ -22,7 +23,7 @@ import { UserProfileRoutes } from './routes/user/userProfileRoutes';
 import userProfileRoutesLegacy from './routes/userProfileRoutes';
 import sessionManagementRoutes from './routes/sessionManagementRoutes';
 import { generalLimiter } from './middlewares/rateLimitMiddleware';
-import { PassportService } from '../infrastructure/services/PassportService';
+import { IPassportService } from '../domain/services/IPassportService';
 import { MCQImportRoutes } from './routes/mcq/MCQImportRoutes';
 import { AvailabilityRoutes } from './routes/availability/availabilityRoutes';
 import { CommunityRoutes } from './routes/community/communityRoutes';
@@ -73,7 +74,7 @@ export class App {
         @inject(TYPES.ReportRoutes) private readonly reportRoutes: ReportRoutes,
         @inject(TYPES.AdminReportRoutes) private readonly adminReportRoutes: AdminReportRoutes,
         @inject(TYPES.ProjectMessageRoutes) private readonly projectMessageRoutes: ProjectMessageRoutes,
-        @inject(TYPES.PassportService) private readonly passportService: PassportService
+        @inject(TYPES.IPassportService) private readonly passportService: IPassportService
 
     ) {
         this.app = express();
@@ -114,47 +115,68 @@ export class App {
         this.app.use(this.passportService.initializePassport());
 
 
-        this.app.get('/api/v1/health', (_req, res) => {
+        this.app.get(`${API_PREFIX}${ROUTES.HEALTH}`, (_req, res) => {
             res.status(HttpStatusCode.OK).json({ status: 'UP', service: 'SkillSwap API' });
         });
 
 
-        this.app.use('/api/v1', generalLimiter);
+        this.app.use(API_PREFIX, generalLimiter);
     }
 
     private setupRoutes(): void {
-        this.app.use('/api/v1/auth', this.authRoutes.router);
-        this.app.use('/api/v1/subscriptions', this.publicSubscriptionRoutes.router);
-        this.app.use('/api/v1/profile', this.userProfileRoutes.getRouter());
-        this.app.use('/api/v1/users', userProfileRoutesLegacy);
+        // Auth & User Management
+        this.app.use(`${API_PREFIX}${ROUTES.AUTH}`, this.authRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.PROFILE}`, this.userProfileRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.USERS}`, userProfileRoutesLegacy);
+
+        // Subscriptions
+        this.app.use(`${API_PREFIX}${ROUTES.SUBSCRIPTIONS}`, this.publicSubscriptionRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.SUBSCRIPTIONS}`, this.userSubscriptionRoutes.router);
+
+        // Skills & Templates
         // IMPORTANT: Specific routes MUST come before parameterized routes
         // /skills/me must be registered before /skills/:skillId
-        this.app.use('/api/v1/skills', this.skillRoutes.router);
-        this.app.use('/api/v1/skills', this.browseSkillsRoutes.getRouter());
-        this.app.use('/api/v1/skill-templates', this.publicSkillTemplateRoutes.router);
-        this.app.use('/api/v1/mcq', this.mcqTestRoutes.getRouter());
-        this.app.use('/api/v1/bookings', this.bookingRoutes.router);
-        this.app.use('/api/v1/sessions', sessionManagementRoutes);
-        this.app.use('/api/v1/admin', this.adminRoutes.router);
-        this.app.use('/api/v1/admin/skills', this.adminSkillRoutes.getRouter());
-        this.app.use('/api/v1/admin/skill-templates', this.skillTemplateRoutes.router);
-        this.app.use('/api/v1/admin/skill-templates/:templateId/questions', this.templateQuestionRoutes.router);
-        this.app.use('/api/v1/admin/mcq', this.mcqImportRoutes.getRouter());
-        this.app.use('/api/v1/availability', this.availabilityRoutes.router);
-        this.app.use('/api/v1/communities', this.communityRoutes.getRouter());
-        this.app.use('/api/v1/payments', this.paymentRoutes.getRouter());
-        this.app.use('/api/v1/subscriptions', this.userSubscriptionRoutes.router);
-        this.app.use('/api/v1/projects', this.projectRoutes.router);
-        this.app.use('/api/v1/admin/wallet', this.adminWalletRoutes.router);
-        this.app.use('/api/v1/admin/sessions', this.adminSessionRoutes.router);
-        this.app.use('/api/v1/video-call', this.videoCallRoutes.router);
-        this.app.use('/api/v1/reviews', this.reviewRoutes.router);
-        this.app.use('/api/v1/project-applications', this.projectApplicationRoutes.router);
-        this.app.use('/api/v1/interviews', this.interviewRoutes.router);
-        this.app.use('/api/v1/wallet', this.walletRoutes.router);
-        this.app.use('/api/v1/reports', this.reportRoutes.router);
-        this.app.use('/api/v1/admin/reports', this.adminReportRoutes.router);
-        this.app.use('/api/v1', this.projectMessageRoutes.router); // Mounts at /api/v1/projects/:projectId/messages
+        this.app.use(`${API_PREFIX}${ROUTES.SKILLS}`, this.skillRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.SKILLS}`, this.browseSkillsRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.SKILL_TEMPLATES}`, this.publicSkillTemplateRoutes.router);
+
+        // MCQ & Tests
+        this.app.use(`${API_PREFIX}${ROUTES.MCQ}`, this.mcqTestRoutes.getRouter());
+
+        // Bookings & Sessions
+        this.app.use(`${API_PREFIX}${ROUTES.BOOKINGS}`, this.bookingRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.SESSIONS}`, sessionManagementRoutes);
+        this.app.use(`${API_PREFIX}${ROUTES.AVAILABILITY}`, this.availabilityRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.VIDEO_CALL}`, this.videoCallRoutes.router);
+
+        // Community & Projects
+        this.app.use(`${API_PREFIX}${ROUTES.COMMUNITIES}`, this.communityRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.PROJECTS}`, this.projectRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.PROJECT_APPLICATIONS}`, this.projectApplicationRoutes.router);
+        this.app.use(API_PREFIX, this.projectMessageRoutes.router); // Mounts at /api/v1/projects/:projectId/messages
+
+        // Payments & Wallet
+        this.app.use(`${API_PREFIX}${ROUTES.PAYMENTS}`, this.paymentRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.WALLET}`, this.walletRoutes.router);
+
+        // Reviews & Reports
+        this.app.use(`${API_PREFIX}${ROUTES.REVIEWS}`, this.reviewRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.REPORTS}`, this.reportRoutes.router);
+
+        // Interviews
+        this.app.use(`${API_PREFIX}${ROUTES.INTERVIEWS}`, this.interviewRoutes.router);
+
+        // Admin Routes
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.BASE}`, this.adminRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.SKILLS}`, this.adminSkillRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.SKILL_TEMPLATES}`, this.skillTemplateRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.TEMPLATE_QUESTIONS}`, this.templateQuestionRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.MCQ}`, this.mcqImportRoutes.getRouter());
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.WALLET}`, this.adminWalletRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.SESSIONS}`, this.adminSessionRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.REPORTS}`, this.adminReportRoutes.router);
+
+        // 404 Handler
         this.app.all('*', notFoundHandler);
     }
 

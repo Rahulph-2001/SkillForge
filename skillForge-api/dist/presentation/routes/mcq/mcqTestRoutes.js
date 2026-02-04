@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const MCQTestController_1 = require("../../controllers/mcq/MCQTestController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let MCQTestRoutes = class MCQTestRoutes {
     constructor(mcqTestController) {
         this.mcqTestController = mcqTestController;
@@ -25,8 +26,8 @@ let MCQTestRoutes = class MCQTestRoutes {
         this.setupRoutes();
     }
     setupRoutes() {
-        this.router.get('/start/:skillId', authMiddleware_1.authMiddleware, this.mcqTestController.startTest);
-        this.router.post('/submit', authMiddleware_1.authMiddleware, this.mcqTestController.submitTest);
+        this.router.get(routes_1.ENDPOINTS.MCQ_TEST.START_BY_SKILL, authMiddleware_1.authMiddleware, this.mcqTestController.startTest);
+        this.router.post(routes_1.ENDPOINTS.MCQ_TEST.SUBMIT, authMiddleware_1.authMiddleware, this.mcqTestController.submitTest);
     }
     getRouter() {
         return this.router;

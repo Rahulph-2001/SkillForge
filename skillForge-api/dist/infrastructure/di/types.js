@@ -12,6 +12,7 @@ exports.TYPES = {
     IEmailService: Symbol.for('IEmailService'),
     IPendingRegistrationService: Symbol.for('IPendingRegistrationService'),
     PassportService: Symbol.for('PassportService'),
+    IPassportService: Symbol.for('IPassportService'),
     RegisterUseCase: Symbol.for('RegisterUseCase'),
     IRegisterUseCase: Symbol.for('IRegisterUseCase'),
     LoginUseCase: Symbol.for('LoginUseCase'),
@@ -383,5 +384,24 @@ exports.TYPES = {
     IGetUserWalletTransactionsUseCase: Symbol.for('IGetUserWalletTransactionsUseCase'),
     WalletController: Symbol.for('WalletController'),
     WalletRoutes: Symbol.for('WalletRoutes'),
+    // Report System
+    IReportRepository: Symbol.for('IReportRepository'),
+    CreateReportUseCase: Symbol.for('CreateReportUseCase'),
+    ICreateReportUseCase: Symbol.for('ICreateReportUseCase'),
+    AdminListReportsUseCase: Symbol.for('AdminListReportsUseCase'),
+    IAdminListReportsUseCase: Symbol.for('IAdminListReportsUseCase'),
+    AdminManageReportUseCase: Symbol.for('AdminManageReportUseCase'),
+    IAdminManageReportUseCase: Symbol.for('IAdminManageReportUseCase'),
+    ReportController: Symbol.for('ReportController'),
+    ReportRoutes: Symbol.for('ReportRoutes'),
+    AdminReportController: Symbol.for('AdminReportController'),
+    AdminReportRoutes: Symbol.for('AdminReportRoutes'),
+    // Project Chat System
+    IProjectMessageRepository: Symbol.for('IProjectMessageRepository'),
+    IProjectMessageMapper: Symbol.for('IProjectMessageMapper'),
+    ISendProjectMessageUseCase: Symbol.for('ISendProjectMessageUseCase'),
+    IGetProjectMessagesUseCase: Symbol.for('IGetProjectMessagesUseCase'),
+    ProjectMessageController: Symbol.for('ProjectMessageController'),
+    ProjectMessageRoutes: Symbol.for('ProjectMessageRoutes'),
 };
 //# sourceMappingURL=types.js.map

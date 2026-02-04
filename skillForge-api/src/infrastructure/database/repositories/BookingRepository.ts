@@ -49,6 +49,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       updatedAt: data.updatedAt,
       startAt: data.startAt,
       endAt: data.endAt,
+      isReviewed: !!data.review,
     });
   }
 
@@ -61,6 +62,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
 
@@ -74,6 +76,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -91,6 +94,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -129,6 +133,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
 
@@ -161,6 +166,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
     return this.mapToDomain(created);
@@ -207,7 +213,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       }
 
       // 3. Hold Credits in Escrow (Move from available to held)
-      await tx.user.update({
+      const updatedLearner = await tx.user.update({
         where: { id: domainBooking.learnerId },
         data: {
           credits: { decrement: sessionCost },
@@ -238,6 +244,24 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
           skill: { select: { title: true, durationHours: true } },
           provider: { select: { name: true, avatarUrl: true } },
           learner: { select: { name: true, avatarUrl: true } },
+          review: { select: { id: true } },
+        },
+      });
+
+      // 4b. Log Wallet Transaction (SESSION_PAYMENT)
+      // @ts-ignore
+      await tx.userWalletTransaction.create({
+        data: {
+          userId: domainBooking.learnerId,
+          type: 'SESSION_PAYMENT',
+          amount: sessionCost,
+          currency: 'INR',
+          source: 'SESSION_BOOKING',
+          referenceId: created.id,
+          description: `Booking for ${domainBooking.skillTitle || 'Session'}`,
+          previousBalance: new Prisma.Decimal(Number(updatedLearner.credits) + sessionCost),
+          newBalance: new Prisma.Decimal(updatedLearner.credits),
+          status: 'COMPLETED',
         },
       });
 
@@ -270,6 +294,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
 
@@ -339,6 +364,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
 
@@ -357,6 +383,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -370,6 +397,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -407,6 +435,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
     return bookings.map((b) => this.mapToDomain(b));
@@ -438,6 +467,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
       orderBy: { preferredDate: 'asc' },
     });
@@ -483,6 +513,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
     return bookings.map((b) => this.mapToDomain(b));
@@ -661,6 +692,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         skill: { select: { title: true, durationHours: true } },
         provider: { select: { name: true, avatarUrl: true } },
         learner: { select: { name: true, avatarUrl: true } },
+        review: { select: { id: true } },
       },
     });
 

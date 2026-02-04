@@ -33,6 +33,7 @@ exports.BookingResponseDTOSchema = zod_1.z.object({
     sessionCost: zod_1.z.number().min(0, 'Session cost must be non-negative'),
     rescheduleInfo: RescheduleInfoSchema.optional(),
     rejectionReason: zod_1.z.string().optional(),
+    isReviewed: zod_1.z.boolean().optional(),
     createdAt: zod_1.z.coerce.date(),
     updatedAt: zod_1.z.coerce.date(),
 });

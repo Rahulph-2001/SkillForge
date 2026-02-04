@@ -3,6 +3,7 @@ import { injectable, inject } from "inversify";
 import { TYPES } from "../../infrastructure/di/types";
 import { ReportController } from "../controllers/ReportController";
 import { authMiddleware } from "../middlewares/authMiddleware";
+import { ENDPOINTS } from "../../config/routes";
 
 @injectable()
 export class ReportRoutes {
@@ -17,6 +18,7 @@ export class ReportRoutes {
 
     private initializeRoutes() {
         this.router.use(authMiddleware);
-        this.router.post("/", (req, res, next) => this.reportController.createReport(req, res, next));
+        this.router.post(ENDPOINTS.REPORT.ROOT, (req, res, next) => this.reportController.createReport(req, res, next));
     }
 }
+

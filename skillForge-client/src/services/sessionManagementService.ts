@@ -23,7 +23,8 @@ export interface ProviderSession {
   status: 'pending' | 'confirmed' | 'rejected' | 'completed' | 'cancelled' | 'reschedule_requested';
   sessionCost: number;
   rescheduleInfo?: RescheduleInfo | null;
-  rejectionReason?: string; // Added field
+  rejectionReason?: string;
+  isReviewed?: boolean;
   createdAt: string;
 }
 

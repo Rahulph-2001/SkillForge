@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const WalletController_1 = require("../../controllers/WalletController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let WalletRoutes = class WalletRoutes {
     constructor(walletController) {
         this.walletController = walletController;
@@ -28,9 +29,9 @@ let WalletRoutes = class WalletRoutes {
         // Apply auth middleware to all wallet routes
         this.router.use(authMiddleware_1.authMiddleware);
         // GET /wallet - Get wallet overview (balance, credits breakdown)
-        this.router.get('/', this.walletController.getWalletData);
+        this.router.get(routes_1.ENDPOINTS.WALLET.ROOT, this.walletController.getWalletData);
         // GET /wallet/transactions - Get paginated transactions
-        this.router.get('/transactions', this.walletController.getTransactions);
+        this.router.get(routes_1.ENDPOINTS.WALLET.TRANSACTIONS, this.walletController.getTransactions);
     }
 };
 exports.WalletRoutes = WalletRoutes;

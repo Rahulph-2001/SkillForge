@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const FeatureController_1 = require("../../controllers/feature/FeatureController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
+const routes_1 = require("../../../config/routes");
 let FeatureRoutes = class FeatureRoutes {
     constructor(featureController) {
         this.featureController = featureController;
@@ -30,15 +31,15 @@ let FeatureRoutes = class FeatureRoutes {
         this.router.use(authMiddleware_1.authMiddleware);
         this.router.use(adminMiddleware_1.adminMiddleware);
         // POST /api/v1/admin/features - Create feature
-        this.router.post('/', (req, res, next) => this.featureController.createFeature(req, res, next));
+        this.router.post(routes_1.ENDPOINTS.FEATURE.ROOT, (req, res, next) => this.featureController.createFeature(req, res, next));
         // GET /api/v1/admin/features - List features
-        this.router.get('/', (req, res, next) => this.featureController.listFeatures(req, res, next));
+        this.router.get(routes_1.ENDPOINTS.FEATURE.ROOT, (req, res, next) => this.featureController.listFeatures(req, res, next));
         // GET /api/v1/admin/features/:id - Get feature by ID
-        this.router.get('/:id', (req, res, next) => this.featureController.getFeature(req, res, next));
+        this.router.get(routes_1.ENDPOINTS.FEATURE.BY_ID, (req, res, next) => this.featureController.getFeature(req, res, next));
         // PUT /api/v1/admin/features/:id - Update feature
-        this.router.put('/:id', (req, res, next) => this.featureController.updateFeature(req, res, next));
+        this.router.put(routes_1.ENDPOINTS.FEATURE.BY_ID, (req, res, next) => this.featureController.updateFeature(req, res, next));
         // DELETE /api/v1/admin/features/:id - Delete feature
-        this.router.delete('/:id', (req, res, next) => this.featureController.deleteFeature(req, res, next));
+        this.router.delete(routes_1.ENDPOINTS.FEATURE.BY_ID, (req, res, next) => this.featureController.deleteFeature(req, res, next));
     }
 };
 exports.FeatureRoutes = FeatureRoutes;

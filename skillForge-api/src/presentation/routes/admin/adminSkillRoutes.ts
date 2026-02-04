@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { AdminSkillController } from '../../controllers/admin/AdminSkillController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class AdminSkillRoutes {
@@ -20,26 +21,27 @@ export class AdminSkillRoutes {
     // All routes require authentication and admin role
     this.router.use(authMiddleware, adminMiddleware);
 
-    
-    this.router.get('/pending', this.adminSkillController.listPending);
 
-    
-    this.router.post('/:skillId/approve', this.adminSkillController.approve);
+    this.router.get(ENDPOINTS.ADMIN_SKILL.PENDING, this.adminSkillController.listPending);
 
-    
-    this.router.post('/:skillId/reject', this.adminSkillController.reject);
 
-    
-    this.router.get('/', this.adminSkillController.getAllSkills);
+    this.router.post(ENDPOINTS.ADMIN_SKILL.APPROVE, this.adminSkillController.approve);
 
-   
-    this.router.post('/:skillId/block', this.adminSkillController.blockSkill);
 
-    
-    this.router.post('/:skillId/unblock', this.adminSkillController.unblockSkill);
+    this.router.post(ENDPOINTS.ADMIN_SKILL.REJECT, this.adminSkillController.reject);
+
+
+    this.router.get(ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.getAllSkills);
+
+
+    this.router.post(ENDPOINTS.ADMIN_SKILL.BLOCK, this.adminSkillController.blockSkill);
+
+
+    this.router.post(ENDPOINTS.ADMIN_SKILL.UNBLOCK, this.adminSkillController.unblockSkill);
   }
 
   public getRouter(): Router {
     return this.router;
   }
 }
+

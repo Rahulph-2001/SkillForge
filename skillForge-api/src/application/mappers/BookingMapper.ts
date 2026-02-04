@@ -34,6 +34,7 @@ export class BookingMapper implements IBookingMapper {
       sessionCost: booking.sessionCost,
       rescheduleInfo: booking.rescheduleInfo,
       rejectionReason: booking.rejectionReason,
+      isReviewed: booking.isReviewed,
       createdAt: booking.createdAt,
       updatedAt: booking.updatedAt,
     };

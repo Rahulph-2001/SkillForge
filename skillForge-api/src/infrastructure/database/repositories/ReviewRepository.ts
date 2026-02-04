@@ -5,6 +5,7 @@ import { Review } from '../../../domain/entities/Review';
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { PrismaClient } from '@prisma/client';
+import { ForbiddenError } from '../../../domain/errors/AppError';
 
 @injectable()
 export class ReviewRepository extends BaseRepository<Review> implements IReviewRepository {
@@ -55,6 +56,7 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
                 _avg: { rating: true },
                 _count: { rating: true },
             });
+            
 
             await tx.user.update({
                 where: { id: review.providerId },

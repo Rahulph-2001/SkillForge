@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const SubscriptionController_1 = require("../../controllers/subscription/SubscriptionController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
+const routes_1 = require("../../../config/routes");
 let SubscriptionRoutes = class SubscriptionRoutes {
     constructor(subscriptionController) {
         this.subscriptionController = subscriptionController;
@@ -30,15 +31,15 @@ let SubscriptionRoutes = class SubscriptionRoutes {
         this.router.use(authMiddleware_1.authMiddleware);
         this.router.use(adminMiddleware_1.adminMiddleware);
         // GET /api/v1/admin/subscriptions/plans - List all subscription plans
-        this.router.get('/plans', this.subscriptionController.listPlans.bind(this.subscriptionController));
+        this.router.get(routes_1.ENDPOINTS.SUBSCRIPTION.PLANS, this.subscriptionController.listPlans.bind(this.subscriptionController));
         // GET /api/v1/admin/subscriptions/stats - Get subscription statistics
-        this.router.get('/stats', this.subscriptionController.getStats.bind(this.subscriptionController));
+        this.router.get(routes_1.ENDPOINTS.SUBSCRIPTION.STATS, this.subscriptionController.getStats.bind(this.subscriptionController));
         // POST /api/v1/admin/subscriptions/plans - Create new subscription plan
-        this.router.post('/plans', this.subscriptionController.createPlan.bind(this.subscriptionController));
+        this.router.post(routes_1.ENDPOINTS.SUBSCRIPTION.PLANS, this.subscriptionController.createPlan.bind(this.subscriptionController));
         // PUT /api/v1/admin/subscriptions/plans/:id - Update subscription plan
-        this.router.put('/plans/:id', this.subscriptionController.updatePlan.bind(this.subscriptionController));
+        this.router.put(routes_1.ENDPOINTS.SUBSCRIPTION.PLAN_BY_ID, this.subscriptionController.updatePlan.bind(this.subscriptionController));
         // DELETE /api/v1/admin/subscriptions/plans/:id - Delete subscription plan
-        this.router.delete('/plans/:id', this.subscriptionController.deletePlan.bind(this.subscriptionController));
+        this.router.delete(routes_1.ENDPOINTS.SUBSCRIPTION.PLAN_BY_ID, this.subscriptionController.deletePlan.bind(this.subscriptionController));
     }
 };
 exports.SubscriptionRoutes = SubscriptionRoutes;

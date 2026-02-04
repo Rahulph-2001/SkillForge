@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const VideoCallController_1 = require("../../../presentation/controllers/videoCall/VideoCallController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let VideoCallRoutes = class VideoCallRoutes {
     constructor(videoCallController) {
         this.videoCallController = videoCallController;
@@ -26,20 +27,20 @@ let VideoCallRoutes = class VideoCallRoutes {
     }
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.post('/room', this.videoCallController.createRoom);
-        this.router.post('/room/join', this.videoCallController.joinRoom);
-        this.router.post('/room/:roomId/leave', this.videoCallController.leaveRoom);
-        this.router.get('/room/:roomId', this.videoCallController.getRoomInfo);
-        this.router.post('/room/:roomId/end', this.videoCallController.endRoom);
+        this.router.post(routes_1.ENDPOINTS.VIDEO_CALL.ROOM, this.videoCallController.createRoom);
+        this.router.post(routes_1.ENDPOINTS.VIDEO_CALL.ROOM_JOIN, this.videoCallController.joinRoom);
+        this.router.post(routes_1.ENDPOINTS.VIDEO_CALL.ROOM_LEAVE, this.videoCallController.leaveRoom);
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.ROOM_BY_ID, this.videoCallController.getRoomInfo);
+        this.router.post(routes_1.ENDPOINTS.VIDEO_CALL.ROOM_END, this.videoCallController.endRoom);
         // Booking specific
-        this.router.get('/room/booking/:bookingId', this.videoCallController.getRoomForBooking);
-        this.router.get('/booking/:bookingId', this.videoCallController.getRoomForBooking); // Alias for client compatibility
-        this.router.get('/session/:bookingId', this.videoCallController.getSessionInfo);
-        this.router.get('/session/:bookingId/info', this.videoCallController.getSessionInfo); // Alias for client compatibility
-        this.router.get('/session/:bookingId/validate-time', this.videoCallController.validateSessionTime);
-        this.router.get('/session/:bookingId/validate', this.videoCallController.validateSessionTime); // Alias
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.ROOM_FOR_BOOKING, this.videoCallController.getRoomForBooking);
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.BOOKING_ALIAS, this.videoCallController.getRoomForBooking); // Alias for client compatibility
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.SESSION, this.videoCallController.getSessionInfo);
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.SESSION_INFO, this.videoCallController.getSessionInfo); // Alias for client compatibility
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.SESSION_VALIDATE_TIME, this.videoCallController.validateSessionTime);
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.SESSION_VALIDATE, this.videoCallController.validateSessionTime); // Alias
         // Interview specific
-        this.router.get('/session/interview/:interviewId', this.videoCallController.getInterviewSessionInfo);
+        this.router.get(routes_1.ENDPOINTS.VIDEO_CALL.INTERVIEW_SESSION, this.videoCallController.getInterviewSessionInfo);
     }
 };
 exports.VideoCallRoutes = VideoCallRoutes;

@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
-const PassportService_1 = require("../../../infrastructure/services/PassportService");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const env_1 = require("../../../config/env");
 const messages_1 = require("../../../config/messages");
@@ -62,7 +61,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 15 * 60 * 1000, // 15 minutes
+                maxAge: env_1.env.ACCESS_TOKEN_COOKIE_MAX_AGE,
             });
             // Set refreshToken cookie
             res.cookie('refreshToken', refreshToken, {
@@ -70,7 +69,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                maxAge: env_1.env.REFRESH_TOKEN_COOKIE_MAX_AGE,
             });
             res
                 .status(HttpStatusCode_1.HttpStatusCode.OK)
@@ -89,7 +88,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 15 * 60 * 1000, // 15 minutes
+                maxAge: env_1.env.ACCESS_TOKEN_COOKIE_MAX_AGE,
             });
             // Set refreshToken cookie
             res.cookie('refreshToken', refreshToken, {
@@ -97,7 +96,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                maxAge: env_1.env.REFRESH_TOKEN_COOKIE_MAX_AGE,
             });
             res
                 .status(HttpStatusCode_1.HttpStatusCode.OK)
@@ -189,7 +188,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 15 * 60 * 1000, // 15 minutes
+                maxAge: env_1.env.ACCESS_TOKEN_COOKIE_MAX_AGE,
             });
             // Set refreshToken cookie
             res.cookie('refreshToken', refreshToken, {
@@ -197,7 +196,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                maxAge: env_1.env.REFRESH_TOKEN_COOKIE_MAX_AGE,
             });
             res
                 .status(HttpStatusCode_1.HttpStatusCode.OK)
@@ -221,7 +220,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 15 * 60 * 1000, // 15 minutes
+                maxAge: env_1.env.ACCESS_TOKEN_COOKIE_MAX_AGE,
             });
             // Set refreshToken cookie
             res.cookie('refreshToken', result.refreshToken, {
@@ -229,7 +228,7 @@ let AuthController = class AuthController {
                 secure: env_1.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                maxAge: env_1.env.GOOGLE_REFRESH_TOKEN_COOKIE_MAX_AGE,
             });
             // Redirect to frontend callback page with isNewUser flag
             const redirectUrl = result.isNewUser
@@ -328,7 +327,7 @@ let AuthController = class AuthController {
 exports.AuthController = AuthController;
 exports.AuthController = AuthController = __decorate([
     (0, inversify_1.injectable)(),
-    __param(0, (0, inversify_1.inject)(types_1.TYPES.PassportService)),
+    __param(0, (0, inversify_1.inject)(types_1.TYPES.IPassportService)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IRegisterUseCase)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.ILoginUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IVerifyOtpUseCase)),
@@ -340,6 +339,6 @@ exports.AuthController = AuthController = __decorate([
     __param(9, (0, inversify_1.inject)(types_1.TYPES.IResetPasswordUseCase)),
     __param(10, (0, inversify_1.inject)(types_1.TYPES.IGetUserByIdUseCase)),
     __param(11, (0, inversify_1.inject)(types_1.TYPES.IAuthResponseMapper)),
-    __metadata("design:paramtypes", [PassportService_1.PassportService, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object])
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object, Object])
 ], AuthController);
 //# sourceMappingURL=AuthController.js.map

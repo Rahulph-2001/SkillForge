@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,17 +7,27 @@
 @layer base {
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
       sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: #f8f7fc;
+    /* Very light purple/gray tint for background */
+    color: #1f2937;
   }
 }
 
 @layer utilities {
   .animate-spin-slow {
     animation: spin 3s linear infinite;
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
   }
 }
 
@@ -29,33 +41,38 @@
   }
 }
 
-/* Video Call Volume Slider */
+/* Video Call Volume Slider - Updated to Purple */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
   height: 6px;
   border-radius: 9999px;
+  background: #ddd6fe;
+  /* violet-200 track */
 }
 
 input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #7c3aed;
+  /* violet-600 thumb */
   cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-  margin-top: -4px;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.4);
+  margin-top: -5px;
 }
 
 input[type='range']::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: #7c3aed;
+  /* violet-600 thumb */
   cursor: pointer;
-  border: 2px solid white;
+  border: 3px solid white;
+  box-shadow: 0 2px 6px rgba(124, 58, 237, 0.4);
 }
 
 input[type='range']::-webkit-slider-runnable-track {

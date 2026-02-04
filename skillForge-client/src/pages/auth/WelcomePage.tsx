@@ -21,18 +21,21 @@ export default function WelcomePage() {
                 </div>
 
                 {/* Credit Balance Card */}
-                <div className="bg-gradient-to-r from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-2xl p-8 mb-12 text-center">
-                    <p className="text-teal-700 text-sm font-medium mb-2">Your Credit Balance</p>
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                        <div className="w-16 h-16 bg-cyan-100 rounded-full flex items-center justify-center animate-spin-slow">
-                            <svg className="w-8 h-8 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-8 mb-12 text-center relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-amber-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                    <div className="absolute -bottom-8 -left-8 w-32 h-32 bg-orange-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+
+                    <p className="text-amber-700 text-sm font-medium mb-2 relative z-10">Your Credit Balance</p>
+                    <div className="flex items-center justify-center gap-3 mb-4 relative z-10">
+                        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center animate-spin-slow border-4 border-white shadow-sm">
+                            <svg className="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
                                 <path d="M12 6v12M8.5 9.5h7M8.5 14.5h7" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
                         </div>
-                        <span className="text-5xl font-bold text-cyan-600">20</span>
+                        <span className="text-5xl font-bold text-amber-600">20</span>
                     </div>
-                    <p className="text-teal-600">Credits are like currency on SkillForge</p>
+                    <p className="text-amber-800/80 relative z-10">Credits are like currency on SkillForge</p>
                 </div>
 
                 {/* How the Credit System Works */}
@@ -90,16 +93,18 @@ export default function WelcomePage() {
                                     <p className="text-gray-600 text-sm">{course.duration}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <svg
-                                        className="w-5 h-5 text-cyan-600 animate-spin-slow"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
-                                        <path d="M12 6v12M8.5 9.5h7M8.5 14.5h7" strokeWidth="1.5" strokeLinecap="round" />
-                                    </svg>
-                                    <span className="font-bold text-cyan-600">{course.credits}</span>
+                                    <div className="flex items-center gap-2">
+                                        <svg
+                                            className="w-5 h-5 text-amber-500 animate-spin-slow"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
+                                            <path d="M12 6v12M8.5 9.5h7M8.5 14.5h7" strokeWidth="1.5" strokeLinecap="round" />
+                                        </svg>
+                                        <span className="font-bold text-amber-600">{course.credits}</span>
+                                    </div>
                                 </div>
                             </div>
                         ))}

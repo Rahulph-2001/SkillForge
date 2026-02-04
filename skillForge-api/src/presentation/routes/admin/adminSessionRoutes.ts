@@ -5,6 +5,7 @@ import { AdminSessionController } from '../../../presentation/controllers/admin/
 import { authMiddleware } from '../../../presentation/middlewares/authMiddleware';
 import { adminMiddleware } from '../../../presentation/middlewares/adminMiddleware';
 import { asyncHandler } from '../../../shared/utils/asyncHandler';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class AdminSessionRoutes {
@@ -22,23 +23,24 @@ export class AdminSessionRoutes {
         this.router.use(adminMiddleware);
 
         this.router.get(
-            '/',
+            ENDPOINTS.ADMIN_SESSION.ROOT,
             asyncHandler(this.adminSessionController.listSessions.bind(this.adminSessionController))
         );
 
         this.router.get(
-            '/stats',
+            ENDPOINTS.ADMIN_SESSION.STATS,
             asyncHandler(this.adminSessionController.getStats.bind(this.adminSessionController))
         );
 
         this.router.patch(
-            '/:id/cancel',
+            ENDPOINTS.ADMIN_SESSION.CANCEL,
             asyncHandler(this.adminSessionController.cancelSession.bind(this.adminSessionController))
         );
 
         this.router.patch(
-            '/:id/complete',
+            ENDPOINTS.ADMIN_SESSION.COMPLETE,
             asyncHandler(this.adminSessionController.completeSession.bind(this.adminSessionController))
         );
     }
 }
+

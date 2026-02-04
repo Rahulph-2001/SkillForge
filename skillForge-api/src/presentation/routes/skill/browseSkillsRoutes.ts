@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { BrowseSkillsController } from '../../controllers/BrowseSkillsController';
 import { SkillDetailsController } from '../../controllers/skill/SkillDetailsController';
 import { optionalAuthMiddleware } from '../../middlewares/optionalAuthMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class BrowseSkillsRoutes {
@@ -19,11 +20,12 @@ export class BrowseSkillsRoutes {
 
   private configureRoutes(): void {
     // Public routes - optional authentication to filter own skills
-    this.router.get('/browse', optionalAuthMiddleware, this.browseSkillsController.browse);
-    this.router.get('/:skillId', this.skillDetailsController.getDetails);
+    this.router.get(ENDPOINTS.BROWSE_SKILLS.BROWSE, optionalAuthMiddleware, this.browseSkillsController.browse);
+    this.router.get(ENDPOINTS.BROWSE_SKILLS.BY_ID, this.skillDetailsController.getDetails);
   }
 
   public getRouter(): Router {
     return this.router;
   }
 }
+

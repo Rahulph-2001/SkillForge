@@ -45,6 +45,7 @@ export interface BookingProps {
     updatedAt: Date;
     startAt?: Date;
     endAt?: Date;
+    isReviewed?: boolean;
 }
 export declare class Booking {
     private readonly props;
@@ -74,6 +75,7 @@ export declare class Booking {
     get updatedAt(): Date;
     get startAt(): Date | undefined;
     get endAt(): Date | undefined;
+    get isReviewed(): boolean;
     canBeAccepted(): boolean;
     canBeRejected(): boolean;
     canBeCancelled(): boolean;

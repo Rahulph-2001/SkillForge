@@ -9,7 +9,8 @@ import {
   ArrowLeft,
   X,
   CheckCircle,
-  CalendarClock
+  CalendarClock,
+  Star
 } from 'lucide-react';
 
 // import { useAppSelector } from '../../store/hooks';
@@ -18,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import JoinSessionButton from '../../components/session/JoinSessionButton';
+import ReviewModal from '../../components/review/ReviewModal';
 
 interface UserSession {
   id: string;
@@ -32,6 +34,7 @@ interface UserSession {
   notes: string | null;
   rescheduleInfo: any;
   rejectionReason?: string;
+  isReviewed?: boolean;
   sessionCost: number;
   createdAt: string;
 }
@@ -62,6 +65,8 @@ export default function SessionManagementPage() {
   const [selectedSession, setSelectedSession] = useState<UserSession | null>(null);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [sessionToCancel, setSessionToCancel] = useState<string | null>(null);
+  const [sessionToReview, setSessionToReview] = useState<UserSession | null>(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
     fetchSessions();
@@ -110,6 +115,7 @@ export default function SessionManagementPage() {
           notes: s.notes,
           rescheduleInfo: s.rescheduleInfo,
           rejectionReason: s.rejectionReason,
+          isReviewed: s.isReviewed,
           sessionCost: s.sessionCost,
           createdAt: s.createdAt,
         };
@@ -529,6 +535,19 @@ export default function SessionManagementPage() {
                           status={session.status}
                         />
                       )}
+
+                      {session.status.toLowerCase() === 'completed' && !session.isReviewed && (
+                        <button
+                          onClick={() => {
+                            setSessionToReview(session);
+                            setShowReviewModal(true);
+                          }}
+                          className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors flex items-center gap-2 text-sm font-medium"
+                        >
+                          <Star className="w-4 h-4" />
+                          Rate & Review
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -568,6 +587,17 @@ export default function SessionManagementPage() {
           setSessionToCancel(null);
         }}
       />
+      {/* Review Modal */}
+      {showReviewModal && sessionToReview && (
+        <ReviewModal
+          bookingId={sessionToReview.id}
+          onSubmitted={() => {
+            setShowReviewModal(false);
+            setSessionToReview(null);
+            fetchSessions();
+          }}
+        />
+      )}
     </div>
   );
 }

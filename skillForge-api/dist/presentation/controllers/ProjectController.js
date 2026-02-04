@@ -93,9 +93,9 @@ let ProjectController = class ProjectController {
         this.reviewCompletion = async (req, res, next) => {
             try {
                 const { id } = req.params;
-                const { decision } = req.body;
+                const { decision, reason } = req.body;
                 const userId = req.user.id;
-                await this.reviewProjectCompletionUseCase.execute(id, userId, decision);
+                await this.reviewProjectCompletionUseCase.execute(id, userId, decision, reason);
                 const response = this.responseBuilder.success(null, messages_1.SUCCESS_MESSAGES.PROJECT.COMPLETION_REVIEWED, HttpStatusCode_1.HttpStatusCode.OK);
                 res.status(response.statusCode).json(response.body);
             }

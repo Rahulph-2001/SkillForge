@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const AdminSkillController_1 = require("../../controllers/admin/AdminSkillController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
+const routes_1 = require("../../../config/routes");
 let AdminSkillRoutes = class AdminSkillRoutes {
     constructor(adminSkillController) {
         this.adminSkillController = adminSkillController;
@@ -28,12 +29,12 @@ let AdminSkillRoutes = class AdminSkillRoutes {
     setupRoutes() {
         // All routes require authentication and admin role
         this.router.use(authMiddleware_1.authMiddleware, adminMiddleware_1.adminMiddleware);
-        this.router.get('/pending', this.adminSkillController.listPending);
-        this.router.post('/:skillId/approve', this.adminSkillController.approve);
-        this.router.post('/:skillId/reject', this.adminSkillController.reject);
-        this.router.get('/', this.adminSkillController.getAllSkills);
-        this.router.post('/:skillId/block', this.adminSkillController.blockSkill);
-        this.router.post('/:skillId/unblock', this.adminSkillController.unblockSkill);
+        this.router.get(routes_1.ENDPOINTS.ADMIN_SKILL.PENDING, this.adminSkillController.listPending);
+        this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.APPROVE, this.adminSkillController.approve);
+        this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.REJECT, this.adminSkillController.reject);
+        this.router.get(routes_1.ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.getAllSkills);
+        this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.BLOCK, this.adminSkillController.blockSkill);
+        this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.UNBLOCK, this.adminSkillController.unblockSkill);
     }
     getRouter() {
         return this.router;

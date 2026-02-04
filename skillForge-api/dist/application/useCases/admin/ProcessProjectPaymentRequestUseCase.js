@@ -20,14 +20,15 @@ const ProjectPaymentRequest_1 = require("../../../domain/entities/ProjectPayment
 const UserWalletTransaction_1 = require("../../../domain/entities/UserWalletTransaction");
 const uuid_1 = require("uuid");
 let ProcessProjectPaymentRequestUseCase = class ProcessProjectPaymentRequestUseCase {
-    constructor(paymentRequestRepository, projectRepository, userRepository, userWalletTransactionRepository, debitAdminWalletUseCase) {
+    constructor(paymentRequestRepository, projectRepository, userRepository, userWalletTransactionRepository, debitAdminWalletUseCase, applicationRepository) {
         this.paymentRequestRepository = paymentRequestRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.userWalletTransactionRepository = userWalletTransactionRepository;
         this.debitAdminWalletUseCase = debitAdminWalletUseCase;
+        this.applicationRepository = applicationRepository;
     }
-    async execute(requestId, adminId, approved, notes) {
+    async execute(requestId, adminId, approved, notes, overrideAction) {
         // 1. Fetch Request
         const paymentRequest = await this.paymentRequestRepository.findById(requestId);
         if (!paymentRequest) {
@@ -41,9 +42,111 @@ let ProcessProjectPaymentRequestUseCase = class ProcessProjectPaymentRequestUseC
         if (!project) {
             throw new AppError_1.NotFoundError('Project not found');
         }
-        if (approved) {
-            // 3. Process Approval
+        if (overrideAction === 'OVERRIDE_RELEASE') {
+            if (paymentRequest.type !== ProjectPaymentRequest_1.ProjectPaymentRequestType.REFUND) {
+                throw new AppError_1.ValidationError('Override Release can only be applied to Refund requests');
+            }
+            // 1. Mark the original REFUND request as REJECTED (Dispute resolved in favor of Contributor)
             try {
+                paymentRequest.reject(adminId, `[OVERRIDE RELEASE] ${notes || 'Admin overrode refund request to release payment.'}`);
+                await this.paymentRequestRepository.update(paymentRequest);
+            }
+            catch (error) {
+                console.error(`[ProcessPaymentRequest] Failed to reject refund request ${requestId}:`, error);
+                throw new AppError_1.InternalServerError(`Failed to process refund rejection during override: ${error.message}`);
+            }
+            // 2. Create a new RELEASE request and Approve it immediately
+            try {
+                // Get the accepted application to find the contributor
+                const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id);
+                if (!acceptedApplication) {
+                    throw new AppError_1.NotFoundError('No accepted application found for this project to release payment to.');
+                }
+                const contributorId = acceptedApplication.applicantId;
+                // RELEASE logic (similar to strictly approving a release)
+                // Debit Admin Wallet
+                await this.debitAdminWalletUseCase.execute({
+                    amount: paymentRequest.amount,
+                    currency: 'INR',
+                    source: 'PROJECT_RELEASE',
+                    referenceId: project.id,
+                    metadata: {
+                        projectId: project.id,
+                        projectTitle: project.title,
+                        recipientId: contributorId,
+                        originalRefundRequestId: paymentRequest.id
+                    }
+                });
+                // Credit Contributor
+                const recipient = await this.userRepository.findById(contributorId);
+                if (!recipient) {
+                    throw new AppError_1.NotFoundError(`Contributor user ${contributorId} not found`);
+                }
+                const previousBalance = recipient.walletBalance;
+                recipient.creditWallet(paymentRequest.amount);
+                const newBalance = recipient.walletBalance;
+                await this.userRepository.update(recipient);
+                // Create Transaction Record for Contributor
+                const transaction = UserWalletTransaction_1.UserWalletTransaction.create({
+                    id: (0, uuid_1.v4)(),
+                    userId: recipient.id,
+                    type: UserWalletTransaction_1.UserWalletTransactionType.PROJECT_EARNING,
+                    amount: paymentRequest.amount,
+                    currency: 'INR',
+                    source: 'PROJECT_COMPLETION',
+                    referenceId: project.id,
+                    description: `Payment for project: ${project.title} (Dispute Resolved by Admin)`,
+                    metadata: {
+                        projectId: project.id,
+                        projectTitle: project.title,
+                        originalRefundRequestId: paymentRequest.id,
+                    },
+                    previousBalance,
+                    newBalance,
+                    status: UserWalletTransaction_1.UserWalletTransactionStatus.COMPLETED,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                });
+                await this.userWalletTransactionRepository.create(transaction);
+                // Mark Project as COMPLETED
+                project.markAsCompleted();
+                // Create audit record for the Overridden Release
+                // We create a new APPROVED Request so history shows money went out
+                const releaseRequest = ProjectPaymentRequest_1.ProjectPaymentRequest.create({
+                    id: (0, uuid_1.v4)(),
+                    projectId: project.id,
+                    type: ProjectPaymentRequest_1.ProjectPaymentRequestType.RELEASE,
+                    amount: paymentRequest.amount,
+                    requestedBy: adminId,
+                    recipientId: recipient.id,
+                    status: ProjectPaymentRequest_1.ProjectPaymentRequestStatus.APPROVED,
+                    processedBy: adminId,
+                    processedAt: new Date(),
+                    adminNotes: `Auto-created via Dispute Resolution Override. Original Refund Request: ${paymentRequest.id}`,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    requesterNotes: `Override Release for Dispute Resolution`
+                });
+                // Since we are creating it as APPROVED, we don't need to call .approve() again unless strict checks require it.
+                // Entity factory usually sets props directly.
+                await this.paymentRequestRepository.create(releaseRequest);
+            }
+            catch (error) {
+                console.error(`[ProcessPaymentRequest] Failed to execute Override Release for ${requestId}:`, error);
+                throw new AppError_1.InternalServerError(`Failed to execute Override Release: ${error.message}`);
+            }
+        }
+        else if (approved) {
+            // 3. Process Approval (Standard Flow)
+            try {
+                // For REFUND, money goes back to Requester (Creator). 
+                const targetRecipientId = paymentRequest.type === ProjectPaymentRequest_1.ProjectPaymentRequestType.RELEASE
+                    ? paymentRequest.recipientId
+                    : paymentRequest.requestedBy;
+                // Note: The existing logic uses paymentRequest.recipientId. 
+                // We must ensure that for REFUND, the recipientId IS the Creator.
+                // Assuming ReviewProjectCompletionUseCase sets recipientId = client.id for REFUND requests.
+                // If so, we can trust paymentRequest.recipientId.
                 // Debit Admin Wallet
                 // Using 'projectId' as reference ID for wallet transaction helps tracking
                 await this.debitAdminWalletUseCase.execute({
@@ -133,6 +236,7 @@ exports.ProcessProjectPaymentRequestUseCase = ProcessProjectPaymentRequestUseCas
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserWalletTransactionRepository)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IDebitAdminWalletUseCase)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], ProcessProjectPaymentRequestUseCase);
 //# sourceMappingURL=ProcessProjectPaymentRequestUseCase.js.map

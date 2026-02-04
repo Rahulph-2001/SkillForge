@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AvailabilityController_1 = require("../../controllers/availability/AvailabilityController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let AvailabilityRoutes = class AvailabilityRoutes {
     constructor(controller) {
         this.controller = controller;
@@ -26,9 +27,9 @@ let AvailabilityRoutes = class AvailabilityRoutes {
     }
     setupRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.get('/', this.controller.getAvailability.bind(this.controller));
-        this.router.put('/', this.controller.updateAvailability.bind(this.controller));
-        this.router.get('/:providerId/slots', this.controller.getOccupiedSlots.bind(this.controller));
+        this.router.get(routes_1.ENDPOINTS.AVAILABILITY.ROOT, this.controller.getAvailability.bind(this.controller));
+        this.router.put(routes_1.ENDPOINTS.AVAILABILITY.ROOT, this.controller.updateAvailability.bind(this.controller));
+        this.router.get(routes_1.ENDPOINTS.AVAILABILITY.SLOTS, this.controller.getOccupiedSlots.bind(this.controller));
     }
 };
 exports.AvailabilityRoutes = AvailabilityRoutes;

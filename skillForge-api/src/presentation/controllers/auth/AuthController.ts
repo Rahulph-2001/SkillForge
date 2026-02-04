@@ -6,7 +6,7 @@ import { IRegisterUseCase } from '../../../application/useCases/auth/interfaces/
 import { ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
 import { IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
 import { IGoogleAuthUseCase } from '../../../application/useCases/auth/interfaces/IGoogleAuthUseCase';
-import { PassportService } from '../../../infrastructure/services/PassportService';
+import { IPassportService } from '../../../domain/services/IPassportService';
 import { IResendOtpUseCase } from '../../../application/useCases/auth/interfaces/IResendOtpUseCase';
 import { IAdminLoginUseCase } from '../../../application/useCases/auth/interfaces/IAdminLoginUseCase';
 import { IForgotPasswordUseCase } from '../../../application/useCases/auth/interfaces/IForgotPasswordUseCase';
@@ -29,7 +29,7 @@ const getClientIp = (req: Request): string | undefined => {
 @injectable()
 export class AuthController {
   constructor(
-    @inject(TYPES.PassportService) public readonly passportService: PassportService,
+    @inject(TYPES.IPassportService) public readonly passportService: IPassportService,
     @inject(TYPES.IRegisterUseCase) private readonly registerUseCase: IRegisterUseCase,
     @inject(TYPES.ILoginUseCase) private readonly loginUseCase: ILoginUseCase,
     @inject(TYPES.IVerifyOtpUseCase) private readonly verifyOtpUseCase: IVerifyOtpUseCase,
@@ -45,7 +45,7 @@ export class AuthController {
     this.googleLogin = this.passportService.authenticateGoogle();
   }
 
-  public readonly googleLogin: ReturnType<PassportService['authenticateGoogle']>;
+  public readonly googleLogin: ReturnType<IPassportService['authenticateGoogle']>;
 
   async register(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -70,7 +70,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: env.ACCESS_TOKEN_COOKIE_MAX_AGE,
       });
 
       // Set refreshToken cookie
@@ -79,7 +79,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: env.REFRESH_TOKEN_COOKIE_MAX_AGE,
       });
 
       res
@@ -100,7 +100,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: env.ACCESS_TOKEN_COOKIE_MAX_AGE,
       });
 
       // Set refreshToken cookie
@@ -109,7 +109,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: env.REFRESH_TOKEN_COOKIE_MAX_AGE,
       });
 
       res
@@ -210,7 +210,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: env.ACCESS_TOKEN_COOKIE_MAX_AGE,
       });
 
       // Set refreshToken cookie
@@ -219,7 +219,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        maxAge: env.REFRESH_TOKEN_COOKIE_MAX_AGE,
       });
 
       res
@@ -245,7 +245,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 15 * 60 * 1000, // 15 minutes
+        maxAge: env.ACCESS_TOKEN_COOKIE_MAX_AGE,
       });
 
       // Set refreshToken cookie
@@ -254,7 +254,7 @@ export class AuthController {
         secure: env.NODE_ENV === 'production',
         sameSite: 'lax' as const,
         path: '/',
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: env.GOOGLE_REFRESH_TOKEN_COOKIE_MAX_AGE,
       });
 
       // Redirect to frontend callback page with isNewUser flag

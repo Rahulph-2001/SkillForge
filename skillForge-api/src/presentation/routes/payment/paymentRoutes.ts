@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { PaymentController } from '../../controllers/payment/PaymentController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import express from 'express';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class PaymentRoutes {
@@ -18,7 +19,7 @@ export class PaymentRoutes {
     private initializeRoutes(): void {
         // POST /api/v1/payments/create-intent
         this.router.post(
-            '/create-intent',
+            ENDPOINTS.PAYMENT.CREATE_INTENT,
             authMiddleware,
             (req: Request, res: Response, next: NextFunction) =>
                 this.paymentController.createPaymentIntent(req, res, next)
@@ -26,7 +27,7 @@ export class PaymentRoutes {
 
         // POST /api/v1/payments/confirm
         this.router.post(
-            '/confirm',
+            ENDPOINTS.PAYMENT.CONFIRM,
             authMiddleware,
             (req: Request, res: Response, next: NextFunction) =>
                 this.paymentController.confirmPayment(req, res, next)
@@ -35,7 +36,7 @@ export class PaymentRoutes {
         // POST /api/v1/payments/webhook
         // Note: Webhook needs raw body for Stripe signature verification
         this.router.post(
-            '/webhook',
+            ENDPOINTS.PAYMENT.WEBHOOK,
             express.raw({ type: 'application/json' }),
             (req: Request, res: Response) =>
                 this.paymentController.handleWebhook(req, res)

@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { UserProfileController } from '../../controllers/user/UserProfileController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import multer, { FileFilterCallback } from 'multer';
+import { ENDPOINTS } from '../../../config/routes';
 
 // Configure multer for memory storage
 const upload = multer({
@@ -37,13 +38,14 @@ export class UserProfileRoutes {
     this.router.use(authMiddleware);
 
     // GET /api/v1/profile - Get current user profile
-    this.router.get('/', this.userProfileController.getProfile.bind(this.userProfileController));
+    this.router.get(ENDPOINTS.USER_PROFILE.ROOT, this.userProfileController.getProfile.bind(this.userProfileController));
 
     // PUT /api/v1/profile - Update current user profile
-    this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
+    this.router.put(ENDPOINTS.USER_PROFILE.ROOT, upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
   }
 
   public getRouter(): Router {
     return this.router;
   }
 }
+

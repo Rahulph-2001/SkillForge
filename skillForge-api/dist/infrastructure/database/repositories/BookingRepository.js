@@ -58,6 +58,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
             updatedAt: data.updatedAt,
             startAt: data.startAt,
             endAt: data.endAt,
+            isReviewed: !!data.review,
         });
     }
     // --- Read Operations ---
@@ -68,6 +69,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return booking ? this.mapToDomain(booking) : null;
@@ -79,6 +81,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -94,6 +97,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -123,6 +127,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return booking ? this.mapToDomain(booking) : null;
@@ -151,6 +156,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return this.mapToDomain(created);
@@ -189,7 +195,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 throw new AppError_1.ConflictError('Slot was just taken by another user');
             }
             // 3. Hold Credits in Escrow (Move from available to held)
-            await tx.user.update({
+            const updatedLearner = await tx.user.update({
                 where: { id: domainBooking.learnerId },
                 data: {
                     credits: { decrement: sessionCost },
@@ -218,6 +224,23 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                     skill: { select: { title: true, durationHours: true } },
                     provider: { select: { name: true, avatarUrl: true } },
                     learner: { select: { name: true, avatarUrl: true } },
+                    review: { select: { id: true } },
+                },
+            });
+            // 4b. Log Wallet Transaction (SESSION_PAYMENT)
+            // @ts-ignore
+            await tx.userWalletTransaction.create({
+                data: {
+                    userId: domainBooking.learnerId,
+                    type: 'SESSION_PAYMENT',
+                    amount: sessionCost,
+                    currency: 'INR',
+                    source: 'SESSION_BOOKING',
+                    referenceId: created.id,
+                    description: `Booking for ${domainBooking.skillTitle || 'Session'}`,
+                    previousBalance: new client_1.Prisma.Decimal(Number(updatedLearner.credits) + sessionCost),
+                    newBalance: new client_1.Prisma.Decimal(updatedLearner.credits),
+                    status: 'COMPLETED',
                 },
             });
             // 5. Create Escrow Transaction Record
@@ -243,6 +266,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return this.mapToDomain(booking);
@@ -304,6 +328,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return this.mapToDomain(updated);
@@ -318,6 +343,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -330,6 +356,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -365,6 +392,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return bookings.map((b) => this.mapToDomain(b));
@@ -393,6 +421,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
             orderBy: { preferredDate: 'asc' },
         });
@@ -429,6 +458,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return bookings.map((b) => this.mapToDomain(b));
@@ -581,6 +611,7 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 skill: { select: { title: true, durationHours: true } },
                 provider: { select: { name: true, avatarUrl: true } },
                 learner: { select: { name: true, avatarUrl: true } },
+                review: { select: { id: true } },
             },
         });
         return this.mapToDomain(updated);

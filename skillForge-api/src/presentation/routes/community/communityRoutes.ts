@@ -11,6 +11,7 @@ import {
   sendMessageSchema
 } from '../../../application/validators/community/CommunityValidationSchemas';
 import { optionalAuthMiddleware } from '../../middlewares/optionalAuthMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class CommunityRoutes {
@@ -25,7 +26,7 @@ export class CommunityRoutes {
 
   private initializeRoutes(): void {
     this.router.post(
-      '/',
+      ENDPOINTS.COMMUNITY.ROOT,
       authMiddleware,
       uploadImage.single('image'),
       validateBody(createCommunitySchema),
@@ -33,7 +34,7 @@ export class CommunityRoutes {
     );
 
     this.router.put(
-      '/:id',
+      ENDPOINTS.COMMUNITY.BY_ID,
       authMiddleware,
       uploadImage.single('image'),
       validateBody(updateCommunitySchema),
@@ -41,31 +42,31 @@ export class CommunityRoutes {
     );
 
     this.router.get(
-      '/',
+      ENDPOINTS.COMMUNITY.ROOT,
       optionalAuthMiddleware,
       this.communityController.getCommunities
     );
 
     this.router.get(
-      '/:id',
+      ENDPOINTS.COMMUNITY.BY_ID,
       optionalAuthMiddleware,
       this.communityController.getCommunityDetails
     );
 
     this.router.post(
-      '/:id/join',
+      ENDPOINTS.COMMUNITY.JOIN,
       authMiddleware,
       this.communityController.joinCommunity
     );
 
     this.router.post(
-      '/:id/leave',
+      ENDPOINTS.COMMUNITY.LEAVE,
       authMiddleware,
       this.communityController.leaveCommunity
     );
 
     this.router.post(
-      '/:id/messages',
+      ENDPOINTS.COMMUNITY.MESSAGES,
       authMiddleware,
       uploadImage.single('file'),
       validateBody(sendMessageSchema),
@@ -73,52 +74,52 @@ export class CommunityRoutes {
     );
 
     this.router.get(
-      '/:id/messages',
+      ENDPOINTS.COMMUNITY.MESSAGES,
       authMiddleware,
       this.communityController.getMessages
     );
 
     this.router.post(
-      '/messages/:messageId/pin',
+      ENDPOINTS.COMMUNITY.PIN_MESSAGE,
       authMiddleware,
       this.communityController.pinMessage
     );
 
     this.router.post(
-      '/messages/:messageId/unpin',
+      ENDPOINTS.COMMUNITY.UNPIN_MESSAGE,
       authMiddleware,
       this.communityController.unpinMessage
     );
 
     this.router.delete(
-      '/messages/:messageId',
+      ENDPOINTS.COMMUNITY.DELETE_MESSAGE,
       authMiddleware,
       this.communityController.deleteMessage
     );
 
     // Reaction routes
     this.router.post(
-      '/messages/:messageId/reactions',
+      ENDPOINTS.COMMUNITY.REACTIONS,
       authMiddleware,
       this.communityController.addReaction
     );
 
     this.router.delete(
-      '/messages/:messageId/reactions/:emoji',
+      ENDPOINTS.COMMUNITY.REMOVE_REACTION,
       authMiddleware,
       this.communityController.removeReaction
     );
 
     // New route for removing members
     this.router.delete(
-      '/:id/members/:memberId',
+      ENDPOINTS.COMMUNITY.REMOVE_MEMBER,
       authMiddleware,
       this.communityController.removeMember
     );
 
     // New route for getting members
     this.router.get(
-      '/:id/members',
+      ENDPOINTS.COMMUNITY.MEMBERS,
       authMiddleware,
       this.communityController.getMembers
     );

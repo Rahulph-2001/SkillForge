@@ -66,6 +66,8 @@ enum ProjectPaymentRequestStatus {
 
 enum UserWalletTransactionType {
   PROJECT_EARNING
+  SESSION_EARNING
+  SESSION_PAYMENT
   CREDIT_REDEMPTION
   WITHDRAWAL
   REFUND

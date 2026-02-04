@@ -36,6 +36,7 @@ let BookingMapper = class BookingMapper {
             sessionCost: booking.sessionCost,
             rescheduleInfo: booking.rescheduleInfo,
             rejectionReason: booking.rejectionReason,
+            isReviewed: booking.isReviewed,
             createdAt: booking.createdAt,
             updatedAt: booking.updatedAt,
         };

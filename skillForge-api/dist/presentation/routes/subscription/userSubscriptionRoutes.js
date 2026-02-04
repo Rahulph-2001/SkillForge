@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const UserSubscriptionController_1 = require("../../controllers/subscription/UserSubscriptionController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let UserSubscriptionRoutes = class UserSubscriptionRoutes {
     constructor(controller) {
         this.controller = controller;
@@ -28,11 +29,11 @@ let UserSubscriptionRoutes = class UserSubscriptionRoutes {
         // All routes require authentication
         this.router.use(authMiddleware_1.authMiddleware);
         // GET /api/v1/subscriptions/me - Get current user's subscription
-        this.router.get('/me', this.controller.getCurrentSubscription.bind(this.controller));
+        this.router.get(routes_1.ENDPOINTS.USER_SUBSCRIPTION.ME, this.controller.getCurrentSubscription.bind(this.controller));
         // POST /api/v1/subscriptions/cancel - Cancel subscription
-        this.router.post('/cancel', this.controller.cancelSubscription.bind(this.controller));
+        this.router.post(routes_1.ENDPOINTS.USER_SUBSCRIPTION.CANCEL, this.controller.cancelSubscription.bind(this.controller));
         // POST /api/v1/subscriptions/reactivate - Reactivate subscription
-        this.router.post('/reactivate', this.controller.reactivateSubscription.bind(this.controller));
+        this.router.post(routes_1.ENDPOINTS.USER_SUBSCRIPTION.REACTIVATE, this.controller.reactivateSubscription.bind(this.controller));
     }
 };
 exports.UserSubscriptionRoutes = UserSubscriptionRoutes;

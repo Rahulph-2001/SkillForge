@@ -29,6 +29,7 @@ export declare const BookingResponseDTOSchema: z.ZodObject<{
         requestedAt: z.ZodCoercedDate<unknown>;
     }, z.core.$strip>>>;
     rejectionReason: z.ZodOptional<z.ZodString>;
+    isReviewed: z.ZodOptional<z.ZodBoolean>;
     createdAt: z.ZodCoercedDate<unknown>;
     updatedAt: z.ZodCoercedDate<unknown>;
 }, z.core.$strip>;

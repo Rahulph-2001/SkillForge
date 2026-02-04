@@ -17,6 +17,7 @@ const express_1 = require("express");
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const PublicSubscriptionController_1 = require("../../controllers/subscription/PublicSubscriptionController");
+const routes_1 = require("../../../config/routes");
 let PublicSubscriptionRoutes = class PublicSubscriptionRoutes {
     constructor(publicSubscriptionController) {
         this.publicSubscriptionController = publicSubscriptionController;
@@ -25,7 +26,7 @@ let PublicSubscriptionRoutes = class PublicSubscriptionRoutes {
     }
     initializeRoutes() {
         // GET /api/v1/subscriptions/plans - List all active subscription plans (public)
-        this.router.get('/plans', this.publicSubscriptionController.listPlans.bind(this.publicSubscriptionController));
+        this.router.get(routes_1.ENDPOINTS.PUBLIC_SUBSCRIPTION.PLANS, this.publicSubscriptionController.listPlans.bind(this.publicSubscriptionController));
     }
 };
 exports.PublicSubscriptionRoutes = PublicSubscriptionRoutes;

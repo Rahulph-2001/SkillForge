@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const SkillController_1 = require("../../controllers/skill/SkillController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const multer_1 = require("../../../config/multer");
+const routes_1 = require("../../../config/routes");
 let SkillRoutes = class SkillRoutes {
     constructor(skillController) {
         this.skillController = skillController;
@@ -27,10 +28,10 @@ let SkillRoutes = class SkillRoutes {
     }
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.post('/', multer_1.uploadImage.single('image'), this.skillController.create);
-        this.router.get('/me', this.skillController.listMySkills);
-        this.router.put('/:id', multer_1.uploadImage.single('image'), this.skillController.update);
-        this.router.patch('/:id/block', this.skillController.toggleBlock);
+        this.router.post(routes_1.ENDPOINTS.SKILL.ROOT, multer_1.uploadImage.single('image'), this.skillController.create);
+        this.router.get(routes_1.ENDPOINTS.SKILL.ME, this.skillController.listMySkills);
+        this.router.put(routes_1.ENDPOINTS.SKILL.BY_ID, multer_1.uploadImage.single('image'), this.skillController.update);
+        this.router.patch(routes_1.ENDPOINTS.SKILL.BLOCK, this.skillController.toggleBlock);
     }
 };
 exports.SkillRoutes = SkillRoutes;

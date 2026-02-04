@@ -27,5 +27,11 @@ exports.ProjectResponseDTOSchema = zod_1.z.object({
         rating: zod_1.z.number().nullable().optional(),
         isVerified: zod_1.z.boolean().optional(),
     }).optional(),
+    // Accepted Contributor information (optional)
+    acceptedContributor: zod_1.z.object({
+        id: zod_1.z.string(),
+        name: zod_1.z.string(),
+        avatarUrl: zod_1.z.string().nullable().optional(),
+    }).optional(),
 });
 //# sourceMappingURL=ProjectResponseDTO.js.map

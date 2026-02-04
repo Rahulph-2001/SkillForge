@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const AdminWalletController_1 = require("../../controllers/admin/AdminWalletController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
+const routes_1 = require("../../../config/routes");
 let AdminWalletRoutes = class AdminWalletRoutes {
     constructor(adminWalletController) {
         this.adminWalletController = adminWalletController;
@@ -28,8 +29,8 @@ let AdminWalletRoutes = class AdminWalletRoutes {
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
         this.router.use(adminMiddleware_1.adminMiddleware);
-        this.router.get('/stats', this.adminWalletController.getWalletStats.bind(this.adminWalletController));
-        this.router.get('/transactions', this.adminWalletController.getWalletTransactions.bind(this.adminWalletController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.STATS, this.adminWalletController.getWalletStats.bind(this.adminWalletController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.TRANSACTIONS, this.adminWalletController.getWalletTransactions.bind(this.adminWalletController));
     }
 };
 exports.AdminWalletRoutes = AdminWalletRoutes;

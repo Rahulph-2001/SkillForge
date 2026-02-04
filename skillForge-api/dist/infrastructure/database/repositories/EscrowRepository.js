@@ -19,6 +19,7 @@ const EscrowTransaction_1 = require("../../../domain/entities/EscrowTransaction"
 const Database_1 = require("../Database");
 const BaseRepository_1 = require("../BaseRepository");
 const AppError_1 = require("../../../domain/errors/AppError");
+const client_1 = require("@prisma/client");
 let EscrowRepository = class EscrowRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
         super(db, 'escrowTransaction');
@@ -94,11 +95,27 @@ let EscrowRepository = class EscrowRepository extends BaseRepository_1.BaseRepos
                     heldCredits: { decrement: escrow.amount },
                 },
             });
-            await tx.user.update({
+            const updatedProvider = await tx.user.update({
                 where: { id: escrow.providerId },
                 data: {
                     credits: { increment: escrow.amount },
                     earnedCredits: { increment: escrow.amount },
+                },
+            });
+            // Log Transaction for Provider
+            // @ts-ignore
+            await tx.userWalletTransaction.create({
+                data: {
+                    userId: escrow.providerId,
+                    type: 'SESSION_EARNING',
+                    amount: escrow.amount,
+                    currency: 'INR',
+                    source: 'SESSION_COMPLETION',
+                    referenceId: bookingId,
+                    description: `Earnings from completed session`,
+                    previousBalance: new client_1.Prisma.Decimal(Number(updatedProvider.credits) - escrow.amount),
+                    newBalance: new client_1.Prisma.Decimal(updatedProvider.credits),
+                    status: 'COMPLETED',
                 },
             });
             const updated = await tx.escrowTransaction.update({
@@ -123,11 +140,27 @@ let EscrowRepository = class EscrowRepository extends BaseRepository_1.BaseRepos
             if (escrow.status !== 'HELD') {
                 throw new AppError_1.ValidationError(`Cannot refund escrow with status: ${escrow.status}`);
             }
-            await tx.user.update({
+            const updatedLearner = await tx.user.update({
                 where: { id: escrow.learnerId },
                 data: {
                     credits: { increment: escrow.amount },
                     heldCredits: { decrement: escrow.amount },
+                },
+            });
+            // Log Transaction for Learner (Refund)
+            // @ts-ignore
+            await tx.userWalletTransaction.create({
+                data: {
+                    userId: escrow.learnerId,
+                    type: 'REFUND',
+                    amount: escrow.amount,
+                    currency: 'INR',
+                    source: 'SESSION_REFUND',
+                    referenceId: bookingId,
+                    description: `Refund for session booking`,
+                    previousBalance: new client_1.Prisma.Decimal(Number(updatedLearner.credits) - escrow.amount),
+                    newBalance: new client_1.Prisma.Decimal(updatedLearner.credits),
+                    status: 'COMPLETED',
                 },
             });
             const updated = await tx.escrowTransaction.update({

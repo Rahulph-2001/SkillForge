@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../infrastructure/di/types");
 const BookingController_1 = require("../controllers/BookingController");
 const authMiddleware_1 = require("../middlewares/authMiddleware");
+const routes_1 = require("../../config/routes");
 let BookingRoutes = class BookingRoutes {
     constructor(bookingController) {
         this.bookingController = bookingController;
@@ -26,12 +27,12 @@ let BookingRoutes = class BookingRoutes {
     }
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.post('/', this.bookingController.createBooking);
-        this.router.get('/my-bookings', this.bookingController.getMyBookings);
-        this.router.get('/upcoming', this.bookingController.getUpcomingSessions);
-        this.router.get('/:id', this.bookingController.getBookingById);
-        this.router.patch('/:id/cancel', this.bookingController.cancelBooking);
-        this.router.post('/:id/complete', this.bookingController.completeSession);
+        this.router.post(routes_1.ENDPOINTS.BOOKING.ROOT, this.bookingController.createBooking);
+        this.router.get(routes_1.ENDPOINTS.BOOKING.MY_BOOKINGS, this.bookingController.getMyBookings);
+        this.router.get(routes_1.ENDPOINTS.BOOKING.UPCOMING, this.bookingController.getUpcomingSessions);
+        this.router.get(routes_1.ENDPOINTS.BOOKING.BY_ID, this.bookingController.getBookingById);
+        this.router.patch(routes_1.ENDPOINTS.BOOKING.CANCEL, this.bookingController.cancelBooking);
+        this.router.post(routes_1.ENDPOINTS.BOOKING.COMPLETE, this.bookingController.completeSession);
     }
 };
 exports.BookingRoutes = BookingRoutes;

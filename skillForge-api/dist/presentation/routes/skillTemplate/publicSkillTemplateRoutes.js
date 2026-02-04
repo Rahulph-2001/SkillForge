@@ -17,6 +17,7 @@ const express_1 = require("express");
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const SkillTemplateController_1 = require("../../controllers/skillTemplate/SkillTemplateController");
+const routes_1 = require("../../../config/routes");
 let PublicSkillTemplateRoutes = class PublicSkillTemplateRoutes {
     constructor(skillTemplateController) {
         this.skillTemplateController = skillTemplateController;
@@ -25,7 +26,7 @@ let PublicSkillTemplateRoutes = class PublicSkillTemplateRoutes {
     }
     setupRoutes() {
         // GET /api/v1/skill-templates/active - List all active templates (no auth required)
-        this.router.get('/active', this.skillTemplateController.listActive.bind(this.skillTemplateController));
+        this.router.get(routes_1.ENDPOINTS.PUBLIC_SKILL_TEMPLATE.ACTIVE, this.skillTemplateController.listActive.bind(this.skillTemplateController));
     }
 };
 exports.PublicSkillTemplateRoutes = PublicSkillTemplateRoutes;

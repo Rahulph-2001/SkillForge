@@ -7,6 +7,6 @@ export declare class ReviewProjectCompletionUseCase implements IReviewProjectCom
     private readonly paymentRequestRepository;
     private readonly applicationRepository;
     constructor(projectRepository: IProjectRepository, paymentRequestRepository: IProjectPaymentRequestRepository, applicationRepository: IProjectApplicationRepository);
-    execute(projectId: string, userId: string, decision: ProjectCompletionDecision): Promise<void>;
+    execute(projectId: string, userId: string, decision: ProjectCompletionDecision, reason?: string): Promise<void>;
 }
 //# sourceMappingURL=ReviewProjectCompletionUseCase.d.ts.map

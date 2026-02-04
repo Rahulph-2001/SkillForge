@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { SkillController } from '../../controllers/skill/SkillController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { uploadImage } from '../../../config/multer';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class SkillRoutes {
@@ -20,25 +21,25 @@ export class SkillRoutes {
 
 
     this.router.post(
-      '/',
+      ENDPOINTS.SKILL.ROOT,
       uploadImage.single('image'),
       this.skillController.create
     );
 
 
     this.router.get(
-      '/me',
+      ENDPOINTS.SKILL.ME,
       this.skillController.listMySkills
     );
 
     this.router.put(
-      '/:id',
+      ENDPOINTS.SKILL.BY_ID,
       uploadImage.single('image'),
       this.skillController.update
     );
 
     this.router.patch(
-      '/:id/block',
+      ENDPOINTS.SKILL.BLOCK,
       this.skillController.toggleBlock
     );
   }

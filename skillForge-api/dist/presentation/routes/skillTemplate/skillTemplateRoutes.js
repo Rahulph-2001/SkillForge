@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const SkillTemplateController_1 = require("../../controllers/skillTemplate/SkillTemplateController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let SkillTemplateRoutes = class SkillTemplateRoutes {
     constructor(skillTemplateController) {
         this.skillTemplateController = skillTemplateController;
@@ -28,15 +29,15 @@ let SkillTemplateRoutes = class SkillTemplateRoutes {
         // All routes require admin authentication
         this.router.use(authMiddleware_1.authMiddleware);
         // POST /api/v1/admin/skill-templates - Create new template
-        this.router.post('/', this.skillTemplateController.create.bind(this.skillTemplateController));
+        this.router.post(routes_1.ENDPOINTS.SKILL_TEMPLATE.ROOT, this.skillTemplateController.create.bind(this.skillTemplateController));
         // GET /api/v1/admin/skill-templates - List all templates
-        this.router.get('/', this.skillTemplateController.list.bind(this.skillTemplateController));
+        this.router.get(routes_1.ENDPOINTS.SKILL_TEMPLATE.ROOT, this.skillTemplateController.list.bind(this.skillTemplateController));
         // PUT /api/v1/admin/skill-templates/:id - Update template
-        this.router.put('/:id', this.skillTemplateController.update.bind(this.skillTemplateController));
+        this.router.put(routes_1.ENDPOINTS.SKILL_TEMPLATE.BY_ID, this.skillTemplateController.update.bind(this.skillTemplateController));
         // DELETE /api/v1/admin/skill-templates/:id - Delete template
-        this.router.delete('/:id', this.skillTemplateController.delete.bind(this.skillTemplateController));
+        this.router.delete(routes_1.ENDPOINTS.SKILL_TEMPLATE.BY_ID, this.skillTemplateController.delete.bind(this.skillTemplateController));
         // PATCH /api/v1/admin/skill-templates/:id/toggle-status - Toggle status
-        this.router.patch('/:id/toggle-status', this.skillTemplateController.toggleStatus.bind(this.skillTemplateController));
+        this.router.patch(routes_1.ENDPOINTS.SKILL_TEMPLATE.TOGGLE_STATUS, this.skillTemplateController.toggleStatus.bind(this.skillTemplateController));
     }
 };
 exports.SkillTemplateRoutes = SkillTemplateRoutes;

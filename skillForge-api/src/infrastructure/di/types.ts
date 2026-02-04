@@ -11,6 +11,7 @@ export const TYPES = {
   IEmailService: Symbol.for('IEmailService'),
   IPendingRegistrationService: Symbol.for('IPendingRegistrationService'),
   PassportService: Symbol.for('PassportService'),
+  IPassportService: Symbol.for('IPassportService'),
   RegisterUseCase: Symbol.for('RegisterUseCase'),
   IRegisterUseCase: Symbol.for('IRegisterUseCase'),
   LoginUseCase: Symbol.for('LoginUseCase'),

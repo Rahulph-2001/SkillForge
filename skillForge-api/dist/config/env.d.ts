@@ -43,5 +43,8 @@ export declare const env: {
     readonly TURN_USERNAME: string;
     readonly TURN_CREDENTIAL: string;
     readonly GEMINI_API_KEY: string;
+    readonly ACCESS_TOKEN_COOKIE_MAX_AGE: number;
+    readonly REFRESH_TOKEN_COOKIE_MAX_AGE: number;
+    readonly GOOGLE_REFRESH_TOKEN_COOKIE_MAX_AGE: number;
 };
 //# sourceMappingURL=env.d.ts.map

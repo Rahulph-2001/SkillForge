@@ -44,6 +44,7 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
         if (existingReview) {
             throw new ValidationError('Review already submitted for this session');
         }
+        
 
         // 5. Create Review Entity
         const reviewEntity = new Review({
@@ -55,25 +56,7 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
             review,
         });
 
-        // 6. Persist with Transaction (Industrial Level: Update Aggregates)
-        // We need to cast to any to access prisma transaction if repository doesn't expose it directly.
-        // However, clean architecture says UseCase shouldn't know about DB implementation details.
-        // Ideally, the repository should handle the transaction or we inject a UnitOfWork.
-        // For this strict architecture, we'll implement a 'createWithAggregates' method in Repository?
-        // Or we use the prisma client directly from the Database service if available.
-        // Since I injected Database, I can use it.
-
-        // Note: IReviewRepository.create signature assumes simple create. 
-        // I will implement the transaction logic inside the Repository for cleaner separation, 
-        // OR use the database service here.
-        // Given the complexity of updating User and Skill stats, it's better to encapsulate this in the Repository 
-        // or a Domain Service. I'll put it in Repository as `createAndUpdateStats`.
-        // But standard pattern is Repository methods are simple.
-        // Let's use the Database service to start a transaction here if possible, or extend the repository.
-        // I'll extend the repository interface for this specific complex operation.
-
-        // Actually, I'll allow the repository to handle the transaction logic for "Review Creation" 
-        // because it involves data integrity across tables.
+      
 
         const createdReview = await (this.reviewRepository as any).createWithStats(reviewEntity);
 

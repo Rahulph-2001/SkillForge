@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { SkillTemplateController } from '../../controllers/skillTemplate/SkillTemplateController';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class PublicSkillTemplateRoutes {
@@ -16,8 +17,9 @@ export class PublicSkillTemplateRoutes {
   private setupRoutes(): void {
     // GET /api/v1/skill-templates/active - List all active templates (no auth required)
     this.router.get(
-      '/active',
+      ENDPOINTS.PUBLIC_SKILL_TEMPLATE.ACTIVE,
       this.skillTemplateController.listActive.bind(this.skillTemplateController)
     );
   }
 }
+

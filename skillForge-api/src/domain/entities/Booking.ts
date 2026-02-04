@@ -50,6 +50,7 @@ export interface BookingProps {
   updatedAt: Date;
   startAt?: Date;
   endAt?: Date;
+  isReviewed?: boolean;
 }
 
 export class Booking {
@@ -168,6 +169,10 @@ export class Booking {
 
   get endAt(): Date | undefined {
     return this.props.endAt;
+  }
+
+  get isReviewed(): boolean {
+    return this.props.isReviewed || false;
   }
 
   // Business Logic Methods

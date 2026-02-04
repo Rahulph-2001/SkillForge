@@ -22,6 +22,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const UserProfileController_1 = require("../../controllers/user/UserProfileController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const multer_1 = __importDefault(require("multer"));
+const routes_1 = require("../../../config/routes");
 // Configure multer for memory storage
 const upload = (0, multer_1.default)({
     storage: multer_1.default.memoryStorage(),
@@ -48,9 +49,9 @@ let UserProfileRoutes = class UserProfileRoutes {
         // Apply auth middleware to all routes
         this.router.use(authMiddleware_1.authMiddleware);
         // GET /api/v1/profile - Get current user profile
-        this.router.get('/', this.userProfileController.getProfile.bind(this.userProfileController));
+        this.router.get(routes_1.ENDPOINTS.USER_PROFILE.ROOT, this.userProfileController.getProfile.bind(this.userProfileController));
         // PUT /api/v1/profile - Update current user profile
-        this.router.put('/', upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
+        this.router.put(routes_1.ENDPOINTS.USER_PROFILE.ROOT, upload.single('avatar'), this.userProfileController.updateProfile.bind(this.userProfileController));
     }
     getRouter() {
         return this.router;

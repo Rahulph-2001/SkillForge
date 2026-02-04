@@ -5,6 +5,7 @@ import { MCQImportController } from '../../controllers/mcq/MCQImportController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
 import { uploadImportFile } from '../../../config/multer';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class MCQImportRoutes {
@@ -21,9 +22,9 @@ export class MCQImportRoutes {
 
   private setupRoutes(): void {
     console.log('[MCQImportRoutes] Setting up MCQ import routes');
-    
+
     this.router.use(authMiddleware, adminMiddleware);
-    
+
     // Add logging middleware to track requests
     this.router.use((req, _res, next) => {
       console.log('[MCQImportRoutes] Request received:', {
@@ -34,22 +35,22 @@ export class MCQImportRoutes {
       });
       next();
     });
-    
+
     this.router.post(
-      '/:templateId/import', 
-      uploadImportFile.single('csvFile'), 
+      ENDPOINTS.MCQ_IMPORT.START_IMPORT,
+      uploadImportFile.single('csvFile'),
       this.mcqImportController.startImport
     );
-    
-   
+
+
     this.router.get(
-      '/:templateId/status', 
+      ENDPOINTS.MCQ_IMPORT.STATUS,
       this.mcqImportController.listJobs
     );
-    
-    
+
+
     this.router.get(
-      '/errors/:jobId/download', 
+      ENDPOINTS.MCQ_IMPORT.DOWNLOAD_ERRORS,
       this.mcqImportController.downloadErrors
     );
   }

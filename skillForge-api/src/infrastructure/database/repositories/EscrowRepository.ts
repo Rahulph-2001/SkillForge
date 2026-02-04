@@ -5,7 +5,7 @@ import { EscrowTransaction, EscrowStatus } from '../../../domain/entities/Escrow
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 @injectable()
 export class EscrowRepository extends BaseRepository<EscrowTransaction> implements IEscrowRepository {
@@ -110,11 +110,28 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
         },
       });
 
-      await tx.user.update({
+      const updatedProvider = await tx.user.update({
         where: { id: escrow.providerId },
         data: {
           credits: { increment: escrow.amount },
           earnedCredits: { increment: escrow.amount },
+        },
+      });
+
+      // Log Transaction for Provider
+      // @ts-ignore
+      await tx.userWalletTransaction.create({
+        data: {
+          userId: escrow.providerId,
+          type: 'SESSION_EARNING',
+          amount: escrow.amount,
+          currency: 'INR',
+          source: 'SESSION_COMPLETION',
+          referenceId: bookingId,
+          description: `Earnings from completed session`,
+          previousBalance: new Prisma.Decimal(Number(updatedProvider.credits) - escrow.amount),
+          newBalance: new Prisma.Decimal(updatedProvider.credits),
+          status: 'COMPLETED',
         },
       });
 
@@ -147,11 +164,28 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
         );
       }
 
-      await tx.user.update({
+      const updatedLearner = await tx.user.update({
         where: { id: escrow.learnerId },
         data: {
           credits: { increment: escrow.amount },
           heldCredits: { decrement: escrow.amount },
+        },
+      });
+
+      // Log Transaction for Learner (Refund)
+      // @ts-ignore
+      await tx.userWalletTransaction.create({
+        data: {
+          userId: escrow.learnerId,
+          type: 'REFUND',
+          amount: escrow.amount,
+          currency: 'INR',
+          source: 'SESSION_REFUND',
+          referenceId: bookingId,
+          description: `Refund for session booking`,
+          previousBalance: new Prisma.Decimal(Number(updatedLearner.credits) - escrow.amount),
+          newBalance: new Prisma.Decimal(updatedLearner.credits),
+          status: 'COMPLETED',
         },
       });
 

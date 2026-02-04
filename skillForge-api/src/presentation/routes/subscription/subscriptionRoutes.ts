@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { SubscriptionController } from '../../controllers/subscription/SubscriptionController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 
 @injectable()
@@ -23,32 +24,33 @@ export class SubscriptionRoutes {
 
     // GET /api/v1/admin/subscriptions/plans - List all subscription plans
     this.router.get(
-      '/plans',
+      ENDPOINTS.SUBSCRIPTION.PLANS,
       this.subscriptionController.listPlans.bind(this.subscriptionController)
     );
 
     // GET /api/v1/admin/subscriptions/stats - Get subscription statistics
     this.router.get(
-      '/stats',
+      ENDPOINTS.SUBSCRIPTION.STATS,
       this.subscriptionController.getStats.bind(this.subscriptionController)
     );
 
     // POST /api/v1/admin/subscriptions/plans - Create new subscription plan
     this.router.post(
-      '/plans',
+      ENDPOINTS.SUBSCRIPTION.PLANS,
       this.subscriptionController.createPlan.bind(this.subscriptionController)
     );
 
     // PUT /api/v1/admin/subscriptions/plans/:id - Update subscription plan
     this.router.put(
-      '/plans/:id',
+      ENDPOINTS.SUBSCRIPTION.PLAN_BY_ID,
       this.subscriptionController.updatePlan.bind(this.subscriptionController)
     );
 
     // DELETE /api/v1/admin/subscriptions/plans/:id - Delete subscription plan
     this.router.delete(
-      '/plans/:id',
+      ENDPOINTS.SUBSCRIPTION.PLAN_BY_ID,
       this.subscriptionController.deletePlan.bind(this.subscriptionController)
     );
   }
 }
+

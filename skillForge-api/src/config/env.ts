@@ -83,5 +83,19 @@ export const env = {
   TURN_SERVER: process.env.TURN_SERVER || '',
   TURN_USERNAME: process.env.TURN_USERNAME || '',
   TURN_CREDENTIAL: process.env.TURN_CREDENTIAL || '',
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY || ''
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+
+  // Cookie Max Age Configuration (in milliseconds)
+  ACCESS_TOKEN_COOKIE_MAX_AGE: parseInt(
+    process.env.ACCESS_TOKEN_COOKIE_MAX_AGE || String(15 * 60 * 1000), // 15 minutes default
+    10
+  ),
+  REFRESH_TOKEN_COOKIE_MAX_AGE: parseInt(
+    process.env.REFRESH_TOKEN_COOKIE_MAX_AGE || String(30 * 24 * 60 * 60 * 1000), // 30 days default
+    10
+  ),
+  GOOGLE_REFRESH_TOKEN_COOKIE_MAX_AGE: parseInt(
+    process.env.GOOGLE_REFRESH_TOKEN_COOKIE_MAX_AGE || String(7 * 24 * 60 * 60 * 1000), // 7 days default
+    10
+  ),
 } as const;

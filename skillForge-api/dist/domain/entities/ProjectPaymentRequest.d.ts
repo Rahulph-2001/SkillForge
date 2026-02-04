@@ -15,6 +15,7 @@ export interface ProjectPaymentRequestProps {
     requestedBy: string;
     recipientId: string;
     status: ProjectPaymentRequestStatus;
+    requesterNotes?: string | null;
     adminNotes?: string | null;
     processedAt?: Date | null;
     processedBy?: string | null;
@@ -33,6 +34,7 @@ export declare class ProjectPaymentRequest {
     get requestedBy(): string;
     get recipientId(): string;
     get status(): ProjectPaymentRequestStatus;
+    get requesterNotes(): string | null | undefined;
     get adminNotes(): string | null | undefined;
     get processedAt(): Date | null | undefined;
     get processedBy(): string | null | undefined;

@@ -5,6 +5,7 @@ import { authMiddleware } from '../../middlewares/authMiddleware';
 import { validateBody } from '../../middlewares/validationMiddleware';
 import { ScheduleInterviewSchema } from '../../../application/dto/interview/ScheduleInterviewDTO';
 import { InterviewController } from '../../controllers/interview/InterviewController';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class InterviewRoutes {
@@ -21,15 +22,16 @@ export class InterviewRoutes {
 
         // Schedule new interview
         this.router.post(
-            '/schedule',
+            ENDPOINTS.INTERVIEW.SCHEDULE,
             validateBody(ScheduleInterviewSchema),
             this.controller.schedule
         );
 
         // Get interviews by application ID
         this.router.get(
-            '/application/:applicationId',
+            ENDPOINTS.INTERVIEW.BY_APPLICATION,
             this.controller.getByApplication
         );
     }
 }
+

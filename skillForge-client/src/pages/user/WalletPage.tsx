@@ -104,9 +104,11 @@ const WalletPage = () => {
 
         switch (type) {
             case 'PROJECT_EARNING':
+            case 'SESSION_EARNING':
             case 'REFUND':
                 return <ArrowDownLeft className="w-5 h-5 text-green-600" />;
             case 'WITHDRAWAL':
+            case 'SESSION_PAYMENT':
             case 'CREDIT_REDEMPTION':
                 return <ArrowUpRight className="w-5 h-5 text-red-600" />;
             default:
@@ -118,6 +120,10 @@ const WalletPage = () => {
         switch (transaction.type) {
             case 'PROJECT_EARNING':
                 return transaction.description || 'Project Payment';
+            case 'SESSION_EARNING':
+                return transaction.description || 'Session Earnings';
+            case 'SESSION_PAYMENT':
+                return transaction.description || 'Session Booking';
             case 'CREDIT_REDEMPTION':
                 return 'Credits Redeemed';
             case 'WITHDRAWAL':
@@ -153,7 +159,7 @@ const WalletPage = () => {
     };
 
     const formatAmount = (amount: number, type: WalletTransaction['type']) => {
-        const isCredit = type === 'PROJECT_EARNING' || type === 'REFUND';
+        const isCredit = type === 'PROJECT_EARNING' || type === 'REFUND' || type === 'SESSION_EARNING';
         const prefix = isCredit ? '+' : '-';
         const colorClass = isCredit ? 'text-green-600' : 'text-red-600';
         return (
@@ -332,8 +338,8 @@ const WalletPage = () => {
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`flex-1 py-3 text-sm font-medium capitalize transition-colors ${activeTab === tab
-                                        ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                                     }`}
                             >
                                 {tab}

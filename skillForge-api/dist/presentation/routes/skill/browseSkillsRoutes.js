@@ -19,6 +19,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const BrowseSkillsController_1 = require("../../controllers/BrowseSkillsController");
 const SkillDetailsController_1 = require("../../controllers/skill/SkillDetailsController");
 const optionalAuthMiddleware_1 = require("../../middlewares/optionalAuthMiddleware");
+const routes_1 = require("../../../config/routes");
 let BrowseSkillsRoutes = class BrowseSkillsRoutes {
     constructor(browseSkillsController, skillDetailsController) {
         this.browseSkillsController = browseSkillsController;
@@ -28,8 +29,8 @@ let BrowseSkillsRoutes = class BrowseSkillsRoutes {
     }
     configureRoutes() {
         // Public routes - optional authentication to filter own skills
-        this.router.get('/browse', optionalAuthMiddleware_1.optionalAuthMiddleware, this.browseSkillsController.browse);
-        this.router.get('/:skillId', this.skillDetailsController.getDetails);
+        this.router.get(routes_1.ENDPOINTS.BROWSE_SKILLS.BROWSE, optionalAuthMiddleware_1.optionalAuthMiddleware, this.browseSkillsController.browse);
+        this.router.get(routes_1.ENDPOINTS.BROWSE_SKILLS.BY_ID, this.skillDetailsController.getDetails);
     }
     getRouter() {
         return this.router;

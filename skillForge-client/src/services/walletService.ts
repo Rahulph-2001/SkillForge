@@ -19,7 +19,7 @@ export interface WalletData {
 export interface WalletTransaction {
     id: string;
     userId: string;
-    type: 'PROJECT_EARNING' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND';
+    type: 'PROJECT_EARNING' | 'SESSION_EARNING' | 'SESSION_PAYMENT' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND';
     amount: number;
     currency: string;
     source: string;

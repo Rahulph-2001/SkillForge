@@ -110,6 +110,9 @@ class Booking {
     get endAt() {
         return this.props.endAt;
     }
+    get isReviewed() {
+        return this.props.isReviewed || false;
+    }
     // Business Logic Methods
     canBeAccepted() {
         return this.props.status === BookingStatus.PENDING;

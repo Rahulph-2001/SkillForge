@@ -146,6 +146,15 @@ class Project {
         this.props.status = ProjectStatus.PENDING_COMPLETION;
         this.props.updatedAt = new Date();
     }
+    revertToInProgress() {
+        // Allows reverting to in-progress if changes are requested.
+        // Restricted to PENDING_COMPLETION.
+        if (this.props.status !== ProjectStatus.PENDING_COMPLETION) {
+            throw new Error('Can only revert to in-progress from pending completion');
+        }
+        this.props.status = ProjectStatus.IN_PROGRESS;
+        this.props.updatedAt = new Date();
+    }
     markAsCancelled() {
         if (!this.canBeCancelled()) {
             throw new Error('Project cannot be cancelled in its current state');

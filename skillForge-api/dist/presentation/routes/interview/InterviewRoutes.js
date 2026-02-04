@@ -20,6 +20,7 @@ const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const validationMiddleware_1 = require("../../middlewares/validationMiddleware");
 const ScheduleInterviewDTO_1 = require("../../../application/dto/interview/ScheduleInterviewDTO");
 const InterviewController_1 = require("../../controllers/interview/InterviewController");
+const routes_1 = require("../../../config/routes");
 let InterviewRoutes = class InterviewRoutes {
     constructor(controller) {
         this.controller = controller;
@@ -29,9 +30,9 @@ let InterviewRoutes = class InterviewRoutes {
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
         // Schedule new interview
-        this.router.post('/schedule', (0, validationMiddleware_1.validateBody)(ScheduleInterviewDTO_1.ScheduleInterviewSchema), this.controller.schedule);
+        this.router.post(routes_1.ENDPOINTS.INTERVIEW.SCHEDULE, (0, validationMiddleware_1.validateBody)(ScheduleInterviewDTO_1.ScheduleInterviewSchema), this.controller.schedule);
         // Get interviews by application ID
-        this.router.get('/application/:applicationId', this.controller.getByApplication);
+        this.router.get(routes_1.ENDPOINTS.INTERVIEW.BY_APPLICATION, this.controller.getByApplication);
     }
 };
 exports.InterviewRoutes = InterviewRoutes;

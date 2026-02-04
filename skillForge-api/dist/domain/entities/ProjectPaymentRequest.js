@@ -62,6 +62,9 @@ class ProjectPaymentRequest {
     get status() {
         return this.props.status;
     }
+    get requesterNotes() {
+        return this.props.requesterNotes;
+    }
     get adminNotes() {
         return this.props.adminNotes;
     }
@@ -128,6 +131,7 @@ class ProjectPaymentRequest {
             requestedBy: data.requestedBy || data.requested_by,
             recipientId: data.recipientId || data.recipient_id,
             status: data.status,
+            requesterNotes: data.requesterNotes || data.requester_notes || null,
             adminNotes: data.adminNotes || data.admin_notes || null,
             processedAt: data.processedAt || data.processed_at ? new Date(data.processedAt || data.processed_at) : null,
             processedBy: data.processedBy || data.processed_by || null,

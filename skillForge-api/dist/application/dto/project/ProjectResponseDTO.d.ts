@@ -28,6 +28,11 @@ export declare const ProjectResponseDTOSchema: z.ZodObject<{
         rating: z.ZodOptional<z.ZodNullable<z.ZodNumber>>;
         isVerified: z.ZodOptional<z.ZodBoolean>;
     }, z.core.$strip>>;
+    acceptedContributor: z.ZodOptional<z.ZodObject<{
+        id: z.ZodString;
+        name: z.ZodString;
+        avatarUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+    }, z.core.$strip>>;
 }, z.core.$strip>;
 export type ProjectResponseDTO = z.infer<typeof ProjectResponseDTOSchema>;
 //# sourceMappingURL=ProjectResponseDTO.d.ts.map

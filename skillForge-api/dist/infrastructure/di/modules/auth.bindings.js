@@ -13,6 +13,7 @@ const VerifyForgotPasswordOtpUseCase_1 = require("../../../application/useCases/
 const ResetPasswordUseCase_1 = require("../../../application/useCases/auth/ResetPasswordUseCase");
 const AuthController_1 = require("../../../presentation/controllers/auth/AuthController");
 const authRoutes_1 = require("../../../presentation/routes/auth/authRoutes");
+const PassportService_1 = require("../../services/PassportService");
 /**
  * Binds all authentication-related use cases, controllers, and routes
  */
@@ -36,6 +37,7 @@ const bindAuthModule = (container) => {
     container.bind(types_1.TYPES.IVerifyForgotPasswordOtpUseCase).to(VerifyForgotPasswordOtpUseCase_1.VerifyForgotPasswordOtpUseCase);
     container.bind(types_1.TYPES.ResetPasswordUseCase).to(ResetPasswordUseCase_1.ResetPasswordUseCase);
     container.bind(types_1.TYPES.IResetPasswordUseCase).to(ResetPasswordUseCase_1.ResetPasswordUseCase);
+    container.bind(types_1.TYPES.IPassportService).to(PassportService_1.PassportService).inSingletonScope();
     // Auth Controllers & Routes
     container.bind(types_1.TYPES.AuthController).to(AuthController_1.AuthController);
     container.bind(types_1.TYPES.AuthRoutes).to(authRoutes_1.AuthRoutes);

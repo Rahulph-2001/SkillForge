@@ -1,13 +1,15 @@
 import { Profile } from 'passport-google-oauth20';
-export declare class PassportService {
+import { RequestHandler } from 'express';
+import { IPassportService } from '../../domain/services/IPassportService';
+export declare class PassportService implements IPassportService {
     constructor();
     private configureGoogleStrategy;
     private setupSerialization;
-    initializePassport(): import("express").Handler;
-    authenticateGoogle(): any;
+    initializePassport(): RequestHandler;
+    authenticateGoogle(): RequestHandler;
     authenticateGoogleCallback(options: {
         failureRedirect: string;
-    }): any;
+    }): RequestHandler;
 }
 declare global {
     namespace Express {

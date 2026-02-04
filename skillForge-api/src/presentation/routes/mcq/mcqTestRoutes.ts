@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { MCQTestController } from '../../controllers/mcq/MCQTestController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class MCQTestRoutes {
@@ -16,14 +17,15 @@ export class MCQTestRoutes {
   }
 
   private setupRoutes(): void {
-    
-    this.router.get('/start/:skillId', authMiddleware, this.mcqTestController.startTest);
 
-    
-    this.router.post('/submit', authMiddleware, this.mcqTestController.submitTest);
+    this.router.get(ENDPOINTS.MCQ_TEST.START_BY_SKILL, authMiddleware, this.mcqTestController.startTest);
+
+
+    this.router.post(ENDPOINTS.MCQ_TEST.SUBMIT, authMiddleware, this.mcqTestController.submitTest);
   }
 
   public getRouter(): Router {
     return this.router;
   }
 }
+

@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const ProjectApplicationController_1 = require("../../controllers/projectApplication/ProjectApplicationController");
 const types_1 = require("../../../infrastructure/di/types");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let ProjectApplicationRoutes = class ProjectApplicationRoutes {
     constructor(projectApplicationController) {
         this.projectApplicationController = projectApplicationController;
@@ -26,17 +27,17 @@ let ProjectApplicationRoutes = class ProjectApplicationRoutes {
     }
     initializeRoutes() {
         // Apply to a project
-        this.router.post('/projects/:projectId/apply', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.applyToProject(req, res, next));
+        this.router.post(routes_1.ENDPOINTS.PROJECT_APPLICATION.APPLY, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.applyToProject(req, res, next));
         // Get applications for a project (Project Owner)
-        this.router.get('/projects/:projectId/applications', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getProjectApplications(req, res, next));
+        this.router.get(routes_1.ENDPOINTS.PROJECT_APPLICATION.GET_PROJECT_APPS, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getProjectApplications(req, res, next));
         // Get my applications
-        this.router.get('/my-applications', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getMyApplications(req, res, next));
+        this.router.get(routes_1.ENDPOINTS.PROJECT_APPLICATION.MY_APPLICATIONS, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getMyApplications(req, res, next));
         // Get received applications
-        this.router.get('/received', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getReceivedApplications(req, res, next));
+        this.router.get(routes_1.ENDPOINTS.PROJECT_APPLICATION.RECEIVED, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.getReceivedApplications(req, res, next));
         // Update application status (Project Owner)
-        this.router.patch('/:applicationId/status', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.updateStatus(req, res, next));
+        this.router.patch(routes_1.ENDPOINTS.PROJECT_APPLICATION.UPDATE_STATUS, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.updateStatus(req, res, next));
         // Withdraw application
-        this.router.post('/:applicationId/withdraw', authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.withdrawApplication(req, res, next));
+        this.router.post(routes_1.ENDPOINTS.PROJECT_APPLICATION.WITHDRAW, authMiddleware_1.authMiddleware, (req, res, next) => this.projectApplicationController.withdrawApplication(req, res, next));
     }
 };
 exports.ProjectApplicationRoutes = ProjectApplicationRoutes;

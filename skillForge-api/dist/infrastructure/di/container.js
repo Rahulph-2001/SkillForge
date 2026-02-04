@@ -20,6 +20,7 @@ const community_bindings_1 = require("./modules/community.bindings");
 const admin_bindings_1 = require("./modules/admin.bindings");
 const project_bindings_1 = require("./modules/project.bindings");
 const adminSession_bindings_1 = require("./modules/adminSession.bindings");
+const report_bindings_1 = require("./modules/report.bindings");
 const escrow_bindings_1 = require("./modules/escrow.bindings");
 const videoCall_bindings_1 = require("./modules/videoCall.bindings");
 const review_bindings_1 = require("./modules/review.bindings");
@@ -27,6 +28,7 @@ const projectApplication_bindings_1 = require("./modules/projectApplication.bind
 const interview_bindings_1 = require("./modules/interview.bindings");
 const projectPaymentRequest_bindings_1 = require("./modules/projectPaymentRequest.bindings");
 const wallet_bindings_1 = require("./modules/wallet.bindings");
+const project_chat_bindings_1 = require("./modules/project_chat.bindings");
 const CronScheduler_1 = require("../scheduler/CronScheduler");
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
@@ -44,6 +46,7 @@ const CronScheduler_1 = require("../scheduler/CronScheduler");
 (0, admin_bindings_1.bindAdminModule)(di_1.container);
 (0, project_bindings_1.bindProjectModule)(di_1.container);
 (0, adminSession_bindings_1.bindAdminSessionModule)(di_1.container);
+(0, report_bindings_1.bindReportModule)(di_1.container);
 (0, videoCall_bindings_1.registerVideoCallBindings)(di_1.container);
 (0, review_bindings_1.registerReviewBindings)(di_1.container);
 (0, projectApplication_bindings_1.registerProjectApplicationBindings)(di_1.container);
@@ -52,6 +55,7 @@ di_1.container.bind(types_1.TYPES.CronScheduler).to(CronScheduler_1.CronSchedule
 di_1.container.load(escrow_bindings_1.escrowModule);
 di_1.container.load(projectPaymentRequest_bindings_1.projectPaymentRequestBindings);
 di_1.container.load(wallet_bindings_1.walletBindings);
+di_1.container.load(project_chat_bindings_1.projectChatBindings);
 // 3. Application entry point
 di_1.container.bind(types_1.TYPES.App).to(server_1.App);
 //# sourceMappingURL=container.js.map

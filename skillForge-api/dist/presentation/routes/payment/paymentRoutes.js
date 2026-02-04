@@ -22,6 +22,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const PaymentController_1 = require("../../controllers/payment/PaymentController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const express_2 = __importDefault(require("express"));
+const routes_1 = require("../../../config/routes");
 let PaymentRoutes = class PaymentRoutes {
     constructor(paymentController) {
         this.paymentController = paymentController;
@@ -30,12 +31,12 @@ let PaymentRoutes = class PaymentRoutes {
     }
     initializeRoutes() {
         // POST /api/v1/payments/create-intent
-        this.router.post('/create-intent', authMiddleware_1.authMiddleware, (req, res, next) => this.paymentController.createPaymentIntent(req, res, next));
+        this.router.post(routes_1.ENDPOINTS.PAYMENT.CREATE_INTENT, authMiddleware_1.authMiddleware, (req, res, next) => this.paymentController.createPaymentIntent(req, res, next));
         // POST /api/v1/payments/confirm
-        this.router.post('/confirm', authMiddleware_1.authMiddleware, (req, res, next) => this.paymentController.confirmPayment(req, res, next));
+        this.router.post(routes_1.ENDPOINTS.PAYMENT.CONFIRM, authMiddleware_1.authMiddleware, (req, res, next) => this.paymentController.confirmPayment(req, res, next));
         // POST /api/v1/payments/webhook
         // Note: Webhook needs raw body for Stripe signature verification
-        this.router.post('/webhook', express_2.default.raw({ type: 'application/json' }), (req, res) => this.paymentController.handleWebhook(req, res));
+        this.router.post(routes_1.ENDPOINTS.PAYMENT.WEBHOOK, express_2.default.raw({ type: 'application/json' }), (req, res) => this.paymentController.handleWebhook(req, res));
     }
     getRouter() {
         return this.router;

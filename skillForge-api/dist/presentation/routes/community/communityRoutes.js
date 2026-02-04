@@ -22,6 +22,7 @@ const multer_1 = require("../../../config/multer");
 const validationMiddleware_1 = require("../../middlewares/validationMiddleware");
 const CommunityValidationSchemas_1 = require("../../../application/validators/community/CommunityValidationSchemas");
 const optionalAuthMiddleware_1 = require("../../middlewares/optionalAuthMiddleware");
+const routes_1 = require("../../../config/routes");
 let CommunityRoutes = class CommunityRoutes {
     constructor(communityController) {
         this.communityController = communityController;
@@ -29,24 +30,24 @@ let CommunityRoutes = class CommunityRoutes {
         this.initializeRoutes();
     }
     initializeRoutes() {
-        this.router.post('/', authMiddleware_1.authMiddleware, multer_1.uploadImage.single('image'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.createCommunitySchema), this.communityController.createCommunity);
-        this.router.put('/:id', authMiddleware_1.authMiddleware, multer_1.uploadImage.single('image'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.updateCommunitySchema), this.communityController.updateCommunity);
-        this.router.get('/', optionalAuthMiddleware_1.optionalAuthMiddleware, this.communityController.getCommunities);
-        this.router.get('/:id', optionalAuthMiddleware_1.optionalAuthMiddleware, this.communityController.getCommunityDetails);
-        this.router.post('/:id/join', authMiddleware_1.authMiddleware, this.communityController.joinCommunity);
-        this.router.post('/:id/leave', authMiddleware_1.authMiddleware, this.communityController.leaveCommunity);
-        this.router.post('/:id/messages', authMiddleware_1.authMiddleware, multer_1.uploadImage.single('file'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.sendMessageSchema), this.communityController.sendMessage);
-        this.router.get('/:id/messages', authMiddleware_1.authMiddleware, this.communityController.getMessages);
-        this.router.post('/messages/:messageId/pin', authMiddleware_1.authMiddleware, this.communityController.pinMessage);
-        this.router.post('/messages/:messageId/unpin', authMiddleware_1.authMiddleware, this.communityController.unpinMessage);
-        this.router.delete('/messages/:messageId', authMiddleware_1.authMiddleware, this.communityController.deleteMessage);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.ROOT, authMiddleware_1.authMiddleware, multer_1.uploadImage.single('image'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.createCommunitySchema), this.communityController.createCommunity);
+        this.router.put(routes_1.ENDPOINTS.COMMUNITY.BY_ID, authMiddleware_1.authMiddleware, multer_1.uploadImage.single('image'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.updateCommunitySchema), this.communityController.updateCommunity);
+        this.router.get(routes_1.ENDPOINTS.COMMUNITY.ROOT, optionalAuthMiddleware_1.optionalAuthMiddleware, this.communityController.getCommunities);
+        this.router.get(routes_1.ENDPOINTS.COMMUNITY.BY_ID, optionalAuthMiddleware_1.optionalAuthMiddleware, this.communityController.getCommunityDetails);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.JOIN, authMiddleware_1.authMiddleware, this.communityController.joinCommunity);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.LEAVE, authMiddleware_1.authMiddleware, this.communityController.leaveCommunity);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.MESSAGES, authMiddleware_1.authMiddleware, multer_1.uploadImage.single('file'), (0, validationMiddleware_1.validateBody)(CommunityValidationSchemas_1.sendMessageSchema), this.communityController.sendMessage);
+        this.router.get(routes_1.ENDPOINTS.COMMUNITY.MESSAGES, authMiddleware_1.authMiddleware, this.communityController.getMessages);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.PIN_MESSAGE, authMiddleware_1.authMiddleware, this.communityController.pinMessage);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.UNPIN_MESSAGE, authMiddleware_1.authMiddleware, this.communityController.unpinMessage);
+        this.router.delete(routes_1.ENDPOINTS.COMMUNITY.DELETE_MESSAGE, authMiddleware_1.authMiddleware, this.communityController.deleteMessage);
         // Reaction routes
-        this.router.post('/messages/:messageId/reactions', authMiddleware_1.authMiddleware, this.communityController.addReaction);
-        this.router.delete('/messages/:messageId/reactions/:emoji', authMiddleware_1.authMiddleware, this.communityController.removeReaction);
+        this.router.post(routes_1.ENDPOINTS.COMMUNITY.REACTIONS, authMiddleware_1.authMiddleware, this.communityController.addReaction);
+        this.router.delete(routes_1.ENDPOINTS.COMMUNITY.REMOVE_REACTION, authMiddleware_1.authMiddleware, this.communityController.removeReaction);
         // New route for removing members
-        this.router.delete('/:id/members/:memberId', authMiddleware_1.authMiddleware, this.communityController.removeMember);
+        this.router.delete(routes_1.ENDPOINTS.COMMUNITY.REMOVE_MEMBER, authMiddleware_1.authMiddleware, this.communityController.removeMember);
         // New route for getting members
-        this.router.get('/:id/members', authMiddleware_1.authMiddleware, this.communityController.getMembers);
+        this.router.get(routes_1.ENDPOINTS.COMMUNITY.MEMBERS, authMiddleware_1.authMiddleware, this.communityController.getMembers);
     }
     getRouter() {
         return this.router;

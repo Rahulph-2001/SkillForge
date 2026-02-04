@@ -3,7 +3,7 @@ import { IRegisterUseCase } from '../../../application/useCases/auth/interfaces/
 import { ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
 import { IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
 import { IGoogleAuthUseCase } from '../../../application/useCases/auth/interfaces/IGoogleAuthUseCase';
-import { PassportService } from '../../../infrastructure/services/PassportService';
+import { IPassportService } from '../../../domain/services/IPassportService';
 import { IResendOtpUseCase } from '../../../application/useCases/auth/interfaces/IResendOtpUseCase';
 import { IAdminLoginUseCase } from '../../../application/useCases/auth/interfaces/IAdminLoginUseCase';
 import { IForgotPasswordUseCase } from '../../../application/useCases/auth/interfaces/IForgotPasswordUseCase';
@@ -12,7 +12,7 @@ import { IResetPasswordUseCase } from '../../../application/useCases/auth/interf
 import { IGetUserByIdUseCase } from '../../../application/useCases/user/interfaces/IGetUserByIdUseCase';
 import { IAuthResponseMapper } from './interfaces/IAuthResponseMapper';
 export declare class AuthController {
-    readonly passportService: PassportService;
+    readonly passportService: IPassportService;
     private readonly registerUseCase;
     private readonly loginUseCase;
     private readonly verifyOtpUseCase;
@@ -24,8 +24,8 @@ export declare class AuthController {
     private readonly resetPasswordUseCase;
     private readonly getUserByIdUseCase;
     private readonly authResponseMapper;
-    constructor(passportService: PassportService, registerUseCase: IRegisterUseCase, loginUseCase: ILoginUseCase, verifyOtpUseCase: IVerifyOtpUseCase, resendOtpUseCase: IResendOtpUseCase, adminLoginUseCase: IAdminLoginUseCase, googleAuthUseCase: IGoogleAuthUseCase, forgotPasswordUseCase: IForgotPasswordUseCase, verifyForgotPasswordOtpUseCase: IVerifyForgotPasswordOtpUseCase, resetPasswordUseCase: IResetPasswordUseCase, getUserByIdUseCase: IGetUserByIdUseCase, authResponseMapper: IAuthResponseMapper);
-    readonly googleLogin: ReturnType<PassportService['authenticateGoogle']>;
+    constructor(passportService: IPassportService, registerUseCase: IRegisterUseCase, loginUseCase: ILoginUseCase, verifyOtpUseCase: IVerifyOtpUseCase, resendOtpUseCase: IResendOtpUseCase, adminLoginUseCase: IAdminLoginUseCase, googleAuthUseCase: IGoogleAuthUseCase, forgotPasswordUseCase: IForgotPasswordUseCase, verifyForgotPasswordOtpUseCase: IVerifyForgotPasswordOtpUseCase, resetPasswordUseCase: IResetPasswordUseCase, getUserByIdUseCase: IGetUserByIdUseCase, authResponseMapper: IAuthResponseMapper);
+    readonly googleLogin: ReturnType<IPassportService['authenticateGoogle']>;
     register(req: Request, res: Response, next: NextFunction): Promise<void>;
     login(req: Request, res: Response, next: NextFunction): Promise<void>;
     verifyOtp(req: Request, res: Response, next: NextFunction): Promise<void>;

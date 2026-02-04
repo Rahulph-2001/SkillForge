@@ -20,6 +20,9 @@ import { ResetPasswordUseCase } from '../../../application/useCases/auth/ResetPa
 import { IResetPasswordUseCase } from '../../../application/useCases/auth/interfaces/IResetPasswordUseCase';
 import { AuthController } from '../../../presentation/controllers/auth/AuthController';
 import { AuthRoutes } from '../../../presentation/routes/auth/authRoutes';
+import { IPassportService } from '../../../domain/services/IPassportService';
+import { PassportService } from '../../services/PassportService';
+
 
 /**
  * Binds all authentication-related use cases, controllers, and routes
@@ -44,7 +47,8 @@ export const bindAuthModule = (container: Container): void => {
   container.bind<IVerifyForgotPasswordOtpUseCase>(TYPES.IVerifyForgotPasswordOtpUseCase).to(VerifyForgotPasswordOtpUseCase);
   container.bind<ResetPasswordUseCase>(TYPES.ResetPasswordUseCase).to(ResetPasswordUseCase);
   container.bind<IResetPasswordUseCase>(TYPES.IResetPasswordUseCase).to(ResetPasswordUseCase);
-  
+  container.bind<IPassportService>(TYPES.IPassportService).to(PassportService).inSingletonScope()
+
   // Auth Controllers & Routes
   container.bind<AuthController>(TYPES.AuthController).to(AuthController);
   container.bind<AuthRoutes>(TYPES.AuthRoutes).to(AuthRoutes);

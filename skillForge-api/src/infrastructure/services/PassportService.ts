@@ -1,10 +1,12 @@
 import { injectable } from 'inversify';
 import passport from 'passport';
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from 'passport-google-oauth20';
+import { RequestHandler } from 'express';
 import { env } from '../../config/env';
+import { IPassportService } from '../../domain/services/IPassportService';
 
 @injectable()
-export class PassportService {
+export class PassportService implements IPassportService {
   constructor() {
     this.configureGoogleStrategy();
     this.setupSerialization();
@@ -43,18 +45,18 @@ export class PassportService {
     });
   }
 
-  public initializePassport() {
+  public initializePassport(): RequestHandler {
     return passport.initialize();
   }
 
-  public authenticateGoogle() {
+  public authenticateGoogle(): RequestHandler {
     return passport.authenticate('google', {
       scope: ['profile', 'email'],
       session: false
     });
   }
 
-  public authenticateGoogleCallback(options: { failureRedirect: string }) {
+  public authenticateGoogleCallback(options: { failureRedirect: string }): RequestHandler {
     return passport.authenticate('google', {
       failureRedirect: options.failureRedirect,
       session: false

@@ -18,10 +18,24 @@ const types_1 = require("../../../infrastructure/di/types");
 const messages_1 = require("../../../config/messages");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 let AdminProjectController = class AdminProjectController {
-    constructor(listProjectsUseCase, getProjectStatsUseCase, responseBuilder) {
+    constructor(listProjectsUseCase, getProjectStatsUseCase, processPaymentRequestUseCase, responseBuilder) {
         this.listProjectsUseCase = listProjectsUseCase;
         this.getProjectStatsUseCase = getProjectStatsUseCase;
+        this.processPaymentRequestUseCase = processPaymentRequestUseCase;
         this.responseBuilder = responseBuilder;
+        this.processPaymentRequest = async (req, res, next) => {
+            try {
+                const { requestId } = req.params;
+                const { approved, notes, overrideAction } = req.body;
+                const adminId = req.user.id; // From auth middleware
+                await this.processPaymentRequestUseCase.execute(requestId, adminId, approved, notes, overrideAction);
+                const response = this.responseBuilder.success(null, approved ? 'Payment request approved successfully' : 'Payment request rejected successfully', HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
         this.listProjects = async (req, res, next) => {
             try {
                 const page = Number(req.query.page) || 1;
@@ -60,7 +74,8 @@ exports.AdminProjectController = AdminProjectController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IAdminListProjectsUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IAdminGetProjectStatsUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IProcessProjectPaymentRequestUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], AdminProjectController);
 //# sourceMappingURL=AdminProjectController.js.map

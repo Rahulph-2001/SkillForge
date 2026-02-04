@@ -105,6 +105,12 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
     async findById(projectId) {
         const project = await this.prisma.project.findUnique({
             where: { id: projectId, isDeleted: false },
+            include: {
+                applications: {
+                    where: { status: 'ACCEPTED' },
+                    include: { applicant: true }
+                }
+            }
         });
         return project ? this.mapToDomain(project) : null;
     }

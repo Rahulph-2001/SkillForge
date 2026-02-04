@@ -20,6 +20,7 @@ const AdminSessionController_1 = require("../../../presentation/controllers/admi
 const authMiddleware_1 = require("../../../presentation/middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../../presentation/middlewares/adminMiddleware");
 const asyncHandler_1 = require("../../../shared/utils/asyncHandler");
+const routes_1 = require("../../../config/routes");
 let AdminSessionRoutes = class AdminSessionRoutes {
     constructor(adminSessionController) {
         this.adminSessionController = adminSessionController;
@@ -30,10 +31,10 @@ let AdminSessionRoutes = class AdminSessionRoutes {
         // Apply auth and admin role check to all routes
         this.router.use(authMiddleware_1.authMiddleware);
         this.router.use(adminMiddleware_1.adminMiddleware);
-        this.router.get('/', (0, asyncHandler_1.asyncHandler)(this.adminSessionController.listSessions.bind(this.adminSessionController)));
-        this.router.get('/stats', (0, asyncHandler_1.asyncHandler)(this.adminSessionController.getStats.bind(this.adminSessionController)));
-        this.router.patch('/:id/cancel', (0, asyncHandler_1.asyncHandler)(this.adminSessionController.cancelSession.bind(this.adminSessionController)));
-        this.router.patch('/:id/complete', (0, asyncHandler_1.asyncHandler)(this.adminSessionController.completeSession.bind(this.adminSessionController)));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_SESSION.ROOT, (0, asyncHandler_1.asyncHandler)(this.adminSessionController.listSessions.bind(this.adminSessionController)));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_SESSION.STATS, (0, asyncHandler_1.asyncHandler)(this.adminSessionController.getStats.bind(this.adminSessionController)));
+        this.router.patch(routes_1.ENDPOINTS.ADMIN_SESSION.CANCEL, (0, asyncHandler_1.asyncHandler)(this.adminSessionController.cancelSession.bind(this.adminSessionController)));
+        this.router.patch(routes_1.ENDPOINTS.ADMIN_SESSION.COMPLETE, (0, asyncHandler_1.asyncHandler)(this.adminSessionController.completeSession.bind(this.adminSessionController)));
     }
 };
 exports.AdminSessionRoutes = AdminSessionRoutes;

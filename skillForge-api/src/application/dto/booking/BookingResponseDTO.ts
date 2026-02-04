@@ -32,6 +32,7 @@ export const BookingResponseDTOSchema = z.object({
   sessionCost: z.number().min(0, 'Session cost must be non-negative'),
   rescheduleInfo: RescheduleInfoSchema.optional(),
   rejectionReason: z.string().optional(),
+  isReviewed: z.boolean().optional(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

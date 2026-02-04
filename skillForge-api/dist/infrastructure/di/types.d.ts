@@ -9,6 +9,7 @@ export declare const TYPES: {
     IEmailService: symbol;
     IPendingRegistrationService: symbol;
     PassportService: symbol;
+    IPassportService: symbol;
     RegisterUseCase: symbol;
     IRegisterUseCase: symbol;
     LoginUseCase: symbol;
@@ -351,5 +352,22 @@ export declare const TYPES: {
     IGetUserWalletTransactionsUseCase: symbol;
     WalletController: symbol;
     WalletRoutes: symbol;
+    IReportRepository: symbol;
+    CreateReportUseCase: symbol;
+    ICreateReportUseCase: symbol;
+    AdminListReportsUseCase: symbol;
+    IAdminListReportsUseCase: symbol;
+    AdminManageReportUseCase: symbol;
+    IAdminManageReportUseCase: symbol;
+    ReportController: symbol;
+    ReportRoutes: symbol;
+    AdminReportController: symbol;
+    AdminReportRoutes: symbol;
+    IProjectMessageRepository: symbol;
+    IProjectMessageMapper: symbol;
+    ISendProjectMessageUseCase: symbol;
+    IGetProjectMessagesUseCase: symbol;
+    ProjectMessageController: symbol;
+    ProjectMessageRoutes: symbol;
 };
 //# sourceMappingURL=types.d.ts.map

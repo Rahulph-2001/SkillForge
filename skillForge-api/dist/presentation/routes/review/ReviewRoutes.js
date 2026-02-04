@@ -20,6 +20,7 @@ const ReviewController_1 = require("../../controllers/review/ReviewController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const validationMiddleware_1 = require("../../middlewares/validationMiddleware");
 const CreateReviewDTO_1 = require("../../../application/dto/review/CreateReviewDTO");
+const routes_1 = require("../../../config/routes");
 let ReviewRoutes = class ReviewRoutes {
     constructor(controller) {
         this.controller = controller;
@@ -28,7 +29,7 @@ let ReviewRoutes = class ReviewRoutes {
     }
     initializeRoutes() {
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.post('/', (0, validationMiddleware_1.validateBody)(CreateReviewDTO_1.CreateReviewSchema), this.controller.create);
+        this.router.post(routes_1.ENDPOINTS.REVIEW.ROOT, (0, validationMiddleware_1.validateBody)(CreateReviewDTO_1.CreateReviewSchema), this.controller.create);
     }
 };
 exports.ReviewRoutes = ReviewRoutes;

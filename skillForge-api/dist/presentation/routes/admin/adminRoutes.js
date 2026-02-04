@@ -23,6 +23,7 @@ const ProjectPaymentRequestController_1 = require("../../controllers/admin/Proje
 const AdminProjectController_1 = require("../../controllers/admin/AdminProjectController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
 const adminMiddleware_1 = require("../../middlewares/adminMiddleware");
+const routes_1 = require("../../../config/routes");
 let AdminRoutes = class AdminRoutes {
     constructor(adminController, subscriptionRoutes, featureRoutes, paymentRequestController, adminProjectController) {
         this.adminController = adminController;
@@ -39,36 +40,36 @@ let AdminRoutes = class AdminRoutes {
         this.router.use(adminMiddleware_1.adminMiddleware);
         // User Management Routes
         // GET /api/v1/admin/users - List all users
-        this.router.get('/users', this.adminController.listUsers.bind(this.adminController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN.USERS, this.adminController.listUsers.bind(this.adminController));
         // POST /api/v1/admin/users/suspend - Suspend a user
-        this.router.post('/users/suspend', this.adminController.suspendUser.bind(this.adminController));
+        this.router.post(routes_1.ENDPOINTS.ADMIN.USERS_SUSPEND, this.adminController.suspendUser.bind(this.adminController));
         // POST /api/v1/admin/users/unsuspend - Unsuspend (reactivate) a user
-        this.router.post('/users/unsuspend', this.adminController.unsuspendUser.bind(this.adminController));
+        this.router.post(routes_1.ENDPOINTS.ADMIN.USERS_UNSUSPEND, this.adminController.unsuspendUser.bind(this.adminController));
         // Community Management Routes
         // GET /api/v1/admin/communities - List all communities with pagination and search
-        this.router.get('/communities', this.adminController.listCommunities.bind(this.adminController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN.COMMUNITIES, this.adminController.listCommunities.bind(this.adminController));
         // PUT /api/v1/admin/communities/:id - Update community
-        this.router.put('/communities/:id', this.adminController.updateCommunity.bind(this.adminController));
+        this.router.put(routes_1.ENDPOINTS.ADMIN.COMMUNITY_BY_ID, this.adminController.updateCommunity.bind(this.adminController));
         // POST /api/v1/admin/communities/:id/block - Block community
-        this.router.post('/communities/:id/block', this.adminController.blockCommunity.bind(this.adminController));
+        this.router.post(routes_1.ENDPOINTS.ADMIN.COMMUNITY_BLOCK, this.adminController.blockCommunity.bind(this.adminController));
         // POST /api/v1/admin/communities/:id/unblock - Unblock community
-        this.router.post('/communities/:id/unblock', this.adminController.unblockCommunity.bind(this.adminController));
+        this.router.post(routes_1.ENDPOINTS.ADMIN.COMMUNITY_UNBLOCK, this.adminController.unblockCommunity.bind(this.adminController));
         // Subscription Management Routes
         // Mount subscription routes at /api/v1/admin/subscriptions
-        this.router.use('/subscriptions', this.subscriptionRoutes.router);
+        this.router.use(routes_1.ENDPOINTS.ADMIN.SUBSCRIPTIONS, this.subscriptionRoutes.router);
         // Feature Management Routes
         // Mount feature routes at /api/v1/admin/features
-        this.router.use('/features', this.featureRoutes.router);
+        this.router.use(routes_1.ENDPOINTS.ADMIN.FEATURES, this.featureRoutes.router);
         // Project Management Routes
         // GET /api/v1/admin/projects - List all projects
-        this.router.get('/projects', this.adminProjectController.listProjects.bind(this.adminProjectController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN.PROJECTS, this.adminProjectController.listProjects.bind(this.adminProjectController));
         // GET /api/v1/admin/projects/stats - Get project statistics
-        this.router.get('/projects/stats', this.adminProjectController.getProjectStats.bind(this.adminProjectController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN.PROJECTS_STATS, this.adminProjectController.getProjectStats.bind(this.adminProjectController));
         // Project Payment Requests
         // GET /api/v1/admin/payment-requests/pending
-        this.router.get('/payment-requests/pending', this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN.PAYMENT_REQUESTS_PENDING, this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));
         // POST /api/v1/admin/payment-requests/:id/process
-        this.router.post('/payment-requests/:id/process', this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
+        this.router.post(routes_1.ENDPOINTS.ADMIN.PAYMENT_REQUEST_PROCESS, this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
     }
 };
 exports.AdminRoutes = AdminRoutes;

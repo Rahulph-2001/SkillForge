@@ -4,6 +4,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ProjectMessageController } from '../../controllers/project/ProjectMessageController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class ProjectMessageRoutes {
@@ -26,7 +27,8 @@ export class ProjectMessageRoutes {
         // GET /projects/:projectId/messages
         // POST /projects/:projectId/messages
 
-        this.router.get('/projects/:projectId/messages', authMiddleware, this.controller.getMessages);
-        this.router.post('/projects/:projectId/messages', authMiddleware, this.controller.sendMessage);
+        this.router.get(ENDPOINTS.PROJECT_MESSAGE.GET_MESSAGES, authMiddleware, this.controller.getMessages);
+        this.router.post(ENDPOINTS.PROJECT_MESSAGE.SEND_MESSAGE, authMiddleware, this.controller.sendMessage);
     }
 }
+

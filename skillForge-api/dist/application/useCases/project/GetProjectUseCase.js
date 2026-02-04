@@ -56,6 +56,11 @@ let GetProjectUseCase = class GetProjectUseCase {
                 rating: undefined,
                 isVerified: false,
             },
+            acceptedContributor: project.acceptedContributor ? {
+                id: project.acceptedContributor.id,
+                name: project.acceptedContributor.name,
+                avatarUrl: project.acceptedContributor.avatarUrl || undefined,
+            } : undefined,
         };
     }
 };

@@ -1,8 +1,8 @@
 
 import { injectable } from 'inversify';
 import { IProjectMessageMapper } from './interfaces/IProjectMessageMapper';
-import { ProjectMessage } from '../../../domain/entities/ProjectMessage';
-import { ProjectMessageResponseDTO } from '../../dto/project/ProjectMessageDTO';
+import { ProjectMessage } from '../../domain/entities/ProjectMessage';
+import { ProjectMessageResponseDTO } from '../dto/project/ProjectMessageDTO';
 
 @injectable()
 export class ProjectMessageMapper implements IProjectMessageMapper {

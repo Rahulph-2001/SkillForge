@@ -5,6 +5,7 @@ import { ReviewController } from '../../controllers/review/ReviewController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { validateBody } from '../../middlewares/validationMiddleware';
 import { CreateReviewSchema } from '../../../application/dto/review/CreateReviewDTO';
+import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
 export class ReviewRoutes {
@@ -18,6 +19,7 @@ export class ReviewRoutes {
 
     private initializeRoutes(): void {
         this.router.use(authMiddleware);
-        this.router.post('/', validateBody(CreateReviewSchema), this.controller.create);
+        this.router.post(ENDPOINTS.REVIEW.ROOT, validateBody(CreateReviewSchema), this.controller.create);
     }
 }
+

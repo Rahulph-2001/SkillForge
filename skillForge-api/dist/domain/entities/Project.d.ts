@@ -62,6 +62,7 @@ export declare class Project {
     markAsPaymentPending(): void;
     markAsRefundPending(): void;
     revertToPendingCompletion(): void;
+    revertToInProgress(): void;
     markAsCancelled(): void;
     incrementApplicationsCount(): void;
     get acceptedContributor(): {

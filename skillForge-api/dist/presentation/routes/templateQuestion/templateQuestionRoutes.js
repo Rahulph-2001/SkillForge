@@ -18,6 +18,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const TemplateQuestionController_1 = require("../../controllers/templateQuestion/TemplateQuestionController");
 const authMiddleware_1 = require("../../middlewares/authMiddleware");
+const routes_1 = require("../../../config/routes");
 let TemplateQuestionRoutes = class TemplateQuestionRoutes {
     constructor(templateQuestionController) {
         this.templateQuestionController = templateQuestionController;
@@ -28,16 +29,16 @@ let TemplateQuestionRoutes = class TemplateQuestionRoutes {
         // All routes require admin authentication
         this.router.use(authMiddleware_1.authMiddleware);
         // POST /api/v1/admin/skill-templates/:templateId/questions - Create question
-        this.router.post('/', this.templateQuestionController.create.bind(this.templateQuestionController));
+        this.router.post(routes_1.ENDPOINTS.TEMPLATE_QUESTION.ROOT, this.templateQuestionController.create.bind(this.templateQuestionController));
         // GET /api/v1/admin/skill-templates/:templateId/questions - List questions
         // Supports ?level=Beginner query parameter
-        this.router.get('/', this.templateQuestionController.list.bind(this.templateQuestionController));
+        this.router.get(routes_1.ENDPOINTS.TEMPLATE_QUESTION.ROOT, this.templateQuestionController.list.bind(this.templateQuestionController));
         // PUT /api/v1/admin/skill-templates/:templateId/questions/:id - Update question
-        this.router.put('/:id', this.templateQuestionController.update.bind(this.templateQuestionController));
+        this.router.put(routes_1.ENDPOINTS.TEMPLATE_QUESTION.BY_ID, this.templateQuestionController.update.bind(this.templateQuestionController));
         // DELETE /api/v1/admin/skill-templates/:templateId/questions/bulk - Bulk delete questions
-        this.router.delete('/bulk', this.templateQuestionController.bulkDelete.bind(this.templateQuestionController));
+        this.router.delete(routes_1.ENDPOINTS.TEMPLATE_QUESTION.BULK_DELETE, this.templateQuestionController.bulkDelete.bind(this.templateQuestionController));
         // DELETE /api/v1/admin/skill-templates/:templateId/questions/:id - Delete question
-        this.router.delete('/:id', this.templateQuestionController.delete.bind(this.templateQuestionController));
+        this.router.delete(routes_1.ENDPOINTS.TEMPLATE_QUESTION.BY_ID, this.templateQuestionController.delete.bind(this.templateQuestionController));
     }
 };
 exports.TemplateQuestionRoutes = TemplateQuestionRoutes;

@@ -25,7 +25,7 @@ let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
         this.paymentRequestRepository = paymentRequestRepository;
         this.applicationRepository = applicationRepository;
     }
-    async execute(projectId, userId, decision) {
+    async execute(projectId, userId, decision, reason) {
         const project = await this.projectRepository.findById(projectId);
         if (!project) {
             throw new AppError_1.NotFoundError('Project not found');
@@ -59,15 +59,19 @@ let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
             project.markAsPaymentPending();
         }
         else if (decision === 'REJECT') {
-            // Create REFUND payment request pending admin approval
+            if (!reason) {
+                throw new AppError_1.ValidationError('A reason is required to reject project completion');
+            }
+            // Create REFUND payment request pending admin approval - THIS IS NOW A DISPUTE
             const paymentRequest = ProjectPaymentRequest_1.ProjectPaymentRequest.create({
                 id: (0, uuid_1.v4)(),
                 projectId: project.id,
                 type: ProjectPaymentRequest_1.ProjectPaymentRequestType.REFUND,
                 amount: project.budget,
                 requestedBy: userId,
-                recipientId: userId, // Refund back to creator
+                recipientId: userId, // Refund goes back to creator
                 status: ProjectPaymentRequest_1.ProjectPaymentRequestStatus.PENDING,
+                requesterNotes: reason, // Store the dispute reason here
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
@@ -75,7 +79,8 @@ let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
             project.markAsRefundPending();
         }
         else if (decision === 'REQUEST_CHANGES') {
-            project.requestModifications();
+            project.revertToInProgress();
+            // TODO: Notify contributor
         }
         else {
             throw new AppError_1.ValidationError('Invalid decision. Must be APPROVE, REJECT, or REQUEST_CHANGES');
