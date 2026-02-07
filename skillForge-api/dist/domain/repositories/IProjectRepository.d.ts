@@ -26,6 +26,7 @@ export interface ProjectStats {
 export interface AdminListProjectsFilters extends ListProjectsFilters {
     includeCreator?: boolean;
     includeContributor?: boolean;
+    isSuspended?: boolean;
 }
 export interface IProjectRepository {
     findById(projectId: string): Promise<Project | null>;

@@ -24,6 +24,9 @@ export interface ProjectProps {
   applicationsCount?: number;
   createdAt: Date;
   updatedAt: Date;
+  isSuspended?: boolean;
+  suspendedAt?: Date | null;
+  suspendedReason?: string | null;
   client?: {
     id: string;
     name: string;
@@ -121,6 +124,17 @@ export class Project {
 
   get updatedAt(): Date {
     return this.props.updatedAt;
+  }
+  get isSuspended(): boolean {
+    return this.props.isSuspended || false;
+  }
+
+  get suspendedAt(): Date | null | undefined {
+    return this.props.suspendedAt;
+  }
+
+  get suspendReason(): string | null | undefined {
+    return this.props.suspendedReason
   }
 
   // Business logic methods
@@ -224,6 +238,16 @@ export class Project {
   get acceptedContributor() {
     return this.props.acceptedContributor;
   }
+  suspend(reason: string): void {
+    if (this.props.isSuspended) {
+      throw new Error('Project is already suspended');
+    }
+    this.props.isSuspended = true;
+    this.props.suspendedAt = new Date();
+    this.props.suspendedReason = reason;
+    this.props.status = ProjectStatus.CANCELLED; // Automatically cancel suspended projects
+    this.props.updatedAt = new Date();
+  }
 
   toJSON(): ProjectProps {
     return {
@@ -242,6 +266,9 @@ export class Project {
       createdAt: this.props.createdAt,
       updatedAt: this.props.updatedAt,
       client: this.props.client,
+      isSuspended: this.props.isSuspended || false,
+      suspendedAt: this.props.suspendedAt,
+      suspendedReason: this.props.suspendedReason,
       acceptedContributor: this.props.acceptedContributor,
     };
   }

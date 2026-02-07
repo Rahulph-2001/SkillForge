@@ -141,6 +141,13 @@ exports.SUCCESS_MESSAGES = {
         FETCHED: 'Interviews retrieved successfully',
         CANCELLED: 'Interview cancelled successfully',
     },
+    NOTIFICATION: {
+        FETCHED: 'Notifications retrieved successfully',
+        COUNT_FETCHED: 'Unread count retrieved successfully',
+        MARKED_READ: 'Notification marked as read',
+        ALL_MARKED_READ: 'All notifications marked as read',
+        DELETED: 'Notification deleted successfully',
+    },
 };
 exports.ERROR_MESSAGES = {
     AUTH: {
@@ -175,6 +182,11 @@ exports.ERROR_MESSAGES = {
         INTERNAL_SERVER_ERROR: 'Internal server error',
         TOO_MANY_REQUESTS: 'Too many requests, try again later.',
         EMAIL_SEND_FAILED: 'Failed to send email. Please try again.',
+    },
+    NOTIFICATION: {
+        NOT_FOUND: 'Notification not found',
+        UNAUTHORIZED: 'You are not authorized to access this notification',
+        CREATION_FAILED: 'Failed to create notification',
     },
     SESSION: {
         NOT_STARTED_YET: 'Session has not started yet. Please wait until the scheduled time.',

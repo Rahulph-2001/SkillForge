@@ -82,6 +82,15 @@ class Project {
     get updatedAt() {
         return this.props.updatedAt;
     }
+    get isSuspended() {
+        return this.props.isSuspended || false;
+    }
+    get suspendedAt() {
+        return this.props.suspendedAt;
+    }
+    get suspendReason() {
+        return this.props.suspendedReason;
+    }
     // Business logic methods
     canBeUpdated() {
         return this.props.status === ProjectStatus.OPEN || this.props.status === ProjectStatus.IN_PROGRESS;
@@ -169,6 +178,16 @@ class Project {
     get acceptedContributor() {
         return this.props.acceptedContributor;
     }
+    suspend(reason) {
+        if (this.props.isSuspended) {
+            throw new Error('Project is already suspended');
+        }
+        this.props.isSuspended = true;
+        this.props.suspendedAt = new Date();
+        this.props.suspendedReason = reason;
+        this.props.status = ProjectStatus.CANCELLED; // Set status to CANCELLED
+        this.props.updatedAt = new Date();
+    }
     toJSON() {
         return {
             id: this.props.id,
@@ -186,6 +205,9 @@ class Project {
             createdAt: this.props.createdAt,
             updatedAt: this.props.updatedAt,
             client: this.props.client,
+            isSuspended: this.props.isSuspended || false,
+            suspendedAt: this.props.suspendedAt,
+            suspendedReason: this.props.suspendedReason,
             acceptedContributor: this.props.acceptedContributor,
         };
     }

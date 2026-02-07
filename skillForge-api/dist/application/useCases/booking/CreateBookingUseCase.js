@@ -19,14 +19,16 @@ const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
 const BookingValidator_1 = require("../../../shared/validators/BookingValidator");
 const DateTimeUtils_1 = require("../../../shared/utils/DateTimeUtils");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CreateBookingUseCase = class CreateBookingUseCase {
-    constructor(bookingRepository, skillRepository, userRepository, availabilityRepository, escrowRepository, bookingMapper) {
+    constructor(bookingRepository, skillRepository, userRepository, availabilityRepository, escrowRepository, bookingMapper, notificationService) {
         this.bookingRepository = bookingRepository;
         this.skillRepository = skillRepository;
         this.userRepository = userRepository;
         this.availabilityRepository = availabilityRepository;
         this.escrowRepository = escrowRepository;
         this.bookingMapper = bookingMapper;
+        this.notificationService = notificationService;
     }
     async execute(request) {
         // 1. Validate required fields
@@ -138,6 +140,25 @@ let CreateBookingUseCase = class CreateBookingUseCase {
         });
         // 11. Create booking with escrow hold (holds credits from learner)
         const createdBooking = await this.bookingRepository.createWithEscrow(booking, sessionCost);
+        // 12. Send notification to provider about new booking request
+        const formattedDate = new Date(request.preferredDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+        await this.notificationService.send({
+            userId: request.providerId,
+            type: Notification_1.NotificationType.BOOKING_REQUEST,
+            title: 'New Booking Request',
+            message: `${learner.name} requested a ${skill.title} session for ${formattedDate} at ${request.preferredTime}`,
+            data: {
+                bookingId: createdBooking.id,
+                skillId: request.skillId,
+                learnerId: request.learnerId,
+                preferredDate: request.preferredDate,
+                preferredTime: request.preferredTime
+            },
+        });
         return this.bookingMapper.toDTO(createdBooking);
     }
 };
@@ -150,6 +171,7 @@ exports.CreateBookingUseCase = CreateBookingUseCase = __decorate([
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IAvailabilityRepository)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], CreateBookingUseCase);
 //# sourceMappingURL=CreateBookingUseCase.js.map

@@ -203,6 +203,10 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       where.status = this.mapToPrismaStatus(filters.status);
     }
 
+    if (typeof filters.isSuspended === 'boolean') {
+      where.isSuspended = filters.isSuspended;
+    }
+
     // Get total count
     const total = await this.prisma.project.count({ where });
 
@@ -311,6 +315,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     search?: string;
     status?: ProjectStatus;
     category?: string;
+    isSuspended?: boolean;
     includeCreator?: boolean;
     includeContributor?: boolean;
   }): Promise<{
@@ -343,6 +348,10 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
 
     if (filters.status) {
       where.status = this.mapToPrismaStatus(filters.status);
+    }
+
+    if (typeof filters.isSuspended === 'boolean') {
+      where.isSuspended = filters.isSuspended;
     }
 
     // Get total count

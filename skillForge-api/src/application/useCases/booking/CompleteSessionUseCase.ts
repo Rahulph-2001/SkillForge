@@ -1,4 +1,3 @@
-
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
@@ -10,6 +9,10 @@ import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/
 import { ICompleteSessionUseCase, CompleteSessionRequestDTO } from './interfaces/ICompleteSessionUseCase';
 import { Database } from '../../../infrastructure/database/Database';
 import { PrismaClient } from '@prisma/client';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 
 @injectable()
 export class CompleteSessionUseCase implements ICompleteSessionUseCase {
@@ -18,22 +21,25 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
         @inject(TYPES.IEscrowRepository) private readonly escrowRepository: IEscrowRepository,
         @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper,
         @inject(TYPES.Database) private readonly database: Database,
+        @inject(TYPES.INotificationService) private readonly notificationService: INotificationService,
+        @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+        @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
     ) { }
 
     async execute(request: CompleteSessionRequestDTO): Promise<BookingResponseDTO> {
         const { bookingId, completedBy } = request;
 
-        const booking = await this.bookingRepository.findById(bookingId)
+        const booking = await this.bookingRepository.findById(bookingId);
         if (!booking) {
-            throw new NotFoundError('Booking not found')
+            throw new NotFoundError('Booking not found');
         }
 
         if (booking.providerId !== completedBy && booking.learnerId !== completedBy) {
-            throw new ForbiddenError('You are not authorized to complete this session')
+            throw new ForbiddenError('You are not authorized to complete this session');
         }
 
         if (!booking.canBeCompleted()) {
-            throw new ValidationError(`cannot complete booking with status: ${booking.status}`)
+            throw new ValidationError(`cannot complete booking with status: ${booking.status}`);
         }
 
         // Use transaction to ensure all updates are atomic
@@ -66,6 +72,38 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
                 where: { id: booking.skillId },
                 data: { totalSessions: { increment: 1 } },
             });
+        });
+
+        // Fetch user and skill details for notifications
+        const learner = await this.userRepository.findById(booking.learnerId);
+        const provider = await this.userRepository.findById(booking.providerId);
+        const skill = await this.skillRepository.findById(booking.skillId);
+
+        // Send notification to learner about session completion
+        await this.notificationService.send({
+            userId: booking.learnerId,
+            type: NotificationType.SESSION_COMPLETED,
+            title: 'Session Completed',
+            message: `Your ${skill?.title || 'skill'} session with ${provider?.name || 'provider'} has been completed`,
+            data: { bookingId: booking.id, skillId: booking.skillId },
+        });
+
+        // Send notification to provider about session completion
+        await this.notificationService.send({
+            userId: booking.providerId,
+            type: NotificationType.SESSION_COMPLETED,
+            title: 'Session Completed',
+            message: `Your ${skill?.title || 'skill'} session with ${learner?.name || 'learner'} has been completed`,
+            data: { bookingId: booking.id, skillId: booking.skillId },
+        });
+
+        // Send notification to provider about credits earned
+        await this.notificationService.send({
+            userId: booking.providerId,
+            type: NotificationType.CREDITS_EARNED,
+            title: 'Credits Earned',
+            message: `You earned ${booking.sessionCost} credits from your session with ${learner?.name || 'learner'}`,
+            data: { bookingId: booking.id, creditsEarned: booking.sessionCost },
         });
 
         // Fetch the updated booking for response

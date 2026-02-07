@@ -18,10 +18,13 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const Project_1 = require("../../../domain/entities/Project");
 const ProjectApplication_1 = require("../../../domain/entities/ProjectApplication");
+const Notification_1 = require("../../../domain/entities/Notification");
 let RequestProjectCompletionUseCase = class RequestProjectCompletionUseCase {
-    constructor(projectRepository, applicationRepository) {
+    constructor(projectRepository, applicationRepository, userRepository, notificationService) {
         this.projectRepository = projectRepository;
         this.applicationRepository = applicationRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
     async execute(projectId, userId) {
         const project = await this.projectRepository.findById(projectId);
@@ -38,6 +41,18 @@ let RequestProjectCompletionUseCase = class RequestProjectCompletionUseCase {
         }
         project.markAsPendingCompletion();
         await this.projectRepository.update(project);
+        // Notify project owner about completion request
+        const contributor = await this.userRepository.findById(userId);
+        await this.notificationService.send({
+            userId: project.clientId,
+            type: Notification_1.NotificationType.PROJECT_COMPLETION_REQUESTED,
+            title: 'Project Completion Requested',
+            message: `${contributor?.name || 'Contributor'} marked "${project.title}" as completed and is requesting your approval`,
+            data: {
+                projectId: project.id,
+                contributorId: userId
+            },
+        });
     }
 };
 exports.RequestProjectCompletionUseCase = RequestProjectCompletionUseCase;
@@ -45,6 +60,8 @@ exports.RequestProjectCompletionUseCase = RequestProjectCompletionUseCase = __de
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], RequestProjectCompletionUseCase);
 //# sourceMappingURL=RequestProjectCompletionUseCase.js.map

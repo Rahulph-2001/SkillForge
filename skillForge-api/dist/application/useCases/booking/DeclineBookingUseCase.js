@@ -17,10 +17,13 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let DeclineBookingUseCase = class DeclineBookingUseCase {
-    constructor(bookingRepository, escrowRepository) {
+    constructor(bookingRepository, escrowRepository, notificationService, userRepository) {
         this.bookingRepository = bookingRepository;
         this.escrowRepository = escrowRepository;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
     }
     async execute(request) {
         // 1. Find the booking
@@ -40,6 +43,15 @@ let DeclineBookingUseCase = class DeclineBookingUseCase {
         await this.escrowRepository.refundCredits(request.bookingId);
         // 5. Update booking status to rejected
         await this.bookingRepository.updateStatus(request.bookingId, Booking_1.BookingStatus.REJECTED, request.reason);
+        // 6. Send notification to learner
+        const provider = await this.userRepository.findById(booking.providerId);
+        await this.notificationService.send({
+            userId: booking.learnerId,
+            type: Notification_1.NotificationType.SESSION_DECLINED,
+            title: 'Session Declined',
+            message: `${provider?.name || 'Provider'} declined your session request${request.reason ? `. Reason: ${request.reason}` : ''}`,
+            data: { bookingId: booking.id, providerId: booking.providerId },
+        });
     }
 };
 exports.DeclineBookingUseCase = DeclineBookingUseCase;
@@ -47,6 +59,8 @@ exports.DeclineBookingUseCase = DeclineBookingUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], DeclineBookingUseCase);
 //# sourceMappingURL=DeclineBookingUseCase.js.map

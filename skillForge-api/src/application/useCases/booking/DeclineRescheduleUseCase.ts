@@ -1,16 +1,21 @@
-
-
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { IDeclineRescheduleUseCase, DeclineRescheduleRequestDTO } from './interfaces/IDeclineRescheduleUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class DeclineRescheduleUseCase implements IDeclineRescheduleUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
-    private readonly bookingRepository: IBookingRepository
+    private readonly bookingRepository: IBookingRepository,
+    @inject(TYPES.IUserRepository)
+    private readonly userRepository: IUserRepository,
+    @inject(TYPES.INotificationService)
+    private readonly notificationService: INotificationService
   ) { }
 
   async execute(request: DeclineRescheduleRequestDTO): Promise<void> {
@@ -52,6 +57,20 @@ export class DeclineRescheduleUseCase implements IDeclineRescheduleUseCase {
     // 5. Decline the reschedule request (revert to confirmed status and clear reschedule info)
     await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
 
-    // TODO: Send notification to the requester about declined reschedule
+    // 6. Send notification to the requester about declined reschedule
+    const requesterId = rescheduleInfo.requestedBy === 'learner' ? booking.learnerId : booking.providerId;
+    const decliner = await this.userRepository.findById(request.userId);
+
+    await this.notificationService.send({
+      userId: requesterId,
+      type: NotificationType.RESCHEDULE_DECLINED,
+      title: 'Reschedule Declined',
+      message: `${decliner?.name || 'User'} declined your reschedule request${request.reason ? `. Reason: ${request.reason}` : '. The session remains at its original time.'}`,
+      data: {
+        bookingId: booking.id,
+        originalDate: booking.preferredDate,
+        originalTime: booking.preferredTime
+      },
+    });
   }
 }

@@ -17,10 +17,14 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const Booking_1 = require("../../../domain/entities/Booking");
+const Notification_1 = require("../../../domain/entities/Notification");
 let AcceptBookingUseCase = class AcceptBookingUseCase {
-    constructor(bookingRepository, bookingMapper) {
+    constructor(bookingRepository, bookingMapper, notificationService, skillRepository, userRepository) {
         this.bookingRepository = bookingRepository;
         this.bookingMapper = bookingMapper;
+        this.notificationService = notificationService;
+        this.skillRepository = skillRepository;
+        this.userRepository = userRepository;
     }
     async execute(request) {
         // 1. Find the booking
@@ -40,6 +44,15 @@ let AcceptBookingUseCase = class AcceptBookingUseCase {
         // NOTE: Credits remain in escrow - NOT transferred to provider yet
         // Credits will be released when session is marked as completed
         const updatedBooking = await this.bookingRepository.updateStatus(request.bookingId, Booking_1.BookingStatus.CONFIRMED);
+        const skill = await this.skillRepository.findById(booking.skillId);
+        const provider = await this.userRepository.findById(booking.providerId);
+        await this.notificationService.send({
+            userId: booking.learnerId,
+            type: Notification_1.NotificationType.SESSION_CONFIRMED,
+            title: 'Session Confirmed',
+            message: `Your ${skill?.title || 'skill'} session with ${provider?.name || 'provider'} has been confirmed for ${new Date(booking.createdAt).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`,
+            data: { bookingId: booking.id, skillId: booking.skillId, providerId: booking.providerId },
+        });
         return this.bookingMapper.toDTO(updatedBooking);
     }
 };
@@ -48,6 +61,9 @@ exports.AcceptBookingUseCase = AcceptBookingUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], AcceptBookingUseCase);
 //# sourceMappingURL=AcceptBookingUseCase.js.map

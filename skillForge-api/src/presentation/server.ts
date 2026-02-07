@@ -40,6 +40,9 @@ import { WalletRoutes } from './routes/wallet/walletRoutes';
 import { ReportRoutes } from './routes/ReportRoutes';
 import { AdminReportRoutes } from './routes/admin/AdminReportRoutes';
 import { ProjectMessageRoutes } from './routes/project/ProjectMessageRoutes';
+import { NotificationRoutes } from './routes/notification/notificationRoutes';
+
+
 
 @injectable()
 export class App {
@@ -74,8 +77,8 @@ export class App {
         @inject(TYPES.ReportRoutes) private readonly reportRoutes: ReportRoutes,
         @inject(TYPES.AdminReportRoutes) private readonly adminReportRoutes: AdminReportRoutes,
         @inject(TYPES.ProjectMessageRoutes) private readonly projectMessageRoutes: ProjectMessageRoutes,
-        @inject(TYPES.IPassportService) private readonly passportService: IPassportService
-
+        @inject(TYPES.IPassportService) private readonly passportService: IPassportService,
+        @inject(TYPES.NotificationRoutes) private readonly notificationRoutes: NotificationRoutes,
     ) {
         this.app = express();
         this.setupMiddlewares();
@@ -175,6 +178,8 @@ export class App {
         this.app.use(`${API_PREFIX}${ROUTES.ADMIN.WALLET}`, this.adminWalletRoutes.router);
         this.app.use(`${API_PREFIX}${ROUTES.ADMIN.SESSIONS}`, this.adminSessionRoutes.router);
         this.app.use(`${API_PREFIX}${ROUTES.ADMIN.REPORTS}`, this.adminReportRoutes.router);
+
+        this.app.use(`${API_PREFIX}${ROUTES.NOTIFICATIONS}`, this.notificationRoutes.router)
 
         // 404 Handler
         this.app.all('*', notFoundHandler);

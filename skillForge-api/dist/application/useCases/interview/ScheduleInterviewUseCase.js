@@ -20,13 +20,15 @@ const VideoCallRoom_1 = require("../../../domain/entities/VideoCallRoom");
 const ProjectApplication_1 = require("../../../domain/entities/ProjectApplication");
 const AppError_1 = require("../../../domain/errors/AppError");
 const messages_1 = require("../../../config/messages");
+const Notification_1 = require("../../../domain/entities/Notification");
 let ScheduleInterviewUseCase = class ScheduleInterviewUseCase {
-    constructor(interviewRepository, applicationRepository, projectRepository, mapper, videoRoomRepository) {
+    constructor(interviewRepository, applicationRepository, projectRepository, mapper, videoRoomRepository, notificationService) {
         this.interviewRepository = interviewRepository;
         this.applicationRepository = applicationRepository;
         this.projectRepository = projectRepository;
         this.mapper = mapper;
         this.videoRoomRepository = videoRoomRepository;
+        this.notificationService = notificationService;
     }
     async execute(userId, data) {
         // 1. Get Application
@@ -65,6 +67,30 @@ let ScheduleInterviewUseCase = class ScheduleInterviewUseCase {
             application.shortlist();
             await this.applicationRepository.update(application);
         }
+        // 7. Notify applicant about interview
+        const scheduledDate = new Date(data.scheduledAt);
+        const formattedDate = scheduledDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+        const formattedTime = scheduledDate.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        await this.notificationService.send({
+            userId: application.applicantId,
+            type: Notification_1.NotificationType.INTERVIEW_SCHEDULED,
+            title: 'Interview Scheduled',
+            message: `Interview for "${project.title}" scheduled on ${formattedDate} at ${formattedTime} (${data.durationMinutes} mins)`,
+            data: {
+                interviewId: updatedInterview.id,
+                projectId: project.id,
+                applicationId: data.applicationId,
+                scheduledAt: data.scheduledAt.toISOString(),
+                roomCode: savedRoom.roomCode
+            },
+        });
         return this.mapper.toResponseDTO(updatedInterview);
     }
 };
@@ -76,6 +102,7 @@ exports.ScheduleInterviewUseCase = ScheduleInterviewUseCase = __decorate([
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IInterviewMapper)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IVideoCallRoomRepository)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
 ], ScheduleInterviewUseCase);
 //# sourceMappingURL=ScheduleInterviewUseCase.js.map

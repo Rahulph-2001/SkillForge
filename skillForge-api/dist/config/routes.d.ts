@@ -23,6 +23,7 @@ export declare const ROUTES: {
     readonly REPORTS: "/reports";
     readonly MCQ: "/mcq";
     readonly INTERVIEWS: "/interviews";
+    readonly NOTIFICATIONS: "/notifications";
     readonly ADMIN: {
         readonly BASE: "/admin";
         readonly SKILLS: "/admin/skills";
@@ -238,6 +239,8 @@ export declare const ENDPOINTS: {
         readonly FEATURES: "/features";
         readonly PROJECTS: "/projects";
         readonly PROJECTS_STATS: "/projects/stats";
+        readonly PROJECT_BY_ID: "/projects/:projectId";
+        readonly PROJECT_SUSPEND: "/projects/:projectId/suspend";
         readonly PAYMENT_REQUESTS_PENDING: "/payment-requests/pending";
         readonly PAYMENT_REQUEST_PROCESS: "/payment-requests/:id/process";
     };
@@ -269,6 +272,13 @@ export declare const ENDPOINTS: {
         readonly RESOLVE: "/:id/resolve";
         readonly STATS: "/stats";
         readonly RESOLUTION: "/:reportId/resolution";
+    };
+    readonly NOTIFICATION: {
+        readonly ROOT: "/";
+        readonly BY_ID: "/:id";
+        readonly UNREAD_COUNT: "/unread-count";
+        readonly MARK_READ: "/:id/read";
+        readonly MARK_ALL_READ: "/read-all";
     };
     readonly COMMON: {
         readonly ROOT: "/";

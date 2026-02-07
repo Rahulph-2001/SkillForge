@@ -19,14 +19,16 @@ const ProjectApplication_1 = require("../../../domain/entities/ProjectApplicatio
 const Project_1 = require("../../../domain/entities/Project");
 const AppError_1 = require("../../../domain/errors/AppError");
 const messages_1 = require("../../../config/messages");
+const Notification_1 = require("../../../domain/entities/Notification");
 let ApplyToProjectUseCase = class ApplyToProjectUseCase {
-    constructor(applicationRepository, projectRepository, userRepository, skillRepository, geminiService, mapper) {
+    constructor(applicationRepository, projectRepository, userRepository, skillRepository, geminiService, mapper, notificationService) {
         this.applicationRepository = applicationRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.skillRepository = skillRepository;
         this.geminiService = geminiService;
         this.mapper = mapper;
+        this.notificationService = notificationService;
     }
     async execute(applicantId, dto) {
         // 1. Validate project exists and is open
@@ -98,12 +100,20 @@ let ApplyToProjectUseCase = class ApplyToProjectUseCase {
         const savedApplication = await this.applicationRepository.create(application);
         // 10. Increment project applications count
         await this.projectRepository.incrementApplicationsCount(dto.projectId);
-        // 11. Return response
-        const userData = applicant.toJSON();
-        // Use type assertion or casting if needed to access snake_case properties if typing issues persist
-        // But based on our previous fix, we know we should use review_count etc if from toJSON()
-        // However, if we access applicant entity getters directly it's safer
-        // Safer to use entity getters:
+        // 11. Notify project owner about new application
+        await this.notificationService.send({
+            userId: project.clientId,
+            type: Notification_1.NotificationType.PROJECT_APPLICATION_RECEIVED,
+            title: 'New Project Application',
+            message: `${applicant.name} applied to your project "${project.title}"`,
+            data: {
+                projectId: project.id,
+                applicationId: savedApplication.id,
+                applicantId: applicantId,
+                matchScore: matchAnalysis.overallScore
+            },
+        });
+        // 12. Return response
         return this.mapper.toResponseDTO(savedApplication, {
             id: applicant.id,
             name: applicant.name,
@@ -123,6 +133,7 @@ exports.ApplyToProjectUseCase = ApplyToProjectUseCase = __decorate([
     __param(3, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IGeminiAIService)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], ApplyToProjectUseCase);
 //# sourceMappingURL=ApplyToProjectUseCase.js.map

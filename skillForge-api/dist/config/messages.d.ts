@@ -137,6 +137,13 @@ export declare const SUCCESS_MESSAGES: {
         readonly FETCHED: "Interviews retrieved successfully";
         readonly CANCELLED: "Interview cancelled successfully";
     };
+    readonly NOTIFICATION: {
+        readonly FETCHED: "Notifications retrieved successfully";
+        readonly COUNT_FETCHED: "Unread count retrieved successfully";
+        readonly MARKED_READ: "Notification marked as read";
+        readonly ALL_MARKED_READ: "All notifications marked as read";
+        readonly DELETED: "Notification deleted successfully";
+    };
 };
 export declare const ERROR_MESSAGES: {
     readonly AUTH: {
@@ -171,6 +178,11 @@ export declare const ERROR_MESSAGES: {
         readonly INTERNAL_SERVER_ERROR: "Internal server error";
         readonly TOO_MANY_REQUESTS: "Too many requests, try again later.";
         readonly EMAIL_SEND_FAILED: "Failed to send email. Please try again.";
+    };
+    readonly NOTIFICATION: {
+        readonly NOT_FOUND: "Notification not found";
+        readonly UNAUTHORIZED: "You are not authorized to access this notification";
+        readonly CREATION_FAILED: "Failed to create notification";
     };
     readonly SESSION: {
         readonly NOT_STARTED_YET: "Session has not started yet. Please wait until the scheduled time.";

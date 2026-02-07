@@ -9,5 +9,6 @@ exports.AdminListProjectsRequestSchema = zod_1.z.object({
     search: zod_1.z.string().optional(),
     status: zod_1.z.enum(['Open', 'In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending', 'Completed', 'Cancelled']).optional(),
     category: zod_1.z.string().optional(),
+    isSuspended: zod_1.z.boolean().optional(),
 });
 //# sourceMappingURL=AdminProjectDTO.js.map

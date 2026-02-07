@@ -60,7 +60,6 @@ export default function SkillCard({ skill, onEdit, onToggleBlock }: SkillCardPro
             src={skill.imageUrl}
             alt={skill.title}
             className="h-full w-full object-cover"
-            crossOrigin="anonymous"
             onError={(e) => {
               const target = e.currentTarget as HTMLImageElement;
               target.style.display = 'none';

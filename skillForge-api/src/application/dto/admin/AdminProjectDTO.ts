@@ -7,6 +7,7 @@ export const AdminListProjectsRequestSchema = z.object({
     search: z.string().optional(),
     status: z.enum(['Open', 'In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending', 'Completed', 'Cancelled']).optional(),
     category: z.string().optional(),
+    isSuspended: z.boolean().optional(),
 });
 
 export type AdminListProjectsRequestDTO = z.infer<typeof AdminListProjectsRequestSchema>;
@@ -37,6 +38,9 @@ export interface AdminProjectDTO {
         avatarUrl: string | null;
     } | null;
     hasPendingPaymentRequest: boolean;
+    isSuspended: boolean;
+    suspendedAt: Date | null;
+    suspendReason: string | null;
 }
 
 // Response DTO for paginated project list

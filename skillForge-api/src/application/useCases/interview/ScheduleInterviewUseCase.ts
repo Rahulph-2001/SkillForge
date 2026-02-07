@@ -12,6 +12,8 @@ import { VideoCallRoom } from '../../../domain/entities/VideoCallRoom';
 import { ProjectApplicationStatus } from '../../../domain/entities/ProjectApplication';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class ScheduleInterviewUseCase implements IScheduleInterviewUseCase {
@@ -20,7 +22,8 @@ export class ScheduleInterviewUseCase implements IScheduleInterviewUseCase {
         @inject(TYPES.IProjectApplicationRepository) private applicationRepository: IProjectApplicationRepository,
         @inject(TYPES.IProjectRepository) private projectRepository: IProjectRepository,
         @inject(TYPES.IInterviewMapper) private mapper: IInterviewMapper,
-        @inject(TYPES.IVideoCallRoomRepository) private videoRoomRepository: IVideoCallRoomRepository
+        @inject(TYPES.IVideoCallRoomRepository) private videoRoomRepository: IVideoCallRoomRepository,
+        @inject(TYPES.INotificationService) private notificationService: INotificationService
     ) { }
 
     async execute(userId: string, data: ScheduleInterviewDTO): Promise<InterviewResponseDTO> {
@@ -66,6 +69,32 @@ export class ScheduleInterviewUseCase implements IScheduleInterviewUseCase {
             application.shortlist();
             await this.applicationRepository.update(application);
         }
+
+        // 7. Notify applicant about interview
+        const scheduledDate = new Date(data.scheduledAt);
+        const formattedDate = scheduledDate.toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+        const formattedTime = scheduledDate.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        await this.notificationService.send({
+            userId: application.applicantId,
+            type: NotificationType.INTERVIEW_SCHEDULED,
+            title: 'Interview Scheduled',
+            message: `Interview for "${project.title}" scheduled on ${formattedDate} at ${formattedTime} (${data.durationMinutes} mins)`,
+            data: {
+                interviewId: updatedInterview.id,
+                projectId: project.id!,
+                applicationId: data.applicationId,
+                scheduledAt: data.scheduledAt.toISOString(),
+                roomCode: savedRoom.roomCode
+            },
+        });
 
         return this.mapper.toResponseDTO(updatedInterview);
     }

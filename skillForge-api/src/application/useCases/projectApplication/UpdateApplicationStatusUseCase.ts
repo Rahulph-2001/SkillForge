@@ -8,13 +8,16 @@ import { ProjectApplicationResponseDTO } from '../../dto/projectApplication/Proj
 import { ProjectApplicationStatus } from '../../../domain/entities/ProjectApplication';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusUseCase {
   constructor(
     @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository,
     @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
-    @inject(TYPES.IProjectApplicationMapper) private readonly mapper: IProjectApplicationMapper
+    @inject(TYPES.IProjectApplicationMapper) private readonly mapper: IProjectApplicationMapper,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
   ) { }
 
   async execute(
@@ -61,8 +64,48 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         throw new ValidationError('Invalid status update');
     }
 
-    // 4. Save and return
+    // 4. Save updated application
     const updated = await this.applicationRepository.update(application);
+
+    // 5. Send notification to applicant based on status
+    if (status === ProjectApplicationStatus.ACCEPTED) {
+      await this.notificationService.send({
+        userId: application.applicantId,
+        type: NotificationType.PROJECT_APPLICATION_ACCEPTED,
+        title: 'Application Accepted!',
+        message: `Congratulations! Your application to "${project.title}" has been accepted!`,
+        data: {
+          projectId: project.id!,
+          applicationId: application.id!,
+          status: 'ACCEPTED'
+        },
+      });
+    } else if (status === ProjectApplicationStatus.REJECTED) {
+      await this.notificationService.send({
+        userId: application.applicantId,
+        type: NotificationType.PROJECT_APPLICATION_REJECTED,
+        title: 'Application Update',
+        message: `Your application to "${project.title}" was not accepted`,
+        data: {
+          projectId: project.id!,
+          applicationId: application.id!,
+          status: 'REJECTED'
+        },
+      });
+    } else if (status === ProjectApplicationStatus.SHORTLISTED) {
+      await this.notificationService.send({
+        userId: application.applicantId,
+        type: NotificationType.PROJECT_APPLICATION_RECEIVED,
+        title: 'Application Shortlisted',
+        message: `Your application to "${project.title}" has been shortlisted!`,
+        data: {
+          projectId: project.id!,
+          applicationId: application.id!,
+          status: 'SHORTLISTED'
+        },
+      });
+    }
+
     return this.mapper.toResponseDTO(updated);
   }
 }

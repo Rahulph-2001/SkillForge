@@ -5,6 +5,7 @@ import { IUserWalletTransactionRepository } from '../../../domain/repositories/I
 import { IDebitAdminWalletUseCase } from './interfaces/IDebitAdminWalletUseCase';
 import { IProcessProjectPaymentRequestUseCase } from './interfaces/IProcessProjectPaymentRequestUseCase';
 import { IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
+import { INotificationService } from '../../../domain/services/INotificationService';
 export declare class ProcessProjectPaymentRequestUseCase implements IProcessProjectPaymentRequestUseCase {
     private readonly paymentRequestRepository;
     private readonly projectRepository;
@@ -12,7 +13,8 @@ export declare class ProcessProjectPaymentRequestUseCase implements IProcessProj
     private readonly userWalletTransactionRepository;
     private readonly debitAdminWalletUseCase;
     private readonly applicationRepository;
-    constructor(paymentRequestRepository: IProjectPaymentRequestRepository, projectRepository: IProjectRepository, userRepository: IUserRepository, userWalletTransactionRepository: IUserWalletTransactionRepository, debitAdminWalletUseCase: IDebitAdminWalletUseCase, applicationRepository: IProjectApplicationRepository);
+    private readonly notificationService;
+    constructor(paymentRequestRepository: IProjectPaymentRequestRepository, projectRepository: IProjectRepository, userRepository: IUserRepository, userWalletTransactionRepository: IUserWalletTransactionRepository, debitAdminWalletUseCase: IDebitAdminWalletUseCase, applicationRepository: IProjectApplicationRepository, notificationService: INotificationService);
     execute(requestId: string, adminId: string, approved: boolean, notes?: string, overrideAction?: 'OVERRIDE_RELEASE'): Promise<void>;
 }
 //# sourceMappingURL=ProcessProjectPaymentRequestUseCase.d.ts.map

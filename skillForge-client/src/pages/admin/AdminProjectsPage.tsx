@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Search, FolderOpen, Play, CheckCircle, Clock, XCircle, DollarSign, RefreshCw } from 'lucide-react';
+import { Search, FolderOpen, Play, CheckCircle, Clock, XCircle, DollarSign, RefreshCw, Eye, AlertTriangle, Ban } from 'lucide-react';
 import adminService, { AdminProject, AdminProjectStats, PendingPaymentRequest } from '../../services/adminService';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
 import ErrorModal from '../../components/common/Modal/ErrorModal';
+import ProjectDetailsModal from '../../components/admin/ProjectDetailsModal';
 import { usePagination } from '../../hooks/usePagination';
 
 const AdminProjectsPage: React.FC = () => {
@@ -35,6 +36,14 @@ const AdminProjectsPage: React.FC = () => {
     const [isProcessing, setIsProcessing] = useState(false);
     const [rejectNotes, setRejectNotes] = useState('');
 
+    // Details and suspend modal states
+    const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+    const [suspendReason, setSuspendReason] = useState('');
+    const [suspendWithRefund, setSuspendWithRefund] = useState(false);
+    const [isSuspendedFilter, setIsSuspendedFilter] = useState<boolean | undefined>(undefined);
+
     const { page, limit, goToPage } = usePagination({ initialLimit: 10 });
     const [totalItems, setTotalItems] = useState(0);
     const calculatedTotalPages = Math.ceil(totalItems / limit);
@@ -46,7 +55,7 @@ const AdminProjectsPage: React.FC = () => {
 
     useEffect(() => {
         fetchProjects();
-    }, [page, limit, searchQuery, statusFilter]);
+    }, [page, limit, searchQuery, statusFilter, isSuspendedFilter]);
 
     const fetchStats = async () => {
         try {
@@ -60,7 +69,7 @@ const AdminProjectsPage: React.FC = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const response = await adminService.listProjects(page, limit, searchQuery, statusFilter);
+            const response = await adminService.listProjects(page, limit, searchQuery, statusFilter, undefined, isSuspendedFilter);
             setProjects(response.projects);
             setTotalItems(response.total);
         } catch (error) {
@@ -89,15 +98,18 @@ const AdminProjectsPage: React.FC = () => {
     const handleTabChange = (tab: string) => {
         setActiveTab(tab);
         let status: string | undefined;
+        let suspended: boolean | undefined;
         switch (tab) {
-            case 'Open': status = 'Open'; break;
-            case 'In Progress': status = 'In_Progress'; break;
-            case 'Completed': status = 'Completed'; break;
-            case 'Pending Approvals': status = undefined; break; // Special handling
-            case 'Cancelled': status = 'Cancelled'; break;
-            default: status = undefined;
+            case 'Open': status = 'Open'; suspended = undefined; break;
+            case 'In Progress': status = 'In_Progress'; suspended = undefined; break;
+            case 'Completed': status = 'Completed'; suspended = undefined; break;
+            case 'Pending Approvals': status = undefined; suspended = undefined; break; // Special handling
+            case 'Cancelled': status = 'Cancelled'; suspended = undefined; break;
+            case 'Flagged': status = undefined; suspended = true; break;
+            default: status = undefined; suspended = undefined;
         }
         setStatusFilter(status);
+        setIsSuspendedFilter(suspended);
         goToPage(1);
     };
 
@@ -200,8 +212,39 @@ const AdminProjectsPage: React.FC = () => {
         { label: 'In Progress', count: stats.inProgressProjects },
         { label: 'Completed', count: stats.completedProjects },
         { label: 'Pending Approvals', count: stats.pendingApprovalProjects },
-        { label: 'Cancelled', count: stats.cancelledProjects }
+        { label: 'Cancelled', count: stats.cancelledProjects },
+        { label: 'Flagged', count: stats.suspendedProjects || 0 }
     ];
+
+    const handleViewDetails = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setShowDetailsModal(true);
+    };
+
+    const handleSuspendClick = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setSuspendReason('');
+        setSuspendWithRefund(false);
+        setShowSuspendConfirm(true);
+    };
+
+    const handleConfirmSuspend = async () => {
+        if (!selectedProjectId || !suspendReason.trim()) return;
+        setIsProcessing(true);
+        try {
+            await adminService.suspendProject(selectedProjectId, suspendReason, suspendWithRefund);
+            setSuccessMessage(`Project suspended successfully${suspendWithRefund ? ' with refund' : ''}!`);
+            setShowSuccessModal(true);
+            setShowSuspendConfirm(false);
+            fetchStats();
+            fetchProjects();
+        } catch (error: any) {
+            setErrorMessage(error.response?.data?.message || 'Failed to suspend project');
+            setShowErrorModal(true);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -374,6 +417,7 @@ const AdminProjectsPage: React.FC = () => {
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
@@ -432,6 +476,32 @@ const AdminProjectsPage: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span className="text-sm text-gray-600">{project.applicationsCount}</span>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => handleViewDetails(project.id)}
+                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                                        title="View Details"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
+                                                    {!project.isSuspended && (
+                                                        <button
+                                                            onClick={() => handleSuspendClick(project.id)}
+                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                                            title="Suspend Project"
+                                                        >
+                                                            <Ban className="w-4 h-4" />
+                                                        </button>
+                                                    )}
+                                                    {project.isSuspended && (
+                                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 flex items-center gap-1">
+                                                            <AlertTriangle className="w-3 h-3" />
+                                                            Suspended
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -540,6 +610,60 @@ const AdminProjectsPage: React.FC = () => {
                 message={errorMessage}
                 onClose={() => setShowErrorModal(false)}
             />
+
+            {/* Project Details Modal */}
+            {selectedProjectId && (
+                <ProjectDetailsModal
+                    projectId={selectedProjectId}
+                    isOpen={showDetailsModal}
+                    onClose={() => {
+                        setShowDetailsModal(false);
+                        setSelectedProjectId(null);
+                    }}
+                    onSuspend={(id) => {
+                        setShowDetailsModal(false);
+                        handleSuspendClick(id);
+                    }}
+                />
+            )}
+
+            {/* Suspend Project Confirm Modal */}
+            <ConfirmModal
+                isOpen={showSuspendConfirm}
+                title="Suspend Project"
+                message="This will suspend the project and prevent any further actions. Are you sure you want to proceed?"
+                confirmText={isProcessing ? "Suspending..." : "Suspend"}
+                cancelText="Cancel"
+                type="danger"
+                onConfirm={handleConfirmSuspend}
+                onCancel={() => setShowSuspendConfirm(false)}
+            >
+                <div className="mt-4 space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Reason for suspension *</label>
+                        <textarea
+                            value={suspendReason}
+                            onChange={(e) => setSuspendReason(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                            rows={3}
+                            placeholder="Enter reason for suspending this project..."
+                            required
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="withRefund"
+                            checked={suspendWithRefund}
+                            onChange={(e) => setSuspendWithRefund(e.target.checked)}
+                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="withRefund" className="text-sm text-gray-700">
+                            Process refund to project creator
+                        </label>
+                    </div>
+                </div>
+            </ConfirmModal>
         </div>
     );
 };

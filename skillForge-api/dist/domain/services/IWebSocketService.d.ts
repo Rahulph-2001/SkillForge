@@ -1,5 +1,5 @@
 export type WebSocketMessage = {
-    type: 'message_sent' | 'message_deleted' | 'message_pinned' | 'message_unpinned' | 'reaction_added' | 'reaction_removed' | 'member_joined' | 'member_left' | 'member_removed' | 'balance_updated' | 'subscription_renewed' | 'project_message_received';
+    type: 'message_sent' | 'message_deleted' | 'message_pinned' | 'message_unpinned' | 'reaction_added' | 'reaction_removed' | 'member_joined' | 'member_left' | 'member_removed' | 'balance_updated' | 'subscription_renewed' | 'project_message_received' | 'notification_received';
     communityId?: string;
     data: Record<string, unknown>;
 };

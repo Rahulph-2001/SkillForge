@@ -13,6 +13,7 @@ export declare const AdminListProjectsRequestSchema: z.ZodObject<{
         Cancelled: "Cancelled";
     }>>;
     category: z.ZodOptional<z.ZodString>;
+    isSuspended: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
 export type AdminListProjectsRequestDTO = z.infer<typeof AdminListProjectsRequestSchema>;
 export interface AdminProjectDTO {
@@ -40,6 +41,9 @@ export interface AdminProjectDTO {
         avatarUrl: string | null;
     } | null;
     hasPendingPaymentRequest: boolean;
+    isSuspended: boolean;
+    suspendedAt: Date | null;
+    suspendReason: string | null;
 }
 export interface AdminListProjectsResponseDTO {
     projects: AdminProjectDTO[];

@@ -18,11 +18,13 @@ const types_1 = require("../../../infrastructure/di/types");
 const ProjectApplication_1 = require("../../../domain/entities/ProjectApplication");
 const AppError_1 = require("../../../domain/errors/AppError");
 const messages_1 = require("../../../config/messages");
+const Notification_1 = require("../../../domain/entities/Notification");
 let UpdateApplicationStatusUseCase = class UpdateApplicationStatusUseCase {
-    constructor(applicationRepository, projectRepository, mapper) {
+    constructor(applicationRepository, projectRepository, mapper, notificationService) {
         this.applicationRepository = applicationRepository;
         this.projectRepository = projectRepository;
         this.mapper = mapper;
+        this.notificationService = notificationService;
     }
     async execute(applicationId, clientId, status) {
         // 1. Get application
@@ -62,8 +64,48 @@ let UpdateApplicationStatusUseCase = class UpdateApplicationStatusUseCase {
             default:
                 throw new AppError_1.ValidationError('Invalid status update');
         }
-        // 4. Save and return
+        // 4. Save updated application
         const updated = await this.applicationRepository.update(application);
+        // 5. Send notification to applicant based on status
+        if (status === ProjectApplication_1.ProjectApplicationStatus.ACCEPTED) {
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_APPLICATION_ACCEPTED,
+                title: 'Application Accepted!',
+                message: `Congratulations! Your application to "${project.title}" has been accepted!`,
+                data: {
+                    projectId: project.id,
+                    applicationId: application.id,
+                    status: 'ACCEPTED'
+                },
+            });
+        }
+        else if (status === ProjectApplication_1.ProjectApplicationStatus.REJECTED) {
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_APPLICATION_REJECTED,
+                title: 'Application Update',
+                message: `Your application to "${project.title}" was not accepted`,
+                data: {
+                    projectId: project.id,
+                    applicationId: application.id,
+                    status: 'REJECTED'
+                },
+            });
+        }
+        else if (status === ProjectApplication_1.ProjectApplicationStatus.SHORTLISTED) {
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_APPLICATION_RECEIVED,
+                title: 'Application Shortlisted',
+                message: `Your application to "${project.title}" has been shortlisted!`,
+                data: {
+                    projectId: project.id,
+                    applicationId: application.id,
+                    status: 'SHORTLISTED'
+                },
+            });
+        }
         return this.mapper.toResponseDTO(updated);
     }
 };
@@ -73,6 +115,7 @@ exports.UpdateApplicationStatusUseCase = UpdateApplicationStatusUseCase = __deco
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], UpdateApplicationStatusUseCase);
 //# sourceMappingURL=UpdateApplicationStatusUseCase.js.map

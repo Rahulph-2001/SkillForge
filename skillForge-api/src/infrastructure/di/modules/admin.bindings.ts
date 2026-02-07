@@ -43,6 +43,10 @@ import { AdminProjectController } from '../../../presentation/controllers/admin/
 import { AdminRoutes } from '../../../presentation/routes/admin/adminRoutes';
 import { AdminSkillRoutes } from '../../../presentation/routes/admin/adminSkillRoutes';
 import { AdminWalletRoutes } from '../../../presentation/routes/admin/AdminWalletRoutes';
+import { AdminGetProjectDetailsUseCase } from '../../../application/useCases/admin/AdminGetProjectDetailsUseCase';
+import { IAdminGetProjectDetailsUseCase } from '../../../application/useCases/admin/interfaces/IAdminGetProjectDetailsUseCase';
+import { AdminSuspendProjectUseCase } from '../../../application/useCases/admin/AdminSuspendProjectUseCase';
+import { IAdminSuspendProjectUseCase } from '../../../application/useCases/admin/interfaces/IAdminSuspendProjectUseCase';
 
 
 
@@ -79,6 +83,8 @@ export const bindAdminModule = (container: Container): void => {
   // Admin Project Management Use Cases
   container.bind<IAdminListProjectsUseCase>(TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase);
   container.bind<IAdminGetProjectStatsUseCase>(TYPES.IAdminGetProjectStatsUseCase).to(AdminGetProjectStatsUseCase);
+  container.bind<IAdminGetProjectDetailsUseCase>(TYPES.IAdminGetProjectDetailsUseCase).to(AdminGetProjectDetailsUseCase);
+  container.bind<IAdminSuspendProjectUseCase>(TYPES.IAdminSuspendProjectUseCase).to(AdminSuspendProjectUseCase);
 
   // Controllers & Routes
   container.bind<AdminController>(TYPES.AdminController).to(AdminController);

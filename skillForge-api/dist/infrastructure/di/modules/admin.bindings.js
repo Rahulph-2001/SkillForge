@@ -27,6 +27,8 @@ const AdminProjectController_1 = require("../../../presentation/controllers/admi
 const adminRoutes_1 = require("../../../presentation/routes/admin/adminRoutes");
 const adminSkillRoutes_1 = require("../../../presentation/routes/admin/adminSkillRoutes");
 const AdminWalletRoutes_1 = require("../../../presentation/routes/admin/AdminWalletRoutes");
+const AdminGetProjectDetailsUseCase_1 = require("../../../application/useCases/admin/AdminGetProjectDetailsUseCase");
+const AdminSuspendProjectUseCase_1 = require("../../../application/useCases/admin/AdminSuspendProjectUseCase");
 /**
  * Binds all admin-related use cases, controllers, and routes
  */
@@ -56,6 +58,8 @@ const bindAdminModule = (container) => {
     // Admin Project Management Use Cases
     container.bind(types_1.TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase_1.AdminListProjectsUseCase);
     container.bind(types_1.TYPES.IAdminGetProjectStatsUseCase).to(AdminGetProjectStatsUseCase_1.AdminGetProjectStatsUseCase);
+    container.bind(types_1.TYPES.IAdminGetProjectDetailsUseCase).to(AdminGetProjectDetailsUseCase_1.AdminGetProjectDetailsUseCase);
+    container.bind(types_1.TYPES.IAdminSuspendProjectUseCase).to(AdminSuspendProjectUseCase_1.AdminSuspendProjectUseCase);
     // Controllers & Routes
     container.bind(types_1.TYPES.AdminController).to(AdminController_1.AdminController);
     container.bind(types_1.TYPES.AdminSkillController).to(AdminSkillController_1.AdminSkillController);

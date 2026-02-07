@@ -18,12 +18,16 @@ const types_1 = require("../../../infrastructure/di/types");
 const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
 const Database_1 = require("../../../infrastructure/database/Database");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CompleteSessionUseCase = class CompleteSessionUseCase {
-    constructor(bookingRepository, escrowRepository, bookingMapper, database) {
+    constructor(bookingRepository, escrowRepository, bookingMapper, database, notificationService, userRepository, skillRepository) {
         this.bookingRepository = bookingRepository;
         this.escrowRepository = escrowRepository;
         this.bookingMapper = bookingMapper;
         this.database = database;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
+        this.skillRepository = skillRepository;
     }
     async execute(request) {
         const { bookingId, completedBy } = request;
@@ -63,6 +67,34 @@ let CompleteSessionUseCase = class CompleteSessionUseCase {
                 data: { totalSessions: { increment: 1 } },
             });
         });
+        // Fetch user and skill details for notifications
+        const learner = await this.userRepository.findById(booking.learnerId);
+        const provider = await this.userRepository.findById(booking.providerId);
+        const skill = await this.skillRepository.findById(booking.skillId);
+        // Send notification to learner about session completion
+        await this.notificationService.send({
+            userId: booking.learnerId,
+            type: Notification_1.NotificationType.SESSION_COMPLETED,
+            title: 'Session Completed',
+            message: `Your ${skill?.title || 'skill'} session with ${provider?.name || 'provider'} has been completed`,
+            data: { bookingId: booking.id, skillId: booking.skillId },
+        });
+        // Send notification to provider about session completion
+        await this.notificationService.send({
+            userId: booking.providerId,
+            type: Notification_1.NotificationType.SESSION_COMPLETED,
+            title: 'Session Completed',
+            message: `Your ${skill?.title || 'skill'} session with ${learner?.name || 'learner'} has been completed`,
+            data: { bookingId: booking.id, skillId: booking.skillId },
+        });
+        // Send notification to provider about credits earned
+        await this.notificationService.send({
+            userId: booking.providerId,
+            type: Notification_1.NotificationType.CREDITS_EARNED,
+            title: 'Credits Earned',
+            message: `You earned ${booking.sessionCost} credits from your session with ${learner?.name || 'learner'}`,
+            data: { bookingId: booking.id, creditsEarned: booking.sessionCost },
+        });
         // Fetch the updated booking for response
         const updatedBooking = await this.bookingRepository.findById(bookingId);
         return this.bookingMapper.toDTO(updatedBooking);
@@ -75,6 +107,9 @@ exports.CompleteSessionUseCase = CompleteSessionUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IBookingMapper)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.Database)),
-    __metadata("design:paramtypes", [Object, Object, Object, Database_1.Database])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __param(5, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Database_1.Database, Object, Object, Object])
 ], CompleteSessionUseCase);
 //# sourceMappingURL=CompleteSessionUseCase.js.map

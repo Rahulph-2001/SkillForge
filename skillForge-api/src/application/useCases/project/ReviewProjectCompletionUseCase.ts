@@ -8,13 +8,16 @@ import { IReviewProjectCompletionUseCase, ProjectCompletionDecision } from './in
 import { ProjectPaymentRequest, ProjectPaymentRequestType, ProjectPaymentRequestStatus } from '../../../domain/entities/ProjectPaymentRequest';
 import { ProjectStatus } from '../../../domain/entities/Project';
 import { v4 as uuidv4 } from 'uuid';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionUseCase {
     constructor(
         @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
         @inject(TYPES.IProjectPaymentRequestRepository) private readonly paymentRequestRepository: IProjectPaymentRequestRepository,
-        @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository
+        @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository,
+        @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
     ) { }
 
     async execute(projectId: string, userId: string, decision: ProjectCompletionDecision, reason?: string): Promise<void> {
@@ -57,6 +60,18 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
             await this.paymentRequestRepository.create(paymentRequest);
             project.markAsPaymentPending();
 
+            // Notify contributor about approval
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: NotificationType.PROJECT_COMPLETION_APPROVED,
+                title: 'Project Completion Approved!',
+                message: `"${project.title}" has been approved! Payment is pending admin review.`,
+                data: {
+                    projectId: project.id!,
+                    status: 'PAYMENT_PENDING'
+                },
+            });
+
         } else if (decision === 'REJECT') {
             if (!reason) {
                 throw new ValidationError('A reason is required to reject project completion');
@@ -77,9 +92,35 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
 
             await this.paymentRequestRepository.create(paymentRequest);
             project.markAsRefundPending();
+
+            // Notify contributor about rejection
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: NotificationType.PROJECT_COMPLETION_REJECTED,
+                title: 'Project Completion Rejected',
+                message: `"${project.title}" completion was rejected. Reason: ${reason}`,
+                data: {
+                    projectId: project.id!,
+                    reason,
+                    status: 'REFUND_PENDING'
+                },
+            });
+
         } else if (decision === 'REQUEST_CHANGES') {
             project.revertToInProgress();
-            // TODO: Notify contributor
+
+            // Notify contributor about requested changes
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: NotificationType.PROJECT_COMPLETION_REJECTED,
+                title: 'Changes Requested',
+                message: `Changes have been requested for "${project.title}". ${reason || 'Please review and resubmit.'}`,
+                data: {
+                    projectId: project.id!,
+                    reason,
+                    status: 'IN_PROGRESS'
+                },
+            });
         } else {
             throw new ValidationError('Invalid decision. Must be APPROVE, REJECT, or REQUEST_CHANGES');
         }

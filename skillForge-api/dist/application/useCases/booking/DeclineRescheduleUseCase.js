@@ -16,9 +16,12 @@ exports.DeclineRescheduleUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let DeclineRescheduleUseCase = class DeclineRescheduleUseCase {
-    constructor(bookingRepository) {
+    constructor(bookingRepository, userRepository, notificationService) {
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
     async execute(request) {
         // 1. Get the booking
@@ -50,13 +53,28 @@ let DeclineRescheduleUseCase = class DeclineRescheduleUseCase {
         }
         // 5. Decline the reschedule request (revert to confirmed status and clear reschedule info)
         await this.bookingRepository.declineReschedule(request.bookingId, request.reason);
-        // TODO: Send notification to the requester about declined reschedule
+        // 6. Send notification to the requester about declined reschedule
+        const requesterId = rescheduleInfo.requestedBy === 'learner' ? booking.learnerId : booking.providerId;
+        const decliner = await this.userRepository.findById(request.userId);
+        await this.notificationService.send({
+            userId: requesterId,
+            type: Notification_1.NotificationType.RESCHEDULE_DECLINED,
+            title: 'Reschedule Declined',
+            message: `${decliner?.name || 'User'} declined your reschedule request${request.reason ? `. Reason: ${request.reason}` : '. The session remains at its original time.'}`,
+            data: {
+                bookingId: booking.id,
+                originalDate: booking.preferredDate,
+                originalTime: booking.preferredTime
+            },
+        });
     }
 };
 exports.DeclineRescheduleUseCase = DeclineRescheduleUseCase;
 exports.DeclineRescheduleUseCase = DeclineRescheduleUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], DeclineRescheduleUseCase);
 //# sourceMappingURL=DeclineRescheduleUseCase.js.map

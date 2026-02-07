@@ -18,10 +18,14 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const Booking_1 = require("../../../domain/entities/Booking");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CancelBookingUseCase = CancelBookingUseCase_1 = class CancelBookingUseCase {
-    constructor(bookingRepository, escrowRepository) {
+    constructor(bookingRepository, escrowRepository, notificationService, userRepository, skillRepository) {
         this.bookingRepository = bookingRepository;
         this.escrowRepository = escrowRepository;
+        this.notificationService = notificationService;
+        this.userRepository = userRepository;
+        this.skillRepository = skillRepository;
     }
     async execute(request) {
         const { bookingId, userId, reason } = request;
@@ -30,7 +34,9 @@ let CancelBookingUseCase = CancelBookingUseCase_1 = class CancelBookingUseCase {
         if (!booking)
             throw new AppError_1.NotFoundError('Booking not found');
         // 2. Authorization Check
-        if (booking.learnerId !== userId && booking.providerId !== userId) {
+        const isLearner = booking.learnerId === userId;
+        const isProvider = booking.providerId === userId;
+        if (!isLearner && !isProvider) {
             throw new AppError_1.ForbiddenError('You are not authorized to cancel this booking');
         }
         // 3. Status Validation
@@ -50,6 +56,17 @@ let CancelBookingUseCase = CancelBookingUseCase_1 = class CancelBookingUseCase {
         await this.escrowRepository.refundCredits(bookingId);
         // 6. Update booking status to cancelled
         await this.bookingRepository.updateStatus(bookingId, Booking_1.BookingStatus.CANCELLED, reason || 'Cancelled by user');
+        // 7. Send notification to the other party
+        const canceller = await this.userRepository.findById(userId);
+        const skill = await this.skillRepository.findById(booking.skillId);
+        const recipientId = isLearner ? booking.providerId : booking.learnerId;
+        await this.notificationService.send({
+            userId: recipientId,
+            type: Notification_1.NotificationType.SESSION_CANCELLED,
+            title: 'Session Cancelled',
+            message: `${canceller?.name || 'User'} cancelled the ${skill?.title || 'skill'} session${reason ? `. Reason: ${reason}` : ''}`,
+            data: { bookingId: booking.id, cancelledBy: userId, skillId: booking.skillId },
+        });
     }
     parseDateTime(dateString, timeString) {
         const [hours, minutes] = timeString.split(':').map(Number);
@@ -65,6 +82,9 @@ exports.CancelBookingUseCase = CancelBookingUseCase = CancelBookingUseCase_1 = _
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IEscrowRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], CancelBookingUseCase);
 //# sourceMappingURL=CancelBookingUseCase.js.map

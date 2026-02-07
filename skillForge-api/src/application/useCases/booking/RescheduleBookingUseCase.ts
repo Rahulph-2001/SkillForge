@@ -1,13 +1,15 @@
-
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { RescheduleInfo } from '../../../domain/entities/Booking';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { BookingValidator } from '../../../shared/validators/BookingValidator';
 import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
 import { IRescheduleBookingUseCase, RescheduleBookingRequestDTO } from './interfaces/IRescheduleBookingUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
@@ -15,7 +17,11 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository,
     @inject(TYPES.ISkillRepository)
-    private readonly skillRepository: ISkillRepository
+    private readonly skillRepository: ISkillRepository,
+    @inject(TYPES.IUserRepository)
+    private readonly userRepository: IUserRepository,
+    @inject(TYPES.INotificationService)
+    private readonly notificationService: INotificationService
   ) { }
 
   async execute(request: RescheduleBookingRequestDTO): Promise<void> {
@@ -90,7 +96,29 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
     // 9. Update booking with reschedule request
     await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
 
-    // TODO: Send notification to the other party (learner or provider)
+    // 10. Send notification to the other party
+    const requester = await this.userRepository.findById(request.userId);
+    const recipientId = isLearner ? booking.providerId : booking.learnerId;
+
+    const formattedDate = new Date(request.newDate).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    await this.notificationService.send({
+      userId: recipientId,
+      type: NotificationType.RESCHEDULE_REQUESTED,
+      title: 'Reschedule Requested',
+      message: `${requester?.name || 'User'} requested to reschedule the ${skill.title} session to ${formattedDate} at ${request.newTime}${request.reason ? `. Reason: ${request.reason}` : ''}`,
+      data: {
+        bookingId: booking.id,
+        newDate: request.newDate,
+        newTime: request.newTime,
+        requestedBy: request.userId,
+        skillId: booking.skillId
+      },
+    });
   }
 
   private parseDateTime(dateString: string, timeString: string): Date {

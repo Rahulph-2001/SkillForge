@@ -12,7 +12,7 @@ export class ListProjectsUseCase implements IListProjectsUseCase {
   constructor(
     @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
-  ) {}
+  ) { }
 
   async execute(filters: ListProjectsRequestDTO): Promise<ListProjectsResponseDTO> {
     // Map DTO filters to repository filters
@@ -20,6 +20,7 @@ export class ListProjectsUseCase implements IListProjectsUseCase {
       search: filters.search,
       category: filters.category,
       status: filters.status as ProjectStatus | undefined,
+      isSuspended: false, // Don't show suspended projects in public list
       page: filters.page || 1,
       limit: filters.limit || 20,
     };
@@ -28,12 +29,12 @@ export class ListProjectsUseCase implements IListProjectsUseCase {
     const result = await this.projectRepository.listProjects(repositoryFilters);
 
     // Collect client IDs (only if we have projects)
-    const clientIds = result.projects.length > 0 
+    const clientIds = result.projects.length > 0
       ? [...new Set(result.projects.map(p => p.clientId))]
       : [];
 
     // Fetch clients (only if we have client IDs)
-    const clients = clientIds.length > 0 
+    const clients = clientIds.length > 0
       ? await this.userRepository.findByIds(clientIds)
       : [];
     const clientsMap = new Map(clients.map(c => [c.id, c]));

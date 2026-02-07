@@ -57,8 +57,9 @@ const walletRoutes_1 = require("./routes/wallet/walletRoutes");
 const ReportRoutes_1 = require("./routes/ReportRoutes");
 const AdminReportRoutes_1 = require("./routes/admin/AdminReportRoutes");
 const ProjectMessageRoutes_1 = require("./routes/project/ProjectMessageRoutes");
+const notificationRoutes_1 = require("./routes/notification/notificationRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, walletRoutes, reportRoutes, adminReportRoutes, projectMessageRoutes, passportService) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, walletRoutes, reportRoutes, adminReportRoutes, projectMessageRoutes, passportService, notificationRoutes) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -88,6 +89,7 @@ let App = class App {
         this.adminReportRoutes = adminReportRoutes;
         this.projectMessageRoutes = projectMessageRoutes;
         this.passportService = passportService;
+        this.notificationRoutes = notificationRoutes;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
         this.setupRoutes();
@@ -168,6 +170,7 @@ let App = class App {
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.WALLET}`, this.adminWalletRoutes.router);
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.SESSIONS}`, this.adminSessionRoutes.router);
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.REPORTS}`, this.adminReportRoutes.router);
+        this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.NOTIFICATIONS}`, this.notificationRoutes.router);
         // 404 Handler
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
@@ -210,6 +213,7 @@ exports.App = App = __decorate([
     __param(26, (0, inversify_1.inject)(types_1.TYPES.AdminReportRoutes)),
     __param(27, (0, inversify_1.inject)(types_1.TYPES.ProjectMessageRoutes)),
     __param(28, (0, inversify_1.inject)(types_1.TYPES.IPassportService)),
+    __param(29, (0, inversify_1.inject)(types_1.TYPES.NotificationRoutes)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -237,6 +241,6 @@ exports.App = App = __decorate([
         walletRoutes_1.WalletRoutes,
         ReportRoutes_1.ReportRoutes,
         AdminReportRoutes_1.AdminReportRoutes,
-        ProjectMessageRoutes_1.ProjectMessageRoutes, Object])
+        ProjectMessageRoutes_1.ProjectMessageRoutes, Object, notificationRoutes_1.NotificationRoutes])
 ], App);
 //# sourceMappingURL=server.js.map

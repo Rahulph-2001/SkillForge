@@ -41,6 +41,8 @@ export const ROUTES = {
     MCQ: '/mcq',
     INTERVIEWS: '/interviews',
 
+    NOTIFICATIONS: '/notifications',
+
     // Admin Routes
     ADMIN: {
         BASE: '/admin',
@@ -287,6 +289,8 @@ export const ENDPOINTS = {
         FEATURES: '/features',
         PROJECTS: '/projects',
         PROJECTS_STATS: '/projects/stats',
+        PROJECT_BY_ID: '/projects/:projectId',
+        PROJECT_SUSPEND: '/projects/:projectId/suspend',
         PAYMENT_REQUESTS_PENDING: '/payment-requests/pending',
         PAYMENT_REQUEST_PROCESS: '/payment-requests/:id/process',
     },
@@ -322,6 +326,14 @@ export const ENDPOINTS = {
         RESOLVE: '/:id/resolve',
         STATS: '/stats',
         RESOLUTION: '/:reportId/resolution',
+    },
+
+    NOTIFICATION: {
+        ROOT: '/',
+        BY_ID: '/:id',
+        UNREAD_COUNT: '/unread-count',
+        MARK_READ: '/:id/read',
+        MARK_ALL_READ: '/read-all',
     },
 
     // Common patterns

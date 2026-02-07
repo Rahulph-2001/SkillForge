@@ -22,6 +22,9 @@ export interface ProjectProps {
     applicationsCount?: number;
     createdAt: Date;
     updatedAt: Date;
+    isSuspended?: boolean;
+    suspendedAt?: Date | null;
+    suspendedReason?: string | null;
     client?: {
         id: string;
         name: string;
@@ -52,6 +55,9 @@ export declare class Project {
     get applicationsCount(): number;
     get createdAt(): Date;
     get updatedAt(): Date;
+    get isSuspended(): boolean;
+    get suspendedAt(): Date | null | undefined;
+    get suspendReason(): string | null | undefined;
     canBeUpdated(): boolean;
     canBeCancelled(): boolean;
     canBeCompleted(): boolean;
@@ -70,6 +76,7 @@ export declare class Project {
         name: string;
         avatarUrl?: string | null;
     } | undefined;
+    suspend(reason: string): void;
     toJSON(): ProjectProps;
     get client(): {
         id: string;

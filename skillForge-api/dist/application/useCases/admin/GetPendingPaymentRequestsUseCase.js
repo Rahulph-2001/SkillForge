@@ -28,7 +28,7 @@ let GetPendingPaymentRequestsUseCase = class GetPendingPaymentRequestsUseCase {
             try {
                 const project = await this.projectRepository.findById(req.projectId);
                 const requester = await this.userRepository.findById(req.requestedBy);
-                if (project && requester) {
+                if (project && requester && !project.isSuspended) {
                     dtos.push({
                         id: req.id,
                         projectId: req.projectId,

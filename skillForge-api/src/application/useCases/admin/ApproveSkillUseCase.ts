@@ -4,12 +4,15 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { IApproveSkillUseCase } from './interfaces/IApproveSkillUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class ApproveSkillUseCase implements IApproveSkillUseCase {
   constructor(
-    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
-  ) {}
+    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
+  ) { }
 
   async execute(skillId: string, _adminId: string): Promise<void> {
     // Verify skill exists and is in review
@@ -54,5 +57,14 @@ export class ApproveSkillUseCase implements IApproveSkillUseCase {
     });
 
     await this.skillRepository.update(updatedSkill);
+
+    // Notify skill provider
+    await this.notificationService.send({
+      userId: skill.providerId,
+      type: NotificationType.SKILL_APPROVED,
+      title: 'Skill Approved!',
+      message: `Your skill "${skill.title}" has been approved and is now visible to learners`,
+      data: { skillId: skill.id },
+    });
   }
 }

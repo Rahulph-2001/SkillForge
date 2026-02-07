@@ -7,6 +7,7 @@ import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
 import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
 export declare class CreateBookingUseCase implements ICreateBookingUseCase {
     private readonly bookingRepository;
     private readonly skillRepository;
@@ -14,7 +15,8 @@ export declare class CreateBookingUseCase implements ICreateBookingUseCase {
     private readonly availabilityRepository;
     private readonly escrowRepository;
     private readonly bookingMapper;
-    constructor(bookingRepository: IBookingRepository, skillRepository: ISkillRepository, userRepository: IUserRepository, availabilityRepository: IAvailabilityRepository, escrowRepository: IEscrowRepository, bookingMapper: IBookingMapper);
+    private readonly notificationService;
+    constructor(bookingRepository: IBookingRepository, skillRepository: ISkillRepository, userRepository: IUserRepository, availabilityRepository: IAvailabilityRepository, escrowRepository: IEscrowRepository, bookingMapper: IBookingMapper, notificationService: INotificationService);
     execute(request: CreateBookingRequestDTO): Promise<BookingResponseDTO>;
 }
 //# sourceMappingURL=CreateBookingUseCase.d.ts.map

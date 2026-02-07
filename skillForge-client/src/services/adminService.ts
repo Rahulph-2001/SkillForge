@@ -180,7 +180,7 @@ class AdminService {
 
     // --- Project Management Methods ---
 
-    async listProjects(page: number = 1, limit: number = 20, search?: string, status?: string, category?: string): Promise<AdminProjectsResponse> {
+    async listProjects(page: number = 1, limit: number = 20, search?: string, status?: string, category?: string, isSuspended?: boolean): Promise<AdminProjectsResponse> {
         try {
             const params = new URLSearchParams({
                 page: page.toString(),
@@ -189,6 +189,7 @@ class AdminService {
             if (search) params.append('search', search);
             if (status) params.append('status', status);
             if (category) params.append('category', category);
+            if (typeof isSuspended === 'boolean') params.append('isSuspended', isSuspended.toString());
 
             const response = await api.get(`${this.baseUrl}/projects?${params.toString()}`);
             return response.data.data;
@@ -204,6 +205,26 @@ class AdminService {
             return response.data.data;
         } catch (error: any) {
             console.error('Failed to get project stats:', error);
+            throw error;
+        }
+    }
+
+    async getProjectDetails(projectId: string): Promise<AdminProjectDetails> {
+        try {
+            const response = await api.get(`${this.baseUrl}/projects/${projectId}`);
+            return response.data.data;
+        } catch (error: any) {
+            console.error('Failed to get project details:', error);
+            throw error;
+        }
+    }
+
+    async suspendProject(projectId: string, reason: string, withRefund: boolean = false): Promise<SuspendProjectResponse> {
+        try {
+            const response = await api.post(`${this.baseUrl}/projects/${projectId}/suspend`, { reason, withRefund });
+            return response.data.data;
+        } catch (error: any) {
+            console.error('Failed to suspend project:', error);
             throw error;
         }
     }
@@ -290,6 +311,9 @@ export interface AdminProject {
         avatarUrl: string | null;
     } | null;
     hasPendingPaymentRequest: boolean;
+    isSuspended: boolean;
+    suspendedAt: string | null;
+    suspendReason: string | null;
 }
 
 export interface AdminProjectsResponse {
@@ -308,6 +332,51 @@ export interface AdminProjectStats {
     pendingApprovalProjects: number;
     cancelledProjects: number;
     totalBudget: number;
+    suspendedProjects?: number;
+}
+
+export interface AdminProjectDetails {
+    id: string;
+    title: string;
+    description: string;
+    category: string;
+    tags: string[];
+    budget: number;
+    duration: string;
+    deadline: string | null;
+    status: string;
+    applicationsCount: number;
+    isSuspended: boolean;
+    suspendedAt: string | null;
+    suspendReason: string | null;
+    createdAt: string;
+    updatedAt: string;
+    creator: {
+        id: string;
+        name: string;
+        email: string;
+        avatarUrl: string | null;
+        rating: number;
+    };
+    contributor: {
+        id: string;
+        name: string;
+        avatarUrl: string | null;
+    } | null;
+    escrow: {
+        amountHeld: number;
+        status: string;
+        releaseTo: string;
+    } | null;
+}
+
+export interface SuspendProjectResponse {
+    id: string;
+    title: string;
+    isSuspended: boolean;
+    suspendedAt: string;
+    suspendReason: string;
+    refundProcessed: boolean;
 }
 
 export interface PendingPaymentRequest {

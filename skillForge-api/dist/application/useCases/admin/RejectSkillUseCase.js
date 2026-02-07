@@ -17,9 +17,11 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const Skill_1 = require("../../../domain/entities/Skill");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let RejectSkillUseCase = class RejectSkillUseCase {
-    constructor(skillRepository) {
+    constructor(skillRepository, notificationService) {
         this.skillRepository = skillRepository;
+        this.notificationService = notificationService;
     }
     async execute(data) {
         // Verify skill exists and is in review
@@ -60,12 +62,21 @@ let RejectSkillUseCase = class RejectSkillUseCase {
             updatedAt: new Date(),
         });
         await this.skillRepository.update(updatedSkill);
+        // Notify skill provider
+        await this.notificationService.send({
+            userId: skill.providerId,
+            type: Notification_1.NotificationType.SKILL_REJECTED,
+            title: 'Skill Not Approved',
+            message: `Your skill "${skill.title}" was not approved. ${data.reason ? `Reason: ${data.reason}` : 'Please review and resubmit.'}`,
+            data: { skillId: skill.id, reason: data.reason },
+        });
     }
 };
 exports.RejectSkillUseCase = RejectSkillUseCase;
 exports.RejectSkillUseCase = RejectSkillUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object])
 ], RejectSkillUseCase);
 //# sourceMappingURL=RejectSkillUseCase.js.map

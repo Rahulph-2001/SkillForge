@@ -13,6 +13,8 @@ import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/
 import { BookingValidator } from '../../../shared/validators/BookingValidator';
 import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
 import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class CreateBookingUseCase implements ICreateBookingUseCase {
@@ -22,7 +24,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
         @inject(TYPES.IAvailabilityRepository) private readonly availabilityRepository: IAvailabilityRepository,
         @inject(TYPES.IEscrowRepository) private readonly escrowRepository: IEscrowRepository,
-        @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper
+        @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper,
+        @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
     ) { }
 
     async execute(request: CreateBookingRequestDTO): Promise<BookingResponseDTO> {
@@ -87,7 +90,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
         if (!availability) {
             throw new ValidationError('Provider has not set their availability. Please contact the provider or try another skill.');
         }
-        
+
         // 8. Validate availability settings
         if (availability) {
             const pastValidation = BookingValidator.validateDateNotInPast(
@@ -198,6 +201,27 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
 
         // 11. Create booking with escrow hold (holds credits from learner)
         const createdBooking = await this.bookingRepository.createWithEscrow(booking, sessionCost);
+
+        // 12. Send notification to provider about new booking request
+        const formattedDate = new Date(request.preferredDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        await this.notificationService.send({
+            userId: request.providerId,
+            type: NotificationType.BOOKING_REQUEST,
+            title: 'New Booking Request',
+            message: `${learner.name} requested a ${skill.title} session for ${formattedDate} at ${request.preferredTime}`,
+            data: {
+                bookingId: createdBooking.id,
+                skillId: request.skillId,
+                learnerId: request.learnerId,
+                preferredDate: request.preferredDate,
+                preferredTime: request.preferredTime
+            },
+        });
 
         return this.bookingMapper.toDTO(createdBooking);
     }

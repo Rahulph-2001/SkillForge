@@ -5,13 +5,15 @@ import { IProjectApplicationRepository } from '../../../domain/repositories/IPro
 import { IProjectRepository } from '../../../domain/repositories/IProjectRepository';
 import { IVideoCallRoomRepository } from '../../../domain/repositories/IVideoCallRoomRepository';
 import { IInterviewMapper } from '../../mappers/interfaces/IInterviewMapper';
+import { INotificationService } from '../../../domain/services/INotificationService';
 export declare class ScheduleInterviewUseCase implements IScheduleInterviewUseCase {
     private interviewRepository;
     private applicationRepository;
     private projectRepository;
     private mapper;
     private videoRoomRepository;
-    constructor(interviewRepository: IInterviewRepository, applicationRepository: IProjectApplicationRepository, projectRepository: IProjectRepository, mapper: IInterviewMapper, videoRoomRepository: IVideoCallRoomRepository);
+    private notificationService;
+    constructor(interviewRepository: IInterviewRepository, applicationRepository: IProjectApplicationRepository, projectRepository: IProjectRepository, mapper: IInterviewMapper, videoRoomRepository: IVideoCallRoomRepository, notificationService: INotificationService);
     execute(userId: string, data: ScheduleInterviewDTO): Promise<InterviewResponseDTO>;
 }
 //# sourceMappingURL=ScheduleInterviewUseCase.d.ts.map

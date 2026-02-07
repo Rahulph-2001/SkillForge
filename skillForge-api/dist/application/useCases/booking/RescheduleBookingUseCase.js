@@ -18,10 +18,13 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const BookingValidator_1 = require("../../../shared/validators/BookingValidator");
 const DateTimeUtils_1 = require("../../../shared/utils/DateTimeUtils");
+const Notification_1 = require("../../../domain/entities/Notification");
 let RescheduleBookingUseCase = class RescheduleBookingUseCase {
-    constructor(bookingRepository, skillRepository) {
+    constructor(bookingRepository, skillRepository, userRepository, notificationService) {
         this.bookingRepository = bookingRepository;
         this.skillRepository = skillRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
     async execute(request) {
         // 1. Validate date and time format
@@ -79,7 +82,27 @@ let RescheduleBookingUseCase = class RescheduleBookingUseCase {
         };
         // 9. Update booking with reschedule request
         await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
-        // TODO: Send notification to the other party (learner or provider)
+        // 10. Send notification to the other party
+        const requester = await this.userRepository.findById(request.userId);
+        const recipientId = isLearner ? booking.providerId : booking.learnerId;
+        const formattedDate = new Date(request.newDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+        await this.notificationService.send({
+            userId: recipientId,
+            type: Notification_1.NotificationType.RESCHEDULE_REQUESTED,
+            title: 'Reschedule Requested',
+            message: `${requester?.name || 'User'} requested to reschedule the ${skill.title} session to ${formattedDate} at ${request.newTime}${request.reason ? `. Reason: ${request.reason}` : ''}`,
+            data: {
+                bookingId: booking.id,
+                newDate: request.newDate,
+                newTime: request.newTime,
+                requestedBy: request.userId,
+                skillId: booking.skillId
+            },
+        });
     }
     parseDateTime(dateString, timeString) {
         const [hours, minutes] = timeString.split(':').map(Number);
@@ -93,6 +116,8 @@ exports.RescheduleBookingUseCase = RescheduleBookingUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], RescheduleBookingUseCase);
 //# sourceMappingURL=RescheduleBookingUseCase.js.map

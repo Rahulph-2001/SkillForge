@@ -30,6 +30,7 @@ const projectPaymentRequest_bindings_1 = require("./modules/projectPaymentReques
 const wallet_bindings_1 = require("./modules/wallet.bindings");
 const project_chat_bindings_1 = require("./modules/project_chat.bindings");
 const CronScheduler_1 = require("../scheduler/CronScheduler");
+const notification_bindings_1 = require("./modules/notification.bindings");
 // Bind all modules in dependency order
 // 1. Core infrastructure (repositories, services, mappers)
 (0, repository_bindings_1.bindRepositoryModule)(di_1.container);
@@ -56,6 +57,7 @@ di_1.container.load(escrow_bindings_1.escrowModule);
 di_1.container.load(projectPaymentRequest_bindings_1.projectPaymentRequestBindings);
 di_1.container.load(wallet_bindings_1.walletBindings);
 di_1.container.load(project_chat_bindings_1.projectChatBindings);
+di_1.container.load(notification_bindings_1.notificationBindings);
 // 3. Application entry point
 di_1.container.bind(types_1.TYPES.App).to(server_1.App);
 //# sourceMappingURL=container.js.map

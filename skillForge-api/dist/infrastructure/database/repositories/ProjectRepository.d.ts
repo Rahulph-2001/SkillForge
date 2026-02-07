@@ -23,6 +23,7 @@ export declare class ProjectRepository extends BaseRepository<Project> implement
         search?: string;
         status?: ProjectStatus;
         category?: string;
+        isSuspended?: boolean;
         includeCreator?: boolean;
         includeContributor?: boolean;
     }): Promise<{

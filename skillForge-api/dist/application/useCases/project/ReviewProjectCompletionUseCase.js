@@ -19,11 +19,13 @@ const AppError_1 = require("../../../domain/errors/AppError");
 const ProjectPaymentRequest_1 = require("../../../domain/entities/ProjectPaymentRequest");
 const Project_1 = require("../../../domain/entities/Project");
 const uuid_1 = require("uuid");
+const Notification_1 = require("../../../domain/entities/Notification");
 let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
-    constructor(projectRepository, paymentRequestRepository, applicationRepository) {
+    constructor(projectRepository, paymentRequestRepository, applicationRepository, notificationService) {
         this.projectRepository = projectRepository;
         this.paymentRequestRepository = paymentRequestRepository;
         this.applicationRepository = applicationRepository;
+        this.notificationService = notificationService;
     }
     async execute(projectId, userId, decision, reason) {
         const project = await this.projectRepository.findById(projectId);
@@ -57,6 +59,17 @@ let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
             });
             await this.paymentRequestRepository.create(paymentRequest);
             project.markAsPaymentPending();
+            // Notify contributor about approval
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_COMPLETION_APPROVED,
+                title: 'Project Completion Approved!',
+                message: `"${project.title}" has been approved! Payment is pending admin review.`,
+                data: {
+                    projectId: project.id,
+                    status: 'PAYMENT_PENDING'
+                },
+            });
         }
         else if (decision === 'REJECT') {
             if (!reason) {
@@ -77,10 +90,33 @@ let ReviewProjectCompletionUseCase = class ReviewProjectCompletionUseCase {
             });
             await this.paymentRequestRepository.create(paymentRequest);
             project.markAsRefundPending();
+            // Notify contributor about rejection
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_COMPLETION_REJECTED,
+                title: 'Project Completion Rejected',
+                message: `"${project.title}" completion was rejected. Reason: ${reason}`,
+                data: {
+                    projectId: project.id,
+                    reason,
+                    status: 'REFUND_PENDING'
+                },
+            });
         }
         else if (decision === 'REQUEST_CHANGES') {
             project.revertToInProgress();
-            // TODO: Notify contributor
+            // Notify contributor about requested changes
+            await this.notificationService.send({
+                userId: application.applicantId,
+                type: Notification_1.NotificationType.PROJECT_COMPLETION_REJECTED,
+                title: 'Changes Requested',
+                message: `Changes have been requested for "${project.title}". ${reason || 'Please review and resubmit.'}`,
+                data: {
+                    projectId: project.id,
+                    reason,
+                    status: 'IN_PROGRESS'
+                },
+            });
         }
         else {
             throw new AppError_1.ValidationError('Invalid decision. Must be APPROVE, REJECT, or REQUEST_CHANGES');
@@ -94,6 +130,7 @@ exports.ReviewProjectCompletionUseCase = ReviewProjectCompletionUseCase = __deco
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IProjectRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IProjectPaymentRequestRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IProjectApplicationRepository)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], ReviewProjectCompletionUseCase);
 //# sourceMappingURL=ReviewProjectCompletionUseCase.js.map

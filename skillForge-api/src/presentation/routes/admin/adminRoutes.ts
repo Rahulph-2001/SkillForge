@@ -67,6 +67,12 @@ export class AdminRoutes {
     // GET /api/v1/admin/projects/stats - Get project statistics
     this.router.get(ENDPOINTS.ADMIN.PROJECTS_STATS, this.adminProjectController.getProjectStats.bind(this.adminProjectController));
 
+    // GET /api/v1/admin/projects/:projectId - Get project details
+    this.router.get(ENDPOINTS.ADMIN.PROJECT_BY_ID, this.adminProjectController.getProjectDetails.bind(this.adminProjectController));
+
+    // POST /api/v1/admin/projects/:projectId/suspend - Suspend a project
+    this.router.post(ENDPOINTS.ADMIN.PROJECT_SUSPEND, this.adminProjectController.suspendProject.bind(this.adminProjectController));
+
     // Project Payment Requests
     // GET /api/v1/admin/payment-requests/pending
     this.router.get(ENDPOINTS.ADMIN.PAYMENT_REQUESTS_PENDING, this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));

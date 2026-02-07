@@ -4,12 +4,15 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { IBlockSkillUseCase, BlockSkillDTO } from './interfaces/IBlockSkillUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class BlockSkillUseCase implements IBlockSkillUseCase {
   constructor(
-    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
-  ) {}
+    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
+  ) { }
 
   async execute(data: BlockSkillDTO): Promise<void> {
     // Verify skill exists
@@ -59,5 +62,14 @@ export class BlockSkillUseCase implements IBlockSkillUseCase {
     });
 
     await this.skillRepository.update(updatedSkill);
+
+    // Notify skill provider
+    await this.notificationService.send({
+      userId: skill.providerId,
+      type: NotificationType.SKILL_BLOCKED,
+      title: 'Skill Blocked',
+      message: `Your skill "${skill.title}" has been blocked by admin. ${data.reason ? `Reason: ${data.reason}` : ''}`,
+      data: { skillId: skill.id, reason: data.reason },
+    });
   }
 }

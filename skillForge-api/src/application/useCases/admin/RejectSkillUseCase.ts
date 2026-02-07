@@ -4,12 +4,15 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { Skill } from '../../../domain/entities/Skill';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { IRejectSkillUseCase, RejectSkillDTO } from './interfaces/IRejectSkillUseCase';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class RejectSkillUseCase implements IRejectSkillUseCase {
   constructor(
-    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
-  ) {}
+    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
+  ) { }
 
   async execute(data: RejectSkillDTO): Promise<void> {
     // Verify skill exists and is in review
@@ -54,5 +57,14 @@ export class RejectSkillUseCase implements IRejectSkillUseCase {
     });
 
     await this.skillRepository.update(updatedSkill);
+
+    // Notify skill provider
+    await this.notificationService.send({
+      userId: skill.providerId,
+      type: NotificationType.SKILL_REJECTED,
+      title: 'Skill Not Approved',
+      message: `Your skill "${skill.title}" was not approved. ${data.reason ? `Reason: ${data.reason}` : 'Please review and resubmit.'}`,
+      data: { skillId: skill.id, reason: data.reason },
+    });
   }
 }

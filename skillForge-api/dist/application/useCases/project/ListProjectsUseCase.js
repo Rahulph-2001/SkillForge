@@ -26,6 +26,7 @@ let ListProjectsUseCase = class ListProjectsUseCase {
             search: filters.search,
             category: filters.category,
             status: filters.status,
+            isSuspended: false, // Don't show suspended projects in public list
             page: filters.page || 1,
             limit: filters.limit || 20,
         };

@@ -251,6 +251,8 @@ export declare const TYPES: {
     IGetPendingPaymentRequestsUseCase: symbol;
     GetPendingPaymentRequestsUseCase: symbol;
     ProjectPaymentRequestController: symbol;
+    IAdminGetProjectDetailsUseCase: symbol;
+    IAdminSuspendProjectUseCase: symbol;
     IProjectRepository: symbol;
     ICreateProjectUseCase: symbol;
     IListProjectsUseCase: symbol;
@@ -369,5 +371,15 @@ export declare const TYPES: {
     IGetProjectMessagesUseCase: symbol;
     ProjectMessageController: symbol;
     ProjectMessageRoutes: symbol;
+    INotificationRepository: symbol;
+    INotificationService: symbol;
+    INotificationMapper: symbol;
+    IGetNotificationsUseCase: symbol;
+    IMarkNotificationAsReadUseCase: symbol;
+    IMarkAllNotificationsAsReadUseCase: symbol;
+    IGetUnreadCountUseCase: symbol;
+    IDeleteNotificationUseCase: symbol;
+    NotificationController: symbol;
+    NotificationRoutes: symbol;
 };
 //# sourceMappingURL=types.d.ts.map

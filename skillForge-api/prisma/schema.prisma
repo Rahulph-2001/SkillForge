@@ -130,6 +130,34 @@ enum ReportStatus {
   DISMISSED
 }
 
+enum NotificationType {
+  SESSION_CONFIRMED
+  SESSION_DECLINED
+  SESSION_CANCELLED
+  SESSION_COMPLETED
+  RESCHEDULE_REQUESTED
+  RESCHEDULE_ACCEPTED
+  RESCHEDULE_DECLINED
+  NEW_MESSAGE
+  CREDITS_EARNED
+  CREDITS_RECEIVED
+  COMMUNITY_UPDATE
+  BOOKING_REQUEST
+  PROFILE_VERIFIED
+  PROJECT_APPLICATION_RECEIVED
+  PROJECT_APPLICATION_ACCEPTED
+  PROJECT_APPLICATION_REJECTED
+  PROJECT_COMPLETION_REQUESTED
+  PROJECT_COMPLETION_APPROVED
+  PROJECT_COMPLETION_REJECTED
+  SKILL_APPROVED
+  SKILL_REJECTED
+  SKILL_BLOCKED
+  INTERVIEW_SCHEDULED
+  SUBSCRIPTION_RENEWED
+  PAYMENT_RECEIVED
+}
+
 // --- Models ---
 
 model Skill {
@@ -517,6 +545,7 @@ model User {
   reportedReports   Report[]            @relation("ReportedUser")
   resolvedReports   Report[]            @relation("ResolvedBy")
   sentProjectMessages ProjectMessage[] @relation("ProjectMessageSender")
+  notifications     Notification[]
 
   @@index([role])
   @@index([isActive])
@@ -542,6 +571,24 @@ model PasswordResetToken {
   @@index([token])
   @@index([expiresAt])
   @@map("password_reset_tokens")
+}
+
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @map("user_id") @db.Uuid
+  type      NotificationType
+  title     String           @db.VarChar(255)
+  message   String           @db.Text
+  data      Json?            @db.Json
+  isRead    Boolean          @default(false) @map("is_read")
+  readAt    DateTime?        @map("read_at") @db.Timestamptz(6)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@index([createdAt])
+  @@map("notifications")
 }
 
 // --- Subscription Management Models ---
@@ -826,6 +873,9 @@ model Project {
   paymentId   String?       @unique @map("payment_id") @db.Uuid // Link to payment for escrow (one-to-one)
   applicationsCount Int      @default(0) @map("applications_count")
   isDeleted   Boolean       @default(false) @map("is_deleted")
+  isSuspended Boolean       @default(false) @map("is_suspended")
+  suspendedAt DateTime?     @map("suspended_at") @db.Timestamptz(6)
+  suspendReason String?     @map("suspend_reason") @db.Text
   createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 

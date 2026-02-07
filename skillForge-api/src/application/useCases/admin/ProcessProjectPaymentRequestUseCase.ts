@@ -11,6 +11,8 @@ import { ProjectPaymentRequestType, ProjectPaymentRequest, ProjectPaymentRequest
 import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
 import { v4 as uuidv4 } from 'uuid';
 import { IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPaymentRequestUseCase {
@@ -20,7 +22,8 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
         @inject(TYPES.IUserWalletTransactionRepository) private readonly userWalletTransactionRepository: IUserWalletTransactionRepository,
         @inject(TYPES.IDebitAdminWalletUseCase) private readonly debitAdminWalletUseCase: IDebitAdminWalletUseCase,
-        @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository
+        @inject(TYPES.IProjectApplicationRepository) private readonly applicationRepository: IProjectApplicationRepository,
+        @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
     ) { }
 
     async execute(requestId: string, adminId: string, approved: boolean, notes?: string, overrideAction?: 'OVERRIDE_RELEASE'): Promise<void> {
@@ -117,7 +120,6 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                 project.markAsCompleted();
 
                 // Create audit record for the Overridden Release
-                // We create a new APPROVED Request so history shows money went out
                 const releaseRequest = ProjectPaymentRequest.create({
                     id: uuidv4(),
                     projectId: project.id!,
@@ -133,10 +135,21 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                     updatedAt: new Date(),
                     requesterNotes: `Override Release for Dispute Resolution`
                 });
-                // Since we are creating it as APPROVED, we don't need to call .approve() again unless strict checks require it.
-                // Entity factory usually sets props directly.
 
                 await this.paymentRequestRepository.create(releaseRequest);
+
+                // Notify contributor about payment received (Dispute resolved in their favor)
+                await this.notificationService.send({
+                    userId: contributorId,
+                    type: NotificationType.PAYMENT_RECEIVED,
+                    title: 'Payment Received',
+                    message: `You received ₹${paymentRequest.amount} for "${project.title}". Dispute resolved in your favor.`,
+                    data: {
+                        projectId: project.id!,
+                        amount: paymentRequest.amount,
+                        isDisputeResolution: true
+                    },
+                });
 
             } catch (error: any) {
                 console.error(`[ProcessPaymentRequest] Failed to execute Override Release for ${requestId}:`, error);
@@ -146,21 +159,10 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
         } else if (approved) {
             // 3. Process Approval (Standard Flow)
             try {
-                // For REFUND, money goes back to Requester (Creator). 
-                const targetRecipientId = paymentRequest.type === ProjectPaymentRequestType.RELEASE
-                    ? paymentRequest.recipientId
-                    : paymentRequest.requestedBy;
-
-                // Note: The existing logic uses paymentRequest.recipientId. 
-                // We must ensure that for REFUND, the recipientId IS the Creator.
-                // Assuming ReviewProjectCompletionUseCase sets recipientId = client.id for REFUND requests.
-                // If so, we can trust paymentRequest.recipientId.
-
                 // Debit Admin Wallet
-                // Using 'projectId' as reference ID for wallet transaction helps tracking
                 await this.debitAdminWalletUseCase.execute({
                     amount: paymentRequest.amount,
-                    currency: 'INR', // Assuming INR for now, should ideally come from project/payment
+                    currency: 'INR',
                     source: paymentRequest.type === ProjectPaymentRequestType.RELEASE ? 'PROJECT_RELEASE' : 'PROJECT_REFUND',
                     referenceId: paymentRequest.id!,
                     metadata: {
@@ -214,8 +216,59 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                 // Update Project Status
                 if (paymentRequest.type === ProjectPaymentRequestType.RELEASE) {
                     project.markAsCompleted();
+
+                    // Notify contributor about payment received
+                    await this.notificationService.send({
+                        userId: paymentRequest.recipientId,
+                        type: NotificationType.PAYMENT_RECEIVED,
+                        title: 'Payment Received',
+                        message: `You received ₹${paymentRequest.amount} for completing "${project.title}"`,
+                        data: {
+                            projectId: project.id!,
+                            amount: paymentRequest.amount
+                        },
+                    });
+
+                    // Also notify project owner that project is completed
+                    await this.notificationService.send({
+                        userId: project.clientId,
+                        type: NotificationType.PROJECT_COMPLETION_APPROVED,
+                        title: 'Project Completed',
+                        message: `"${project.title}" has been marked as completed. Payment released to contributor.`,
+                        data: {
+                            projectId: project.id!,
+                            status: 'COMPLETED'
+                        },
+                    });
                 } else {
                     project.markAsCancelled();
+
+                    // Notify project owner about refund
+                    await this.notificationService.send({
+                        userId: paymentRequest.recipientId,
+                        type: NotificationType.CREDITS_RECEIVED,
+                        title: 'Refund Received',
+                        message: `You received a refund of ₹${paymentRequest.amount} for "${project.title}"`,
+                        data: {
+                            projectId: project.id!,
+                            amount: paymentRequest.amount
+                        },
+                    });
+
+                    // Notify contributor about project cancellation
+                    const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id!);
+                    if (acceptedApplication) {
+                        await this.notificationService.send({
+                            userId: acceptedApplication.applicantId,
+                            type: NotificationType.PROJECT_COMPLETION_REJECTED,
+                            title: 'Project Cancelled',
+                            message: `"${project.title}" has been cancelled and refunded to the project owner.`,
+                            data: {
+                                projectId: project.id!,
+                                status: 'CANCELLED'
+                            },
+                        });
+                    }
                 }
 
                 // Update Request Status
@@ -231,6 +284,19 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
             try {
                 project.revertToPendingCompletion();
                 paymentRequest.reject(adminId, notes);
+
+                // Notify project owner about rejection
+                await this.notificationService.send({
+                    userId: project.clientId,
+                    type: NotificationType.PROJECT_COMPLETION_REJECTED,
+                    title: 'Payment Request Rejected',
+                    message: `Payment request for "${project.title}" was rejected by admin. ${notes || 'Please review and resubmit.'}`,
+                    data: {
+                        projectId: project.id!,
+                        reason: notes
+                    },
+                });
+
             } catch (error: any) {
                 console.error(`[ProcessPaymentRequest] Failed to process rejection for ${requestId}:`, error);
                 throw new InternalServerError(`Failed to process payment rejection: ${error.message}`);
@@ -242,4 +308,3 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
         await this.paymentRequestRepository.update(paymentRequest);
     }
 }
-

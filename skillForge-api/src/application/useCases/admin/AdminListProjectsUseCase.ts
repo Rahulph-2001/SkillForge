@@ -37,6 +37,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
             search: dto.search,
             status: statusFilter,
             category: dto.category,
+            isSuspended: dto.isSuspended,
             includeCreator: true,
             includeContributor: true
         };
@@ -85,7 +86,11 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
                     avatarUrl: creator.avatarUrl || null
                 },
                 contributor,
-                hasPendingPaymentRequest: pendingProjectIds.has(project.id!)
+                hasPendingPaymentRequest: pendingProjectIds.has(project.id!),
+                // Suspension fields - defaults for pre-migration compatibility
+                isSuspended: project.isSuspended ?? false,
+                suspendedAt: project.suspendedAt ?? null,
+                suspendReason: project.suspendReason ?? null
             });
         }
 

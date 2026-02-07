@@ -49,7 +49,7 @@ import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
 import SessionVideoCallPage from '../pages/user/SessionVideoCallPage';
 import InterviewVideoCallPage from '../pages/user/InterviewVideoCallPage';
 import WalletPage from '../pages/user/WalletPage';
-
+import NotificationsPage from '@/pages/user/NotificationsPage';
 
 const AppRoutes = () => {
     const { user } = useAppSelector((state) => state.auth);
@@ -273,6 +273,14 @@ const AppRoutes = () => {
                     }
                 />
             </Route>
+            <Route
+                path="/notifications"
+                element={
+                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <NotificationsPage />
+                    </ProtectedRoute>
+                }
+            />
 
             {/* Admin Routes wrapped in AdminLayout */}
             <Route element={<AdminLayout />}>

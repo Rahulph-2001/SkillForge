@@ -13,6 +13,8 @@ import { ProjectApplication } from '../../../domain/entities/ProjectApplication'
 import { ProjectStatus } from '../../../domain/entities/Project';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class ApplyToProjectUseCase implements IApplyToProjectUseCase {
@@ -22,7 +24,8 @@ export class ApplyToProjectUseCase implements IApplyToProjectUseCase {
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
     @inject(TYPES.IGeminiAIService) private readonly geminiService: IGeminiAIService,
-    @inject(TYPES.IProjectApplicationMapper) private readonly mapper: IProjectApplicationMapper
+    @inject(TYPES.IProjectApplicationMapper) private readonly mapper: IProjectApplicationMapper,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService
   ) { }
 
   async execute(applicantId: string, dto: CreateProjectApplicationDTO): Promise<ProjectApplicationResponseDTO> {
@@ -115,13 +118,21 @@ export class ApplyToProjectUseCase implements IApplyToProjectUseCase {
     // 10. Increment project applications count
     await this.projectRepository.incrementApplicationsCount(dto.projectId);
 
-    // 11. Return response
-    const userData = applicant.toJSON();
-    // Use type assertion or casting if needed to access snake_case properties if typing issues persist
-    // But based on our previous fix, we know we should use review_count etc if from toJSON()
-    // However, if we access applicant entity getters directly it's safer
+    // 11. Notify project owner about new application
+    await this.notificationService.send({
+      userId: project.clientId,
+      type: NotificationType.PROJECT_APPLICATION_RECEIVED,
+      title: 'New Project Application',
+      message: `${applicant.name} applied to your project "${project.title}"`,
+      data: {
+        projectId: project.id!,
+        applicationId: savedApplication.id!,
+        applicantId: applicantId,
+        matchScore: matchAnalysis.overallScore
+      },
+    });
 
-    // Safer to use entity getters:
+    // 12. Return response
     return this.mapper.toResponseDTO(savedApplication, {
       id: applicant.id,
       name: applicant.name,

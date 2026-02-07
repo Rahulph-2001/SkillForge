@@ -267,6 +267,8 @@ exports.TYPES = {
     IGetPendingPaymentRequestsUseCase: Symbol.for('IGetPendingPaymentRequestsUseCase'),
     GetPendingPaymentRequestsUseCase: Symbol.for('GetPendingPaymentRequestsUseCase'),
     ProjectPaymentRequestController: Symbol.for('ProjectPaymentRequestController'),
+    IAdminGetProjectDetailsUseCase: Symbol.for('IAdminGetProjectDetailsUseCase'),
+    IAdminSuspendProjectUseCase: Symbol.for('IAdminSuspendProjectUseCase'),
     // Project 
     IProjectRepository: Symbol.for('IProjectRepository'),
     ICreateProjectUseCase: Symbol.for('ICreateProjectUseCase'),
@@ -403,5 +405,16 @@ exports.TYPES = {
     IGetProjectMessagesUseCase: Symbol.for('IGetProjectMessagesUseCase'),
     ProjectMessageController: Symbol.for('ProjectMessageController'),
     ProjectMessageRoutes: Symbol.for('ProjectMessageRoutes'),
+    // Notification System
+    INotificationRepository: Symbol.for('INotificationRepository'),
+    INotificationService: Symbol.for('INotificationService'),
+    INotificationMapper: Symbol.for('INotificationMapper'),
+    IGetNotificationsUseCase: Symbol.for('IGetNotificationsUseCase'),
+    IMarkNotificationAsReadUseCase: Symbol.for('IMarkNotificationAsReadUseCase'),
+    IMarkAllNotificationsAsReadUseCase: Symbol.for('IMarkAllNotificationsAsReadUseCase'),
+    IGetUnreadCountUseCase: Symbol.for('IGetUnreadCountUseCase'),
+    IDeleteNotificationUseCase: Symbol.for('IDeleteNotificationUseCase'),
+    NotificationController: Symbol.for('NotificationController'),
+    NotificationRoutes: Symbol.for('NotificationRoutes'),
 };
 //# sourceMappingURL=types.js.map

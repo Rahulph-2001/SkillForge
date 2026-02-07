@@ -16,9 +16,12 @@ exports.AcceptRescheduleUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let AcceptRescheduleUseCase = class AcceptRescheduleUseCase {
-    constructor(bookingRepository) {
+    constructor(bookingRepository, userRepository, notificationService) {
         this.bookingRepository = bookingRepository;
+        this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
     async execute(request) {
         // 1. Get the booking
@@ -52,13 +55,33 @@ let AcceptRescheduleUseCase = class AcceptRescheduleUseCase {
         // 5. Update booking with new date/time and set status to confirmed
         // Note: Repository method handles overlap detection transactionally
         await this.bookingRepository.acceptReschedule(request.bookingId, rescheduleInfo.newDate, rescheduleInfo.newTime);
-        // TODO: Send notification to the requester about accepted reschedule
+        // 6. Send notification to the requester about accepted reschedule
+        const requesterId = rescheduleInfo.requestedBy === 'learner' ? booking.learnerId : booking.providerId;
+        const accepter = await this.userRepository.findById(request.userId);
+        const formattedDate = new Date(rescheduleInfo.newDate).toLocaleDateString('en-US', {
+            weekday: 'long',
+            month: 'short',
+            day: 'numeric'
+        });
+        await this.notificationService.send({
+            userId: requesterId,
+            type: Notification_1.NotificationType.RESCHEDULE_ACCEPTED,
+            title: 'Reschedule Accepted',
+            message: `${accepter?.name || 'User'} accepted your reschedule request. Session is now scheduled for ${formattedDate} at ${rescheduleInfo.newTime}`,
+            data: {
+                bookingId: booking.id,
+                newDate: rescheduleInfo.newDate,
+                newTime: rescheduleInfo.newTime
+            },
+        });
     }
 };
 exports.AcceptRescheduleUseCase = AcceptRescheduleUseCase;
 exports.AcceptRescheduleUseCase = AcceptRescheduleUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IBookingRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.INotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], AcceptRescheduleUseCase);
 //# sourceMappingURL=AcceptRescheduleUseCase.js.map

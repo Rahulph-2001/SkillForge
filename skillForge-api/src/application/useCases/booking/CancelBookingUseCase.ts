@@ -1,5 +1,3 @@
-
-
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
@@ -8,6 +6,10 @@ import { ICancelBookingUseCase } from './interfaces/ICancelBookingUseCase';
 import { CancelBookingRequestDTO } from '../../dto/booking/CancelBookingRequestDTO';
 import { BookingStatus } from '../../../domain/entities/Booking';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
+import { INotificationService } from '../../../domain/services/INotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
+import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
 
 @injectable()
 export class CancelBookingUseCase implements ICancelBookingUseCase {
@@ -16,7 +18,10 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
 
   constructor(
     @inject(TYPES.IBookingRepository) private readonly bookingRepository: IBookingRepository,
-    @inject(TYPES.IEscrowRepository) private readonly escrowRepository: IEscrowRepository
+    @inject(TYPES.IEscrowRepository) private readonly escrowRepository: IEscrowRepository,
+    @inject(TYPES.INotificationService) private readonly notificationService: INotificationService,
+    @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
+    @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
   ) { }
 
   async execute(request: CancelBookingRequestDTO): Promise<void> {
@@ -27,7 +32,10 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
     if (!booking) throw new NotFoundError('Booking not found');
 
     // 2. Authorization Check
-    if (booking.learnerId !== userId && booking.providerId !== userId) {
+    const isLearner = booking.learnerId === userId;
+    const isProvider = booking.providerId === userId;
+
+    if (!isLearner && !isProvider) {
       throw new ForbiddenError('You are not authorized to cancel this booking');
     }
 
@@ -56,6 +64,19 @@ export class CancelBookingUseCase implements ICancelBookingUseCase {
       BookingStatus.CANCELLED,
       reason || 'Cancelled by user'
     );
+
+    // 7. Send notification to the other party
+    const canceller = await this.userRepository.findById(userId);
+    const skill = await this.skillRepository.findById(booking.skillId);
+    const recipientId = isLearner ? booking.providerId : booking.learnerId;
+
+    await this.notificationService.send({
+      userId: recipientId,
+      type: NotificationType.SESSION_CANCELLED,
+      title: 'Session Cancelled',
+      message: `${canceller?.name || 'User'} cancelled the ${skill?.title || 'skill'} session${reason ? `. Reason: ${reason}` : ''}`,
+      data: { bookingId: booking.id, cancelledBy: userId, skillId: booking.skillId },
+    });
   }
 
   private parseDateTime(dateString: string, timeString: string): Date {

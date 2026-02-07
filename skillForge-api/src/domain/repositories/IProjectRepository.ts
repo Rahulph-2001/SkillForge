@@ -7,6 +7,7 @@ export interface ListProjectsFilters {
   clientId?: string;
   page?: number;
   limit?: number;
+  isSuspended?: boolean;
 }
 
 export interface ListProjectsResult {
@@ -30,6 +31,7 @@ export interface ProjectStats {
 export interface AdminListProjectsFilters extends ListProjectsFilters {
   includeCreator?: boolean;
   includeContributor?: boolean;
+  isSuspended?: boolean;
 }
 
 export interface IProjectRepository {

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, MessageCircle, ChevronDown, LogOut, User, CreditCard } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../store/hooks';
 import { logout } from '../../../store/slices/authSlice';
 import { toast } from 'react-hot-toast';
+import notificationService from '../../../services/notificationService';
 
 import { useAppSelector } from '../../../store/hooks';
 
@@ -12,6 +13,26 @@ export default function Navbar() {
     const isAuthenticated = !!user;
     const location = useLocation();
     const [showUserMenu, setShowUserMenu] = useState(false);
+    const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+
+    // Fetch unread notification count
+    useEffect(() => {
+        if (isAuthenticated) {
+            const fetchUnreadCount = async () => {
+                try {
+                    const response = await notificationService.getUnreadCount();
+                    setUnreadNotificationCount(response.count);
+                } catch (error) {
+                    console.error('Failed to fetch unread count:', error);
+                }
+            };
+            fetchUnreadCount();
+
+            // Refresh every 30 seconds
+            const interval = setInterval(fetchUnreadCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [isAuthenticated]);
 
     const isActive = (path: string) => location.pathname === path;
     const dispatch = useAppDispatch();
@@ -158,7 +179,14 @@ export default function Navbar() {
                         <span className="text-sm text-amber-600/80">credits</span>
                     </div>
 
-                    <Bell className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
+                    <Link to="/notifications" className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <Bell className="w-5 h-5 text-gray-600 hover:text-blue-600 transition-colors" />
+                        {unreadNotificationCount > 0 && (
+                            <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-red-500 text-white text-xs font-bold rounded-full px-1">
+                                {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                            </span>
+                        )}
+                    </Link>
                     <MessageCircle className="w-5 h-5 text-gray-600 cursor-pointer hover:text-blue-600 transition-colors" />
 
                     {/* User Menu Dropdown */}
