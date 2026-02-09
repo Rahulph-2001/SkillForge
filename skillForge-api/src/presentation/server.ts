@@ -41,6 +41,7 @@ import { ReportRoutes } from './routes/ReportRoutes';
 import { AdminReportRoutes } from './routes/admin/AdminReportRoutes';
 import { ProjectMessageRoutes } from './routes/project/ProjectMessageRoutes';
 import { NotificationRoutes } from './routes/notification/notificationRoutes';
+import { CreditPackageRoutes } from './routes/credit/CreditPackageRoutes';
 
 
 
@@ -79,6 +80,7 @@ export class App {
         @inject(TYPES.ProjectMessageRoutes) private readonly projectMessageRoutes: ProjectMessageRoutes,
         @inject(TYPES.IPassportService) private readonly passportService: IPassportService,
         @inject(TYPES.NotificationRoutes) private readonly notificationRoutes: NotificationRoutes,
+        @inject(TYPES.CreditPackageRoutes) private readonly creditPackageRoutes: CreditPackageRoutes,
     ) {
         this.app = express();
         this.setupMiddlewares();
@@ -180,6 +182,7 @@ export class App {
         this.app.use(`${API_PREFIX}${ROUTES.ADMIN.REPORTS}`, this.adminReportRoutes.router);
 
         this.app.use(`${API_PREFIX}${ROUTES.NOTIFICATIONS}`, this.notificationRoutes.router)
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.CREDIT_PACKAGES}`, this.creditPackageRoutes.router);
 
         // 404 Handler
         this.app.all('*', notFoundHandler);

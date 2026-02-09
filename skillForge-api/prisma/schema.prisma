@@ -158,6 +158,26 @@ enum NotificationType {
   PAYMENT_RECEIVED
 }
 
+// --- Custom Models ---
+
+model CreditPackage {
+  id        String  @id @default(uuid()) @db.Uuid
+  credits   Int
+  price     Decimal @db.Decimal(10, 2)
+  isPopular Boolean @default(false) @map("is_popular")
+  isActive  Boolean @default(true) @map("is_active")
+
+  // Discount field kept for database completeness but not exposed in current create flow
+  discount Int @default(0)
+
+  // Metadata
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  @@map("credit_packages")
+}
+
 // --- Models ---
 
 model Skill {

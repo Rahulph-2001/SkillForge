@@ -43,6 +43,7 @@ import AdminCommunitiesPage from '../pages/admin/AdminCommunitiesPage';
 import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPage';
 import AdminProjectsPage from '../pages/admin/AdminProjectsPage';
 import AdminReportsPage from '../pages/admin/AdminReportsPage';
+import AdminCreditManagementPage from '../pages/admin/AdminCreditManagementPage';
 import MyApplicationsPage from '../pages/user/MyApplicationsPage';
 import ManageApplicationsPage from '../pages/user/ManageApplicationsPage';
 import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
@@ -385,6 +386,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminReportsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/credits"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminCreditManagementPage />
                         </ProtectedRoute>
                     }
                 />

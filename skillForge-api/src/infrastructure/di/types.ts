@@ -467,4 +467,14 @@ export const TYPES = {
   IDeleteNotificationUseCase: Symbol.for('IDeleteNotificationUseCase'),
   NotificationController: Symbol.for('NotificationController'),
   NotificationRoutes: Symbol.for('NotificationRoutes'),
+
+  // Credit Package Management
+  ICreditPackageRepository: Symbol.for('ICreditPackageRepository'),
+  ICreateCreditPackageUseCase: Symbol.for('ICreateCreditPackageUseCase'),
+  IGetCreditPackagesUseCase: Symbol.for('IGetCreditPackagesUseCase'),
+  IUpdateCreditPackageUseCase: Symbol.for('IUpdateCreditPackageUseCase'),
+  IDeleteCreditPackageUseCase: Symbol.for('IDeleteCreditPackageUseCase'),
+  ICreditPackageMapper: Symbol.for('ICreditPackageMapper'),
+  CreditPackageController: Symbol.for('CreditPackageController'),
+  CreditPackageRoutes: Symbol.for('CreditPackageRoutes'),
 };

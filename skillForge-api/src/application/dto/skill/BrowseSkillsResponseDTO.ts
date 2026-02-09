@@ -19,6 +19,8 @@ export const BrowseSkillDTOSchema = z.object({
     id: z.string().uuid('Invalid provider ID'),
     name: z.string().min(1, 'Provider name is required'),
     email: z.string().email('Invalid email address'),
+    avatarUrl: z.string().nullable().optional(),
+    reviewCount: z.number().int().min(0).optional(),
   }),
   availableDays: z.array(z.string()),
 });

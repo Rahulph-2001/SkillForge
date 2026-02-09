@@ -29,6 +29,7 @@ import { walletBindings } from './modules/wallet.bindings';
 import { projectChatBindings } from './modules/project_chat.bindings';
 import { CronScheduler } from '../scheduler/CronScheduler';
 import { notificationBindings } from './modules/notification.bindings';
+import { registerCreditBindings } from './modules/credit.bindings';
 
 
 export { container };
@@ -63,6 +64,7 @@ container.load(projectPaymentRequestBindings);
 container.load(walletBindings);
 container.load(projectChatBindings);
 container.load(notificationBindings)
+registerCreditBindings(container);
 
 // 3. Application entry point
 container.bind<App>(TYPES.App).to(App);

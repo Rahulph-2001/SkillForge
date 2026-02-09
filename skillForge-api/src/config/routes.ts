@@ -53,6 +53,7 @@ export const ROUTES = {
         WALLET: '/admin/wallet',
         SESSIONS: '/admin/sessions',
         REPORTS: '/admin/reports',
+        CREDIT_PACKAGES: '/admin/credit-packages',
     },
 
     // Health Check

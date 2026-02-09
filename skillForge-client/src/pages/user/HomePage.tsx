@@ -1,9 +1,50 @@
-
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
-
+import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
 
 export default function HomePage() {
+    const [featuredSkills, setFeaturedSkills] = useState<BrowseSkill[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const fetchSkills = async () => {
+            try {
+                // Fetch top rated skills
+                const response = await browseSkillsService.browseSkills({
+                    limit: 3,
+                    // in real app, we might want to sort by rating, but for now strict to plan
+                });
+                setFeaturedSkills(response.skills);
+            } catch (err) {
+                console.error('Failed to fetch featured skills:', err);
+                setError('Failed to load featured skills');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSkills();
+    }, []);
+
+    const getCategoryIcon = (category: string) => {
+        const icons: { [key: string]: string } = {
+            'Music': '🎸',
+            'Programming': '💻',
+            'Technology': '💻',
+            'Design': '🎨',
+            'Art': '🎨',
+            'Business': '💼',
+            'Marketing': '📢',
+            'Lifestyle': '🧘',
+            'Health': '🧘',
+            'Cooking': '🍳',
+            'Language': '🗣️',
+            'Academics': '📚'
+        };
+        return icons[category] || '✨';
+    };
+
     return (
         <main className="min-h-screen bg-white">
 
@@ -133,93 +174,92 @@ export default function HomePage() {
                     </div>
 
                     <div className="grid md:grid-cols-3 gap-6">
-                        {[
-                            {
-                                title: 'Acoustic Guitar for Beginners',
-                                description:
-                                    'Learn the fundamentals of acoustic guitar playing, including basic chords, strumming patterns...',
-                                instructor: 'Marcus Johnson',
-                                duration: '1 hour',
-                                level: 'Beginner',
-                                rating: 4.9,
-                                reviews: '8 reviews',
-                                tags: ['Music', 'Guitar', 'Beginner Friendly'],
-                                price: '8 / hour',
-                            },
-                            {
-                                title: 'Full-Stack Web Development',
-                                description:
-                                    'Master modern web development with React, Node.js, and databases. Build real-world projects...',
-                                instructor: 'David Kim',
-                                duration: '1.5 hours',
-                                level: 'Intermediate',
-                                rating: 4.7,
-                                reviews: '12 reviews',
-                                tags: ['Programming', 'Web Development', 'React'],
-                                price: '12 / hour',
-                            },
-                            {
-                                title: 'Vinyasa Yoga Flow',
-                                description:
-                                    'Dynamic yoga practice that links breath with movement. Improve flexibility, strength...',
-                                instructor: 'Emily Rodriguez',
-                                duration: '1 hour',
-                                level: 'All Levels',
-                                rating: 5,
-                                reviews: '6 reviews',
-                                tags: ['Yoga', 'Fitness', 'Wellness'],
-                                price: '6 / hour',
-                            },
-                        ].map((skill, idx) => (
-                            <div
-                                key={idx}
-                                className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
-                            >
-                                <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
-                                    <span className="text-5xl">{idx === 0 ? '🎸' : idx === 1 ? '💻' : '🧘'}</span>
-                                </div>
-
-                                <div className="p-6">
-                                    <h3 className="text-base font-bold text-gray-900 mb-2">{skill.title}</h3>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{skill.description}</p>
-
-                                    <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
-                                        <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span className="text-xs">👤</span>
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-900">{skill.instructor}</span>
-                                    </div>
-
-                                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
-                                        <span>⏱️ {skill.duration}</span>
-                                        <span>📊 {skill.level}</span>
-                                    </div>
-
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {skill.tags.map((tag) => (
-                                            <span key={tag} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
-                                                {tag}
-                                            </span>
-                                        ))}
-                                    </div>
-
-                                    <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center gap-1">
-                                                <span className="text-yellow-400">⭐</span>
-                                                <span className="text-sm font-bold text-gray-900">{skill.rating}</span>
-                                            </div>
-                                            <span className="text-xs text-gray-600">({skill.reviews})</span>
-                                        </div>
-                                        <span className="text-sm font-semibold text-gray-900">{skill.price}</span>
-                                    </div>
-
-                                    <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors">
-                                        View Details
-                                    </button>
-                                </div>
+                        {loading ? (
+                            <div className="col-span-3 text-center py-12">
+                                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <p className="mt-2 text-gray-500">Loading featured skills...</p>
                             </div>
-                        ))}
+                        ) : error ? (
+                            <div className="col-span-3 text-center py-12 text-red-500">
+                                {error}
+                            </div>
+                        ) : featuredSkills.length === 0 ? (
+                            <div className="col-span-3 text-center py-12 text-gray-500">
+                                No featured skills available at the moment.
+                            </div>
+                        ) : (
+                            featuredSkills.map((skill) => (
+                                <div
+                                    key={skill.id}
+                                    className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow"
+                                >
+                                    <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                                        {skill.imageUrl ? (
+                                            <img
+                                                src={skill.imageUrl}
+                                                alt={skill.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-5xl">{getCategoryIcon(skill.category)}</span>
+                                        )}
+                                    </div>
+
+                                    <div className="p-6">
+                                        <h3 className="text-base font-bold text-gray-900 mb-2 truncate" title={skill.title}>{skill.title}</h3>
+                                        <p className="text-gray-600 text-sm mb-4 line-clamp-2">{skill.description}</p>
+
+                                        <div className="flex items-center gap-2 mb-4 pb-4 border-b border-gray-200">
+                                            {skill.provider.avatarUrl ? (
+                                                <img
+                                                    src={skill.provider.avatarUrl}
+                                                    alt={skill.provider.name}
+                                                    className="w-6 h-6 rounded-full object-cover"
+                                                />
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+                                                    <span className="text-xs">👤</span>
+                                                </div>
+                                            )}
+                                            <span className="text-sm font-medium text-gray-900 truncate">{skill.provider.name}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-4 text-xs text-gray-600 mb-4">
+                                            <span>⏱️ {skill.durationHours}h</span>
+                                            <span>📊 {skill.level}</span>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            {skill.tags.slice(0, 3).map((tag) => (
+                                                <span key={tag} className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs font-medium">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-1">
+                                                    <span className="text-yellow-400">⭐</span>
+                                                    <span className="text-sm font-bold text-gray-900">{Number(skill.rating || 0).toFixed(1)}</span>
+                                                </div>
+                                                <span className="text-xs text-gray-600">
+                                                    ({skill.provider.reviewCount || skill.totalSessions || 0} reviews)
+                                                </span>
+                                            </div>
+                                            <span className="text-sm font-semibold text-gray-900">{skill.creditsPerHour} credits/hr</span>
+                                        </div>
+
+                                        <Link
+                                            to={`/app/skill/${skill.id}`}
+                                            className="w-full mt-4 bg-blue-600 text-white py-2 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors block text-center"
+                                        >
+                                            View Details
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             </section>
