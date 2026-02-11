@@ -4,13 +4,20 @@ import { Search, Ban, CheckCircle, Eye, RotateCcw } from 'lucide-react'
 import adminService, { User } from '../../services/adminService'
 import { ConfirmModal, SuccessModal, ErrorModal } from '../../components/common/Modal'
 import UserDetailsModal from '../../components/admin/UserDetailsModal'
+import Pagination from '../../components/common/pagination/Pagination';
+
 
 export default function UserManagement() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')
+    const [debouncedSearch, setDebouncedSearch] = useState('')
     const [selectedFilter, setSelectedFilter] = useState('All Users')
     const [actioningUserId, setActioningUserId] = useState<string | null>(null)
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(20)
+    const [totalPages, setTotalPages] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
 
     // Modal states
     const [confirmModal, setConfirmModal] = useState<{
@@ -38,39 +45,56 @@ export default function UserManagement() {
         user: User | null
     }>({ isOpen: false, user: null })
 
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     useEffect(() => {
         loadUsers()
-    }, [])
+    }, [page, limit, debouncedSearch, selectedFilter])
 
     const loadUsers = async () => {
         try {
-            setLoading(true)
-            console.log('[UserManagement] Loading users...')
+            setLoading(true);
+            console.log('[UserManagement] Loading users...');
 
-            const response = await adminService.listUsers()
-            console.log('[UserManagement] Users response:', response)
+            const response = await adminService.listUsers(
+                page,
+                limit,
+                debouncedSearch || undefined,
+                undefined,
+                selectedFilter === 'Active' ? true : selectedFilter === 'Suspended' ? false : undefined
+            );
 
-            if (response && Array.isArray(response.users)) {
-                // Filter out admin users from the list
-                const nonAdminUsers = response.users.filter(user => user.role !== 'admin') // Using string literal for API response comparison
-                setUsers(nonAdminUsers)
-                console.log(`[UserManagement] Successfully loaded ${nonAdminUsers.length} non-admin users`)
+            console.log('[UserManagement] Users response:', response);
+
+            if (response && response.users && Array.isArray(response.users)) {
+                const nonAdminUsers = response.users.filter(user => user.role !== 'admin');
+                setUsers(nonAdminUsers);
+                setTotalPages(response.pagination.totalPages);
+                setTotalItems(response.pagination.total);
+                console.log(`[UserManagement] Successfully loaded ${nonAdminUsers.length} non-admin users`);
 
                 if (nonAdminUsers.length === 0) {
                     setErrorModal({
                         isOpen: true,
                         title: 'No Users Found',
                         message: 'No non-admin users found in the system'
-                    })
+                    });
                 }
             } else {
-                console.error('[UserManagement] Invalid response structure:', response)
+                console.error('[UserManagement] Invalid response structure:', response);
                 setErrorModal({
                     isOpen: true,
                     title: 'Load Error',
                     message: 'Invalid response from server'
                 });
-                setUsers([])
+                setUsers([]);
             }
         } catch (error: any) {
             console.error('[UserManagement] Error loading users:', {
@@ -78,16 +102,14 @@ export default function UserManagement() {
                 response: error?.response?.data,
                 status: error?.response?.status,
                 stack: error?.stack
-            })
+            });
 
-            // Handle specific error cases
             if (error?.response?.status === 401) {
                 setErrorModal({
                     isOpen: true,
                     title: 'Session Expired',
                     message: 'Session expired. Please login again.'
                 });
-                // Redirect handled by axios interceptor
             } else if (error?.response?.status === 403) {
                 setErrorModal({
                     isOpen: true,
@@ -95,7 +117,7 @@ export default function UserManagement() {
                     message: 'Access denied. Admin privileges required.'
                 });
             } else {
-                const errorMessage = error?.message || 'Failed to load users. Please try again.'
+                const errorMessage = error?.message || 'Failed to load users. Please try again.';
                 setErrorModal({
                     isOpen: true,
                     title: 'Load Error',
@@ -103,11 +125,11 @@ export default function UserManagement() {
                 });
             }
 
-            setUsers([])
+            setUsers([]);
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
+    };
 
     const handleViewProfile = (user: User) => {
         console.log('[UserManagement] View profile:', user)
@@ -207,16 +229,14 @@ export default function UserManagement() {
         }
     }
 
-    const filteredUsers = users.filter((user) => {
-        const matchesSearch =
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
 
-        if (selectedFilter === 'All Users') return matchesSearch
-        if (selectedFilter === 'Active') return matchesSearch && user.isActive
-        if (selectedFilter === 'Suspended') return matchesSearch && !user.isActive
-        return matchesSearch
-    })
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit);
+        setPage(1);
+    };
 
     const columns = [
         {
@@ -348,7 +368,7 @@ export default function UserManagement() {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-4 gap-4 mb-8">
                     <div className="bg-white border border-gray-200 rounded-lg p-6">
-                        <div className="text-3xl font-bold text-blue-600 mb-1">{users.length}</div>
+                        <div className="text-3xl font-bold text-blue-600 mb-1">{totalItems}</div>
                         <div className="text-sm text-gray-600">Total Users</div>
                     </div>
                     <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -401,7 +421,7 @@ export default function UserManagement() {
                 {/* Users Table */}
                 <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
                     <div className="p-6 border-b border-gray-200">
-                        <h3 className="font-bold text-gray-900">All Users ({filteredUsers.length})</h3>
+                        <h3 className="font-bold text-gray-900">All Users ({totalItems})</h3>
                         <p className="text-sm text-gray-600">Manage user accounts and permissions</p>
                     </div>
 
@@ -409,7 +429,7 @@ export default function UserManagement() {
                         <div className="p-12 text-center text-gray-500">
                             Loading users...
                         </div>
-                    ) : filteredUsers.length === 0 ? (
+                    ) : users.length === 0 ? (
                         <div className="p-12 text-center text-gray-500">
                             No users found
                         </div>
@@ -426,7 +446,7 @@ export default function UserManagement() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredUsers.map((user) => (
+                                    {users.map((user) => (
                                         <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                                             {columns.map((column) => (
                                                 <td key={column.key} className="px-6 py-4">
@@ -440,6 +460,22 @@ export default function UserManagement() {
                         </div>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {!loading && totalItems > 0 && (
+                    <div className="mt-6">
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            totalItems={totalItems}
+                            limit={limit}
+                            onPageChange={handlePageChange}
+                            onLimitChange={handleLimitChange}
+                            showLimitSelector={true}
+                            showInfo={true}
+                        />
+                    </div>
+                )}
             </main>
 
             {/* Confirm Modal */}

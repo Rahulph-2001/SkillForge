@@ -13,6 +13,9 @@ export default function AdminSkillVerificationPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [rejectModalOpen, setRejectModalOpen] = useState(false);
@@ -28,17 +31,48 @@ export default function AdminSkillVerificationPage() {
 
   const itemsPerPage = 10;
 
+  // Debounce search input
   useEffect(() => {
-    fetchAllSkills();
-  }, []);
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
-  const fetchAllSkills = async () => {
+  // Fetch skills when page, filter, or debounced search changes
+  useEffect(() => {
+    fetchSkills();
+  }, [currentPage, filter, debouncedSearch]);
+
+  const fetchSkills = async () => {
     try {
       setLoading(true);
-      console.log('🔵 [AdminSkillVerificationPage] Fetching all skills...');
-      const response = await adminSkillService.getAllSkills();
-      console.log('✅ [AdminSkillVerificationPage] Skills loaded:', response.data);
-      setSkills(response.data.data);
+      console.log('🔵 [AdminSkillVerificationPage] Fetching skills...');
+
+      // Determine status and isBlocked from filter
+      let status: 'in-review' | 'approved' | 'rejected' | undefined;
+      let isBlocked: boolean | undefined;
+
+      if (filter === 'blocked') {
+        isBlocked = true;
+      } else if (filter !== 'all') {
+        status = filter as 'in-review' | 'approved' | 'rejected';
+        isBlocked = false;
+      }
+
+      const response = await adminSkillService.listSkills(
+        currentPage,
+        itemsPerPage,
+        debouncedSearch || undefined,
+        status,
+        isBlocked
+      );
+
+      console.log('✅ [AdminSkillVerificationPage] Skills loaded:', response);
+      setSkills(response.skills);
+      setTotalPages(response.totalPages);
+      setTotalItems(response.total);
     } catch (error: any) {
       console.error('❌ [AdminSkillVerificationPage] Error fetching skills:', error);
       setErrorMessage(error.response?.data?.message || 'Failed to load skills');
@@ -65,7 +99,7 @@ export default function AdminSkillVerificationPage() {
       setSelectedSkillId(null);
 
       // Refresh the list
-      await fetchAllSkills();
+      await fetchSkills();
     } catch (error: any) {
       console.error('❌ [AdminSkillVerificationPage] Error approving skill:', error);
       setErrorMessage(error.response?.data?.message || 'Failed to approve skill');
@@ -99,7 +133,7 @@ export default function AdminSkillVerificationPage() {
       setRejectionReason('');
 
       // Refresh the list
-      await fetchAllSkills();
+      await fetchSkills();
     } catch (error: any) {
       console.error('❌ [AdminSkillVerificationPage] Error rejecting skill:', error);
       setErrorMessage(error.response?.data?.message || 'Failed to reject skill');
@@ -133,7 +167,7 @@ export default function AdminSkillVerificationPage() {
       setBlockReason('');
 
       // Refresh the list
-      await fetchAllSkills();
+      await fetchSkills();
     } catch (error: any) {
       console.error('❌ [AdminSkillVerificationPage] Error blocking skill:', error);
       setErrorMessage(error.response?.data?.message || 'Failed to block skill');
@@ -160,7 +194,7 @@ export default function AdminSkillVerificationPage() {
       setSelectedSkillId(null);
 
       // Refresh the list
-      await fetchAllSkills();
+      await fetchSkills();
     } catch (error: any) {
       console.error('❌ [AdminSkillVerificationPage] Error unblocking skill:', error);
       setErrorMessage(error.response?.data?.message || 'Failed to unblock skill');
@@ -174,28 +208,8 @@ export default function AdminSkillVerificationPage() {
     setViewModalOpen(true);
   };
 
-  // Filter and search logic
-  const filteredSkills = skills.filter((skill) => {
-    let matchesFilter = false;
-
-    if (filter === 'all') {
-      matchesFilter = true;
-    } else if (filter === 'blocked') {
-      matchesFilter = skill.isBlocked === true;
-    } else {
-      matchesFilter = skill.status === filter && !skill.isBlocked;
-    }
-
-    const matchesSearch =
-      skill.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      skill.providerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      skill.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const totalPages = Math.ceil(filteredSkills.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const displayedSkills = filteredSkills.slice(startIndex, startIndex + itemsPerPage);
+  // No frontend filtering needed - all done on backend
+  const displayedSkills = skills;
 
   // Calculate stats
   const stats = [
@@ -284,7 +298,7 @@ export default function AdminSkillVerificationPage() {
           {/* Header */}
           <div className="border-b border-gray-200 p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-1">
-              All Skills ({filteredSkills.length})
+              All Skills ({totalItems})
             </h2>
             <p className="text-gray-600 text-sm">Review and approve skill verification requests</p>
           </div>
@@ -491,7 +505,7 @@ export default function AdminSkillVerificationPage() {
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
                 limit={itemsPerPage}
-                totalItems={filteredSkills.length}
+                totalItems={totalItems}
               />
             </>
           )}

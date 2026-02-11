@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import {
     Layout,
-    Filter,
-    Search,
     AlertTriangle,
     CheckCircle,
-    XCircle,
-    Clock,
-    Eye,
-    MessageSquare,
-    ChevronRight
+    XCircle
 } from 'lucide-react';
 import adminService, { Report, ReportFilters } from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 import { format } from 'date-fns';
+import Pagination from '../../components/common/Pagination';
 
 export default function AdminReportsPage() {
     const [reports, setReports] = useState<Report[]>([]);
@@ -24,21 +19,34 @@ export default function AdminReportsPage() {
     const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
     const [actionType, setActionType] = useState<'RESOLVE' | 'DISMISS' | null>(null);
 
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
     useEffect(() => {
         fetchReports();
-    }, [filters]);
+    }, [filters, page, limit]);
 
     const fetchReports = async () => {
         setIsLoading(true);
         try {
-            const response = await adminService.listReports(1, 100, filters);
-            setReports(response.reports);
+            const response = await adminService.listReports(page, limit, filters);
+            setReports(response.data);
+            setTotalPages(response.totalPages);
+            setTotalItems(response.total);
         } catch (error) {
             console.error('Failed to fetch reports:', error);
             toast.error('Failed to load reports');
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const handleFilterChange = (newFilters: Partial<ReportFilters>) => {
+        setFilters({ ...filters, ...newFilters });
+        setPage(1); // Reset to first page when filters change
     };
 
     const handleAction = (report: Report, action: 'RESOLVE' | 'DISMISS') => {
@@ -73,7 +81,7 @@ export default function AdminReportsPage() {
                 <div className="flex items-center gap-3">
                     <select
                         className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
-                        onChange={(e) => setFilters({ ...filters, status: e.target.value || undefined })}
+                        onChange={(e) => handleFilterChange({ status: e.target.value || undefined })}
                     >
                         <option value="">All Statuses</option>
                         <option value="PENDING">Pending</option>
@@ -84,7 +92,7 @@ export default function AdminReportsPage() {
 
                     <select
                         className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
-                        onChange={(e) => setFilters({ ...filters, type: e.target.value || undefined })}
+                        onChange={(e) => handleFilterChange({ type: e.target.value || undefined })}
                     >
                         <option value="">All Types</option>
                         <option value="PROJECT_DISPUTE">Project Disputes</option>
@@ -202,6 +210,25 @@ export default function AdminReportsPage() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+                )}
+
+                {/* Pagination */}
+                {totalPages > 0 && !isLoading && reports.length > 0 && (
+                    <div className="px-6 py-4 border-t border-gray-200">
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            totalItems={totalItems}
+                            limit={limit}
+                            onPageChange={setPage}
+                            onLimitChange={(newLimit: number) => {
+                                setLimit(newLimit);
+                                setPage(1);
+                            }}
+                            showLimitSelector={true}
+                            showInfo={true}
+                        />
                     </div>
                 )}
             </div>

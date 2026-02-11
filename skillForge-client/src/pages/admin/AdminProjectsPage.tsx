@@ -5,7 +5,7 @@ import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
 import ErrorModal from '../../components/common/Modal/ErrorModal';
 import ProjectDetailsModal from '../../components/admin/ProjectDetailsModal';
-import { usePagination } from '../../hooks/usePagination';
+import Pagination from '../../components/common/pagination/Pagination';
 
 const AdminProjectsPage: React.FC = () => {
     const [projects, setProjects] = useState<AdminProject[]>([]);
@@ -21,6 +21,7 @@ const AdminProjectsPage: React.FC = () => {
         totalBudget: 0
     });
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
     const [activeTab, setActiveTab] = useState<string>('All');
     const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
 
@@ -44,18 +45,29 @@ const AdminProjectsPage: React.FC = () => {
     const [suspendWithRefund, setSuspendWithRefund] = useState(false);
     const [isSuspendedFilter, setIsSuspendedFilter] = useState<boolean | undefined>(undefined);
 
-    const { page, limit, goToPage } = usePagination({ initialLimit: 10 });
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
+    const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const calculatedTotalPages = Math.ceil(totalItems / limit);
 
     useEffect(() => {
         fetchStats();
         fetchPendingRequests();
     }, []);
 
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     useEffect(() => {
         fetchProjects();
-    }, [page, limit, searchQuery, statusFilter, isSuspendedFilter]);
+    }, [page, limit, debouncedSearch, statusFilter, isSuspendedFilter]);
 
     const fetchStats = async () => {
         try {
@@ -69,9 +81,10 @@ const AdminProjectsPage: React.FC = () => {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const response = await adminService.listProjects(page, limit, searchQuery, statusFilter, undefined, isSuspendedFilter);
+            const response = await adminService.listProjects(page, limit, debouncedSearch, statusFilter, undefined, isSuspendedFilter);
             setProjects(response.projects);
             setTotalItems(response.total);
+            setTotalPages(response.totalPages);
         } catch (error) {
             console.error('Failed to fetch projects:', error);
             setErrorMessage('Failed to load projects.');
@@ -92,7 +105,7 @@ const AdminProjectsPage: React.FC = () => {
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
-        if (page !== 1) goToPage(1);
+        if (page !== 1) setPage(1);
     };
 
     const handleTabChange = (tab: string) => {
@@ -110,7 +123,16 @@ const AdminProjectsPage: React.FC = () => {
         }
         setStatusFilter(status);
         setIsSuspendedFilter(suspended);
-        goToPage(1);
+        setPage(1);
+    };
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit);
+        setPage(1); // Reset to first page when limit changes
     };
 
     const handleApproveClick = (request: PendingPaymentRequest) => {
@@ -507,50 +529,25 @@ const AdminProjectsPage: React.FC = () => {
                                     ))}
                                 </tbody>
                             </table>
-
-                            {/* Pagination */}
-                            {calculatedTotalPages > 1 && (
-                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-                                    <p className="text-sm text-gray-600">
-                                        Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, totalItems)} of {totalItems} projects
-                                    </p>
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => goToPage(page - 1)}
-                                            disabled={page === 1}
-                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
-                                        >
-                                            Previous
-                                        </button>
-                                        {Array.from({ length: Math.min(5, calculatedTotalPages) }, (_, i) => {
-                                            const pageNum = Math.max(1, Math.min(page - 2, calculatedTotalPages - 4)) + i;
-                                            if (pageNum > calculatedTotalPages) return null;
-                                            return (
-                                                <button
-                                                    key={pageNum}
-                                                    onClick={() => goToPage(pageNum)}
-                                                    className={`px-3 py-1 rounded-md text-sm ${page === pageNum
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'border border-gray-300 hover:bg-gray-100'
-                                                        }`}
-                                                >
-                                                    {pageNum}
-                                                </button>
-                                            );
-                                        })}
-                                        <button
-                                            onClick={() => goToPage(page + 1)}
-                                            disabled={page === calculatedTotalPages}
-                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
-                                        >
-                                            Next
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
                         </>
                     )}
                 </div>
+
+                {/* Pagination */}
+                {!loading && totalItems > 0 && (
+                    <div className="mt-6">
+                        <Pagination
+                            currentPage={page}
+                            totalPages={totalPages}
+                            totalItems={totalItems}
+                            limit={limit}
+                            onPageChange={handlePageChange}
+                            onLimitChange={handleLimitChange}
+                            showLimitSelector={true}
+                            showInfo={true}
+                        />
+                    </div>
+                )}
             </main>
 
             {/* Modals */}

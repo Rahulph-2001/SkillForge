@@ -16,10 +16,10 @@ import { CreateSkillTemplateUseCase } from '../../../application/useCases/skillT
 import { ICreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/ICreateSkillTemplateUseCase';
 import { ListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/ListSkillTemplatesUseCase';
 import { IListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/interfaces/IListSkillTemplatesUseCase';
+import { GetSkillTemplateByIdUseCase } from '../../../application/useCases/skillTemplate/GetSkillTemplateByIdUseCase';
+import { IGetSkillTemplateByIdUseCase } from '../../../application/useCases/skillTemplate/interfaces/IGetSkillTemplateByIdUseCase';
 import { UpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/UpdateSkillTemplateUseCase';
 import { IUpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IUpdateSkillTemplateUseCase';
-import { DeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase';
-import { IDeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IDeleteSkillTemplateUseCase';
 import { ToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase';
 import { IToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/interfaces/IToggleSkillTemplateStatusUseCase';
 import { CreateTemplateQuestionUseCase } from '../../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase';
@@ -69,19 +69,19 @@ export const bindSkillModule = (container: Container): void => {
   container.bind<IGetSkillDetailsUseCase>(TYPES.IGetSkillDetailsUseCase).to(GetSkillDetailsUseCase);
   container.bind<IUpdateSkillUseCase>(TYPES.IUpdateSkillUseCase).to(UpdateSkillUseCase);
   container.bind<IToggleSkillBlockUseCase>(TYPES.IToggleSkillBlockUseCase).to(ToggleSkillBlockUseCase);
-  
+
   // Skill Template Use Cases
   container.bind<CreateSkillTemplateUseCase>(TYPES.CreateSkillTemplateUseCase).to(CreateSkillTemplateUseCase);
   container.bind<ICreateSkillTemplateUseCase>(TYPES.ICreateSkillTemplateUseCase).to(CreateSkillTemplateUseCase);
   container.bind<ListSkillTemplatesUseCase>(TYPES.ListSkillTemplatesUseCase).to(ListSkillTemplatesUseCase);
   container.bind<IListSkillTemplatesUseCase>(TYPES.IListSkillTemplatesUseCase).to(ListSkillTemplatesUseCase);
+  container.bind<GetSkillTemplateByIdUseCase>(TYPES.GetSkillTemplateByIdUseCase).to(GetSkillTemplateByIdUseCase);
+  container.bind<IGetSkillTemplateByIdUseCase>(TYPES.IGetSkillTemplateByIdUseCase).to(GetSkillTemplateByIdUseCase);
   container.bind<UpdateSkillTemplateUseCase>(TYPES.UpdateSkillTemplateUseCase).to(UpdateSkillTemplateUseCase);
   container.bind<IUpdateSkillTemplateUseCase>(TYPES.IUpdateSkillTemplateUseCase).to(UpdateSkillTemplateUseCase);
-  container.bind<DeleteSkillTemplateUseCase>(TYPES.DeleteSkillTemplateUseCase).to(DeleteSkillTemplateUseCase);
-  container.bind<IDeleteSkillTemplateUseCase>(TYPES.IDeleteSkillTemplateUseCase).to(DeleteSkillTemplateUseCase);
   container.bind<ToggleSkillTemplateStatusUseCase>(TYPES.ToggleSkillTemplateStatusUseCase).to(ToggleSkillTemplateStatusUseCase);
   container.bind<IToggleSkillTemplateStatusUseCase>(TYPES.IToggleSkillTemplateStatusUseCase).to(ToggleSkillTemplateStatusUseCase);
-  
+
   // Template Question Use Cases
   container.bind<CreateTemplateQuestionUseCase>(TYPES.CreateTemplateQuestionUseCase).to(CreateTemplateQuestionUseCase);
   container.bind<ICreateTemplateQuestionUseCase>(TYPES.ICreateTemplateQuestionUseCase).to(CreateTemplateQuestionUseCase);
@@ -93,7 +93,7 @@ export const bindSkillModule = (container: Container): void => {
   container.bind<IDeleteTemplateQuestionUseCase>(TYPES.IDeleteTemplateQuestionUseCase).to(DeleteTemplateQuestionUseCase);
   container.bind<BulkDeleteTemplateQuestionsUseCase>(TYPES.BulkDeleteTemplateQuestionsUseCase).to(BulkDeleteTemplateQuestionsUseCase);
   container.bind<IBulkDeleteTemplateQuestionsUseCase>(TYPES.IBulkDeleteTemplateQuestionsUseCase).to(BulkDeleteTemplateQuestionsUseCase);
-  
+
   // MCQ Use Cases
   container.bind<StartMCQTestUseCase>(TYPES.StartMCQTestUseCase).to(StartMCQTestUseCase);
   container.bind<IStartMCQTestUseCase>(TYPES.IStartMCQTestUseCase).to(StartMCQTestUseCase);
@@ -106,7 +106,7 @@ export const bindSkillModule = (container: Container): void => {
   container.bind<IListMCQImportJobsUseCase>(TYPES.IListMCQImportJobsUseCase).to(ListMCQImportJobsUseCase);
   container.bind<DownloadMCQImportErrorsUseCase>(TYPES.DownloadMCQImportErrorsUseCase).to(DownloadMCQImportErrorsUseCase);
   container.bind<IDownloadMCQImportErrorsUseCase>(TYPES.IDownloadMCQImportErrorsUseCase).to(DownloadMCQImportErrorsUseCase);
-  
+
   // Controllers & Routes
   container.bind<SkillController>(TYPES.SkillController).to(SkillController);
   container.bind<BrowseSkillsController>(TYPES.BrowseSkillsController).to(BrowseSkillsController);

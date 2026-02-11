@@ -26,6 +26,10 @@ import { BlockSkillUseCase } from '../../../application/useCases/admin/BlockSkil
 import { IBlockSkillUseCase } from '../../../application/useCases/admin/interfaces/IBlockSkillUseCase';
 import { UnblockSkillUseCase } from '../../../application/useCases/admin/UnblockSkillUseCase';
 import { IUnblockSkillUseCase } from '../../../application/useCases/admin/interfaces/IUnblockSkillUseCase';
+import { AdminListSkillsUseCase } from '../../../application/useCases/admin/AdminListSkillsUseCase';
+import { IAdminListSkillsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListSkillsUseCase';
+import { AdminSkillMapper } from '../../../application/mappers/AdminSkillMapper';
+import { IAdminSkillMapper } from '../../../application/mappers/interfaces/IAdminSkillMapper';
 import { GetAdminWalletStatsUseCase } from '../../../application/useCases/admin/GetAdminWalletStatsUseCase';
 import { IGetAdminWalletStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminWalletStatsUseCase';
 import { GetWalletTransactionsUseCase } from '../../../application/useCases/admin/GetWalletTransactionsUseCase';
@@ -74,6 +78,10 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<IGetAllSkillsUseCase>(TYPES.IGetAllSkillsUseCase).to(GetAllSkillsUseCase);
   container.bind<IBlockSkillUseCase>(TYPES.IBlockSkillUseCase).to(BlockSkillUseCase);
   container.bind<IUnblockSkillUseCase>(TYPES.IUnblockSkillUseCase).to(UnblockSkillUseCase);
+  container.bind<IAdminListSkillsUseCase>(TYPES.IAdminListSkillsUseCase).to(AdminListSkillsUseCase);
+
+  // Admin Skill Mappers
+  container.bind<IAdminSkillMapper>(TYPES.IAdminSkillMapper).to(AdminSkillMapper);
 
   // Admin Wallet Use Cases
   container.bind<IGetAdminWalletStatsUseCase>(TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase);

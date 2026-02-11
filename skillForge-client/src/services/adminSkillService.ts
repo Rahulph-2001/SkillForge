@@ -54,6 +54,42 @@ export const adminSkillService = {
     return api.get<ApiResponse<SkillData[]>>('/admin/skills');
   },
 
+  // List skills with pagination and filters
+  listSkills: async (
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: 'in-review' | 'approved' | 'rejected',
+    isBlocked?: boolean
+  ): Promise<{
+    skills: SkillData[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  }> => {
+    const params: Record<string, string> = {
+      page: page.toString(),
+      limit: limit.toString(),
+    };
+    if (search) params.search = search;
+    if (status) params.status = status;
+    if (isBlocked !== undefined) params.isBlocked = isBlocked.toString();
+
+    const response = await api.get<ApiResponse<{
+      skills: SkillData[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+    }>>('/admin/skills', { params });
+    return response.data.data;
+  },
+
   // Get all skills pending admin approval
   getPendingSkills: async () => {
     return api.get<ApiResponse<PendingSkill[]>>('/admin/skills/pending');

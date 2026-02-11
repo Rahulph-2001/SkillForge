@@ -4,8 +4,8 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ICreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/ICreateSkillTemplateUseCase';
 import { IListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/interfaces/IListSkillTemplatesUseCase';
 import { IUpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IUpdateSkillTemplateUseCase';
-import { IDeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IDeleteSkillTemplateUseCase';
 import { IToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/interfaces/IToggleSkillTemplateStatusUseCase';
+import { IGetSkillTemplateByIdUseCase } from '../../../application/useCases/skillTemplate/interfaces/IGetSkillTemplateByIdUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillTemplateDTO } from '../../../application/dto/skillTemplate/CreateSkillTemplateDTO';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
@@ -16,8 +16,8 @@ export class SkillTemplateController {
   constructor(
     @inject(TYPES.ICreateSkillTemplateUseCase) private readonly createSkillTemplateUseCase: ICreateSkillTemplateUseCase,
     @inject(TYPES.IListSkillTemplatesUseCase) private readonly listSkillTemplatesUseCase: IListSkillTemplatesUseCase,
+    @inject(TYPES.IGetSkillTemplateByIdUseCase) private readonly getSkillTemplateByIdUseCase: IGetSkillTemplateByIdUseCase,
     @inject(TYPES.IUpdateSkillTemplateUseCase) private readonly updateSkillTemplateUseCase: IUpdateSkillTemplateUseCase,
-    @inject(TYPES.IDeleteSkillTemplateUseCase) private readonly deleteSkillTemplateUseCase: IDeleteSkillTemplateUseCase,
     @inject(TYPES.IToggleSkillTemplateStatusUseCase) private readonly toggleSkillTemplateStatusUseCase: IToggleSkillTemplateStatusUseCase,
     @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
   ) { }
@@ -50,13 +50,49 @@ export class SkillTemplateController {
    */
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
 
-      const templates = await this.listSkillTemplatesUseCase.execute(adminUserId);
+      const adminUserId = req.user!.userId;
+      const page = req.query.page ? parseInt(req.query.page as string) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limits as string) : 10;
+      const search = req.query.search as string | undefined;
+      const category = req.query.category as string | undefined;
+      const status = req.query.status as string | undefined;
+
+      const result = await this.listSkillTemplatesUseCase.execute(
+        adminUserId,
+        page,
+        limit,
+        search,
+        category,
+        status
+      );
+
+      const resposne = this.responseBuilder.success(
+        result,
+        'Skill templates retrieves successfully',
+        HttpStatusCode.OK
+      );
+      res.status(resposne.statusCode).json(resposne.body)
+
+    } catch (error) {
+      next(error)
+    }
+  }
+
+  /**
+   * GET /api/v1/admin/skill-templates/:id
+   * Get a single skill template by ID
+   */
+  async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const adminUserId = req.user!.userId;
+      const templateId = req.params.id;
+
+      const template = await this.getSkillTemplateByIdUseCase.execute(adminUserId, templateId);
 
       const response = this.responseBuilder.success(
-        templates.map(t => t.toJSON()),
-        'Skill templates retrieved successfully',
+        template.toJSON(),
+        'Skill template retrieved successfully',
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
@@ -88,27 +124,7 @@ export class SkillTemplateController {
     }
   }
 
-  /**
-   * DELETE /api/v1/admin/skill-templates/:id
-   * Delete (soft delete) a skill template
-   */
-  async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
-    try {
-      const adminUserId = req.user!.userId;
-      const templateId = req.params.id;
 
-      await this.deleteSkillTemplateUseCase.execute(adminUserId, templateId);
-
-      const response = this.responseBuilder.success(
-        { message: SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED },
-        SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED,
-        HttpStatusCode.OK
-      );
-      res.status(response.statusCode).json(response.body);
-    } catch (error) {
-      next(error);
-    }
-  }
 
   /**
    * PATCH /api/v1/admin/skill-templates/:id/toggle-status

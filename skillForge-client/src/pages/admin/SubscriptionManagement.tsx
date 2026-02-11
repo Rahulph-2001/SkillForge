@@ -12,6 +12,8 @@ import subscriptionService, {
   SubscriptionFeature,
 } from '../../services/subscriptionService';
 
+import Pagination from '../../components/common/pagination/Pagination';
+
 
 const SubscriptionManagement: React.FC = () => {
   // State Management
@@ -26,10 +28,16 @@ const SubscriptionManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
   // Load data on component mount
   useEffect(() => {
     loadData();
-  }, []);
+  }, [page, limit]);
 
 
   const loadData = async () => {
@@ -38,11 +46,13 @@ const SubscriptionManagement: React.FC = () => {
       setError(null);
 
       const [plansResponse, statsResponse] = await Promise.all([
-        subscriptionService.listPlans(),
+        subscriptionService.listPlans(page, limit),
         subscriptionService.getStats(),
       ]);
 
       setPlans(plansResponse.plans);
+      setTotalItems(plansResponse.total);
+      setTotalPages(plansResponse.totalPages);
       setStats(statsResponse);
     } catch (err: any) {
       console.error('Error loading subscription data:', err);
@@ -161,6 +171,18 @@ const SubscriptionManagement: React.FC = () => {
   const handleCloseModal = () => {
     setShowEditModal(false);
     setSelectedPlan(null);
+  };
+
+  /**
+   * Handle pagination
+   */
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1);
   };
 
   // Loading State
@@ -300,16 +322,33 @@ const SubscriptionManagement: React.FC = () => {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {plans.map((plan) => (
-                <PlanCard
-                  key={plan.id}
-                  plan={plan}
-                  onEdit={handleEditPlan}
-                  onDelete={handleDeleteClick}
-                />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {plans.map((plan) => (
+                  <PlanCard
+                    key={plan.id}
+                    plan={plan}
+                    onEdit={handleEditPlan}
+                    onDelete={handleDeleteClick}
+                  />
+                ))}
+              </div>
+
+              {!loading && totalItems > 0 && (
+                <div className="mt-6">
+                  <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    totalItems={totalItems}
+                    limit={limit}
+                    onPageChange={handlePageChange}
+                    onLimitChange={handleLimitChange}
+                    showLimitSelector={true}
+                    showInfo={true}
+                  />
+                </div>
+              )}
+            </>
           )}
         </div>
 

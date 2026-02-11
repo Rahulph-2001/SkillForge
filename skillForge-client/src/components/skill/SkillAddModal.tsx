@@ -64,9 +64,9 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
     const fetchTemplates = async () => {
       try {
         setLoadingTemplates(true);
-        const response = await skillTemplateService.getAllActive();
-        setSkillTemplates(response.data.data || []);
-        setFilteredTemplates(response.data.data || []);
+        const response = await skillTemplateService.getActive();
+        setSkillTemplates(response || []);
+        setFilteredTemplates(response || []);
       } catch (error) {
         console.error('Failed to fetch skill templates:', error);
       } finally {

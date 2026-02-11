@@ -1,86 +1,99 @@
-import api from './api';
+import api from './api'
 
 export interface SkillTemplate {
-  id: string;
-  title: string;
-  category: string;
-  description: string;
-  creditsMin: number;
-  creditsMax: number;
-  mcqCount: number;
-  passRange: number;
-  levels: string[];
-  tags: string[];
-  status: 'Active' | 'Inactive';
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  title: string
+  category: string
+  description: string
+  creditsMin: number
+  creditsMax: number
+  mcqCount: number
+  passRange: number
+  levels: string[]
+  tags: string[]
+  status: "Active" | "Inactive"
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
 }
 
-export interface CreateSkillTemplatePayload {
-  title: string;
-  category: string;
-  description: string;
-  creditsMin: number;
-  creditsMax: number;
-  mcqCount: number;
-  passRange?: number;
-  levels: string[];
-  tags: string[];
-  status?: 'Active' | 'Inactive';
+export interface SkillTemplateListResponse {
+  templates: SkillTemplate[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
 
-export interface UpdateSkillTemplatePayload {
-  title?: string;
-  category?: string;
-  description?: string;
-  creditsMin?: number;
-  creditsMax?: number;
-  mcqCount?: number;
-  passRange?: number;
-  levels?: string[];
-  tags?: string[];
-  status?: 'Active' | 'Inactive';
+export interface CreateSkillTemplateRequest {
+  title: string
+  category: string
+  description: string
+  creditsMin: number
+  creditsMax: number
+  mcqCount: number
+  passRange: number
+  levels: string[]
+  tags: string[]
+  status?: "Active" | "Inactive"
 }
 
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
+export interface UpdateSkillTemplateRequest {
+  title?: string
+  category?: string
+  description?: string
+  creditsMin?: number
+  creditsMax?: number
+  mcqCount?: number
+  passRange?: number
+  levels?: string[]
+  tags?: string[]
+  status?: "Active" | "Inactive"
 }
 
 export const skillTemplateService = {
-  // Get all skill templates
-  getAll: async () => {
-    return api.get<ApiResponse<SkillTemplate[]>>('/admin/skill-templates');
+  getAll: async (
+    page = 1,
+    limit = 10,
+    search?: string,
+    category?: string,
+    status?: string
+  ): Promise<SkillTemplateListResponse> => {
+    const params: Record<string, string | number> = { page, limit }
+    if (search) params.search = search
+    if (category && category !== 'All') params.category = category
+    if (status && status !== 'All Status') params.status = status
+
+    const response = await api.get('/admin/skill-templates', { params })
+    return response.data.data
   },
 
-  // Get single skill template by ID
-  getById: async (id: string) => {
-    return api.get<ApiResponse<SkillTemplate>>(`/admin/skill-templates/${id}`);
+  getById: async (id: string): Promise<SkillTemplate> => {
+    const response = await api.get(`/admin/skill-templates/${id}`)
+    return response.data.data
   },
 
-  // Create new skill template
-  create: async (data: CreateSkillTemplatePayload) => {
-    return api.post<ApiResponse<SkillTemplate>>('/admin/skill-templates', data);
+  create: async (data: CreateSkillTemplateRequest): Promise<SkillTemplate> => {
+    const response = await api.post('/admin/skill-templates', data)
+    return response.data.data
   },
 
-  // Update skill template
-  update: async (id: string, data: UpdateSkillTemplatePayload) => {
-    return api.put<ApiResponse<SkillTemplate>>(`/admin/skill-templates/${id}`, data);
+  update: async (id: string, data: UpdateSkillTemplateRequest): Promise<SkillTemplate> => {
+    const response = await api.put(`/admin/skill-templates/${id}`, data)
+    return response.data.data
   },
 
-  // Delete skill template
-  delete: async (id: string) => {
-    return api.delete<ApiResponse<{ message: string }>>(`/admin/skill-templates/${id}`);
+  toggleStatus: async (id: string): Promise<SkillTemplate> => {
+    const response = await api.patch(`/admin/skill-templates/${id}/toggle-status`)
+    return response.data.data
   },
 
-  // Toggle status (Active/Inactive)
-  toggleStatus: async (id: string) => {
-    return api.patch<ApiResponse<SkillTemplate>>(`/admin/skill-templates/${id}/toggle-status`);
-  },
-
-  // Get all active skill templates (public endpoint for users)
-  getAllActive: async () => {
-    return api.get<ApiResponse<SkillTemplate[]>>('/skill-templates/active');
-  },
-};
+  getActive: async (): Promise<SkillTemplate[]> => {
+    const response = await api.get('/skill-templates/active')
+    return response.data.data
+  }
+}

@@ -7,6 +7,7 @@ import { IRejectSkillUseCase } from '../../../application/useCases/admin/interfa
 import { IGetAllSkillsUseCase } from '../../../application/useCases/admin/interfaces/IGetAllSkillsUseCase';
 import { IBlockSkillUseCase } from '../../../application/useCases/admin/interfaces/IBlockSkillUseCase';
 import { IUnblockSkillUseCase } from '../../../application/useCases/admin/interfaces/IUnblockSkillUseCase';
+import { IAdminListSkillsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListSkillsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
@@ -20,6 +21,7 @@ export class AdminSkillController {
     @inject(TYPES.IGetAllSkillsUseCase) private getAllSkillsUseCase: IGetAllSkillsUseCase,
     @inject(TYPES.IBlockSkillUseCase) private blockSkillUseCase: IBlockSkillUseCase,
     @inject(TYPES.IUnblockSkillUseCase) private unblockSkillUseCase: IUnblockSkillUseCase,
+    @inject(TYPES.IAdminListSkillsUseCase) private adminListSkillsUseCase: IAdminListSkillsUseCase,
     @inject(TYPES.IResponseBuilder) private responseBuilder: IResponseBuilder
   ) { }
 
@@ -113,6 +115,39 @@ export class AdminSkillController {
       const response = this.responseBuilder.success(
         skills,
         SUCCESS_MESSAGES.SKILL.ALL_FETCHED(skills.length),
+        HttpStatusCode.OK
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error: unknown) {
+      next(error);
+    }
+  };
+
+  /**
+   * List all skills with pagination and filters (for admin management)
+   * GET /api/v1/admin/skills
+   */
+  public listSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const adminUserId = req.user!.userId;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string | undefined;
+      const status = req.query.status as 'in-review' | 'approved' | 'rejected' | undefined;
+      const isBlocked = req.query.isBlocked === 'true' ? true : req.query.isBlocked === 'false' ? false : undefined;
+
+      const result = await this.adminListSkillsUseCase.execute({
+        adminUserId,
+        page,
+        limit,
+        search,
+        status,
+        isBlocked,
+      });
+
+      const response = this.responseBuilder.success(
+        result,
+        SUCCESS_MESSAGES.SKILL.ALL_FETCHED(result.total),
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);

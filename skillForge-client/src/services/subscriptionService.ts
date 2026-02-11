@@ -1,8 +1,6 @@
 import api from './api';
 
-/**
- * Subscription Feature Interface
- */
+
 export interface SubscriptionFeature {
     id: string;
     name: string;
@@ -40,17 +38,17 @@ export interface SubscriptionStats {
     freeUsers: number;
 }
 
-/**
- * List Plans Response Interface
- */
 export interface ListPlansResponse {
     plans: SubscriptionPlan[];
     total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
 }
 
-/**
- * Create Plan Request Interface
- */
+
 export interface CreatePlanRequest {
     name: string;
     price: number;
@@ -79,42 +77,44 @@ class SubscriptionService {
     private readonly publicBaseUrl = '/subscriptions';
 
 
-    async listPlans(): Promise<ListPlansResponse> {
-        try {
-            const response = await api.get(`${this.baseUrl}/plans`);
-
-            // Backend returns: { success: true, message: string, data: { plans: [], total: number } }
-            if (response.data?.success && response.data?.data) {
-                const result = response.data.data;
-                return result;
-            }
-
-            // Fallback for different response structure
-            if (response.data?.plans) {
-                return response.data;
-            }
-
-            // Invalid response structure
-            console.error('[SubscriptionService] Invalid response structure:', response.data);
-            throw new Error('Invalid response structure from server');
-        } catch (error: any) {
-            console.error('[SubscriptionService] Error loading plans:', {
-                message: error?.message,
-                response: error?.response?.data,
-                status: error?.response?.status,
-                url: error?.config?.url
-            });
-
-            // Re-throw with more context
-            const errorMessage = error?.response?.data?.message
-                || error?.response?.data?.error?.message
-                || error?.message
-                || 'Failed to load subscription plans';
-
-            throw new Error(errorMessage);
+ async listPlans(page: number = 1, limit: number = 20, isActive?: boolean): Promise<ListPlansResponse> {
+    try {
+        const params: Record<string, string> = {
+            page: page.toString(),
+            limit: limit.toString(),
+        };
+        if (isActive !== undefined) {
+            params.isActive = isActive.toString();
         }
-    }
 
+        const response = await api.get(`${this.baseUrl}/plans`, { params });
+
+        if (response.data?.success && response.data?.data) {
+            return response.data.data;
+        }
+
+        if (response.data?.plans) {
+            return response.data;
+        }
+
+        console.error('[SubscriptionService] Invalid response structure:', response.data);
+        throw new Error('Invalid response structure from server');
+    } catch (error: any) {
+        console.error('[SubscriptionService] Error loading plans:', {
+            message: error?.message,
+            response: error?.response?.data,
+            status: error?.response?.status,
+            url: error?.config?.url
+        });
+
+        const errorMessage = error?.response?.data?.message
+            || error?.response?.data?.error?.message
+            || error?.message
+            || 'Failed to load subscription plans';
+
+        throw new Error(errorMessage);
+    }
+}
 
     async getStats(): Promise<SubscriptionStats> {
         try {

@@ -14,7 +14,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
 
   async create(template: SkillTemplate): Promise<SkillTemplate> {
     const data = template.toJSON();
-    
+
     // Don't pass id - let database generate UUID
     const created = await this.prisma.skillTemplate.create({
       data: {
@@ -31,7 +31,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
         isActive: data.isActive,
       },
     });
-    
+
     return this.toDomain(created);
   }
 
@@ -42,12 +42,37 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     return template ? this.toDomain(template) : null;
   }
 
-  async findAll(): Promise<SkillTemplate[]> {
-    const templates = await this.prisma.skillTemplate.findMany({
-      where: { isActive: true },
-      orderBy: { createdAt: 'desc' },
-    });
-    return templates.map((t: any) => this.toDomain(t));
+
+  async findWithPagination(
+    filters: { search?: string; category?: string; status?: string },
+    pagination: { skip: number; take: number }
+  ): Promise<{ templates: SkillTemplate[]; total: number }> {
+    const where: any = {};
+
+    if (filters.search) {
+      where.title = { contains: filters.search, mode: 'insensitive' };
+    }
+    if (filters.category && filters.category !== 'All') {
+      where.category = filters.category;
+    }
+    if (filters.status && filters.status !== 'All Status') {
+      where.status = filters.status;
+    }
+
+    const [templates, total] = await Promise.all([
+      this.prisma.skillTemplate.findMany({
+        where,
+        skip: pagination.skip,
+        take: pagination.take,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.skillTemplate.count({ where }),
+    ]);
+
+    return {
+      templates: templates.map((t: any) => this.toDomain(t)),
+      total,
+    };
   }
 
   async findByCategory(category: string): Promise<SkillTemplate[]> {
@@ -68,7 +93,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
 
   async update(id: string, updates: Partial<SkillTemplate>): Promise<SkillTemplate> {
     const updateData: any = {};
-    
+
     if (updates.title) updateData.title = updates.title;
     if (updates.category) updateData.category = updates.category;
     if (updates.description) updateData.description = updates.description;
@@ -80,14 +105,14 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     if (updates.tags) updateData.tags = updates.tags;
     if (updates.status) updateData.status = updates.status;
     if (updates.isActive !== undefined) updateData.isActive = updates.isActive;
-    
+
     updateData.updatedAt = new Date();
 
     const updated = await this.prisma.skillTemplate.update({
       where: { id },
       data: updateData,
     });
-    
+
     return this.toDomain(updated);
   }
 

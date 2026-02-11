@@ -106,10 +106,10 @@ export const TYPES = {
   ICreateSkillTemplateUseCase: Symbol.for('ICreateSkillTemplateUseCase'),
   ListSkillTemplatesUseCase: Symbol.for('ListSkillTemplatesUseCase'),
   IListSkillTemplatesUseCase: Symbol.for('IListSkillTemplatesUseCase'),
+  GetSkillTemplateByIdUseCase: Symbol.for('GetSkillTemplateByIdUseCase'),
+  IGetSkillTemplateByIdUseCase: Symbol.for('IGetSkillTemplateByIdUseCase'),
   UpdateSkillTemplateUseCase: Symbol.for('UpdateSkillTemplateUseCase'),
   IUpdateSkillTemplateUseCase: Symbol.for('IUpdateSkillTemplateUseCase'),
-  DeleteSkillTemplateUseCase: Symbol.for('DeleteSkillTemplateUseCase'),
-  IDeleteSkillTemplateUseCase: Symbol.for('IDeleteSkillTemplateUseCase'),
   ToggleSkillTemplateStatusUseCase: Symbol.for('ToggleSkillTemplateStatusUseCase'),
   IToggleSkillTemplateStatusUseCase: Symbol.for('IToggleSkillTemplateStatusUseCase'),
   SkillTemplateController: Symbol.for('SkillTemplateController'),
@@ -149,8 +149,11 @@ export const TYPES = {
   GetAllSkillsUseCase: Symbol.for('GetAllSkillsUseCase'),
   BlockSkillUseCase: Symbol.for('BlockSkillUseCase'),
   UnblockSkillUseCase: Symbol.for('UnblockSkillUseCase'),
+  IAdminListSkillsUseCase: Symbol.for('IAdminListSkillsUseCase'),
+  IAdminSkillMapper: Symbol.for('IAdminSkillMapper'),
   AdminSkillController: Symbol.for('AdminSkillController'),
   AdminSkillRoutes: Symbol.for('AdminSkillRoutes'),
+
 
   // Session Management
   IBookingRepository: Symbol.for('BookingRepository'),

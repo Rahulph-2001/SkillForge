@@ -279,3 +279,42 @@ export const unblockCommunityByAdmin = async (communityId: string, reason?: stri
     });
 };
 
+/**
+ * Admin-specific response for communities list with pagination and stats
+ */
+export interface AdminCommunitiesResponse {
+    communities: Community[];
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
+    stats: {
+        totalCommunities: number;
+        totalMembers: number;
+        avgMembershipCost: number;
+    };
+}
+
+/**
+ * Get communities for admin with pagination and search (admin-only operation)
+ */
+export const getAdminCommunities = async (
+    page = 1,
+    limit = 12,
+    search?: string,
+    category?: string,
+    isActive?: boolean
+): Promise<AdminCommunitiesResponse> => {
+    const params: Record<string, string | number | boolean> = { page, limit };
+    if (search) params.search = search;
+    if (category) params.category = category;
+    if (typeof isActive === 'boolean') params.isActive = isActive;
+
+    const response = await api.get('/admin/communities', { params });
+    return response.data.data;
+};
+

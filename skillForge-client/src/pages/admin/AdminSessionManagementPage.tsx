@@ -18,6 +18,7 @@ const AdminSessionManagementPage: React.FC = () => {
         cancelled: 0
     });
     const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
 
     // Modal states
     const [selectedSession, setSelectedSession] = useState<AdminSession | null>(null);
@@ -103,7 +104,7 @@ const AdminSessionManagementPage: React.FC = () => {
     const fetchSessionsWithTotal = async () => {
         try {
             setLoading(true);
-            const response = await adminService.listSessions(page, limit, searchQuery);
+            const response = await adminService.listSessions(page, limit, debouncedSearch);
             setSessions(response.data);
             setTotalItems(response.total);
         } catch (error) {
@@ -115,10 +116,19 @@ const AdminSessionManagementPage: React.FC = () => {
         }
     };
 
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            if (page !== 1) goToPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
     // Use effect to call fetchSessionsWithTotal
     useEffect(() => {
         fetchSessionsWithTotal();
-    }, [page, limit, searchQuery]);
+    }, [page, limit, debouncedSearch]);
 
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

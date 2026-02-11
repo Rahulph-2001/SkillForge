@@ -42,8 +42,8 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
     const loadLibraryFeatures = async () => {
         try {
             setLoadingLibrary(true);
-            const features = await featureService.listLibraryFeatures();
-            setLibraryFeatures(features);
+            const response = await featureService.listLibraryFeatures(); // Assuming listLibraryFeatures returns { features: [...] } or directly [...]
+            setLibraryFeatures(response.features);
         } catch (error) {
             console.error('Failed to load library features', error);
             toast.error('Failed to load library features');

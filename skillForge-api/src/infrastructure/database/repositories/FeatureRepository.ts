@@ -94,14 +94,37 @@ export class PrismaFeatureRepository extends BaseRepository<Feature> implements 
         return data.map((item) => Feature.fromJSON(item));
     }
 
-    async findLibraryFeatures(): Promise<Feature[]> {
-        const data = await this.prisma.feature.findMany({
-            where: {
-                planId: null,
-            },
-            orderBy: { displayOrder: 'asc' },
-        });
+    async findLibraryFeatures(filters: { search?: string; isEnabled?: boolean; }, pagination: { skip: number; take: number; }): Promise<{ features: Feature[]; total: number; }> {
+        const where: any ={
+            planId: null
+        };
 
-        return data.map((item) => Feature.fromJSON(item));
+        if(filters.search){
+            where.OR = [
+                {name: { contains: filters.search, mode: 'insesitive'}},
+                {description: {contains: filters.search, mode: 'insensitive'}}
+            ]
+        }
+
+        if(typeof filters.isEnabled === 'boolean'){
+            where.isEnabled = filters.isEnabled;
+        }
+
+        const [feature, total] = await Promise.all(
+            [
+                this.prisma.feature.findMany({
+                    where,
+                    skip: pagination.skip,
+                    take: pagination.take,
+                    orderBy: {displayOrder: 'asc'}
+                }),
+                this.prisma.feature.count({where})
+            ]
+        );
+
+        return {
+            features: feature.map((item)=> Feature.fromJSON(item)),
+            total
+        }
     }
 }

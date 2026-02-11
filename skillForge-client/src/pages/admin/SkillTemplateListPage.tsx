@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react"
-import { Search, Plus, Edit2, Trash2, TrendingUp, FileQuestion } from "lucide-react"
+import React, { useState, useEffect, useCallback } from "react"
+import { Search, Plus, Edit2, TrendingUp, FileQuestion } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService"
-import { ErrorModal, SuccessModal, ConfirmModal } from "../../components/common/Modal"
+import { skillTemplateService, SkillTemplate, SkillTemplateListResponse } from "../../services/skillTemplateService"
+import { ErrorModal, SuccessModal } from "../../components/common/Modal"
 import QuestionManagementModal from "../../components/admin/QuestionManagementModal"
+import Pagination from "../../components/common/pagination/Pagination"
 
 
 export default function SkillTemplateListPage() {
@@ -11,45 +12,75 @@ export default function SkillTemplateListPage() {
 
   const [templates, setTemplates] = useState<SkillTemplate[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Search & Filter State
   const [searchTerm, setSearchTerm] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [selectedStatus, setSelectedStatus] = useState("All Status")
+
+  // Pagination State
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
+  const [totalPages, setTotalPages] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+
+  // Modal State
   const [questionModalOpen, setQuestionModalOpen] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<SkillTemplate | null>(null)
   const [successMessage, setSuccessMessage] = useState("")
   const [errorMessage, setErrorMessage] = useState("")
-  const [showConfirm, setShowConfirm] = useState(false)
-  const [templateToDelete, setTemplateToDelete] = useState<string | null>(null)
 
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm)
+      setPage(1)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
+  // Reset page when filters change
+  useEffect(() => {
+    setPage(1)
+  }, [selectedCategory, selectedStatus])
+
+  // Fetch templates when dependencies change
   useEffect(() => {
     fetchTemplates()
-  }, [])
+  }, [page, limit, debouncedSearch, selectedCategory, selectedStatus])
 
-  const fetchTemplates = async () => {
+  const fetchTemplates = useCallback(async () => {
     try {
       setLoading(true)
-      const response = await skillTemplateService.getAll()
-      // Backend returns { success, message, data: [...] }
-      setTemplates(response.data.data || [])
+      const response: SkillTemplateListResponse = await skillTemplateService.getAll(
+        page,
+        limit,
+        debouncedSearch || undefined,
+        selectedCategory !== "All" ? selectedCategory : undefined,
+        selectedStatus !== "All Status" ? selectedStatus : undefined
+      )
+
+      setTemplates(response.templates || [])
+      setTotalPages(response.pagination.totalPages)
+      setTotalItems(response.pagination.total)
+      console.log('Pagination Debug:', {
+        templates: response.templates?.length,
+        totalPages: response.pagination.totalPages,
+        totalItems: response.pagination.total,
+        fullResponse: response
+      })
     } catch (error: any) {
       console.error('Fetch templates error:', error)
       setErrorMessage(error.response?.data?.message || error.response?.data?.error || "Failed to fetch templates")
     } finally {
       setLoading(false)
     }
-  }
-
-  const filteredTemplates = templates.filter((template) => {
-    const matchesSearch = template.title.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesCategory = selectedCategory === "All" || template.category === selectedCategory
-    const matchesStatus = selectedStatus === "All Status" || template.status === selectedStatus
-
-    return matchesSearch && matchesCategory && matchesStatus
-  })
+  }, [page, limit, debouncedSearch, selectedCategory, selectedStatus])
 
   const stats = {
-    total: templates.length,
-    active: templates.filter((t) => t.status === "Active").length,
+    total: totalItems,
+    active: templates.filter((t) => t.status === "Active").length, // Note: active count logic might need adjustment if paginated
     inactive: templates.filter((t) => t.status === "Inactive").length,
     avgMcqs: templates.length
       ? Math.round(templates.reduce((sum, t) => sum + t.mcqCount, 0) / templates.length)
@@ -66,28 +97,18 @@ export default function SkillTemplateListPage() {
     }
   }
 
-  const handleDeleteClick = (id: string) => {
-    setTemplateToDelete(id)
-    setShowConfirm(true)
+
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage)
   }
 
-  const handleConfirmDelete = async () => {
-    if (!templateToDelete) return
-
-    try {
-      await skillTemplateService.delete(templateToDelete)
-      setSuccessMessage("Template deleted successfully")
-      fetchTemplates()
-      setShowConfirm(false)
-      setTemplateToDelete(null)
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.error || "Failed to delete template")
-      setShowConfirm(false)
-      setTemplateToDelete(null)
-    }
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit)
+    setPage(1)
   }
 
-  if (loading) {
+  if (loading && templates.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -124,7 +145,7 @@ export default function SkillTemplateListPage() {
           </button>
         </div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - Note: These might only reflect current page with server-side pagination unless a separate stats endpoint exists */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard
             icon={<div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center text-white text-xs">T</div>}
@@ -133,12 +154,12 @@ export default function SkillTemplateListPage() {
           />
           <StatCard
             icon={<div className="w-6 h-6 bg-green-600 rounded-lg flex items-center justify-center text-white text-xs">A</div>}
-            label="Active"
+            label="Active on Page"
             value={stats.active}
           />
           <StatCard
             icon={<div className="w-6 h-6 bg-red-600 rounded-lg flex items-center justify-center text-white text-xs">I</div>}
-            label="Inactive"
+            label="Inactive on Page"
             value={stats.inactive}
           />
           <StatCard
@@ -174,15 +195,15 @@ export default function SkillTemplateListPage() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option>All</option>
-                <option>Technology</option>
-                <option>Design</option>
-                <option>Business</option>
-                <option>Languages</option>
-                <option>Music</option>
-                <option>Fitness</option>
-                <option>Creative</option>
-                <option>Professional</option>
+                <option value="All">All</option>
+                <option value="Technology">Technology</option>
+                <option value="Design">Design</option>
+                <option value="Business">Business</option>
+                <option value="Languages">Languages</option>
+                <option value="Music">Music</option>
+                <option value="Fitness">Fitness</option>
+                <option value="Creative">Creative</option>
+                <option value="Professional">Professional</option>
               </select>
             </div>
 
@@ -194,9 +215,9 @@ export default function SkillTemplateListPage() {
                 onChange={(e) => setSelectedStatus(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option>All Status</option>
-                <option>Active</option>
-                <option>Inactive</option>
+                <option value="All Status">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
               </select>
             </div>
           </div>
@@ -204,13 +225,12 @@ export default function SkillTemplateListPage() {
 
         {/* Templates Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTemplates.map((template) => (
+          {templates.map((template) => (
             <TemplateCard
               key={template.id}
               template={template}
               onToggleStatus={() => handleToggleStatus(template.id)}
-              onDelete={() => handleDeleteClick(template.id)}
-              onEdit={() => navigate(`/admin/skill-templates/edit/${template.id}`)}
+              onEdit={() => navigate(`/admin/skill-templates/${template.id}/edit`)}
               onManageQuestions={() => {
                 setSelectedTemplate(template)
                 setQuestionModalOpen(true)
@@ -218,12 +238,29 @@ export default function SkillTemplateListPage() {
             />
           ))}
 
-          {filteredTemplates.length === 0 && (
+          {templates.length === 0 && !loading && (
             <div className="col-span-full text-center text-gray-500 py-12 border border-dashed border-gray-300 rounded-lg">
               No templates found. Try changing filters or add a new template.
             </div>
           )}
         </div>
+
+        {/* Pagination */}
+        {templates.length > 0 && !loading && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages || 1}
+              totalItems={totalItems || templates.length}
+              limit={limit}
+              onPageChange={handlePageChange}
+              onLimitChange={handleLimitChange}
+              showLimitSelector={true}
+              showInfo={true}
+            />
+          </div>
+        )}
+
       </div>
 
       {/* Modals */}
@@ -256,20 +293,6 @@ export default function SkillTemplateListPage() {
         />
       )}
 
-      {/* Confirm Delete Modal */}
-      <ConfirmModal
-        isOpen={showConfirm}
-        title="Delete Template"
-        message="Are you sure you want to delete this template? This action cannot be undone."
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={handleConfirmDelete}
-        onCancel={() => {
-          setShowConfirm(false)
-          setTemplateToDelete(null)
-        }}
-        type="danger"
-      />
     </div>
   )
 }
@@ -287,28 +310,34 @@ function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string
 function TemplateCard({
   template,
   onToggleStatus,
-  onDelete,
   onEdit,
   onManageQuestions,
 }: {
   template: SkillTemplate
   onToggleStatus: () => void
-  onDelete: () => void
   onEdit: () => void
   onManageQuestions: () => void
 }) {
+  const isBlocked = !template.isActive
+
   return (
-    <div className="bg-white rounded-lg p-6 border border-gray-200 hover:shadow-lg transition-shadow">
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
+    <div className={`bg-white rounded-lg p-6 border ${isBlocked ? 'border-red-200 bg-red-50/30' : 'border-gray-200'
+      } hover:shadow-md transition-shadow`}>
+      {/* Header with Title and Actions */}
+      <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <h3 className="text-lg font-bold text-gray-800 mb-1 line-clamp-2">{template.title}</h3>
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm text-gray-600">{template.category}</span>
-            <StatusBadge status={template.status} />
+          <div className="flex items-center gap-2 mb-2">
+            <h3 className="text-lg font-semibold text-gray-800">{template.title}</h3>
+            {isBlocked && (
+              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
+                Blocked
+              </span>
+            )}
           </div>
+          <p className="text-sm text-gray-600 mb-2">{template.category}</p>
+          <StatusBadge status={template.status} />
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
           <button
             className="p-2 hover:bg-purple-50 rounded-lg transition-colors"
             onClick={onManageQuestions}
@@ -318,9 +347,6 @@ function TemplateCard({
           </button>
           <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={onEdit}>
             <Edit2 className="w-4 h-4 text-gray-600" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={onDelete}>
-            <Trash2 className="w-4 h-4 text-red-600" />
           </button>
         </div>
       </div>
@@ -355,12 +381,15 @@ function TemplateCard({
         </div>
       </div>
 
-      {/* Toggle Status Button */}
+      {/* Block/Unblock Button */}
       <button
-        className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+        className={`w-full px-4 py-2 border rounded-lg font-medium transition-colors ${isBlocked
+            ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'
+            : 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
+          }`}
         onClick={onToggleStatus}
       >
-        {template.status === "Active" ? "Deactivate" : "Activate"}
+        {isBlocked ? 'Unblock Template' : 'Block Template'}
       </button>
     </div>
   )

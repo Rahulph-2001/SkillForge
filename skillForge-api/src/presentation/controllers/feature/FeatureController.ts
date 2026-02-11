@@ -20,10 +20,7 @@ export class FeatureController {
         @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
     ) { }
 
-    /**
-     * POST /api/v1/admin/features
-     * Create a new feature
-     */
+    
     async createFeature(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const dto = req.body;
@@ -39,31 +36,29 @@ export class FeatureController {
         }
     }
 
-    /**
-     * GET /api/v1/admin/features
-     * List all features (optionally filtered by planId)
-     */
+   
     async listFeatures(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const planId = req.query.planId as string | undefined;
             const highlightedOnly = req.query.highlightedOnly === 'true';
+            const page = req.query.page ? parseInt(req.query.page as string): undefined;
+            const limit = req.query.limit ? parseInt(req.query.limit as string): undefined;
+            const search = req.query.search as string | undefined;
 
-            const features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
+            const result = await this.listFeaturesUseCase.execute(page, limit, search, planId, highlightedOnly);
 
             const response = this.responseBuilder.success(
-                features,
+                result,
                 SUCCESS_MESSAGES.FEATURE.FETCHED
             );
-            res.status(response.statusCode).json(response.body);
+            res.status(response.statusCode).json(response.body)
+            
         } catch (error) {
-            next(error);
+            next(error)
         }
     }
 
-    /**
-     * GET /api/v1/admin/features/:id
-     * Get feature by ID
-     */
+   
     async getFeature(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
             const featureId = req.params.id;

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import featureService, { Feature, CreateFeatureRequest, UpdateFeatureRequest } from '../../../services/featureService';
+import React, { useState, useEffect, useCallback } from 'react';
+import featureService, { Feature, CreateFeatureRequest, UpdateFeatureRequest, FeatureListResponse } from '../../../services/featureService';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../../components/common/Modal/ConfirmModal';
+import Pagination from '../../../components/common/pagination/Pagination';
 import './FeatureManagement.css';
 
 const FeatureManagement: React.FC = () => {
@@ -13,20 +14,55 @@ const FeatureManagement: React.FC = () => {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [featureToToggle, setFeatureToToggle] = useState<Feature | null>(null);
 
+    // Pagination state
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+
+    // Search state
+    const [searchQuery, setSearchQuery] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(searchQuery);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    // Fetch features when pagination or search changes
     useEffect(() => {
         loadFeatures();
-    }, []);
+    }, [page, limit, debouncedSearch]);
 
-    const loadFeatures = async () => {
+    const loadFeatures = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await featureService.listFeatures();
-            setFeatures(data);
+            const data: FeatureListResponse = await featureService.listLibraryFeatures(
+                page,
+                limit,
+                debouncedSearch || undefined
+            );
+            setFeatures(data.features);
+            setTotalPages(data.pagination.totalPages);
+            setTotalItems(data.pagination.total);
         } catch (error: any) {
             toast.error(error.response?.data?.message || 'Failed to load features');
         } finally {
             setLoading(false);
         }
+    }, [page, limit, debouncedSearch]);
+
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit);
+        setPage(1);
     };
 
     const handleToggleStatus = (feature: Feature) => {
@@ -38,14 +74,13 @@ const FeatureManagement: React.FC = () => {
         if (!featureToToggle) return;
 
         const newStatus = !featureToToggle.isEnabled;
-        const action = newStatus ? 'unblock' : 'block';
 
         try {
             await featureService.updateFeature(featureToToggle.id, { isEnabled: newStatus });
             toast.success(`Feature ${newStatus ? 'unblocked' : 'blocked'} successfully`);
             loadFeatures();
         } catch (error: any) {
-            toast.error(error.response?.data?.message || `Failed to ${action} feature`);
+            toast.error(error.response?.data?.message || `Failed to update feature`);
         } finally {
             setShowConfirmModal(false);
             setFeatureToToggle(null);
@@ -75,73 +110,107 @@ const FeatureManagement: React.FC = () => {
                 </button>
             </div>
 
+            {/* Search Input */}
+            <div className="search-container" style={{ marginBottom: '1rem' }}>
+                <input
+                    type="text"
+                    placeholder="Search features..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    style={{
+                        padding: '0.5rem 1rem',
+                        borderRadius: '0.375rem',
+                        border: '1px solid #d1d5db',
+                        width: '300px',
+                    }}
+                />
+            </div>
+
             {loading ? (
                 <div className="loading">Loading features...</div>
             ) : (
-                <div className="features-table-container">
-                    <table className="features-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Type</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {features.length === 0 ? (
+                <>
+                    <div className="features-table-container">
+                        <table className="features-table">
+                            <thead>
                                 <tr>
-                                    <td colSpan={4} className="no-data">No features found</td>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
-                            ) : (
-                                features.map((feature) => (
-                                    <tr key={feature.id}>
-                                        <td>
-                                            <div className="feature-name">
-                                                {feature.name}
-                                                {feature.description && (
-                                                    <span className="feature-desc">{feature.description}</span>
-                                                )}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`badge badge-${feature.featureType.toLowerCase()}`}>
-                                                {getFeatureTypeLabel(feature.featureType)}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className={`status ${feature.isEnabled ? 'enabled' : 'disabled'}`}>
-                                                {feature.isEnabled ? 'Active' : 'Blocked'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="action-buttons">
-                                                <button className="btn-edit" onClick={() => handleEdit(feature)}>
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    className={`btn-${feature.isEnabled ? 'block' : 'unblock'}`}
-                                                    onClick={() => handleToggleStatus(feature)}
-                                                    style={{
-                                                        backgroundColor: feature.isEnabled ? '#ef4444' : '#10b981',
-                                                        color: 'white',
-                                                        padding: '0.5rem 1rem',
-                                                        borderRadius: '0.375rem',
-                                                        border: 'none',
-                                                        cursor: 'pointer',
-                                                        marginLeft: '0.5rem'
-                                                    }}
-                                                >
-                                                    {feature.isEnabled ? 'Block' : 'Unblock'}
-                                                </button>
-                                            </div>
-                                        </td>
+                            </thead>
+                            <tbody>
+                                {features.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={4} className="no-data">No features found</td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                ) : (
+                                    features.map((feature) => (
+                                        <tr key={feature.id}>
+                                            <td>
+                                                <div className="feature-name">
+                                                    {feature.name}
+                                                    {feature.description && (
+                                                        <span className="feature-desc">{feature.description}</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span className={`badge badge-${feature.featureType.toLowerCase()}`}>
+                                                    {getFeatureTypeLabel(feature.featureType)}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span className={`status ${feature.isEnabled ? 'enabled' : 'disabled'}`}>
+                                                    {feature.isEnabled ? 'Active' : 'Blocked'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div className="action-buttons">
+                                                    <button className="btn-edit" onClick={() => handleEdit(feature)}>
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className={`btn-${feature.isEnabled ? 'block' : 'unblock'}`}
+                                                        onClick={() => handleToggleStatus(feature)}
+                                                        style={{
+                                                            backgroundColor: feature.isEnabled ? '#ef4444' : '#10b981',
+                                                            color: 'white',
+                                                            padding: '0.5rem 1rem',
+                                                            borderRadius: '0.375rem',
+                                                            border: 'none',
+                                                            cursor: 'pointer',
+                                                            marginLeft: '0.5rem'
+                                                        }}
+                                                    >
+                                                        {feature.isEnabled ? 'Block' : 'Unblock'}
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalPages > 0 && (
+                        <div style={{ marginTop: '1rem' }}>
+                            <Pagination
+                                currentPage={page}
+                                totalPages={totalPages}
+                                totalItems={totalItems}
+                                limit={limit}
+                                onPageChange={handlePageChange}
+                                onLimitChange={handleLimitChange}
+                                showLimitSelector={true}
+                                showInfo={true}
+                            />
+                        </div>
+                    )}
+                </>
             )}
 
             {showCreateModal && (
@@ -199,7 +268,6 @@ const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({ onClose, onSucc
         description: '',
         featureType: 'BOOLEAN',
         isEnabled: true,
-        // Removed limitValue, displayOrder, isHighlighted as per requirement
     });
     const [loading, setLoading] = useState(false);
 
@@ -296,7 +364,6 @@ const EditFeatureModal: React.FC<EditFeatureModalProps> = ({ feature, onClose, o
         name: feature.name,
         description: feature.description,
         isEnabled: feature.isEnabled,
-        // Removed limitValue, displayOrder, isHighlighted
     });
     const [loading, setLoading] = useState(false);
 

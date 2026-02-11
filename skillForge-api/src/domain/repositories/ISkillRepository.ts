@@ -39,5 +39,18 @@ export interface ISkillRepository {
   findAll(filters?: { category?: string; status?: string }): Promise<Skill[]>;
   findPending(): Promise<Skill[]>;
   browse(filters: BrowseSkillsFilters): Promise<{ skills: Skill[]; total: number }>;
+  findAllAdminWithPagination(filters: {
+    page: number;
+    limit: number;
+    search?: string;
+    status?: 'in-review' | 'approved' | 'rejected';
+    isBlocked?: boolean;
+  }): Promise<{
+    skills: Skill[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }>;
   update(skill: Skill): Promise<Skill>;
 }

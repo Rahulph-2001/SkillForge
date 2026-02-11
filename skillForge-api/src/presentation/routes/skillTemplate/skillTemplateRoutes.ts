@@ -31,19 +31,19 @@ export class SkillTemplateRoutes {
       this.skillTemplateController.list.bind(this.skillTemplateController)
     );
 
+    // GET /api/v1/admin/skill-templates/:id - Get template by ID
+    this.router.get(
+      ENDPOINTS.SKILL_TEMPLATE.BY_ID,
+      this.skillTemplateController.getById.bind(this.skillTemplateController)
+    );
+
     // PUT /api/v1/admin/skill-templates/:id - Update template
     this.router.put(
       ENDPOINTS.SKILL_TEMPLATE.BY_ID,
       this.skillTemplateController.update.bind(this.skillTemplateController)
     );
 
-    // DELETE /api/v1/admin/skill-templates/:id - Delete template
-    this.router.delete(
-      ENDPOINTS.SKILL_TEMPLATE.BY_ID,
-      this.skillTemplateController.delete.bind(this.skillTemplateController)
-    );
-
-    // PATCH /api/v1/admin/skill-templates/:id/toggle-status - Toggle status
+    // PATCH /api/v1/admin/skill-templates/:id/toggle-status - Toggle status (Block/Unblock)
     this.router.patch(
       ENDPOINTS.SKILL_TEMPLATE.TOGGLE_STATUS,
       this.skillTemplateController.toggleStatus.bind(this.skillTemplateController)

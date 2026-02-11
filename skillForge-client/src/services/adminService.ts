@@ -15,8 +15,15 @@ export interface User {
 
 
 export interface ListUsersResponse {
-    users: User[];
+  users: User[];
+  pagination: {
     total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
 
 
@@ -62,28 +69,39 @@ class AdminService {
     private readonly baseUrl = '/admin';
     // ... users methods ...
 
-    async listUsers(): Promise<ListUsersResponse> {
-        try {
-            const response = await api.get(`${this.baseUrl}/users`);
+async listUsers(
+  page = 1,
+  limit = 20,
+  search?: string,
+  role?: 'user' | 'admin',
+  isActive?: boolean
+): Promise<ListUsersResponse> {
+  try {
+    const params: Record<string, string | number> = { page, limit };
+    if (search) params.search = search;
+    if (role) params.role = role;
+    if (isActive !== undefined) params.isActive = isActive.toString();
 
-            if (response.data?.success && response.data?.data) {
-                return response.data.data;
-            }
+    const response = await api.get(`${this.baseUrl}/users`, { params });
 
-            if (response.data?.users) {
-                return response.data;
-            }
-
-            throw new Error('Invalid response structure from server');
-        } catch (error: any) {
-            const errorMessage = error?.response?.data?.message
-                || error?.response?.data?.error?.message
-                || error?.message
-                || 'Failed to load users';
-
-            throw new Error(errorMessage);
-        }
+    if (response.data?.success && response.data?.data) {
+      return response.data.data;
     }
+
+    if (response.data?.users) {
+      return response.data;
+    }
+
+    throw new Error('Invalid response structure from server');
+  } catch (error: any) {
+    const errorMessage = error?.response?.data?.message
+      || error?.response?.data?.error?.message
+      || error?.message
+      || 'Failed to load users';
+
+    throw new Error(errorMessage);
+  }
+}
 
 
     async suspendUser(userId: string, reason?: string): Promise<{ success: boolean; message: string }> {
@@ -429,8 +447,13 @@ export interface ReportFilters {
 }
 
 export interface ListReportsResponse {
-    reports: Report[];
+    data: Report[];
     total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
 }
 
 export default new AdminService();

@@ -30,12 +30,10 @@ export class AdminSkillRoutes {
 
     this.router.post(ENDPOINTS.ADMIN_SKILL.REJECT, this.adminSkillController.reject);
 
-
-    this.router.get(ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.getAllSkills);
-
+    // List all skills with pagination and filters
+    this.router.get(ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.listSkills);
 
     this.router.post(ENDPOINTS.ADMIN_SKILL.BLOCK, this.adminSkillController.blockSkill);
-
 
     this.router.post(ENDPOINTS.ADMIN_SKILL.UNBLOCK, this.adminSkillController.unblockSkill);
   }

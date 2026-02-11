@@ -7,6 +7,10 @@ export interface IUserRepository {
 
   save(user: User): Promise<User>;
   update(user: User): Promise<User>;
-  findAll(): Promise<User[]>;
+  findWithPagination(
+  filters: { search?: string; role?: 'user' | 'admin'; isActive?: boolean },
+  pagination: { skip: number; take: number }
+): Promise<{ users: User[]; total: number }>;
+
   delete(id: string): Promise<void>;
 }

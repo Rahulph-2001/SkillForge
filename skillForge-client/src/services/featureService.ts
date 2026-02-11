@@ -14,6 +14,18 @@ export interface Feature {
     updatedAt: string;
 }
 
+export interface FeatureListResponse {
+    features: Feature[];
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
+}
+
 export interface CreateFeatureRequest {
     planId?: string;
     name: string;
@@ -44,14 +56,22 @@ const featureService = {
     },
 
     /**
-     * List all library features (master features with no plan)
+     * List library features with pagination (master features with no plan)
      */
-    async listLibraryFeatures(): Promise<Feature[]> {
-        return this.listFeatures();
+    async listLibraryFeatures(
+        page = 1,
+        limit = 10,
+        search?: string
+    ): Promise<FeatureListResponse> {
+        const params: Record<string, string | number> = { page, limit };
+        if (search) params.search = search;
+
+        const response = await api.get('/admin/features', { params });
+        return response.data.data;
     },
 
     /**
-     * List all features (optionally filtered by planId)
+     * List all features (optionally filtered by planId) - non-paginated
      */
     async listFeatures(planId?: string, highlightedOnly?: boolean): Promise<Feature[]> {
         const params = new URLSearchParams();

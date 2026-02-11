@@ -97,13 +97,40 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return User.fromDatabaseRow(updatedUser as unknown as Record<string, unknown>);
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await super.findAll();
-    // Filter out deleted users and map to domain entities
-    return users
-      .map((user: unknown) => User.fromDatabaseRow(user as unknown as Record<string, unknown>))
-      .filter((user: User) => !user.isDeleted);
+ async findWithPagination(
+  filters: { search?: string; role?: 'user' | 'admin'; isActive?: boolean },
+  pagination: { skip: number; take: number }
+): Promise<{ users: User[]; total: number }> {
+  const where: any = { isDeleted: false };
+
+  if (filters.search) {
+    where.OR = [
+      { name: { contains: filters.search, mode: 'insensitive' } },
+      { email: { contains: filters.search, mode: 'insensitive' } }
+    ];
   }
+  if (filters.role) {
+    where.role = filters.role;
+  }
+  if (filters.isActive !== undefined) {
+    where.isActive = filters.isActive;
+  }
+
+  const [users, total] = await Promise.all([
+    this.prisma.user.findMany({
+      where,
+      skip: pagination.skip,
+      take: pagination.take,
+      orderBy: { createdAt: 'desc' },
+    }),
+    this.prisma.user.count({ where }),
+  ]);
+
+  return {
+    users: users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>)),
+    total,
+  };
+}
 
   async delete(id: string): Promise<void> {
     await super.delete(id);

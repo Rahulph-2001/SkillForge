@@ -1,26 +1,12 @@
 import { z } from 'zod';
 
-export const ListUsersRequestSchema = z.object({
-  adminUserId: z.string().uuid('Invalid admin user ID'),
-  page: z.number()
-    .int('Page must be an integer')
-    .min(1, 'Page must be at least 1')
-    .optional()
-    .default(1),
-  limit: z.number()
-    .int('Limit must be an integer')
-    .min(1, 'Limit must be at least 1')
-    .max(100, 'Limit cannot exceed 100')
-    .optional()
-    .default(20),
-  search: z.string()
-    .max(255, 'Search query too long')
-    .trim()
-    .optional(),
-  role: z.enum(['user', 'admin'], {
-    message: 'Invalid role',
-  }).optional(),
+export const ListUsersRequestDTOSchema = z.object({
+  adminUserId: z.string().uuid(),
+  page: z.number().int().positive().optional().default(1),
+  limit: z.number().int().positive().max(100).optional().default(20),
+  search: z.string().trim().optional(),
+  role: z.enum(['user', 'admin']).optional(),
   isActive: z.boolean().optional(),
 });
 
-export type ListUsersRequestDTO = z.infer<typeof ListUsersRequestSchema>;
+export type ListUsersRequestDTO = z.infer<typeof ListUsersRequestDTOSchema>;

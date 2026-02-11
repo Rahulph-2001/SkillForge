@@ -1,7 +1,8 @@
+
 import { useState, FormEvent, useEffect } from "react"
 import { X } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
-import { skillTemplateService, CreateSkillTemplatePayload } from "../../services/skillTemplateService"
+import { skillTemplateService, CreateSkillTemplateRequest } from "../../services/skillTemplateService"
 import { ErrorModal, SuccessModal } from "../../components/common/Modal"
 
 
@@ -49,7 +50,7 @@ export default function SkillTemplateCreatePage() {
     try {
       setLoading(true)
       const response = await skillTemplateService.getById(templateId)
-      const template = response.data.data
+      const template = response
       setFormData({
         title: template.title,
         category: template.category,
@@ -94,7 +95,7 @@ export default function SkillTemplateCreatePage() {
 
     try {
       setLoading(true)
-      const payload: CreateSkillTemplatePayload = {
+      const payload: CreateSkillTemplateRequest = {
         title: formData.title.trim(),
         category: formData.category,
         description: "", // Empty description - users will add their own
