@@ -21,6 +21,7 @@ export const ROUTES = {
     SUBSCRIPTIONS: '/subscriptions',
     PAYMENTS: '/payments',
     WALLET: '/wallet',
+    CREDITS: '/credits',
 
     // Sessions & Bookings
     BOOKINGS: '/bookings',
@@ -335,6 +336,13 @@ export const ENDPOINTS = {
         UNREAD_COUNT: '/unread-count',
         MARK_READ: '/:id/read',
         MARK_ALL_READ: '/read-all',
+    },
+
+    CREDIT: {
+        ROOT: '/',
+        PACKAGES: '/packages',
+        PURCHASE: '/purchase',
+        TRANSACTIONS: '/transactions',
     },
 
     // Common patterns

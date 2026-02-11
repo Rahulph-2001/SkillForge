@@ -1,5 +1,5 @@
 import { z } from 'zod';
-export declare const ListUsersRequestSchema: z.ZodObject<{
+export declare const ListUsersRequestDTOSchema: z.ZodObject<{
     adminUserId: z.ZodString;
     page: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
     limit: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
@@ -10,5 +10,5 @@ export declare const ListUsersRequestSchema: z.ZodObject<{
     }>>;
     isActive: z.ZodOptional<z.ZodBoolean>;
 }, z.core.$strip>;
-export type ListUsersRequestDTO = z.infer<typeof ListUsersRequestSchema>;
+export type ListUsersRequestDTO = z.infer<typeof ListUsersRequestDTOSchema>;
 //# sourceMappingURL=ListUsersRequestDTO.d.ts.map

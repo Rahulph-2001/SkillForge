@@ -90,6 +90,66 @@ let UserWalletTransactionRepository = class UserWalletTransactionRepository {
         });
         return UserWalletTransaction_1.UserWalletTransaction.fromDatabaseRow(updated);
     }
+    async findCreditTransactions(userId, filters) {
+        const skip = (filters.page - 1) * filters.limit;
+        const where = {
+            userId,
+            type: {
+                in: filters.type
+                    ? [filters.type]
+                    : ['CREDIT_PURCHASE', 'SESSION_PAYMENT', 'SESSION_EARNING', 'PROJECT_EARNING']
+            }
+        };
+        const [transactions, total] = await Promise.all([
+            this.prisma.userWalletTransaction.findMany({
+                where,
+                skip,
+                take: filters.limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.userWalletTransaction.count({ where }),
+        ]);
+        return {
+            transactions: transactions.map(t => UserWalletTransaction_1.UserWalletTransaction.fromDatabaseRow(t)),
+            total,
+            page: filters.page,
+            limit: filters.limit,
+            totalPages: Math.ceil(total / filters.limit),
+        };
+    }
+    async getCreditStats(userId) {
+        const [earned, spent, purchased] = await Promise.all([
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: { in: ['SESSION_EARNING', 'PROJECT_EARNING'] },
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: 'SESSION_PAYMENT',
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: 'CREDIT_PURCHASE',
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+        ]);
+        return {
+            totalEarned: Number(earned._sum?.amount || 0),
+            totalSpent: Number(spent._sum?.amount || 0),
+            totalPurchased: Number(purchased._sum?.amount || 0),
+        };
+    }
 };
 exports.UserWalletTransactionRepository = UserWalletTransactionRepository;
 exports.UserWalletTransactionRepository = UserWalletTransactionRepository = __decorate([

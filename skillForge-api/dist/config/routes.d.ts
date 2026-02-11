@@ -12,6 +12,7 @@ export declare const ROUTES: {
     readonly SUBSCRIPTIONS: "/subscriptions";
     readonly PAYMENTS: "/payments";
     readonly WALLET: "/wallet";
+    readonly CREDITS: "/credits";
     readonly BOOKINGS: "/bookings";
     readonly SESSIONS: "/sessions";
     readonly AVAILABILITY: "/availability";
@@ -33,6 +34,7 @@ export declare const ROUTES: {
         readonly WALLET: "/admin/wallet";
         readonly SESSIONS: "/admin/sessions";
         readonly REPORTS: "/admin/reports";
+        readonly CREDIT_PACKAGES: "/admin/credit-packages";
     };
     readonly HEALTH: "/health";
 };
@@ -279,6 +281,12 @@ export declare const ENDPOINTS: {
         readonly UNREAD_COUNT: "/unread-count";
         readonly MARK_READ: "/:id/read";
         readonly MARK_ALL_READ: "/read-all";
+    };
+    readonly CREDIT: {
+        readonly ROOT: "/";
+        readonly PACKAGES: "/packages";
+        readonly PURCHASE: "/purchase";
+        readonly TRANSACTIONS: "/transactions";
     };
     readonly COMMON: {
         readonly ROOT: "/";

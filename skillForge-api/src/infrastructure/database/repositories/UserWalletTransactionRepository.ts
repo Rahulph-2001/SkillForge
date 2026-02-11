@@ -95,4 +95,83 @@ export class UserWalletTransactionRepository implements IUserWalletTransactionRe
 
         return UserWalletTransaction.fromDatabaseRow(updated);
     }
+
+    async findCreditTransactions(userId: string, filters: {
+        type?: string;
+        page: number;
+        limit: number;
+    }): Promise<{
+        transactions: UserWalletTransaction[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }> {
+        const skip = (filters.page - 1) * filters.limit;
+        const where: any = {
+            userId,
+            type: {
+                in: filters.type
+                    ? [filters.type]
+                    : ['CREDIT_PURCHASE', 'SESSION_PAYMENT', 'SESSION_EARNING', 'PROJECT_EARNING']
+            }
+        };
+
+        const [transactions, total] = await Promise.all([
+            this.prisma.userWalletTransaction.findMany({
+                where,
+                skip,
+                take: filters.limit,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.userWalletTransaction.count({ where }),
+        ]);
+
+        return {
+            transactions: transactions.map(t => UserWalletTransaction.fromDatabaseRow(t)),
+            total,
+            page: filters.page,
+            limit: filters.limit,
+            totalPages: Math.ceil(total / filters.limit),
+        };
+    }
+
+    async getCreditStats(userId: string): Promise<{
+        totalEarned: number;
+        totalSpent: number;
+        totalPurchased: number;
+    }> {
+        const [earned, spent, purchased] = await Promise.all([
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: { in: ['SESSION_EARNING', 'PROJECT_EARNING'] as any },
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: 'SESSION_PAYMENT' as any,
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+            this.prisma.userWalletTransaction.aggregate({
+                where: {
+                    userId,
+                    type: 'CREDIT_PURCHASE' as any,
+                    status: 'COMPLETED',
+                },
+                _sum: { amount: true },
+            }),
+        ]);
+
+        return {
+            totalEarned: Number(earned._sum?.amount || 0),
+            totalSpent: Number(spent._sum?.amount || 0),
+            totalPurchased: Number(purchased._sum?.amount || 0),
+        };
+    }
 }

@@ -5,6 +5,7 @@ import { IRejectSkillUseCase } from '../../../application/useCases/admin/interfa
 import { IGetAllSkillsUseCase } from '../../../application/useCases/admin/interfaces/IGetAllSkillsUseCase';
 import { IBlockSkillUseCase } from '../../../application/useCases/admin/interfaces/IBlockSkillUseCase';
 import { IUnblockSkillUseCase } from '../../../application/useCases/admin/interfaces/IUnblockSkillUseCase';
+import { IAdminListSkillsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListSkillsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class AdminSkillController {
     private listPendingSkillsUseCase;
@@ -13,8 +14,9 @@ export declare class AdminSkillController {
     private getAllSkillsUseCase;
     private blockSkillUseCase;
     private unblockSkillUseCase;
+    private adminListSkillsUseCase;
     private responseBuilder;
-    constructor(listPendingSkillsUseCase: IListPendingSkillsUseCase, approveSkillUseCase: IApproveSkillUseCase, rejectSkillUseCase: IRejectSkillUseCase, getAllSkillsUseCase: IGetAllSkillsUseCase, blockSkillUseCase: IBlockSkillUseCase, unblockSkillUseCase: IUnblockSkillUseCase, responseBuilder: IResponseBuilder);
+    constructor(listPendingSkillsUseCase: IListPendingSkillsUseCase, approveSkillUseCase: IApproveSkillUseCase, rejectSkillUseCase: IRejectSkillUseCase, getAllSkillsUseCase: IGetAllSkillsUseCase, blockSkillUseCase: IBlockSkillUseCase, unblockSkillUseCase: IUnblockSkillUseCase, adminListSkillsUseCase: IAdminListSkillsUseCase, responseBuilder: IResponseBuilder);
     /**
      * List all pending skills (passed MCQ, waiting for admin approval)
      * GET /api/v1/admin/skills/pending
@@ -35,6 +37,11 @@ export declare class AdminSkillController {
      * GET /api/v1/admin/skills
      */
     getAllSkills: (_req: Request, res: Response, next: NextFunction) => Promise<void>;
+    /**
+     * List all skills with pagination and filters (for admin management)
+     * GET /api/v1/admin/skills
+     */
+    listSkills: (req: Request, res: Response, next: NextFunction) => Promise<void>;
     /**
      * Block a skill
      * POST /api/v1/admin/skills/:skillId/block

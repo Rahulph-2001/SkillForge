@@ -46,6 +46,10 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
         }
         return User_1.User.fromDatabaseRow(user);
     }
+    async findAll() {
+        const users = await super.findAll();
+        return users.map((u) => User_1.User.fromDatabaseRow(u));
+    }
     mapUserDataToPrisma(user) {
         const userData = user.toJSON();
         return {
@@ -100,15 +104,46 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
         });
         return User_1.User.fromDatabaseRow(updatedUser);
     }
-    async findAll() {
-        const users = await super.findAll();
-        // Filter out deleted users and map to domain entities
-        return users
-            .map((user) => User_1.User.fromDatabaseRow(user))
-            .filter((user) => !user.isDeleted);
+    async findWithPagination(filters, pagination) {
+        const where = { isDeleted: false };
+        if (filters.search) {
+            where.OR = [
+                { name: { contains: filters.search, mode: 'insensitive' } },
+                { email: { contains: filters.search, mode: 'insensitive' } }
+            ];
+        }
+        if (filters.role) {
+            where.role = filters.role;
+        }
+        if (filters.isActive !== undefined) {
+            where.isActive = filters.isActive;
+        }
+        const [users, total] = await Promise.all([
+            this.prisma.user.findMany({
+                where,
+                skip: pagination.skip,
+                take: pagination.take,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.user.count({ where }),
+        ]);
+        return {
+            users: users.map((u) => User_1.User.fromDatabaseRow(u)),
+            total,
+        };
     }
     async delete(id) {
         await super.delete(id);
+    }
+    async addPurchasedCredits(userId, credits) {
+        const updated = await this.prisma.user.update({
+            where: { id: userId },
+            data: {
+                credits: { increment: credits },
+                purchasedCredits: { increment: credits }
+            }
+        });
+        return User_1.User.fromDatabaseRow(updated);
     }
 };
 exports.UserRepository = UserRepository;

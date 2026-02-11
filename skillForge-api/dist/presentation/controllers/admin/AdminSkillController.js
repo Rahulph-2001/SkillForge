@@ -18,13 +18,14 @@ const types_1 = require("../../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let AdminSkillController = class AdminSkillController {
-    constructor(listPendingSkillsUseCase, approveSkillUseCase, rejectSkillUseCase, getAllSkillsUseCase, blockSkillUseCase, unblockSkillUseCase, responseBuilder) {
+    constructor(listPendingSkillsUseCase, approveSkillUseCase, rejectSkillUseCase, getAllSkillsUseCase, blockSkillUseCase, unblockSkillUseCase, adminListSkillsUseCase, responseBuilder) {
         this.listPendingSkillsUseCase = listPendingSkillsUseCase;
         this.approveSkillUseCase = approveSkillUseCase;
         this.rejectSkillUseCase = rejectSkillUseCase;
         this.getAllSkillsUseCase = getAllSkillsUseCase;
         this.blockSkillUseCase = blockSkillUseCase;
         this.unblockSkillUseCase = unblockSkillUseCase;
+        this.adminListSkillsUseCase = adminListSkillsUseCase;
         this.responseBuilder = responseBuilder;
         /**
          * List all pending skills (passed MCQ, waiting for admin approval)
@@ -98,6 +99,33 @@ let AdminSkillController = class AdminSkillController {
             }
         };
         /**
+         * List all skills with pagination and filters (for admin management)
+         * GET /api/v1/admin/skills
+         */
+        this.listSkills = async (req, res, next) => {
+            try {
+                const adminUserId = req.user.userId;
+                const page = parseInt(req.query.page) || 1;
+                const limit = parseInt(req.query.limit) || 10;
+                const search = req.query.search;
+                const status = req.query.status;
+                const isBlocked = req.query.isBlocked === 'true' ? true : req.query.isBlocked === 'false' ? false : undefined;
+                const result = await this.adminListSkillsUseCase.execute({
+                    adminUserId,
+                    page,
+                    limit,
+                    search,
+                    status,
+                    isBlocked,
+                });
+                const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.SKILL.ALL_FETCHED(result.total), HttpStatusCode_1.HttpStatusCode.OK);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
+        /**
          * Block a skill
          * POST /api/v1/admin/skills/:skillId/block
          */
@@ -151,7 +179,8 @@ exports.AdminSkillController = AdminSkillController = __decorate([
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IGetAllSkillsUseCase)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IBlockSkillUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IUnblockSkillUseCase)),
-    __param(6, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IAdminListSkillsUseCase)),
+    __param(7, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object])
 ], AdminSkillController);
 //# sourceMappingURL=AdminSkillController.js.map

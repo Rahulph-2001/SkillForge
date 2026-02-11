@@ -70,6 +70,30 @@ export class CreditPackageRepository extends BaseRepository<CreditPackage> imple
         return this.toDomain(data);
     }
 
+async findActivePackages(): Promise<CreditPackage[]> {
+  const packages = await this.prisma.creditPackage.findMany({
+    where: {
+      isActive: true,
+      isDeleted: false,
+    },
+    orderBy: [
+      { isPopular: 'desc' },
+      { credits: 'asc' },
+    ],
+  });
+  
+  return packages.map(pkg => new CreditPackage({
+    id: pkg.id,
+    credits: pkg.credits,
+    price: Number(pkg.price),
+    isPopular: pkg.isPopular,
+    isActive: pkg.isActive,
+    discount: pkg.discount,
+    createdAt: pkg.createdAt,
+    updatedAt: pkg.updatedAt,
+    isDeleted: pkg.isDeleted,
+  }));
+}
     async delete(id: string): Promise<void> {
         await (this.prisma as any).creditPackage.update({
             where: { id },

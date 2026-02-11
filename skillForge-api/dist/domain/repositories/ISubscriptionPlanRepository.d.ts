@@ -8,6 +8,17 @@ export interface SubscriptionStats {
 }
 export interface ISubscriptionPlanRepository {
     findAll(): Promise<SubscriptionPlan[]>;
+    findWithPagination(filters: {
+        page: number;
+        limit: number;
+        isActive?: boolean;
+    }): Promise<{
+        plans: SubscriptionPlan[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     findById(id: string): Promise<SubscriptionPlan | null>;
     findByName(name: string): Promise<SubscriptionPlan | null>;
     create(plan: SubscriptionPlan): Promise<SubscriptionPlan>;

@@ -71,6 +71,7 @@ enum UserWalletTransactionType {
   CREDIT_REDEMPTION
   WITHDRAWAL
   REFUND
+  CREDIT_PURCHASE
 }
 
 enum UserWalletTransactionStatus {

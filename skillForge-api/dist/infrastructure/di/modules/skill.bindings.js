@@ -10,8 +10,8 @@ const UpdateSkillUseCase_1 = require("../../../application/useCases/skill/Update
 const ToggleSkillBlockUseCase_1 = require("../../../application/useCases/skill/ToggleSkillBlockUseCase");
 const CreateSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/CreateSkillTemplateUseCase");
 const ListSkillTemplatesUseCase_1 = require("../../../application/useCases/skillTemplate/ListSkillTemplatesUseCase");
+const GetSkillTemplateByIdUseCase_1 = require("../../../application/useCases/skillTemplate/GetSkillTemplateByIdUseCase");
 const UpdateSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/UpdateSkillTemplateUseCase");
-const DeleteSkillTemplateUseCase_1 = require("../../../application/useCases/skillTemplate/DeleteSkillTemplateUseCase");
 const ToggleSkillTemplateStatusUseCase_1 = require("../../../application/useCases/skillTemplate/ToggleSkillTemplateStatusUseCase");
 const CreateTemplateQuestionUseCase_1 = require("../../../application/useCases/templateQuestion/CreateTemplateQuestionUseCase");
 const ListTemplateQuestionsUseCase_1 = require("../../../application/useCases/templateQuestion/ListTemplateQuestionsUseCase");
@@ -54,10 +54,10 @@ const bindSkillModule = (container) => {
     container.bind(types_1.TYPES.ICreateSkillTemplateUseCase).to(CreateSkillTemplateUseCase_1.CreateSkillTemplateUseCase);
     container.bind(types_1.TYPES.ListSkillTemplatesUseCase).to(ListSkillTemplatesUseCase_1.ListSkillTemplatesUseCase);
     container.bind(types_1.TYPES.IListSkillTemplatesUseCase).to(ListSkillTemplatesUseCase_1.ListSkillTemplatesUseCase);
+    container.bind(types_1.TYPES.GetSkillTemplateByIdUseCase).to(GetSkillTemplateByIdUseCase_1.GetSkillTemplateByIdUseCase);
+    container.bind(types_1.TYPES.IGetSkillTemplateByIdUseCase).to(GetSkillTemplateByIdUseCase_1.GetSkillTemplateByIdUseCase);
     container.bind(types_1.TYPES.UpdateSkillTemplateUseCase).to(UpdateSkillTemplateUseCase_1.UpdateSkillTemplateUseCase);
     container.bind(types_1.TYPES.IUpdateSkillTemplateUseCase).to(UpdateSkillTemplateUseCase_1.UpdateSkillTemplateUseCase);
-    container.bind(types_1.TYPES.DeleteSkillTemplateUseCase).to(DeleteSkillTemplateUseCase_1.DeleteSkillTemplateUseCase);
-    container.bind(types_1.TYPES.IDeleteSkillTemplateUseCase).to(DeleteSkillTemplateUseCase_1.DeleteSkillTemplateUseCase);
     container.bind(types_1.TYPES.ToggleSkillTemplateStatusUseCase).to(ToggleSkillTemplateStatusUseCase_1.ToggleSkillTemplateStatusUseCase);
     container.bind(types_1.TYPES.IToggleSkillTemplateStatusUseCase).to(ToggleSkillTemplateStatusUseCase_1.ToggleSkillTemplateStatusUseCase);
     // Template Question Use Cases

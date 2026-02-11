@@ -2,17 +2,17 @@ import { Request, Response, NextFunction } from 'express';
 import { ICreateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/ICreateSkillTemplateUseCase';
 import { IListSkillTemplatesUseCase } from '../../../application/useCases/skillTemplate/interfaces/IListSkillTemplatesUseCase';
 import { IUpdateSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IUpdateSkillTemplateUseCase';
-import { IDeleteSkillTemplateUseCase } from '../../../application/useCases/skillTemplate/interfaces/IDeleteSkillTemplateUseCase';
 import { IToggleSkillTemplateStatusUseCase } from '../../../application/useCases/skillTemplate/interfaces/IToggleSkillTemplateStatusUseCase';
+import { IGetSkillTemplateByIdUseCase } from '../../../application/useCases/skillTemplate/interfaces/IGetSkillTemplateByIdUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 export declare class SkillTemplateController {
     private readonly createSkillTemplateUseCase;
     private readonly listSkillTemplatesUseCase;
+    private readonly getSkillTemplateByIdUseCase;
     private readonly updateSkillTemplateUseCase;
-    private readonly deleteSkillTemplateUseCase;
     private readonly toggleSkillTemplateStatusUseCase;
     private readonly responseBuilder;
-    constructor(createSkillTemplateUseCase: ICreateSkillTemplateUseCase, listSkillTemplatesUseCase: IListSkillTemplatesUseCase, updateSkillTemplateUseCase: IUpdateSkillTemplateUseCase, deleteSkillTemplateUseCase: IDeleteSkillTemplateUseCase, toggleSkillTemplateStatusUseCase: IToggleSkillTemplateStatusUseCase, responseBuilder: IResponseBuilder);
+    constructor(createSkillTemplateUseCase: ICreateSkillTemplateUseCase, listSkillTemplatesUseCase: IListSkillTemplatesUseCase, getSkillTemplateByIdUseCase: IGetSkillTemplateByIdUseCase, updateSkillTemplateUseCase: IUpdateSkillTemplateUseCase, toggleSkillTemplateStatusUseCase: IToggleSkillTemplateStatusUseCase, responseBuilder: IResponseBuilder);
     /**
      * POST /api/v1/admin/skill-templates
      * Create a new skill template
@@ -24,15 +24,15 @@ export declare class SkillTemplateController {
      */
     list(req: Request, res: Response, next: NextFunction): Promise<void>;
     /**
+     * GET /api/v1/admin/skill-templates/:id
+     * Get a single skill template by ID
+     */
+    getById(req: Request, res: Response, next: NextFunction): Promise<void>;
+    /**
      * PUT /api/v1/admin/skill-templates/:id
      * Update a skill template
      */
     update(req: Request, res: Response, next: NextFunction): Promise<void>;
-    /**
-     * DELETE /api/v1/admin/skill-templates/:id
-     * Delete (soft delete) a skill template
-     */
-    delete(req: Request, res: Response, next: NextFunction): Promise<void>;
     /**
      * PATCH /api/v1/admin/skill-templates/:id/toggle-status
      * Toggle skill template status (Active/Inactive)

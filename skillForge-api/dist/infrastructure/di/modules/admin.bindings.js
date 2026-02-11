@@ -15,6 +15,8 @@ const RejectSkillUseCase_1 = require("../../../application/useCases/admin/Reject
 const GetAllSkillsUseCase_1 = require("../../../application/useCases/admin/GetAllSkillsUseCase");
 const BlockSkillUseCase_1 = require("../../../application/useCases/admin/BlockSkillUseCase");
 const UnblockSkillUseCase_1 = require("../../../application/useCases/admin/UnblockSkillUseCase");
+const AdminListSkillsUseCase_1 = require("../../../application/useCases/admin/AdminListSkillsUseCase");
+const AdminSkillMapper_1 = require("../../../application/mappers/AdminSkillMapper");
 const GetAdminWalletStatsUseCase_1 = require("../../../application/useCases/admin/GetAdminWalletStatsUseCase");
 const GetWalletTransactionsUseCase_1 = require("../../../application/useCases/admin/GetWalletTransactionsUseCase");
 const CreditAdminWalletUseCase_1 = require("../../../application/useCases/admin/CreditAdminWalletUseCase");
@@ -51,6 +53,9 @@ const bindAdminModule = (container) => {
     container.bind(types_1.TYPES.IGetAllSkillsUseCase).to(GetAllSkillsUseCase_1.GetAllSkillsUseCase);
     container.bind(types_1.TYPES.IBlockSkillUseCase).to(BlockSkillUseCase_1.BlockSkillUseCase);
     container.bind(types_1.TYPES.IUnblockSkillUseCase).to(UnblockSkillUseCase_1.UnblockSkillUseCase);
+    container.bind(types_1.TYPES.IAdminListSkillsUseCase).to(AdminListSkillsUseCase_1.AdminListSkillsUseCase);
+    // Admin Skill Mappers
+    container.bind(types_1.TYPES.IAdminSkillMapper).to(AdminSkillMapper_1.AdminSkillMapper);
     // Admin Wallet Use Cases
     container.bind(types_1.TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase_1.GetAdminWalletStatsUseCase);
     container.bind(types_1.TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase_1.GetWalletTransactionsUseCase);

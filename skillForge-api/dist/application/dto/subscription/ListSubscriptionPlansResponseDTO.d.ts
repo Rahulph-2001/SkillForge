@@ -1,7 +1,4 @@
 import { z } from 'zod';
-/**
- * Zod schema for List Subscription Plans Response DTO
- */
 export declare const ListSubscriptionPlansResponseDTOSchema: z.ZodObject<{
     plans: z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -31,6 +28,11 @@ export declare const ListSubscriptionPlansResponseDTOSchema: z.ZodObject<{
         updatedAt: z.ZodCoercedDate<unknown>;
     }, z.core.$strip>>;
     total: z.ZodNumber;
+    page: z.ZodNumber;
+    limit: z.ZodNumber;
+    totalPages: z.ZodNumber;
+    hasNextPage: z.ZodBoolean;
+    hasPreviousPage: z.ZodBoolean;
 }, z.core.$strip>;
 export type ListSubscriptionPlansResponseDTO = z.infer<typeof ListSubscriptionPlansResponseDTOSchema>;
 //# sourceMappingURL=ListSubscriptionPlansResponseDTO.d.ts.map

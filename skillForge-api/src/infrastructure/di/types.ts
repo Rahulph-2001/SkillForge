@@ -480,4 +480,11 @@ export const TYPES = {
   ICreditPackageMapper: Symbol.for('ICreditPackageMapper'),
   CreditPackageController: Symbol.for('CreditPackageController'),
   CreditPackageRoutes: Symbol.for('CreditPackageRoutes'),
+
+  // User Credit Management
+  IGetUserCreditPackagesUseCase: Symbol.for('IGetUserCreditPackagesUseCase'),
+  IPurchaseCreditPackageUseCase: Symbol.for('IPurchaseCreditPackageUseCase'),
+  IGetCreditTransactionsUseCase: Symbol.for('IGetCreditTransactionsUseCase'),
+  CreditController: Symbol.for('CreditController'),
+  CreditRoutes: Symbol.for('CreditRoutes'),
 };

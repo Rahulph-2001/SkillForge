@@ -42,6 +42,7 @@ import { AdminReportRoutes } from './routes/admin/AdminReportRoutes';
 import { ProjectMessageRoutes } from './routes/project/ProjectMessageRoutes';
 import { NotificationRoutes } from './routes/notification/notificationRoutes';
 import { CreditPackageRoutes } from './routes/credit/CreditPackageRoutes';
+import { CreditRoutes } from './routes/credit/CreditRoutes';
 
 
 
@@ -81,6 +82,7 @@ export class App {
         @inject(TYPES.IPassportService) private readonly passportService: IPassportService,
         @inject(TYPES.NotificationRoutes) private readonly notificationRoutes: NotificationRoutes,
         @inject(TYPES.CreditPackageRoutes) private readonly creditPackageRoutes: CreditPackageRoutes,
+        @inject(TYPES.CreditRoutes) private readonly creditRoutes: CreditRoutes,
     ) {
         this.app = express();
         this.setupMiddlewares();
@@ -163,6 +165,7 @@ export class App {
         // Payments & Wallet
         this.app.use(`${API_PREFIX}${ROUTES.PAYMENTS}`, this.paymentRoutes.getRouter());
         this.app.use(`${API_PREFIX}${ROUTES.WALLET}`, this.walletRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.CREDITS}`, this.creditRoutes.router);
 
         // Reviews & Reports
         this.app.use(`${API_PREFIX}${ROUTES.REVIEWS}`, this.reviewRoutes.router);

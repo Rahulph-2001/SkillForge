@@ -20,6 +20,7 @@ exports.ROUTES = {
     SUBSCRIPTIONS: '/subscriptions',
     PAYMENTS: '/payments',
     WALLET: '/wallet',
+    CREDITS: '/credits',
     // Sessions & Bookings
     BOOKINGS: '/bookings',
     SESSIONS: '/sessions',
@@ -46,6 +47,7 @@ exports.ROUTES = {
         WALLET: '/admin/wallet',
         SESSIONS: '/admin/sessions',
         REPORTS: '/admin/reports',
+        CREDIT_PACKAGES: '/admin/credit-packages',
     },
     // Health Check
     HEALTH: '/health',
@@ -294,6 +296,12 @@ exports.ENDPOINTS = {
         UNREAD_COUNT: '/unread-count',
         MARK_READ: '/:id/read',
         MARK_ALL_READ: '/read-all',
+    },
+    CREDIT: {
+        ROOT: '/',
+        PACKAGES: '/packages',
+        PURCHASE: '/purchase',
+        TRANSACTIONS: '/transactions',
     },
     // Common patterns
     COMMON: {

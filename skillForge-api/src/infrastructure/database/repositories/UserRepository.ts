@@ -38,6 +38,11 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return User.fromDatabaseRow(user as unknown as Record<string, unknown>);
   }
 
+  async findAll(): Promise<User[]> {
+    const users = await super.findAll();
+    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+  }
+
   private mapUserDataToPrisma(user: User): Record<string, unknown> {
     const userData = user.toJSON();
     return {
@@ -97,42 +102,53 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return User.fromDatabaseRow(updatedUser as unknown as Record<string, unknown>);
   }
 
- async findWithPagination(
-  filters: { search?: string; role?: 'user' | 'admin'; isActive?: boolean },
-  pagination: { skip: number; take: number }
-): Promise<{ users: User[]; total: number }> {
-  const where: any = { isDeleted: false };
+  async findWithPagination(
+    filters: { search?: string; role?: 'user' | 'admin'; isActive?: boolean },
+    pagination: { skip: number; take: number }
+  ): Promise<{ users: User[]; total: number }> {
+    const where: any = { isDeleted: false };
 
-  if (filters.search) {
-    where.OR = [
-      { name: { contains: filters.search, mode: 'insensitive' } },
-      { email: { contains: filters.search, mode: 'insensitive' } }
-    ];
-  }
-  if (filters.role) {
-    where.role = filters.role;
-  }
-  if (filters.isActive !== undefined) {
-    where.isActive = filters.isActive;
-  }
+    if (filters.search) {
+      where.OR = [
+        { name: { contains: filters.search, mode: 'insensitive' } },
+        { email: { contains: filters.search, mode: 'insensitive' } }
+      ];
+    }
+    if (filters.role) {
+      where.role = filters.role;
+    }
+    if (filters.isActive !== undefined) {
+      where.isActive = filters.isActive;
+    }
 
-  const [users, total] = await Promise.all([
-    this.prisma.user.findMany({
-      where,
-      skip: pagination.skip,
-      take: pagination.take,
-      orderBy: { createdAt: 'desc' },
-    }),
-    this.prisma.user.count({ where }),
-  ]);
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        skip: pagination.skip,
+        take: pagination.take,
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.user.count({ where }),
+    ]);
 
-  return {
-    users: users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>)),
-    total,
-  };
-}
+    return {
+      users: users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>)),
+      total,
+    };
+  }
 
   async delete(id: string): Promise<void> {
     await super.delete(id);
+  }
+
+  async addPurchasedCredits(userId: string, credits: number): Promise<User> {
+    const updated = await this.prisma.user.update({
+      where: { id: userId },
+      data: {
+        credits: { increment: credits },
+        purchasedCredits: { increment: credits }
+      }
+    });
+    return User.fromDatabaseRow(updated as unknown as Record<string, unknown>);
   }
 }

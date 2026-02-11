@@ -96,10 +96,10 @@ exports.TYPES = {
     ICreateSkillTemplateUseCase: Symbol.for('ICreateSkillTemplateUseCase'),
     ListSkillTemplatesUseCase: Symbol.for('ListSkillTemplatesUseCase'),
     IListSkillTemplatesUseCase: Symbol.for('IListSkillTemplatesUseCase'),
+    GetSkillTemplateByIdUseCase: Symbol.for('GetSkillTemplateByIdUseCase'),
+    IGetSkillTemplateByIdUseCase: Symbol.for('IGetSkillTemplateByIdUseCase'),
     UpdateSkillTemplateUseCase: Symbol.for('UpdateSkillTemplateUseCase'),
     IUpdateSkillTemplateUseCase: Symbol.for('IUpdateSkillTemplateUseCase'),
-    DeleteSkillTemplateUseCase: Symbol.for('DeleteSkillTemplateUseCase'),
-    IDeleteSkillTemplateUseCase: Symbol.for('IDeleteSkillTemplateUseCase'),
     ToggleSkillTemplateStatusUseCase: Symbol.for('ToggleSkillTemplateStatusUseCase'),
     IToggleSkillTemplateStatusUseCase: Symbol.for('IToggleSkillTemplateStatusUseCase'),
     SkillTemplateController: Symbol.for('SkillTemplateController'),
@@ -135,6 +135,8 @@ exports.TYPES = {
     GetAllSkillsUseCase: Symbol.for('GetAllSkillsUseCase'),
     BlockSkillUseCase: Symbol.for('BlockSkillUseCase'),
     UnblockSkillUseCase: Symbol.for('UnblockSkillUseCase'),
+    IAdminListSkillsUseCase: Symbol.for('IAdminListSkillsUseCase'),
+    IAdminSkillMapper: Symbol.for('IAdminSkillMapper'),
     AdminSkillController: Symbol.for('AdminSkillController'),
     AdminSkillRoutes: Symbol.for('AdminSkillRoutes'),
     // Session Management
@@ -416,5 +418,20 @@ exports.TYPES = {
     IDeleteNotificationUseCase: Symbol.for('IDeleteNotificationUseCase'),
     NotificationController: Symbol.for('NotificationController'),
     NotificationRoutes: Symbol.for('NotificationRoutes'),
+    // Credit Package Management
+    ICreditPackageRepository: Symbol.for('ICreditPackageRepository'),
+    ICreateCreditPackageUseCase: Symbol.for('ICreateCreditPackageUseCase'),
+    IGetCreditPackagesUseCase: Symbol.for('IGetCreditPackagesUseCase'),
+    IUpdateCreditPackageUseCase: Symbol.for('IUpdateCreditPackageUseCase'),
+    IDeleteCreditPackageUseCase: Symbol.for('IDeleteCreditPackageUseCase'),
+    ICreditPackageMapper: Symbol.for('ICreditPackageMapper'),
+    CreditPackageController: Symbol.for('CreditPackageController'),
+    CreditPackageRoutes: Symbol.for('CreditPackageRoutes'),
+    // User Credit Management
+    IGetUserCreditPackagesUseCase: Symbol.for('IGetUserCreditPackagesUseCase'),
+    IPurchaseCreditPackageUseCase: Symbol.for('IPurchaseCreditPackageUseCase'),
+    IGetCreditTransactionsUseCase: Symbol.for('IGetCreditTransactionsUseCase'),
+    CreditController: Symbol.for('CreditController'),
+    CreditRoutes: Symbol.for('CreditRoutes'),
 };
 //# sourceMappingURL=types.js.map

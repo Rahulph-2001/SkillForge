@@ -18,6 +18,7 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 const messages_1 = require("../../../config/messages");
+const ListSubscriptionPlansRequestDTO_1 = require("../../dto/subscription/ListSubscriptionPlansRequestDTO");
 let ListSubscriptionPlansUseCase = class ListSubscriptionPlansUseCase {
     constructor(userRepository, subscriptionPlanRepository, subscriptionPlanMapper) {
         this.userRepository = userRepository;
@@ -25,16 +26,24 @@ let ListSubscriptionPlansUseCase = class ListSubscriptionPlansUseCase {
         this.subscriptionPlanMapper = subscriptionPlanMapper;
     }
     async execute(request) {
-        // Verify admin privileges
-        const adminUser = await this.userRepository.findById(request.adminUserId);
+        const validatedRequest = ListSubscriptionPlansRequestDTO_1.ListSubscriptionPlansRequestSchema.parse(request);
+        const adminUser = await this.userRepository.findById(validatedRequest.adminUserId);
         if (!adminUser || adminUser.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
         }
-        // Fetch all plans
-        const plans = await this.subscriptionPlanRepository.findAll();
+        const result = await this.subscriptionPlanRepository.findWithPagination({
+            page: validatedRequest.page,
+            limit: validatedRequest.limit,
+            isActive: validatedRequest.isActive,
+        });
         return {
-            plans: plans.map(plan => this.subscriptionPlanMapper.toDTO(plan)),
-            total: plans.length,
+            plans: result.plans.map(plan => this.subscriptionPlanMapper.toDTO(plan)),
+            total: result.total,
+            page: result.page,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            hasNextPage: result.page < result.totalPages,
+            hasPreviousPage: result.page > 1,
         };
     }
 };

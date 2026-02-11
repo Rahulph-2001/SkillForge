@@ -16,9 +16,10 @@ exports.AdminReportController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 let AdminReportController = class AdminReportController {
-    constructor(listReportsUseCase, manageReportUseCase) {
+    constructor(listReportsUseCase, manageReportUseCase, paginationService) {
         this.listReportsUseCase = listReportsUseCase;
         this.manageReportUseCase = manageReportUseCase;
+        this.paginationService = paginationService;
     }
     async listReports(req, res, next) {
         try {
@@ -27,8 +28,10 @@ let AdminReportController = class AdminReportController {
             const status = req.query.status;
             const type = req.query.type;
             const projectId = req.query.projectId;
-            const result = await this.listReportsUseCase.execute(page, limit, { status, type, projectId });
-            res.json(result);
+            const paginationParams = this.paginationService.validatePaginationParams(page, limit);
+            const result = await this.listReportsUseCase.execute(paginationParams.page, paginationParams.limit, { status, type, projectId });
+            const paginationResult = this.paginationService.createResult(result.reports, result.total, paginationParams.page, paginationParams.limit);
+            res.json(paginationResult);
         }
         catch (error) {
             next(error);
@@ -52,6 +55,7 @@ exports.AdminReportController = AdminReportController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IAdminListReportsUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IAdminManageReportUseCase)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], AdminReportController);
 //# sourceMappingURL=AdminReportController.js.map

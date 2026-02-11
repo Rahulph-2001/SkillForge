@@ -16,13 +16,12 @@ exports.SkillTemplateController = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
-const messages_1 = require("../../../config/messages");
 let SkillTemplateController = class SkillTemplateController {
-    constructor(createSkillTemplateUseCase, listSkillTemplatesUseCase, updateSkillTemplateUseCase, deleteSkillTemplateUseCase, toggleSkillTemplateStatusUseCase, responseBuilder) {
+    constructor(createSkillTemplateUseCase, listSkillTemplatesUseCase, getSkillTemplateByIdUseCase, updateSkillTemplateUseCase, toggleSkillTemplateStatusUseCase, responseBuilder) {
         this.createSkillTemplateUseCase = createSkillTemplateUseCase;
         this.listSkillTemplatesUseCase = listSkillTemplatesUseCase;
+        this.getSkillTemplateByIdUseCase = getSkillTemplateByIdUseCase;
         this.updateSkillTemplateUseCase = updateSkillTemplateUseCase;
-        this.deleteSkillTemplateUseCase = deleteSkillTemplateUseCase;
         this.toggleSkillTemplateStatusUseCase = toggleSkillTemplateStatusUseCase;
         this.responseBuilder = responseBuilder;
     }
@@ -49,8 +48,29 @@ let SkillTemplateController = class SkillTemplateController {
     async list(req, res, next) {
         try {
             const adminUserId = req.user.userId;
-            const templates = await this.listSkillTemplatesUseCase.execute(adminUserId);
-            const response = this.responseBuilder.success(templates.map(t => t.toJSON()), 'Skill templates retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            const page = req.query.page ? parseInt(req.query.page) : 1;
+            const limit = req.query.limit ? parseInt(req.query.limits) : 10;
+            const search = req.query.search;
+            const category = req.query.category;
+            const status = req.query.status;
+            const result = await this.listSkillTemplatesUseCase.execute(adminUserId, page, limit, search, category, status);
+            const resposne = this.responseBuilder.success(result, 'Skill templates retrieves successfully', HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(resposne.statusCode).json(resposne.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    /**
+     * GET /api/v1/admin/skill-templates/:id
+     * Get a single skill template by ID
+     */
+    async getById(req, res, next) {
+        try {
+            const adminUserId = req.user.userId;
+            const templateId = req.params.id;
+            const template = await this.getSkillTemplateByIdUseCase.execute(adminUserId, templateId);
+            const response = this.responseBuilder.success(template.toJSON(), 'Skill template retrieved successfully', HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -68,22 +88,6 @@ let SkillTemplateController = class SkillTemplateController {
             const dto = req.body;
             const template = await this.updateSkillTemplateUseCase.execute(adminUserId, templateId, dto);
             const response = this.responseBuilder.success(template.toJSON(), 'Skill template updated successfully', HttpStatusCode_1.HttpStatusCode.OK);
-            res.status(response.statusCode).json(response.body);
-        }
-        catch (error) {
-            next(error);
-        }
-    }
-    /**
-     * DELETE /api/v1/admin/skill-templates/:id
-     * Delete (soft delete) a skill template
-     */
-    async delete(req, res, next) {
-        try {
-            const adminUserId = req.user.userId;
-            const templateId = req.params.id;
-            await this.deleteSkillTemplateUseCase.execute(adminUserId, templateId);
-            const response = this.responseBuilder.success({ message: messages_1.SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED }, messages_1.SUCCESS_MESSAGES.TEMPLATE.SKILL_DELETED, HttpStatusCode_1.HttpStatusCode.OK);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
@@ -126,8 +130,8 @@ exports.SkillTemplateController = SkillTemplateController = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ICreateSkillTemplateUseCase)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IListSkillTemplatesUseCase)),
-    __param(2, (0, inversify_1.inject)(types_1.TYPES.IUpdateSkillTemplateUseCase)),
-    __param(3, (0, inversify_1.inject)(types_1.TYPES.IDeleteSkillTemplateUseCase)),
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetSkillTemplateByIdUseCase)),
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IUpdateSkillTemplateUseCase)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IToggleSkillTemplateStatusUseCase)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])

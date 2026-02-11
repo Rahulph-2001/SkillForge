@@ -49,12 +49,30 @@ let SkillTemplateRepository = class SkillTemplateRepository extends BaseReposito
         });
         return template ? this.toDomain(template) : null;
     }
-    async findAll() {
-        const templates = await this.prisma.skillTemplate.findMany({
-            where: { isActive: true },
-            orderBy: { createdAt: 'desc' },
-        });
-        return templates.map((t) => this.toDomain(t));
+    async findWithPagination(filters, pagination) {
+        const where = {};
+        if (filters.search) {
+            where.title = { contains: filters.search, mode: 'insensitive' };
+        }
+        if (filters.category && filters.category !== 'All') {
+            where.category = filters.category;
+        }
+        if (filters.status && filters.status !== 'All Status') {
+            where.status = filters.status;
+        }
+        const [templates, total] = await Promise.all([
+            this.prisma.skillTemplate.findMany({
+                where,
+                skip: pagination.skip,
+                take: pagination.take,
+                orderBy: { createdAt: 'desc' },
+            }),
+            this.prisma.skillTemplate.count({ where }),
+        ]);
+        return {
+            templates: templates.map((t) => this.toDomain(t)),
+            total,
+        };
     }
     async findByCategory(category) {
         const templates = await this.prisma.skillTemplate.findMany({

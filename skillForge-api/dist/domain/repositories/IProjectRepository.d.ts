@@ -6,6 +6,7 @@ export interface ListProjectsFilters {
     clientId?: string;
     page?: number;
     limit?: number;
+    isSuspended?: boolean;
 }
 export interface ListProjectsResult {
     projects: Project[];

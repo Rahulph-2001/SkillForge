@@ -1,0 +1,204 @@
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import {
+    ArrowLeft,
+    CreditCard
+} from 'lucide-react';
+import {
+    FaWallet,
+    FaArrowUp,
+    FaArrowDown,
+    FaPlus
+} from 'react-icons/fa';
+import TransactionList from '../../components/credits/TransactionList';
+import BuyCreditsModal from '../../components/credits/BuyCreditsModal';
+import creditService from '../../services/creditService';
+import { toast } from 'react-hot-toast';
+
+const CreditManagementPage: React.FC = () => {
+    const [activeTab, setActiveTab] = useState<'all' | 'purchases' | 'earned' | 'spent'>('all');
+    const [isBuyModalOpen, setIsBuyModalOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [stats, setStats] = useState({
+        balance: 0,
+        earned: 0,
+        spent: 0
+    });
+    const [refreshKey, setRefreshKey] = useState(0); // To trigger re-fetch
+
+    const fetchCreditData = useCallback(async () => {
+        try {
+            setLoading(true);
+            const data = await creditService.getTransactions({ limit: 1 });
+            if (data.stats) {
+                setStats({
+                    balance: data.stats.totalEarned - data.stats.totalSpent + data.stats.totalPurchased,
+                    earned: data.stats.totalEarned,
+                    spent: data.stats.totalSpent
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch credit data', error);
+            toast.error('Failed to load credit data');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        fetchCreditData();
+    }, [fetchCreditData, refreshKey]);
+
+    const handlePurchaseSuccess = () => {
+        setRefreshKey(prev => prev + 1);
+    };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-gray-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-5xl mx-auto">
+                {/* Header */}
+                <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div>
+                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors">
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to Dashboard
+                        </Link>
+                        <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <CreditCard className="w-6 h-6 text-indigo-600" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-bold text-indigo-900">Credit Management</h1>
+                                <p className="text-gray-600">Track and manage your platform credits</p>
+                            </div>
+                        </div>
+                    </div>
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setIsBuyModalOpen(true)}
+                        className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-indigo-700 hover:shadow-xl transition-all"
+                    >
+                        <FaPlus className="text-sm" />
+                        Buy Credits
+                    </motion.button>
+                </div>
+
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    {/* Current Balance Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden"
+                    >
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                            <FaWallet className="w-24 h-24" />
+                        </div>
+                        <div className="flex items-center gap-2 mb-4">
+                            <CreditCard className="w-5 h-5 opacity-80" />
+                            <span className="text-sm opacity-80 font-medium">Available Balance</span>
+                        </div>
+                        <div className="text-4xl font-bold mb-2">
+                            {stats.balance}
+                        </div>
+                        <p className="text-sm opacity-80">Credits available for use</p>
+                    </motion.div>
+
+                    {/* Total Earned Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1 }}
+                        className="bg-white rounded-xl p-6 shadow border border-gray-200"
+                    >
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-green-100 rounded-lg">
+                                <FaArrowUp className="w-5 h-5 text-green-600" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-600">Total Earned</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 mt-2">
+                            {stats.earned} <span className="text-sm font-normal text-gray-500">Credits</span>
+                        </div>
+                        <div className="mt-2 text-xs text-green-600 font-medium">
+                            + Lifetime Earnings
+                        </div>
+                    </motion.div>
+
+                    {/* Total Spent Card */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="bg-white rounded-xl p-6 shadow border border-gray-200"
+                    >
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="p-2 bg-red-100 rounded-lg">
+                                <FaArrowDown className="w-5 h-5 text-red-600" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-600">Total Spent</span>
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 mt-2">
+                            {stats.spent} <span className="text-sm font-normal text-gray-500">Credits</span>
+                        </div>
+                        <div className="mt-2 text-xs text-red-600 font-medium">
+                            - Lifetime Spending
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Transaction History Section */}
+                <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
+                    <div className="p-6 border-b border-gray-200">
+                        <div className="flex items-center gap-2 mb-1">
+                            <div className="p-1.5 bg-gray-100 rounded-md">
+                                <FaWallet className="w-4 h-4 text-gray-600" />
+                            </div>
+                            <h3 className="font-semibold text-gray-900">Transaction History</h3>
+                        </div>
+                        <p className="text-sm text-gray-600">View detailed history of your credit transactions</p>
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="flex border-b border-gray-200 bg-gray-50/50">
+                        {(['all', 'purchases', 'earned', 'spent'] as const).map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab)}
+                                className={`flex-1 py-3 text-sm font-medium capitalize transition-colors border-b-2 ${activeTab === tab
+                                    ? 'text-indigo-600 border-indigo-600 bg-indigo-50/50'
+                                    : 'text-gray-600 border-transparent hover:text-gray-900 hover:bg-gray-50'
+                                    }`}
+                            >
+                                {tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Content */}
+                    <div className="min-h-[300px]">
+                        <TransactionList filter={activeTab} key={activeTab} />
+                    </div>
+                </div>
+
+                <BuyCreditsModal
+                    isOpen={isBuyModalOpen}
+                    onClose={() => setIsBuyModalOpen(false)}
+                    onPurchaseSuccess={handlePurchaseSuccess}
+                />
+            </div>
+        </div>
+    );
+};
+
+export default CreditManagementPage;

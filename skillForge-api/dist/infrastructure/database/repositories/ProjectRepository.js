@@ -187,6 +187,9 @@ let ProjectRepository = class ProjectRepository extends BaseRepository_1.BaseRep
         if (filters.status) {
             where.status = this.mapToPrismaStatus(filters.status);
         }
+        if (typeof filters.isSuspended === 'boolean') {
+            where.isSuspended = filters.isSuspended;
+        }
         // Get total count
         const total = await this.prisma.project.count({ where });
         // Get projects

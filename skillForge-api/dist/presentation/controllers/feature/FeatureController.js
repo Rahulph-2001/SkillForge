@@ -25,10 +25,6 @@ let FeatureController = class FeatureController {
         this.deleteFeatureUseCase = deleteFeatureUseCase;
         this.responseBuilder = responseBuilder;
     }
-    /**
-     * POST /api/v1/admin/features
-     * Create a new feature
-     */
     async createFeature(req, res, next) {
         try {
             const dto = req.body;
@@ -40,26 +36,21 @@ let FeatureController = class FeatureController {
             next(error);
         }
     }
-    /**
-     * GET /api/v1/admin/features
-     * List all features (optionally filtered by planId)
-     */
     async listFeatures(req, res, next) {
         try {
             const planId = req.query.planId;
             const highlightedOnly = req.query.highlightedOnly === 'true';
-            const features = await this.listFeaturesUseCase.execute(planId, highlightedOnly);
-            const response = this.responseBuilder.success(features, messages_1.SUCCESS_MESSAGES.FEATURE.FETCHED);
+            const page = req.query.page ? parseInt(req.query.page) : undefined;
+            const limit = req.query.limit ? parseInt(req.query.limit) : undefined;
+            const search = req.query.search;
+            const result = await this.listFeaturesUseCase.execute(page, limit, search, planId, highlightedOnly);
+            const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.FEATURE.FETCHED);
             res.status(response.statusCode).json(response.body);
         }
         catch (error) {
             next(error);
         }
     }
-    /**
-     * GET /api/v1/admin/features/:id
-     * Get feature by ID
-     */
     async getFeature(req, res, next) {
         try {
             const featureId = req.params.id;

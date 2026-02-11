@@ -18,6 +18,8 @@ export declare const BrowseSkillDTOSchema: z.ZodObject<{
         id: z.ZodString;
         name: z.ZodString;
         email: z.ZodString;
+        avatarUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+        reviewCount: z.ZodOptional<z.ZodNumber>;
     }, z.core.$strip>;
     availableDays: z.ZodArray<z.ZodString>;
 }, z.core.$strip>;
@@ -42,6 +44,8 @@ export declare const BrowseSkillsResponseDTOSchema: z.ZodObject<{
             id: z.ZodString;
             name: z.ZodString;
             email: z.ZodString;
+            avatarUrl: z.ZodOptional<z.ZodNullable<z.ZodString>>;
+            reviewCount: z.ZodOptional<z.ZodNumber>;
         }, z.core.$strip>;
         availableDays: z.ZodArray<z.ZodString>;
     }, z.core.$strip>>;

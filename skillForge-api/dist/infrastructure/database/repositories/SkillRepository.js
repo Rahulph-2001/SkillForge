@@ -154,6 +154,62 @@ let SkillRepository = class SkillRepository extends BaseRepository_1.BaseReposit
             totalPages: Math.ceil(total / limit),
         };
     }
+    async findAllAdminWithPagination(filters) {
+        const page = filters.page || 1;
+        const limit = filters.limit || 10;
+        const skip = (page - 1) * limit;
+        const where = {
+            isDeleted: false,
+        };
+        // Status filter
+        if (filters.status) {
+            where.status = filters.status;
+        }
+        // Blocked filter
+        if (filters.isBlocked !== undefined) {
+            where.isAdminBlocked = filters.isBlocked;
+        }
+        // Search filter
+        if (filters.search) {
+            where.OR = [
+                { title: { contains: filters.search, mode: 'insensitive' } },
+                { category: { contains: filters.search, mode: 'insensitive' } },
+                {
+                    provider: {
+                        OR: [
+                            { name: { contains: filters.search, mode: 'insensitive' } },
+                            { email: { contains: filters.search, mode: 'insensitive' } }
+                        ]
+                    }
+                }
+            ];
+        }
+        const [skills, total] = await Promise.all([
+            this.prisma.skill.findMany({
+                where,
+                skip,
+                take: limit,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    provider: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true
+                        }
+                    }
+                }
+            }),
+            this.prisma.skill.count({ where }),
+        ]);
+        return {
+            skills: skills.map((s) => this.toDomain(s)),
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
     async findByProviderIdAndStatus(providerId, status) {
         const skills = await this.prisma.skill.findMany({
             where: {

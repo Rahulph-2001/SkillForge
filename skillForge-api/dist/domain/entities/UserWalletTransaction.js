@@ -4,9 +4,12 @@ exports.UserWalletTransaction = exports.UserWalletTransactionStatus = exports.Us
 var UserWalletTransactionType;
 (function (UserWalletTransactionType) {
     UserWalletTransactionType["PROJECT_EARNING"] = "PROJECT_EARNING";
+    UserWalletTransactionType["SESSION_EARNING"] = "SESSION_EARNING";
+    UserWalletTransactionType["SESSION_PAYMENT"] = "SESSION_PAYMENT";
     UserWalletTransactionType["CREDIT_REDEMPTION"] = "CREDIT_REDEMPTION";
     UserWalletTransactionType["WITHDRAWAL"] = "WITHDRAWAL";
     UserWalletTransactionType["REFUND"] = "REFUND";
+    UserWalletTransactionType["CREDIT_PURCHASE"] = "CREDIT_PURCHASE";
 })(UserWalletTransactionType || (exports.UserWalletTransactionType = UserWalletTransactionType = {}));
 var UserWalletTransactionStatus;
 (function (UserWalletTransactionStatus) {

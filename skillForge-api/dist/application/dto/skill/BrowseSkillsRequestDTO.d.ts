@@ -13,9 +13,9 @@ export declare const BrowseSkillsRequestSchema: z.ZodObject<{
     page: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
     limit: z.ZodDefault<z.ZodOptional<z.ZodNumber>>;
     sortBy: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
-        rating: "rating";
-        createdAt: "createdAt";
         credits: "credits";
+        createdAt: "createdAt";
+        rating: "rating";
     }>>>;
     sortOrder: z.ZodDefault<z.ZodOptional<z.ZodEnum<{
         asc: "asc";

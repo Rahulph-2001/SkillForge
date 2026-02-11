@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetCreditTransactionsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/credit/interfaaces/IGetCreditTransactionsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,+BAA+B,EAAE,gCAAgC,EAAE,MAAM,8CAA8C,CAAC;AAEjI,MAAM,WAAW,6BAA6B;IAC1C,OAAO,CAAC,OAAO,EAAE,+BAA+B,GAAG,OAAO,CAAC,gCAAgC,CAAC,CAAC;CAChG"}

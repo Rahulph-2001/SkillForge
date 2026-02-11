@@ -32,7 +32,8 @@ let AdminSkillRoutes = class AdminSkillRoutes {
         this.router.get(routes_1.ENDPOINTS.ADMIN_SKILL.PENDING, this.adminSkillController.listPending);
         this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.APPROVE, this.adminSkillController.approve);
         this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.REJECT, this.adminSkillController.reject);
-        this.router.get(routes_1.ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.getAllSkills);
+        // List all skills with pagination and filters
+        this.router.get(routes_1.ENDPOINTS.ADMIN_SKILL.ROOT, this.adminSkillController.listSkills);
         this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.BLOCK, this.adminSkillController.blockSkill);
         this.router.post(routes_1.ENDPOINTS.ADMIN_SKILL.UNBLOCK, this.adminSkillController.unblockSkill);
     }

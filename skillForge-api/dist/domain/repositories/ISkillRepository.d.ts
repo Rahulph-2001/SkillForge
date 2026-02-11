@@ -41,6 +41,19 @@ export interface ISkillRepository {
         skills: Skill[];
         total: number;
     }>;
+    findAllAdminWithPagination(filters: {
+        page: number;
+        limit: number;
+        search?: string;
+        status?: 'in-review' | 'approved' | 'rejected';
+        isBlocked?: boolean;
+    }): Promise<{
+        skills: Skill[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     update(skill: Skill): Promise<Skill>;
 }
 //# sourceMappingURL=ISkillRepository.d.ts.map

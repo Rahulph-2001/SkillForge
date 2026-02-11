@@ -6,4 +6,5 @@ export interface ICreditPackageRepository {
   findPackages(filters?: { isActive?: boolean }, skip?: number, take?: number): Promise<{ data: CreditPackage[], total: number }>;
   update(entity: CreditPackage): Promise<CreditPackage>;
   delete(id: string): Promise<void>;
+  findActivePackages(): Promise<CreditPackage[]>
 }

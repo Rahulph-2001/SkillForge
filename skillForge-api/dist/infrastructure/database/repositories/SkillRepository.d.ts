@@ -22,6 +22,19 @@ export declare class SkillRepository extends BaseRepository<Skill> implements IS
         limit: number;
         totalPages: number;
     }>;
+    findAllAdminWithPagination(filters: {
+        page: number;
+        limit: number;
+        search?: string;
+        status?: 'in-review' | 'approved' | 'rejected';
+        isBlocked?: boolean;
+    }): Promise<{
+        skills: Skill[];
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+    }>;
     findByProviderIdAndStatus(providerId: string, status: string): Promise<Skill[]>;
     findAll(): Promise<Skill[]>;
     create(skill: Skill): Promise<Skill>;

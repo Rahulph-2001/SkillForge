@@ -144,6 +144,12 @@ export declare const SUCCESS_MESSAGES: {
         readonly ALL_MARKED_READ: "All notifications marked as read";
         readonly DELETED: "Notification deleted successfully";
     };
+    readonly CREDITS: {
+        readonly PACKAGE_CREATED: "Credit package created successfully";
+        readonly PACKAGES_FETCHED: "Credit packages retrieved successfully";
+        readonly PACKAGE_UPDATED: "Credit package updated successfully";
+        readonly PACKAGE_DELETED: "Credit package deleted successfully";
+    };
 };
 export declare const ERROR_MESSAGES: {
     readonly AUTH: {
@@ -277,6 +283,9 @@ export declare const ERROR_MESSAGES: {
     };
     readonly VALIDATION: {
         readonly VALIDATION_ERROR: "VALIDATION_ERROR";
+    };
+    readonly CREDITS: {
+        readonly PACKAGE_NOT_FOUND: "Credit package not found";
     };
 };
 export declare const API_MESSAGES: {

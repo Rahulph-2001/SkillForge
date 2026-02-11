@@ -50,6 +50,7 @@ import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
 import SessionVideoCallPage from '../pages/user/SessionVideoCallPage';
 import InterviewVideoCallPage from '../pages/user/InterviewVideoCallPage';
 import WalletPage from '../pages/user/WalletPage';
+import CreditManagementPage from '../pages/user/CreditManagementPage';
 import NotificationsPage from '@/pages/user/NotificationsPage';
 
 const AppRoutes = () => {
@@ -270,6 +271,14 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
                             <WalletPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/credits"
+                    element={
+                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                            <CreditManagementPage />
                         </ProtectedRoute>
                     }
                 />

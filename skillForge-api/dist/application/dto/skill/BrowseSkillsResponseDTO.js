@@ -21,6 +21,8 @@ exports.BrowseSkillDTOSchema = zod_1.z.object({
         id: zod_1.z.string().uuid('Invalid provider ID'),
         name: zod_1.z.string().min(1, 'Provider name is required'),
         email: zod_1.z.string().email('Invalid email address'),
+        avatarUrl: zod_1.z.string().nullable().optional(),
+        reviewCount: zod_1.z.number().int().min(0).optional(),
     }),
     availableDays: zod_1.z.array(zod_1.z.string()),
 });

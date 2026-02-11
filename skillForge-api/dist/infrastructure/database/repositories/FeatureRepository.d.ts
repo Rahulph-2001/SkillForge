@@ -11,6 +11,15 @@ export declare class PrismaFeatureRepository extends BaseRepository<Feature> imp
     delete(id: string): Promise<void>;
     reorderFeatures(planId: string, featureIds: string[]): Promise<void>;
     findHighlightedByPlanId(planId: string): Promise<Feature[]>;
-    findLibraryFeatures(): Promise<Feature[]>;
+    findLibraryFeatures(filters: {
+        search?: string;
+        isEnabled?: boolean;
+    }, pagination: {
+        skip: number;
+        take: number;
+    }): Promise<{
+        features: Feature[];
+        total: number;
+    }>;
 }
 //# sourceMappingURL=FeatureRepository.d.ts.map

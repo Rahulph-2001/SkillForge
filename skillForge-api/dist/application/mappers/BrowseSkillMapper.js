@@ -39,12 +39,14 @@ let BrowseSkillMapper = class BrowseSkillMapper {
             creditsPerHour: skill.creditsPerHour,
             imageUrl: skill.imageUrl,
             tags: skill.tags,
-            rating: skill.rating,
+            rating: Number(skill.rating),
             totalSessions: skill.totalSessions,
             provider: {
                 id: provider.id,
                 name: provider.name,
                 email: provider.email.value,
+                avatarUrl: provider.avatarUrl,
+                reviewCount: provider.reviewCount,
             },
             availableDays
         };

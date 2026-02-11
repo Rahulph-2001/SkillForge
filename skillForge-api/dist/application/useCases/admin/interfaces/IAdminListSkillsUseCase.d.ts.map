@@ -1,0 +1,1 @@
+{"version":3,"file":"IAdminListSkillsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IAdminListSkillsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,8CAA8C,CAAC;AACzF,OAAO,EAAE,0BAA0B,EAAE,MAAM,+CAA+C,CAAC;AAE3F,MAAM,WAAW,uBAAuB;IACpC,OAAO,CAAC,OAAO,EAAE,yBAAyB,GAAG,OAAO,CAAC,0BAA0B,CAAC,CAAC;CACpF"}

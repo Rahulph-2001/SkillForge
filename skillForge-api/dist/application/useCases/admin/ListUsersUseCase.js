@@ -18,22 +18,41 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 const messages_1 = require("../../../config/messages");
+const ListUsersRequestDTO_1 = require("../../dto/admin/ListUsersRequestDTO");
 let ListUsersUseCase = class ListUsersUseCase {
-    constructor(userRepository, userMapper) {
+    constructor(userRepository, userMapper, paginationService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.paginationService = paginationService;
     }
     async execute(request) {
+        // Validate request
+        const validatedRequest = ListUsersRequestDTO_1.ListUsersRequestDTOSchema.parse(request);
         // Verify admin user
-        const adminUser = await this.userRepository.findById(request.adminUserId);
+        const adminUser = await this.userRepository.findById(validatedRequest.adminUserId);
         if (!adminUser || adminUser.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.ForbiddenError(messages_1.ERROR_MESSAGES.ADMIN.ACCESS_REQUIRED);
         }
-        // Get all users
-        const users = await this.userRepository.findAll();
+        // Create pagination params
+        const paginationParams = this.paginationService.createParams(validatedRequest.page, validatedRequest.limit);
+        // Get paginated users
+        const { users, total } = await this.userRepository.findWithPagination({
+            search: validatedRequest.search,
+            role: validatedRequest.role,
+            isActive: validatedRequest.isActive
+        }, paginationParams);
+        // Create pagination result
+        const paginationResult = this.paginationService.createResult(users, total, validatedRequest.page, validatedRequest.limit);
         return {
             users: users.map(user => this.userMapper.toDTO(user)),
-            total: users.length
+            pagination: {
+                total: paginationResult.total,
+                page: paginationResult.page,
+                limit: paginationResult.limit,
+                totalPages: paginationResult.totalPages,
+                hasNextPage: paginationResult.hasNextPage,
+                hasPreviousPage: paginationResult.hasPreviousPage,
+            }
         };
     }
 };
@@ -42,6 +61,7 @@ exports.ListUsersUseCase = ListUsersUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IAdminUserDTOMapper)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], ListUsersUseCase);
 //# sourceMappingURL=ListUsersUseCase.js.map

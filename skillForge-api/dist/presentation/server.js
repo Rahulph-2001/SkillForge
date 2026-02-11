@@ -58,8 +58,10 @@ const ReportRoutes_1 = require("./routes/ReportRoutes");
 const AdminReportRoutes_1 = require("./routes/admin/AdminReportRoutes");
 const ProjectMessageRoutes_1 = require("./routes/project/ProjectMessageRoutes");
 const notificationRoutes_1 = require("./routes/notification/notificationRoutes");
+const CreditPackageRoutes_1 = require("./routes/credit/CreditPackageRoutes");
+const CreditRoutes_1 = require("./routes/credit/CreditRoutes");
 let App = class App {
-    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, walletRoutes, reportRoutes, adminReportRoutes, projectMessageRoutes, passportService, notificationRoutes) {
+    constructor(authRoutes, adminRoutes, publicSubscriptionRoutes, skillRoutes, browseSkillsRoutes, skillTemplateRoutes, publicSkillTemplateRoutes, templateQuestionRoutes, mcqTestRoutes, adminSkillRoutes, bookingRoutes, userProfileRoutes, mcqImportRoutes, availabilityRoutes, communityRoutes, paymentRoutes, userSubscriptionRoutes, projectRoutes, adminWalletRoutes, adminSessionRoutes, videoCallRoutes, reviewRoutes, projectApplicationRoutes, interviewRoutes, walletRoutes, reportRoutes, adminReportRoutes, projectMessageRoutes, passportService, notificationRoutes, creditPackageRoutes, creditRoutes) {
         this.authRoutes = authRoutes;
         this.adminRoutes = adminRoutes;
         this.publicSubscriptionRoutes = publicSubscriptionRoutes;
@@ -90,6 +92,8 @@ let App = class App {
         this.projectMessageRoutes = projectMessageRoutes;
         this.passportService = passportService;
         this.notificationRoutes = notificationRoutes;
+        this.creditPackageRoutes = creditPackageRoutes;
+        this.creditRoutes = creditRoutes;
         this.app = (0, express_1.default)();
         this.setupMiddlewares();
         this.setupRoutes();
@@ -156,6 +160,7 @@ let App = class App {
         // Payments & Wallet
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.PAYMENTS}`, this.paymentRoutes.getRouter());
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.WALLET}`, this.walletRoutes.router);
+        this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.CREDITS}`, this.creditRoutes.router);
         // Reviews & Reports
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.REVIEWS}`, this.reviewRoutes.router);
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.REPORTS}`, this.reportRoutes.router);
@@ -171,6 +176,7 @@ let App = class App {
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.SESSIONS}`, this.adminSessionRoutes.router);
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.REPORTS}`, this.adminReportRoutes.router);
         this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.NOTIFICATIONS}`, this.notificationRoutes.router);
+        this.app.use(`${routes_1.API_PREFIX}${routes_1.ROUTES.ADMIN.CREDIT_PACKAGES}`, this.creditPackageRoutes.router);
         // 404 Handler
         this.app.all('*', errorHandler_1.notFoundHandler);
     }
@@ -214,6 +220,8 @@ exports.App = App = __decorate([
     __param(27, (0, inversify_1.inject)(types_1.TYPES.ProjectMessageRoutes)),
     __param(28, (0, inversify_1.inject)(types_1.TYPES.IPassportService)),
     __param(29, (0, inversify_1.inject)(types_1.TYPES.NotificationRoutes)),
+    __param(30, (0, inversify_1.inject)(types_1.TYPES.CreditPackageRoutes)),
+    __param(31, (0, inversify_1.inject)(types_1.TYPES.CreditRoutes)),
     __metadata("design:paramtypes", [authRoutes_1.AuthRoutes,
         adminRoutes_1.AdminRoutes,
         publicSubscriptionRoutes_1.PublicSubscriptionRoutes,
@@ -241,6 +249,8 @@ exports.App = App = __decorate([
         walletRoutes_1.WalletRoutes,
         ReportRoutes_1.ReportRoutes,
         AdminReportRoutes_1.AdminReportRoutes,
-        ProjectMessageRoutes_1.ProjectMessageRoutes, Object, notificationRoutes_1.NotificationRoutes])
+        ProjectMessageRoutes_1.ProjectMessageRoutes, Object, notificationRoutes_1.NotificationRoutes,
+        CreditPackageRoutes_1.CreditPackageRoutes,
+        CreditRoutes_1.CreditRoutes])
 ], App);
 //# sourceMappingURL=server.js.map

@@ -16,25 +16,39 @@ exports.ListFeaturesUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 let ListFeaturesUseCase = class ListFeaturesUseCase {
-    constructor(featureRepository, featureMapper) {
+    constructor(featureRepository, featureMapper, paginationService) {
         this.featureRepository = featureRepository;
         this.featureMapper = featureMapper;
+        this.paginationService = paginationService;
     }
-    async execute(planId, highlightedOnly = false) {
-        let features;
+    async execute(page, limit, search, planId, highlightedOnly = false) {
+        // If planId is provided, use old non-paginated approach
         if (planId) {
+            let features;
             if (highlightedOnly) {
                 features = await this.featureRepository.findHighlightedByPlanId(planId);
             }
             else {
                 features = await this.featureRepository.findByPlanId(planId);
             }
+            return this.featureMapper.toDTOArray(features);
         }
-        else {
-            // Fetch library features (master features)
-            features = await this.featureRepository.findLibraryFeatures();
-        }
-        return this.featureMapper.toDTOArray(features);
+        // For library features, use pagination
+        const paginationParams = this.paginationService.createParams(page || 1, limit || 10);
+        const { features, total } = await this.featureRepository.findLibraryFeatures({ search }, paginationParams);
+        const featureDTOs = this.featureMapper.toDTOArray(features);
+        const paginationResult = this.paginationService.createResult(featureDTOs, total, page || 1, limit || 10);
+        return {
+            features: featureDTOs,
+            pagination: {
+                total: paginationResult.total,
+                page: paginationResult.page,
+                limit: paginationResult.limit,
+                totalPages: paginationResult.totalPages,
+                hasNextPage: paginationResult.hasNextPage,
+                hasPreviousPage: paginationResult.hasPreviousPage,
+            },
+        };
     }
 };
 exports.ListFeaturesUseCase = ListFeaturesUseCase;
@@ -42,6 +56,7 @@ exports.ListFeaturesUseCase = ListFeaturesUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IFeatureRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IFeatureMapper)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], ListFeaturesUseCase);
 //# sourceMappingURL=ListFeaturesUseCase.js.map

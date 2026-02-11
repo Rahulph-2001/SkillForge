@@ -1,8 +1,11 @@
 export declare enum UserWalletTransactionType {
     PROJECT_EARNING = "PROJECT_EARNING",
+    SESSION_EARNING = "SESSION_EARNING",
+    SESSION_PAYMENT = "SESSION_PAYMENT",
     CREDIT_REDEMPTION = "CREDIT_REDEMPTION",
     WITHDRAWAL = "WITHDRAWAL",
-    REFUND = "REFUND"
+    REFUND = "REFUND",
+    CREDIT_PURCHASE = "CREDIT_PURCHASE"
 }
 export declare enum UserWalletTransactionStatus {
     COMPLETED = "COMPLETED",

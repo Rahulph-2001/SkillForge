@@ -88,14 +88,32 @@ let PrismaFeatureRepository = class PrismaFeatureRepository extends BaseReposito
         });
         return data.map((item) => Feature_1.Feature.fromJSON(item));
     }
-    async findLibraryFeatures() {
-        const data = await this.prisma.feature.findMany({
-            where: {
-                planId: null,
-            },
-            orderBy: { displayOrder: 'asc' },
-        });
-        return data.map((item) => Feature_1.Feature.fromJSON(item));
+    async findLibraryFeatures(filters, pagination) {
+        const where = {
+            planId: null
+        };
+        if (filters.search) {
+            where.OR = [
+                { name: { contains: filters.search, mode: 'insesitive' } },
+                { description: { contains: filters.search, mode: 'insensitive' } }
+            ];
+        }
+        if (typeof filters.isEnabled === 'boolean') {
+            where.isEnabled = filters.isEnabled;
+        }
+        const [feature, total] = await Promise.all([
+            this.prisma.feature.findMany({
+                where,
+                skip: pagination.skip,
+                take: pagination.take,
+                orderBy: { displayOrder: 'asc' }
+            }),
+            this.prisma.feature.count({ where })
+        ]);
+        return {
+            features: feature.map((item) => Feature_1.Feature.fromJSON(item)),
+            total
+        };
     }
 };
 exports.PrismaFeatureRepository = PrismaFeatureRepository;

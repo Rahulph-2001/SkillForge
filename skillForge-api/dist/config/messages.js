@@ -148,6 +148,12 @@ exports.SUCCESS_MESSAGES = {
         ALL_MARKED_READ: 'All notifications marked as read',
         DELETED: 'Notification deleted successfully',
     },
+    CREDITS: {
+        PACKAGE_CREATED: 'Credit package created successfully',
+        PACKAGES_FETCHED: 'Credit packages retrieved successfully',
+        PACKAGE_UPDATED: 'Credit package updated successfully',
+        PACKAGE_DELETED: 'Credit package deleted successfully',
+    },
 };
 exports.ERROR_MESSAGES = {
     AUTH: {
@@ -281,6 +287,9 @@ exports.ERROR_MESSAGES = {
     },
     VALIDATION: {
         VALIDATION_ERROR: 'VALIDATION_ERROR',
+    },
+    CREDITS: {
+        PACKAGE_NOT_FOUND: 'Credit package not found',
     },
 };
 exports.API_MESSAGES = {

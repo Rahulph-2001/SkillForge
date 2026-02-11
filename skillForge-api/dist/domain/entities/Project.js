@@ -185,7 +185,7 @@ class Project {
         this.props.isSuspended = true;
         this.props.suspendedAt = new Date();
         this.props.suspendedReason = reason;
-        this.props.status = ProjectStatus.CANCELLED; // Set status to CANCELLED
+        this.props.status = ProjectStatus.CANCELLED; // Automatically cancel suspended projects
         this.props.updatedAt = new Date();
     }
     toJSON() {

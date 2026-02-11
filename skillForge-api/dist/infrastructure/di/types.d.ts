@@ -93,10 +93,10 @@ export declare const TYPES: {
     ICreateSkillTemplateUseCase: symbol;
     ListSkillTemplatesUseCase: symbol;
     IListSkillTemplatesUseCase: symbol;
+    GetSkillTemplateByIdUseCase: symbol;
+    IGetSkillTemplateByIdUseCase: symbol;
     UpdateSkillTemplateUseCase: symbol;
     IUpdateSkillTemplateUseCase: symbol;
-    DeleteSkillTemplateUseCase: symbol;
-    IDeleteSkillTemplateUseCase: symbol;
     ToggleSkillTemplateStatusUseCase: symbol;
     IToggleSkillTemplateStatusUseCase: symbol;
     SkillTemplateController: symbol;
@@ -130,6 +130,8 @@ export declare const TYPES: {
     GetAllSkillsUseCase: symbol;
     BlockSkillUseCase: symbol;
     UnblockSkillUseCase: symbol;
+    IAdminListSkillsUseCase: symbol;
+    IAdminSkillMapper: symbol;
     AdminSkillController: symbol;
     AdminSkillRoutes: symbol;
     IBookingRepository: symbol;
@@ -381,5 +383,18 @@ export declare const TYPES: {
     IDeleteNotificationUseCase: symbol;
     NotificationController: symbol;
     NotificationRoutes: symbol;
+    ICreditPackageRepository: symbol;
+    ICreateCreditPackageUseCase: symbol;
+    IGetCreditPackagesUseCase: symbol;
+    IUpdateCreditPackageUseCase: symbol;
+    IDeleteCreditPackageUseCase: symbol;
+    ICreditPackageMapper: symbol;
+    CreditPackageController: symbol;
+    CreditPackageRoutes: symbol;
+    IGetUserCreditPackagesUseCase: symbol;
+    IPurchaseCreditPackageUseCase: symbol;
+    IGetCreditTransactionsUseCase: symbol;
+    CreditController: symbol;
+    CreditRoutes: symbol;
 };
 //# sourceMappingURL=types.d.ts.map

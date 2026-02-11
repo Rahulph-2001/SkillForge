@@ -18,20 +18,33 @@ const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
 const UserRole_1 = require("../../../domain/enums/UserRole");
 let ListSkillTemplatesUseCase = class ListSkillTemplatesUseCase {
-    constructor(skillTemplateRepository, userRepository) {
+    constructor(skillTemplateRepository, userRepository, paginationService) {
         this.skillTemplateRepository = skillTemplateRepository;
         this.userRepository = userRepository;
+        this.paginationService = paginationService;
     }
-    async execute(adminUserId) {
+    async execute(adminUserId, page = 1, limit = 10, search, category, status) {
         // Verify admin
         const admin = await this.userRepository.findById(adminUserId);
         if (!admin || admin.role !== UserRole_1.UserRole.ADMIN) {
             throw new AppError_1.UnauthorizedError('Only admins can view skill templates');
         }
-        return await this.skillTemplateRepository.findAll();
+        const paginationParams = this.paginationService.createParams(page, limit);
+        const { templates, total } = await this.skillTemplateRepository.findWithPagination({ search, category, status }, paginationParams);
+        const paginationResult = this.paginationService.createResult(templates, total, page, limit);
+        return {
+            templates,
+            pagination: {
+                total: paginationResult.total,
+                page: paginationResult.page,
+                limit: paginationResult.limit,
+                totalPages: paginationResult.totalPages,
+                hasNextPage: paginationResult.hasNextPage,
+                hasPreviousPage: paginationResult.hasPreviousPage,
+            },
+        };
     }
     async executePublic() {
-        // Public endpoint - only return active templates
         return await this.skillTemplateRepository.findByStatus('Active');
     }
 };
@@ -40,6 +53,7 @@ exports.ListSkillTemplatesUseCase = ListSkillTemplatesUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillTemplateRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IPaginationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], ListSkillTemplatesUseCase);
 //# sourceMappingURL=ListSkillTemplatesUseCase.js.map

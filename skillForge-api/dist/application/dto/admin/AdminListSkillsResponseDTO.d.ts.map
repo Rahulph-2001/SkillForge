@@ -1,0 +1,1 @@
+{"version":3,"file":"AdminListSkillsResponseDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/admin/AdminListSkillsResponseDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAGxB;;GAEG;AACH,eAAO,MAAM,gCAAgC;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;iBAQ3C,CAAC;AAEH,MAAM,MAAM,0BAA0B,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,gCAAgC,CAAC,CAAC"}

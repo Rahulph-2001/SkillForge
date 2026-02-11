@@ -13,20 +13,8 @@ export declare class FeatureController {
     private readonly deleteFeatureUseCase;
     private readonly responseBuilder;
     constructor(createFeatureUseCase: ICreateFeatureUseCase, listFeaturesUseCase: IListFeaturesUseCase, getFeatureByIdUseCase: IGetFeatureByIdUseCase, updateFeatureUseCase: IUpdateFeatureUseCase, deleteFeatureUseCase: IDeleteFeatureUseCase, responseBuilder: IResponseBuilder);
-    /**
-     * POST /api/v1/admin/features
-     * Create a new feature
-     */
     createFeature(req: Request, res: Response, next: NextFunction): Promise<void>;
-    /**
-     * GET /api/v1/admin/features
-     * List all features (optionally filtered by planId)
-     */
     listFeatures(req: Request, res: Response, next: NextFunction): Promise<void>;
-    /**
-     * GET /api/v1/admin/features/:id
-     * Get feature by ID
-     */
     getFeature(req: Request, res: Response, next: NextFunction): Promise<void>;
     /**
      * PUT /api/v1/admin/features/:id

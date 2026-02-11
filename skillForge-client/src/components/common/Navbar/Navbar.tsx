@@ -174,10 +174,13 @@ export default function Navbar() {
                         )}
                     </Link>
 
-                    <div className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-lg border border-amber-100">
+                    <Link
+                        to="/credits"
+                        className="flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-lg border border-amber-100 hover:bg-amber-100 transition-colors cursor-pointer"
+                    >
                         <span className="text-sm font-semibold text-amber-600">{user?.credits || 0}</span>
                         <span className="text-sm text-amber-600/80">credits</span>
-                    </div>
+                    </Link>
 
                     <Link to="/notifications" className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <Bell className="w-5 h-5 text-gray-600 hover:text-blue-600 transition-colors" />
@@ -231,6 +234,17 @@ export default function Navbar() {
                                     >
                                         <User className="w-4 h-4 text-gray-600" />
                                         <span className="text-sm text-gray-700">My Profile</span>
+                                    </Link>
+
+                                    <Link
+                                        to="/credits"
+                                        className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+                                        onClick={() => setShowUserMenu(false)}
+                                    >
+                                        <div className="w-4 h-4 flex items-center justify-center">
+                                            <span className="text-amber-600 font-bold">$</span>
+                                        </div>
+                                        <span className="text-sm text-gray-700">Manage Credits</span>
                                     </Link>
 
                                     <Link
