@@ -15,6 +15,7 @@ import TransactionList from '../../components/credits/TransactionList';
 import BuyCreditsModal from '../../components/credits/BuyCreditsModal';
 import creditService from '../../services/creditService';
 import { toast } from 'react-hot-toast';
+import { useAppSelector } from '../../store/hooks';
 
 const CreditManagementPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'all' | 'purchases' | 'earned' | 'spent'>('all');
@@ -27,13 +28,16 @@ const CreditManagementPage: React.FC = () => {
     });
     const [refreshKey, setRefreshKey] = useState(0); // To trigger re-fetch
 
+    const { user } = useAppSelector((state) => state.auth);
+
     const fetchCreditData = useCallback(async () => {
         try {
             setLoading(true);
+
             const data = await creditService.getTransactions({ limit: 1 });
             if (data.stats) {
                 setStats({
-                    balance: data.stats.totalEarned - data.stats.totalSpent + data.stats.totalPurchased,
+                    balance: user?.credits || 0, // Use actual user credits from Redux store
                     earned: data.stats.totalEarned,
                     spent: data.stats.totalSpent
                 });
@@ -44,7 +48,7 @@ const CreditManagementPage: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, []);
+    }, [user?.credits]);
 
     useEffect(() => {
         fetchCreditData();

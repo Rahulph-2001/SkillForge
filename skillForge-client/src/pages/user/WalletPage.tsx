@@ -105,10 +105,14 @@ const WalletPage = () => {
         switch (type) {
             case 'PROJECT_EARNING':
             case 'SESSION_EARNING':
+            case 'COMMUNITY_EARNING':
             case 'REFUND':
+            case 'CREDIT_PURCHASE':
                 return <ArrowDownLeft className="w-5 h-5 text-green-600" />;
             case 'WITHDRAWAL':
             case 'SESSION_PAYMENT':
+            case 'COMMUNITY_JOIN':
+            case 'PROJECT_PAYMENT':
             case 'CREDIT_REDEMPTION':
                 return <ArrowUpRight className="w-5 h-5 text-red-600" />;
             default:
@@ -119,13 +123,21 @@ const WalletPage = () => {
     const getTransactionLabel = (transaction: WalletTransaction) => {
         switch (transaction.type) {
             case 'PROJECT_EARNING':
+                return transaction.description || 'Project Payment Received';
+            case 'PROJECT_PAYMENT':
                 return transaction.description || 'Project Payment';
             case 'SESSION_EARNING':
                 return transaction.description || 'Session Earnings';
             case 'SESSION_PAYMENT':
                 return transaction.description || 'Session Booking';
+            case 'COMMUNITY_JOIN':
+                return transaction.description || 'Joined Community';
+            case 'COMMUNITY_EARNING':
+                return transaction.description || 'Community Membership Fee';
             case 'CREDIT_REDEMPTION':
                 return 'Credits Redeemed';
+            case 'CREDIT_PURCHASE':
+                return 'Credits Purchased';
             case 'WITHDRAWAL':
                 return `Withdrawn to ${transaction.metadata?.method || 'Bank Account'}`;
             case 'REFUND':
@@ -158,13 +170,25 @@ const WalletPage = () => {
         }
     };
 
-    const formatAmount = (amount: number, type: WalletTransaction['type']) => {
-        const isCredit = type === 'PROJECT_EARNING' || type === 'REFUND' || type === 'SESSION_EARNING';
-        const prefix = isCredit ? '+' : '-';
-        const colorClass = isCredit ? 'text-green-600' : 'text-red-600';
+    const formatAmount = (amount: number, currency: string) => {
+        // Use the actual sign of the amount from the backend
+        // Backend now correctly sets negative amounts for spending/locking credits
+        const isPositive = amount > 0;
+        const absoluteAmount = Math.abs(amount);
+        const prefix = isPositive ? '+' : '-';
+        const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
+
+        // Format based on currency
+        let formattedAmount = '';
+        if (currency === 'CREDITS') {
+            formattedAmount = `${prefix}${absoluteAmount} Credits`;
+        } else {
+            formattedAmount = `${prefix}₹${absoluteAmount.toLocaleString('en-IN')}`;
+        }
+
         return (
             <span className={`font-bold ${colorClass}`}>
-                {prefix}₹{amount.toLocaleString('en-IN')}
+                {formattedAmount}
             </span>
         );
     };
@@ -381,7 +405,7 @@ const WalletPage = () => {
                                         </div>
                                         <div className="text-right">
                                             <div className="mb-1">
-                                                {formatAmount(transaction.amount, transaction.type)}
+                                                {formatAmount(transaction.amount, transaction.currency)}
                                             </div>
                                             {getStatusBadge(transaction.status)}
                                         </div>

@@ -6,6 +6,9 @@ import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMember } from '../../../domain/entities/CommunityMember';
 import { CommunityMemberResponseDTO } from '../../dto/community/CommunityMemberResponseDTO';
 import { NotFoundError, ConflictError, ValidationError } from '../../../domain/errors/AppError';
+import { IUserWalletTransactionRepository } from '../../../domain/repositories/IUserWalletTransactionRepository';
+import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
+import { v4 as uuidv4 } from 'uuid';
 import { IJoinCommunityUseCase } from './interfaces/IJoinCommunityUseCase';
 import { ITransactionService } from '../../../domain/services/ITransactionService';
 
@@ -15,7 +18,8 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
     @inject(TYPES.ICommunityRepository) private readonly communityRepository: ICommunityRepository,
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.IWebSocketService) private readonly webSocketService: IWebSocketService,
-    @inject(TYPES.ITransactionService) private readonly transactionService: ITransactionService
+    @inject(TYPES.ITransactionService) private readonly transactionService: ITransactionService,
+    @inject(TYPES.IUserWalletTransactionRepository) private readonly userWalletTransactionRepository: IUserWalletTransactionRepository
   ) { }
 
   public async execute(userId: string, communityId: string): Promise<CommunityMemberResponseDTO> {
@@ -57,18 +61,54 @@ export class JoinCommunityUseCase implements IJoinCommunityUseCase {
       const userCreditsBefore = user.credits;
       user.deductCredits(community.creditsCost);
       console.log(`[JoinCommunity] User credits after deduction: ${user.credits} (deducted ${community.creditsCost})`);
-      
+
       const updatedUser = await repos.userRepository.update(user);
       console.log(`[JoinCommunity] User updated in DB. Credits in DB: ${updatedUser.credits}`);
+
+      // Transaction 1: Debit User
+      if (community.creditsCost > 0) {
+        await this.userWalletTransactionRepository.create(UserWalletTransaction.create({
+          id: uuidv4(),
+          userId: userId,
+          type: UserWalletTransactionType.COMMUNITY_JOIN,
+          amount: community.creditsCost,
+          currency: 'CREDITS',
+          source: 'COMMUNITY_JOIN',
+          referenceId: communityId,
+          description: `Joined community: ${community.name}`,
+          previousBalance: userCreditsBefore,
+          newBalance: updatedUser.credits,
+          status: UserWalletTransactionStatus.COMPLETED,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }));
+      }
 
       // Credit creator (if not joining own community)
       if (community.creditsCost > 0 && creator.id !== userId) {
         const creatorCreditsBefore = creator.credits;
         creator.addCredits(community.creditsCost, 'earned');
         console.log(`[JoinCommunity] Creator credits after addition: ${creator.credits} (added ${community.creditsCost})`);
-        
+
         const updatedCreator = await repos.userRepository.update(creator);
         console.log(`[JoinCommunity] Creator updated in DB. Credits in DB: ${updatedCreator.credits}`);
+
+        // Transaction 2: Credit Creator
+        await this.userWalletTransactionRepository.create(UserWalletTransaction.create({
+          id: uuidv4(),
+          userId: creator.id,
+          type: UserWalletTransactionType.COMMUNITY_EARNING,
+          amount: community.creditsCost,
+          currency: 'CREDITS',
+          source: 'COMMUNITY_JOIN',
+          referenceId: communityId,
+          description: `Member joined community: ${community.name}`,
+          previousBalance: creatorCreditsBefore,
+          newBalance: updatedCreator.credits,
+          status: UserWalletTransactionStatus.COMPLETED,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }));
       }
 
       // Calculate subscription end date

@@ -7,7 +7,7 @@ export interface CreditPackageProps {
     credits: number;
     price: number;
     finalPrice: number;
-    savings: number;
+    savings: number; // Accepts both for compatibility
     discount: number;
     isPopular: boolean;
     onSelect: (id: string) => void;

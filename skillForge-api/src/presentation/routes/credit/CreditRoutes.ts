@@ -4,7 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { CreditController } from '../../controllers/credit/CreditController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { validateBody } from '../../middlewares/validationMiddleware';
-import { PurchaseCreditPackageRequestSchema } from '../../../application/dto/credit/PurchaseCreditPackageDTO';
+import { PurchaseCreditPackageBodySchema } from '../../../application/dto/credit/PurchaseCreditPackageDTO';
 import { ENDPOINTS } from '../../../config/routes';
 
 @injectable()
@@ -24,7 +24,7 @@ export class CreditRoutes {
 
         this.router.post(
             ENDPOINTS.CREDIT.PURCHASE,
-            validateBody(PurchaseCreditPackageRequestSchema),
+            validateBody(PurchaseCreditPackageBodySchema),
             this.controller.purchasePackage
         );
 

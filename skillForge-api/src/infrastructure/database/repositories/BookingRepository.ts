@@ -249,19 +249,25 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       });
 
       // 4b. Log Wallet Transaction (SESSION_PAYMENT)
+      // Amount is NEGATIVE because credits are being locked/held in escrow
       // @ts-ignore
       await tx.userWalletTransaction.create({
         data: {
           userId: domainBooking.learnerId,
           type: 'SESSION_PAYMENT',
-          amount: sessionCost,
-          currency: 'INR',
+          amount: -sessionCost, // Negative amount - credits are being locked/held
+          currency: 'CREDITS',
           source: 'SESSION_BOOKING',
           referenceId: created.id,
           description: `Booking for ${domainBooking.skillTitle || 'Session'}`,
           previousBalance: new Prisma.Decimal(Number(updatedLearner.credits) + sessionCost),
           newBalance: new Prisma.Decimal(updatedLearner.credits),
           status: 'COMPLETED',
+          metadata: {
+            sessionCost: sessionCost,
+            skillTitle: domainBooking.skillTitle,
+            providerId: domainBooking.providerId,
+          },
         },
       });
 

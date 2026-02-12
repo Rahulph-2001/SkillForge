@@ -55,16 +55,57 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
     useEffect(() => {
         const initMedia = async () => {
             try {
+                console.log('[VideoCall] Requesting camera/microphone access...');
                 const stream = await videoCallService.getUserMedia(true, true);
+                console.log('[VideoCall] Got media stream:', stream);
+                console.log('[VideoCall] Video tracks:', stream.getVideoTracks());
+                console.log('[VideoCall] Audio tracks:', stream.getAudioTracks());
+
                 setLocalStream(stream);
                 localStreamRef.current = stream;
-            } catch (err) {
-                console.error("Failed to get user media", err);
-                toast.error("Failed to access camera/microphone");
+                console.log('[VideoCall] Local stream set successfully');
+            } catch (err: any) {
+                console.error("[VideoCall] Failed to get user media:", err);
+                console.error("[VideoCall] Error name:", err.name);
+                console.error("[VideoCall] Error message:", err.message);
+
+                // Provide specific error messages
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    toast.error("Camera/microphone permission denied. Please allow access and refresh.");
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    toast.error("No camera/microphone found. Please connect a device.");
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    toast.error("Camera/microphone is already in use by another application.");
+                } else if (err.message?.includes('HTTPS')) {
+                    toast.error("Camera access requires HTTPS. Please use localhost or enable HTTPS.");
+                } else {
+                    toast.error(`Failed to access camera/microphone: ${err.message}`);
+                }
             }
         };
         initMedia();
     }, []);
+
+    // Assign local stream to video element
+    useEffect(() => {
+        if (localVideoRef.current && localStream) {
+            // Only set srcObject if it's not already set to this stream
+            if (localVideoRef.current.srcObject !== localStream) {
+                console.log('[VideoCall] Assigning stream to video element');
+                localVideoRef.current.srcObject = localStream;
+
+                // Add event listener to play video once metadata is loaded
+                localVideoRef.current.onloadedmetadata = () => {
+                    console.log('[VideoCall] Video metadata loaded, attempting to play...');
+                    localVideoRef.current?.play().catch(err => {
+                        console.error('[VideoCall] Error playing video:', err);
+                    });
+                };
+
+                console.log('[VideoCall] Video element srcObject set:', localVideoRef.current.srcObject);
+            }
+        }
+    }, [localStream]);
 
     // WebRTC signaling
     useEffect(() => {
@@ -135,7 +176,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             peerConnectionRef.current?.close();
             localStreamRef.current?.getTracks().forEach(track => track.stop());
         };
-    }, [room, user, localStream]);
+    }, [room, user]); // Removed localStream from dependencies to prevent stopping tracks
 
     const createPeerConnection = useCallback(
         async (peerId: string, createOffer: boolean) => {

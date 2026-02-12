@@ -72,6 +72,9 @@ enum UserWalletTransactionType {
   WITHDRAWAL
   REFUND
   CREDIT_PURCHASE
+  COMMUNITY_JOIN
+  COMMUNITY_EARNING
+  PROJECT_PAYMENT
 }
 
 enum UserWalletTransactionStatus {

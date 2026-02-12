@@ -6,6 +6,9 @@ export enum UserWalletTransactionType {
     WITHDRAWAL = 'WITHDRAWAL',
     REFUND = 'REFUND',
     CREDIT_PURCHASE = 'CREDIT_PURCHASE',
+    COMMUNITY_JOIN = 'COMMUNITY_JOIN',
+    COMMUNITY_EARNING = 'COMMUNITY_EARNING',
+    PROJECT_PAYMENT = 'PROJECT_PAYMENT',
 }
 
 export enum UserWalletTransactionStatus {
@@ -44,9 +47,8 @@ export class UserWalletTransaction {
         if (!this.props.userId) {
             throw new Error('User ID is required');
         }
-        if (this.props.amount <= 0) {
-            throw new Error('Amount must be positive');
-        }
+        // Amount can be positive (earnings/purchases) or negative (spending/locking)
+        // No validation needed for amount sign
         if (!Object.values(UserWalletTransactionType).includes(this.props.type)) {
             throw new Error('Invalid transaction type');
         }

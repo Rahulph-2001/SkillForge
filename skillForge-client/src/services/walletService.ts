@@ -19,7 +19,7 @@ export interface WalletData {
 export interface WalletTransaction {
     id: string;
     userId: string;
-    type: 'PROJECT_EARNING' | 'SESSION_EARNING' | 'SESSION_PAYMENT' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND';
+    type: 'PROJECT_EARNING' | 'SESSION_EARNING' | 'SESSION_PAYMENT' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND' | 'COMMUNITY_JOIN' | 'COMMUNITY_EARNING' | 'PROJECT_PAYMENT' | 'CREDIT_PURCHASE';
     amount: number;
     currency: string;
     source: string;
@@ -43,7 +43,7 @@ export interface WalletTransactionsResponse {
 }
 
 export interface WalletTransactionFilters {
-    type?: 'PROJECT_EARNING' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND';
+    type?: 'PROJECT_EARNING' | 'CREDIT_REDEMPTION' | 'WITHDRAWAL' | 'REFUND' | 'COMMUNITY_JOIN' | 'COMMUNITY_EARNING' | 'PROJECT_PAYMENT' | 'CREDIT_PURCHASE' | 'SESSION_PAYMENT' | 'SESSION_EARNING';
     status?: 'COMPLETED' | 'PENDING' | 'FAILED';
     page?: number;
     limit?: number;

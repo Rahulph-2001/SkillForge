@@ -110,6 +110,25 @@ const TransactionList: React.FC<TransactionListProps> = ({ filter }) => {
         });
     };
 
+    const getTransactionAmount = (transaction: CreditTransaction) => {
+        // For credit purchases, show the credits added (from metadata), not the money amount
+        if (transaction.type === 'CREDIT_PURCHASE' && transaction.metadata?.creditsAdded) {
+            return {
+                value: transaction.metadata.creditsAdded,
+                isPositive: true,
+                label: 'Credits'
+            };
+        }
+
+        // For other transactions, use the amount field
+        // Positive amounts are earnings, negative are spending
+        return {
+            value: Math.abs(transaction.amount),
+            isPositive: transaction.amount > 0,
+            label: transaction.type === 'CREDIT_PURCHASE' ? 'INR' : 'Credits'
+        };
+    };
+
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
@@ -133,41 +152,45 @@ const TransactionList: React.FC<TransactionListProps> = ({ filter }) => {
     return (
         <div className="divide-y divide-gray-100">
             <AnimatePresence mode="popLayout">
-                {transactions.map((transaction, index) => (
-                    <motion.div
-                        key={transaction.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="p-4 hover:bg-gray-50 transition-colors"
-                    >
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                                    {getIcon(transaction.type, transaction.status)}
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="font-medium text-gray-900 truncate">
-                                        {transaction.description || 'Transaction'}
-                                    </p>
-                                    <p className="text-sm text-gray-500">
-                                        {formatDate(transaction.createdAt)}
-                                    </p>
-                                </div>
-                            </div>
+                {transactions.map((transaction, index) => {
+                    const amountInfo = getTransactionAmount(transaction);
 
-                            <div className="text-right flex-shrink-0 ml-4">
-                                <div className={`font-bold ${transaction.amount > 0 ? 'text-green-600' : 'text-gray-900'}`}>
-                                    {transaction.amount > 0 ? '+' : ''}{transaction.amount}
+                    return (
+                        <motion.div
+                            key={transaction.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="p-4 hover:bg-gray-50 transition-colors"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                        {getIcon(transaction.type, transaction.status)}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <p className="font-medium text-gray-900 truncate">
+                                            {transaction.description || 'Transaction'}
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            {formatDate(transaction.createdAt)}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="mt-1">
-                                    {getStatusBadge(transaction.status)}
+
+                                <div className="text-right flex-shrink-0 ml-4">
+                                    <div className={`font-bold ${amountInfo.isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                                        {amountInfo.isPositive ? '+' : '-'}{amountInfo.value}
+                                    </div>
+                                    <div className="mt-1">
+                                        {getStatusBadge(transaction.status)}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </motion.div>
-                ))}
+                        </motion.div>
+                    );
+                })}
             </AnimatePresence>
         </div>
     );

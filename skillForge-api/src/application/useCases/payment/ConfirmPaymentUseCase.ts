@@ -14,6 +14,10 @@ import { PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { AssignSubscriptionDTO } from '../../dto/subscription/AssignSubscriptionDTO';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { BillingInterval } from '../../../domain/enums/SubscriptionEnums';
+import { IUserWalletTransactionRepository } from '../../../domain/repositories/IUserWalletTransactionRepository';
+import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
+import { v4 as uuidv4 } from 'uuid';
+import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 
 @injectable()
 export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
@@ -22,7 +26,9 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
         @inject(TYPES.IPaymentRepository) private paymentRepository: IPaymentRepository,
         @inject(TYPES.IAssignSubscriptionUseCase) private assignSubscriptionUseCase: IAssignSubscriptionUseCase,
         @inject(TYPES.ICreateProjectUseCase) private createProjectUseCase: ICreateProjectUseCase,
-        @inject(TYPES.ICreditAdminWalletUseCase) private creditAdminWalletUseCase: ICreditAdminWalletUseCase
+        @inject(TYPES.ICreditAdminWalletUseCase) private creditAdminWalletUseCase: ICreditAdminWalletUseCase,
+        @inject(TYPES.IUserWalletTransactionRepository) private userWalletTransactionRepository: IUserWalletTransactionRepository,
+        @inject(TYPES.IUserRepository) private userRepository: IUserRepository
     ) { }
 
     async execute(dto: ConfirmPaymentDTO): Promise<PaymentResponseDTO> {
@@ -113,6 +119,7 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
 
                     if (projectData.title && projectData.description && projectData.category && projectData.budget) {
                         await this.createProjectUseCase.execute(updatedPayment.userId, projectData, updatedPayment.id);
+
                         // Credit admin wallet with escrow budget
                         try {
                             await this.creditAdminWalletUseCase.execute({
@@ -129,6 +136,38 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                             console.log(`[ConfirmPayment] Credited ${projectData.budget} ${updatedPayment.currency} to admin wallet as escrow for project`);
                         } catch (walletError) {
                             console.error('[ConfirmPayment] Failed to credit admin wallet for project escrow:', walletError);
+                        }
+
+                        // Log User Transaction (To show in Wallet History as "Paid")
+                        try {
+                            const user = await this.userRepository.findById(updatedPayment.userId);
+                            const currentBalance = user ? user.walletBalance : 0;
+
+                            await this.userWalletTransactionRepository.create(UserWalletTransaction.create({
+                                id: uuidv4(),
+                                userId: updatedPayment.userId,
+                                type: UserWalletTransactionType.PROJECT_PAYMENT,
+                                amount: -projectData.budget, // NEGATIVE - money locked in escrow for project
+                                currency: 'INR',
+                                source: 'STRIPE_PAYMENT',
+                                referenceId: updatedPayment.id,
+                                description: `Payment for project: ${projectData.title}`,
+                                metadata: {
+                                    projectId: updatedPayment.id, // Ideally this would be the actual project ID, but we might not have it easily if CreateProject returned void/DTO. 
+                                    // Actually CreateProject DOES return DTO, but we are blindly calling execute. 
+                                    // ideally we should capture the project ID. But for now, linking to payment ID is okay.
+                                    paymentId: updatedPayment.id,
+                                    projectTitle: projectData.title,
+                                    budget: projectData.budget,
+                                },
+                                previousBalance: currentBalance,
+                                newBalance: currentBalance, // Balance doesn't change as it was direct payment
+                                status: UserWalletTransactionStatus.COMPLETED,
+                                createdAt: new Date(),
+                                updatedAt: new Date(),
+                            }));
+                        } catch (txError) {
+                            console.warn('[ConfirmPayment] Failed to log user wallet transaction for project payment', txError);
                         }
                     }
                 } catch (error) {

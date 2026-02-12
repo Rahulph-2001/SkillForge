@@ -1,7 +1,14 @@
 import { z } from 'zod';
 
+// Schema for the complete request (used by use case)
 export const PurchaseCreditPackageRequestSchema = z.object({
   userId: z.string().uuid(),
+  packageId: z.string().uuid(),
+  paymentIntentId: z.string(),
+});
+
+// Schema for body validation (userId comes from auth middleware)
+export const PurchaseCreditPackageBodySchema = z.object({
   packageId: z.string().uuid(),
   paymentIntentId: z.string(),
 });

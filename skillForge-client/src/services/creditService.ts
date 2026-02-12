@@ -5,7 +5,7 @@ export interface CreditPackageData {
     credits: number;
     price: number;
     finalPrice: number;
-    savings: number;
+    savingsAmount: number;
     discount: number;
     isPopular: boolean;
 }
@@ -56,7 +56,7 @@ const creditService = {
      */
     async getPackages(): Promise<CreditPackageData[]> {
         const response = await api.get('/credits/packages');
-        return response.data.data;
+        return response.data.data.packages || response.data.data;
     },
 
     /**
