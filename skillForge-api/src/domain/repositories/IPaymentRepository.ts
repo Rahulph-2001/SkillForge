@@ -19,4 +19,8 @@ export interface IPaymentRepository {
             search?: string;
         }
     ): Promise<IPaginationResult<Payment>>;
+    // Add to existing interface
+    getTotalRevenue(): Promise<number>;
+    getRevenueByDateRange(startDate: Date, endDate: Date): Promise<number>;
+    getRevenueByPurpose(purpose: PaymentPurpose): Promise<number>;
 }

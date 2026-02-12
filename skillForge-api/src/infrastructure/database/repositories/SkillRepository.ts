@@ -314,6 +314,29 @@ export class SkillRepository extends BaseRepository<Skill> implements ISkillRepo
   async delete(id: string): Promise<void> {
     await super.delete(id);
   }
+  async countTotal(): Promise<number> {
+    return await this.prisma.skill.count({
+      where: { isDeleted: false }
+    })
+  }
+
+  async countPending(): Promise<number> {
+    return await this.prisma.skill.count({
+      where: {
+        isDeleted: false,
+        status: 'in-review'
+      }
+    })
+  }
+
+  async countByDateRange(startDate: Date, endDate: Date): Promise<number> {
+    return await this.prisma.skill.count({
+      where: {
+        isDeleted: false,
+        createdAt: { gte: startDate, lte: endDate }
+      }
+    })
+  }
 
   private toDomain(data: any): Skill {
     return new Skill({

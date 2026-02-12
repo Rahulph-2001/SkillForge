@@ -79,6 +79,9 @@ export class AdminRoutes {
 
     // POST /api/v1/admin/payment-requests/:id/process
     this.router.post(ENDPOINTS.ADMIN.PAYMENT_REQUEST_PROCESS, this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
+
+    // Dashboard Stats
+    this.router.get(ENDPOINTS.ADMIN.DASHBOARD_STATS, this.adminController.getDashboardStats);
   }
 }
 

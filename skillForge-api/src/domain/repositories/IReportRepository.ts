@@ -21,4 +21,7 @@ export interface IReportRepository {
     findAll(page: number, limit: number, filters?: ReportFilters): Promise<{ reports: Report[]; total: number }>;
     update(report: Report): Promise<void>;
     count(filters?: ReportFilters): Promise<number>;
+    // Add to existing interface
+    findPendingReports(limit: number): Promise<Report[]>;
+    countPending(): Promise<number>;
 }

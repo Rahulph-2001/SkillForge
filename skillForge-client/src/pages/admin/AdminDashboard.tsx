@@ -1,5 +1,8 @@
 
 
+import { useEffect, useState } from 'react';
+import { adminDashboardService, AdminDashboardStats } from '../../services/adminDashboardService';
+
 const Icons = {
     Users: () => (
         <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -97,71 +100,95 @@ const Icons = {
 }
 
 export default function AdminDashboard() {
+    const [stats, setStats] = useState<AdminDashboardStats | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const data = await adminDashboardService.getDashboardStats();
+                setStats(data);
+            } catch (err) {
+                console.error('Failed to fetch dashboard stats:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchStats();
+    }, []);
+
+    if (loading || !stats) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+        );
+    }
 
     const statCards = [
         {
             label: "Total Users",
-            value: "15,234",
+            value: stats.totalUsers.toLocaleString(),
             icon: Icons.Users,
             color: "text-blue-500",
             bgColor: "bg-blue-50",
-            change: "+12%",
-            active: "8,456 active",
+            change: `${stats.userGrowthPercentage >= 0 ? '+' : ''}${stats.userGrowthPercentage}%`,
+            active: `${stats.activeUsers.toLocaleString()} active`,
         },
         {
             label: "Total Skills",
-            value: "892",
+            value: stats.totalSkills.toLocaleString(),
             icon: Icons.Skills,
             color: "text-purple-500",
             bgColor: "bg-purple-50",
-            change: "-8%",
-            active: "32 pending approval",
+            change: `${stats.skillGrowthPercentage >= 0 ? '+' : ''}${stats.skillGrowthPercentage}%`,
+            active: `${stats.pendingSkillsCount} pending approval`,
         },
         {
             label: "Total Sessions",
-            value: "4,521",
+            value: stats.totalSessions.toLocaleString(),
             icon: Icons.Sessions,
             color: "text-green-500",
             bgColor: "bg-green-50",
-            change: "+15%",
-            active: "124 this week",
+            change: `${stats.sessionGrowthPercentage >= 0 ? '+' : ''}${stats.sessionGrowthPercentage}%`,
+            active: `${stats.sessionsThisWeek} this week`,
         },
         {
             label: "Total Revenue",
-            value: "₹1,25,670",
+            value: `₹${stats.totalRevenue.toLocaleString()}`,
             icon: Icons.Revenue,
             color: "text-yellow-500",
             bgColor: "bg-yellow-50",
-            change: "+22%",
-            active: "₹5,234 this week",
+            change: `${stats.revenueGrowthPercentage >= 0 ? '+' : ''}${stats.revenueGrowthPercentage}%`,
+            active: `₹${stats.revenueThisWeek.toLocaleString()} this week`,
         },
     ]
 
     const revenueCards = [
         {
             title: "Credit Sales Revenue",
-            amount: "₹2,27,500",
-            desc: "This month 2,500 credits sold",
+            amount: `₹${stats.creditSalesRevenue.toLocaleString()}`,
+            desc: `This month ${stats.creditsSoldCount} credits sold`,
             color: "border-l-4 border-l-green-500",
             icon: Icons.CreditSales,
         },
         {
             title: "Credits Redeemed",
-            amount: "₹85,000",
-            desc: "1,700 credits @ 50/credit",
+            amount: `₹${stats.creditsRedeemedAmount.toLocaleString()}`,
+            desc: `${stats.creditsRedeemedCount} credits redeemed`,
             color: "border-l-4 border-l-orange-500",
             icon: Icons.CreditsRedeemed,
         },
         {
             title: "Net Revenue",
-            amount: "₹1,42,500",
+            amount: `₹${stats.netRevenue.toLocaleString()}`,
             desc: "Sales - Redemptions",
             color: "border-l-4 border-l-purple-500",
             icon: Icons.NetRevenue,
         },
         {
             title: "Profit Margin",
-            amount: "62.6%",
+            amount: `${stats.profitMargin}%`,
             desc: "Healthy margin",
             color: "border-l-4 border-l-teal-500",
             icon: Icons.ProfitMargin,
@@ -169,26 +196,23 @@ export default function AdminDashboard() {
     ]
 
     const walletStats = [
-        { title: "Total Wallet Balance", amount: "₹10,990", desc: "Across all users", icon: Icons.Wallet },
-        { title: "Credits Redeemed", amount: "₹85,000", desc: "This month", icon: Icons.CheckCircle },
-        { title: "Pending Withdrawals", amount: "₹7,000", desc: "3 requests", icon: Icons.Clock },
-        { title: "Completed Withdrawals", amount: "₹48,920", desc: "This month", icon: Icons.CheckCircle },
+        { title: "Total Wallet Balance", amount: `₹${stats.totalWalletBalance.toLocaleString()}`, desc: "Across all users", icon: Icons.Wallet },
+        { title: "Credits Redeemed", amount: `₹${stats.creditsRedeemedThisMonth.toLocaleString()}`, desc: "This month", icon: Icons.CheckCircle },
+        { title: "Pending Withdrawals", amount: `₹${stats.pendingWithdrawals.toLocaleString()}`, desc: `${stats.pendingWithdrawalsCount} requests`, icon: Icons.Clock },
+        { title: "Completed Withdrawals", amount: `₹${stats.completedWithdrawals.toLocaleString()}`, desc: "This month", icon: Icons.CheckCircle },
     ]
 
-    const recentUsers = [
-        { name: "Marcus Johnson", location: "Austin, TX", credits: "32 credits" },
-        { name: "Emily Rodriguez", location: "Portland, OR", credits: "28 credits" },
-        { name: "David Kim", location: "Seattle, WA", credits: "51 credits" },
-        { name: "Lisa Patel", location: "New York, NY", credits: "39 credits" },
-    ]
+    const recentUsers = stats.recentUsers.map(user => ({
+        name: user.name,
+        location: user.location || 'Unknown',
+        credits: `${user.credits} credits`
+    }));
 
-    const recentSessions = [
-        { title: "Acoustic Guitar for Beginners", instructor: "Marcus Johnson", status: "Confirmed" },
-        { title: "Conversational Spanish", instructor: "Lisa Patel", status: "Confirmed" },
-        { title: "Full-Stack Web Development", instructor: "David Kim", status: "pending" },
-        { title: "Vinyasa Yoga Flow", instructor: "Emily Rodriguez", status: "Rejected" },
-        { title: "Digital Photography Basics", instructor: "David Kim", status: "completed" },
-    ]
+    const recentSessions = stats.recentSessions.map(session => ({
+        title: session.skillTitle,
+        instructor: session.providerName,
+        status: session.status
+    }));
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -315,22 +339,32 @@ export default function AdminDashboard() {
                             <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">View All</button>
                         </div>
 
-                        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                            <div className="border-b border-gray-200 pb-4 mb-4">
-                                <div className="flex justify-between items-start mb-3">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-6 h-6 text-blue-600">
-                                            <Icons.Users />
-                                        </div>
-                                        <div>
-                                            <p className="font-semibold text-gray-900">Harassment</p>
-                                            <p className="text-sm text-gray-600">Inappropriate behavior during session</p>
+                        <div className="space-y-4">
+                            {stats.pendingReports.length > 0 ? (
+                                stats.pendingReports.map((report, idx) => (
+                                    <div key={idx} className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                                        <div className="border-b border-gray-200 pb-4 mb-4">
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-6 h-6 text-blue-600">
+                                                        <Icons.Users />
+                                                    </div>
+                                                    <div>
+                                                        <p className="font-semibold text-gray-900">{report.type}</p>
+                                                        <p className="text-sm text-gray-600">{report.description}</p>
+                                                    </div>
+                                                </div>
+                                                <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">Review</button>
+                                            </div>
+                                            <p className="text-xs text-gray-500 ml-10">Reported by {report.reportedBy}</p>
                                         </div>
                                     </div>
-                                    <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">Review</button>
+                                ))
+                            ) : (
+                                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm text-center text-gray-500">
+                                    No pending reports
                                 </div>
-                                <p className="text-xs text-gray-500 ml-10">Reported by Emily Rodriguez</p>
-                            </div>
+                            )}
                         </div>
                     </div>
 
@@ -347,14 +381,29 @@ export default function AdminDashboard() {
 
                         <div className="space-y-4">
                             {[
-                                { title: "New Registrations", count: "127", time: "Last 24 hours", trend: "↑ 11%", icon: Icons.Users },
-                                { title: "New Skills Listed", count: "43", time: "Last 24 hours", trend: "↑ 8%", icon: Icons.Skills },
+                                {
+                                    title: "New Registrations",
+                                    count: stats.newRegistrations24h.toString(),
+                                    time: "Last 24 hours",
+                                    trend: `${stats.newRegistrationsGrowth >= 0 ? '↑' : '↓'} ${Math.abs(stats.newRegistrationsGrowth).toFixed(1)}%`,
+                                    icon: Icons.Users,
+                                    trendColor: stats.newRegistrationsGrowth >= 0 ? "text-green-600" : "text-red-600"
+                                },
+                                {
+                                    title: "New Skills Listed",
+                                    count: stats.newSkills24h.toString(),
+                                    time: "Last 24 hours",
+                                    trend: `${stats.newSkillsGrowth >= 0 ? '↑' : '↓'} ${Math.abs(stats.newSkillsGrowth).toFixed(1)}%`,
+                                    icon: Icons.Skills,
+                                    trendColor: stats.newSkillsGrowth >= 0 ? "text-green-600" : "text-red-600"
+                                },
                                 {
                                     title: "Sessions Completed",
-                                    count: "89",
+                                    count: stats.sessionsCompleted24h.toString(),
                                     time: "Last 24 hours",
-                                    trend: "↑ 12%",
+                                    trend: `${stats.sessionsCompletedGrowth >= 0 ? '↑' : '↓'} ${Math.abs(stats.sessionsCompletedGrowth).toFixed(1)}%`,
                                     icon: Icons.CheckCircle,
+                                    trendColor: stats.sessionsCompletedGrowth >= 0 ? "text-green-600" : "text-red-600"
                                 },
                             ].map((activity, idx) => (
                                 <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
@@ -370,7 +419,7 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="text-right">
                                             <p className="font-bold text-gray-900">{activity.count}</p>
-                                            <p className="text-xs text-green-600">{activity.trend}</p>
+                                            <p className={`text-xs ${activity.trendColor}`}>{activity.trend}</p>
                                         </div>
                                     </div>
                                 </div>

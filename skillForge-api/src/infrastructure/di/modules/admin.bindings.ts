@@ -6,6 +6,8 @@ import { SuspendUserUseCase } from '../../../application/useCases/admin/SuspendU
 import { ISuspendUserUseCase } from '../../../application/useCases/admin/interfaces/ISuspendUserUseCase';
 import { UnsuspendUserUseCase } from '../../../application/useCases/admin/UnsuspendUserUseCase';
 import { IUnsuspendUserUseCase } from '../../../application/useCases/admin/interfaces/IUnsuspendUserUseCase';
+import { GetAdminDashboardStatsUseCase } from '../../../application/useCases/admin/GetAdminDashboardStatsUseCase';
+import { IGetAdminDashboardStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminDashboardStatsUseCase';
 import { ListCommunitiesUseCase } from '../../../application/useCases/admin/ListCommunitiesUseCase';
 import { IListCommunitiesUseCase } from '../../../application/useCases/admin/interfaces/IListCommunitiesUseCase';
 import { UpdateCommunityByAdminUseCase } from '../../../application/useCases/admin/UpdateCommunityByAdminUseCase';
@@ -64,6 +66,9 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<ISuspendUserUseCase>(TYPES.ISuspendUserUseCase).to(SuspendUserUseCase);
   container.bind<UnsuspendUserUseCase>(TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase);
   container.bind<IUnsuspendUserUseCase>(TYPES.IUnsuspendUserUseCase).to(UnsuspendUserUseCase);
+
+  // Admin Dashboard Stats
+  container.bind<IGetAdminDashboardStatsUseCase>(TYPES.IGetAdminDashboardStatsUseCase).to(GetAdminDashboardStatsUseCase);
 
   // Admin Community Management Use Cases
   container.bind<IListCommunitiesUseCase>(TYPES.IListCommunitiesUseCase).to(ListCommunitiesUseCase);

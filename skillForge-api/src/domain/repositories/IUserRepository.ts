@@ -14,4 +14,10 @@ export interface IUserRepository {
   ): Promise<{ users: User[]; total: number }>;
   addPurchasedCredits(userId: string, credits: number): Promise<User>;
   delete(id: string): Promise<void>;
+  countTotal(): Promise<number>;
+  countActive(): Promise<number>;
+  countByDateRange(startDate: Date, endDate: Date): Promise<number>;
+  findRecent(limit: number): Promise<User[]>;
+  getTotalWalletBalance(): Promise<number>;
+  countUsersWithBalance(): Promise<number>;
 }

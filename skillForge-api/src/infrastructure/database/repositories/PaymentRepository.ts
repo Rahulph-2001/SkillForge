@@ -143,4 +143,38 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
             hasPreviousPage: paginationParams.page > 1,
         };
     }
+   async getTotalRevenue(): Promise<number> {
+  const result = await this.prisma.payment.aggregate({
+    where: {
+      status: PaymentStatus.SUCCEEDED
+    },
+    _sum: { amount: true }
+  });
+  
+  return result._sum.amount || 0;
+}
+
+async getRevenueByDateRange(startDate: Date, endDate: Date): Promise<number> {
+  const result = await this.prisma.payment.aggregate({
+    where: {
+      status: PaymentStatus.SUCCEEDED,
+      created_at: { gte: startDate, lte: endDate }
+    },
+    _sum: { amount: true }
+  });
+  
+  return result._sum.amount || 0;
+}
+
+async getRevenueByPurpose(purpose: PaymentPurpose): Promise<number> {
+  const result = await this.prisma.payment.aggregate({
+    where: {
+      status: PaymentStatus.SUCCEEDED,
+      purpose: purpose
+    },
+    _sum: { amount: true }
+  });
+  
+  return result._sum.amount || 0;
+}
 }

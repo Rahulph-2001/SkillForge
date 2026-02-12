@@ -775,5 +775,53 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
 
     return { totalSessions, completed, upcoming, cancelled };
   }
+  async countTotal(): Promise<number> {
+    return await this.prisma.booking.count({
+      where: { isDeleted: false }
+    });
+  }
+
+  async countByStatus(status: BookingStatus): Promise<number> {
+    return await this.prisma.booking.count({
+      where: {
+        isDeleted: false,
+        status: status
+      }
+    });
+  }
+
+  async countByDateRange(startDate: Date, endDate: Date): Promise<number> {
+    return await this.prisma.booking.count({
+      where: {
+        isDeleted: false,
+        createdAt: { gte: startDate, lte: endDate }
+      }
+    });
+  }
+
+  async countByStatusAndDateRange(status: BookingStatus, startDate: Date, endDate: Date): Promise<number> {
+    return await this.prisma.booking.count({
+      where: {
+        isDeleted: false,
+        status: status,
+        createdAt: { gte: startDate, lte: endDate }
+      }
+    });
+  }
+
+  async findRecent(limit: number): Promise<Booking[]> {
+    const bookings = await this.prisma.booking.findMany({
+      where: { isDeleted: false },
+      include: {
+        skill: true,
+        provider: true,
+        learner: true
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit
+    });
+
+    return bookings.map(b => this.mapToDomain(b));
+  }
 
 }

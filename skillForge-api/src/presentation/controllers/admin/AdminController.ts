@@ -10,6 +10,7 @@ import { IBlockCommunityUseCase } from '../../../application/useCases/admin/inte
 import { IUnblockCommunityUseCase } from '../../../application/useCases/admin/interfaces/IUnblockCommunityUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
+import { IGetAdminDashboardStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminDashboardStatsUseCase';
 
 @injectable()
 export class AdminController {
@@ -21,7 +22,8 @@ export class AdminController {
     @inject(TYPES.IUpdateCommunityByAdminUseCase) private readonly updateCommunityUseCase: IUpdateCommunityByAdminUseCase,
     @inject(TYPES.IBlockCommunityUseCase) private readonly blockCommunityUseCase: IBlockCommunityUseCase,
     @inject(TYPES.IUnblockCommunityUseCase) private readonly unblockCommunityUseCase: IUnblockCommunityUseCase,
-    @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder
+    @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder,
+    @inject(TYPES.IGetAdminDashboardStatsUseCase) private readonly getDashboardStatsUseCase: IGetAdminDashboardStatsUseCase,
   ) { }
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -192,4 +194,23 @@ export class AdminController {
       next(error);
     }
   }
+
+  public getDashboardStats = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const adminUserId = req.user!.userId;
+      const result = await this.getDashboardStatsUseCase.execute(adminUserId);
+
+      const response = this.responseBuilder.success(
+        result,
+        SUCCESS_MESSAGES.ADMIN.DASHBOARD_STATS_FETCHED
+      );
+      res.status(response.statusCode).json(response.body);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

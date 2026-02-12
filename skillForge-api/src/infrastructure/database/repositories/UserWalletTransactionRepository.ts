@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { Database } from '../Database';
 import { IUserWalletTransactionRepository, UserWalletTransactionFilters, PaginatedTransactions } from '../../../domain/repositories/IUserWalletTransactionRepository';
-import { UserWalletTransaction } from '../../../domain/entities/UserWalletTransaction';
+import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
 
 @injectable()
 export class UserWalletTransactionRepository implements IUserWalletTransactionRepository {
@@ -173,5 +173,76 @@ export class UserWalletTransactionRepository implements IUserWalletTransactionRe
             totalSpent: Number(spent._sum?.amount || 0),
             totalPurchased: Number(purchased._sum?.amount || 0),
         };
+    }
+
+    async getTotalByType(type: UserWalletTransactionType): Promise<number> {
+        const result = await this.prisma.userWalletTransaction.aggregate({
+            where: { type: type as any },
+            _sum: { amount: true }
+        });
+
+        return Number(result._sum.amount ?? 0) || 0;
+    }
+
+    async countByType(type: UserWalletTransactionType): Promise<number> {
+        return await this.prisma.userWalletTransaction.count({
+            where: { type: type as any }
+        });
+    }
+
+    async getTotalByTypeAndDateRange(
+        type: UserWalletTransactionType,
+        startDate: Date,
+        endDate: Date
+    ): Promise<number> {
+        const result = await this.prisma.userWalletTransaction.aggregate({
+            where: {
+                type: type as any,
+                createdAt: { gte: startDate, lte: endDate }
+            },
+            _sum: { amount: true }
+        });
+
+        return Number(result._sum.amount ?? 0) || 0;
+    }
+
+    async countByTypeAndDateRange(
+        type: UserWalletTransactionType,
+        startDate: Date,
+        endDate: Date
+    ): Promise<number> {
+        return await this.prisma.userWalletTransaction.count({
+            where: {
+                type: type as any,
+                createdAt: { gte: startDate, lte: endDate }
+            }
+        });
+    }
+
+    async getTotalByTypeAndStatus(
+        type: UserWalletTransactionType,
+        status: UserWalletTransactionStatus
+    ): Promise<number> {
+        const result = await this.prisma.userWalletTransaction.aggregate({
+            where: {
+                type: type as any,
+                status: status as any
+            },
+            _sum: { amount: true }
+        });
+
+        return Number(result._sum.amount ?? 0) || 0;
+    }
+
+    async countByTypeAndStatus(
+        type: UserWalletTransactionType,
+        status: UserWalletTransactionStatus
+    ): Promise<number> {
+        return await this.prisma.userWalletTransaction.count({
+            where: {
+                type: type as any,
+                status: status as any
+            }
+        });
     }
 }

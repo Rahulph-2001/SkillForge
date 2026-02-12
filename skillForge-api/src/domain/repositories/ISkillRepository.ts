@@ -53,4 +53,7 @@ export interface ISkillRepository {
     totalPages: number;
   }>;
   update(skill: Skill): Promise<Skill>;
+  countTotal(): Promise<number>;
+  countPending(): Promise<number>;
+  countByDateRange( startDate: Date, endDate: Date):Promise<number>
 }

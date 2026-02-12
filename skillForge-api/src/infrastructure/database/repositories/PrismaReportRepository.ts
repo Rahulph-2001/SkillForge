@@ -91,6 +91,31 @@ export class PrismaReportRepository implements IReportRepository {
         return this.prisma.report.count({ where });
     }
 
+    async findPendingReports(limit: number): Promise<Report[]> {
+        const reports = await this.prisma.report.findMany({
+            where: {
+                status: "PENDING"
+            },
+            include: {
+                reporter: true
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: limit
+        })
+
+        return reports.map(r=> this.toDomain(r))
+    }
+
+    async countPending(): Promise<number> {
+        return this.prisma.report.count({
+            where: {
+                status:"PENDING"
+            }
+        })
+    }
+
     private toDomain(prismaReport: any): Report {
         return Report.create({
             id: prismaReport.id,

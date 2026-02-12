@@ -37,6 +37,7 @@ export const TYPES = {
   ISuspendUserUseCase: Symbol.for('ISuspendUserUseCase'),
   UnsuspendUserUseCase: Symbol.for('UnsuspendUserUseCase'),
   IUnsuspendUserUseCase: Symbol.for('IUnsuspendUserUseCase'),
+  IGetAdminDashboardStatsUseCase: Symbol.for('IGetAdminDashboardStatsUseCase'),
   ListCommunitiesUseCase: Symbol.for('ListCommunitiesUseCase'),
   IListCommunitiesUseCase: Symbol.for('IListCommunitiesUseCase'),
   UpdateCommunityByAdminUseCase: Symbol.for('UpdateCommunityByAdminUseCase'),

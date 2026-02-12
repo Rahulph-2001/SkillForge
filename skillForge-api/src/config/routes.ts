@@ -295,6 +295,7 @@ export const ENDPOINTS = {
         PROJECT_SUSPEND: '/projects/:projectId/suspend',
         PAYMENT_REQUESTS_PENDING: '/payment-requests/pending',
         PAYMENT_REQUEST_PROCESS: '/payment-requests/:id/process',
+        DASHBOARD_STATS: '/dashboard/stats',
     },
 
     ADMIN_SKILL: {

@@ -4,6 +4,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { User } from '../../../domain/entities/User';
 import { TYPES } from '../../di/types';
 import { BaseRepository } from '../BaseRepository';
+import { UserRole } from '@prisma/client';
 
 @injectable()
 export class UserRepository extends BaseRepository<User> implements IUserRepository {
@@ -151,4 +152,65 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     });
     return User.fromDatabaseRow(updated as unknown as Record<string, unknown>);
   }
+  async countTotal(): Promise<number> {
+    return await this.prisma.user.count({
+      where: {
+        isDeleted: false,
+        role: UserRole.user
+      }
+    });
+  }
+
+  async countActive(): Promise<number> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    return await this.prisma.user.count({
+      where: {
+        isDeleted: false,
+        role: UserRole.user,
+        lastLogin: { gte: thirtyDaysAgo }
+      }
+    });
+  }
+
+  async countByDateRange(startDate: Date, endDate: Date): Promise<number> {
+    return await this.prisma.user.count({
+      where: {
+        isDeleted: false,
+        role: UserRole.user,
+        createdAt: { gte: startDate, lte: endDate }
+      }
+    });
+  }
+
+  async findRecent(limit: number): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: { isDeleted: false, role: UserRole.user },
+      orderBy: { createdAt: 'desc' },
+      take: limit
+    });
+
+    return users.map(u => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+  }
+
+  async getTotalWalletBalance(): Promise<number> {
+    const result = await this.prisma.user.aggregate({
+      where: { isDeleted: false, role: UserRole.user },
+      _sum: { walletBalance: true }
+    });
+
+    return Number(result._sum.walletBalance) || 0;
+  }
+
+  async countUsersWithBalance(): Promise<number> {
+    return await this.prisma.user.count({
+      where: {
+        isDeleted: false,
+        role: UserRole.user,
+        walletBalance: { gt: 0 }
+      }
+    });
+  }
+
 }
