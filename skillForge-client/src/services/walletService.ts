@@ -79,7 +79,7 @@ const walletService = {
         if (filters?.limit) params.append('limit', filters.limit.toString());
 
         const response = await api.get(`/wallet/transactions?${params.toString()}`);
-        return response.data;
+        return response.data.data;
     },
 
     /**

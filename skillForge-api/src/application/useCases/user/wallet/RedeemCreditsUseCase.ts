@@ -39,7 +39,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             }
 
             // 3. Fetch Conversion Rate & Limits
-            const rateSettings = await tx.systemSettings.findUnique({ where: { key: 'CREDIT_CONVERSION_RATE' } });
+            const rateSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'CREDIT_CONVERSION_RATE' } });
             if (!rateSettings) {
                 throw new Error('Credit conversion rate not set by admin');
             }
@@ -48,10 +48,10 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
                 throw new Error('Credit conversion rate is invalid');
             }
 
-            const minSettings = await tx.systemSettings.findUnique({ where: { key: 'REDEMPTION_MIN_CREDITS' } });
+            const minSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'REDEMPTION_MIN_CREDITS' } });
             const minCredits = minSettings ? Number(minSettings.value) : 10;
 
-            const maxSettings = await tx.systemSettings.findUnique({ where: { key: 'REDEMPTION_MAX_CREDITS' } });
+            const maxSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'REDEMPTION_MAX_CREDITS' } });
             const maxCredits = maxSettings ? Number(maxSettings.value) : 1000;
 
             if (creditsToRedeem < minCredits) {
@@ -111,7 +111,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             await tx.userWalletTransaction.create({
                 data: {
                     userId: userId,
-                    type: UserWalletTransactionType.CREDIT_REDEMPTION_SUCCESS, // Using the new Enum value
+                    type: UserWalletTransactionType.CREDIT_REDEMPTION_SUCCESS as any, // Cast to any to avoid potential Prisma enum mismatch
                     amount: redemptionValue, // Positive amount added to wallet
                     currency: 'INR', // Default currency
                     status: UserWalletTransactionStatus.COMPLETED,
