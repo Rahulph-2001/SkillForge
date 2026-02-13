@@ -16,6 +16,7 @@ exports.PrismaPaymentRepository = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../di/types");
 const Payment_1 = require("../../../domain/entities/Payment");
+const PaymentEnums_1 = require("../../../domain/enums/PaymentEnums");
 const Database_1 = require("../Database");
 const BaseRepository_1 = require("../BaseRepository");
 let PrismaPaymentRepository = class PrismaPaymentRepository extends BaseRepository_1.BaseRepository {
@@ -130,6 +131,35 @@ let PrismaPaymentRepository = class PrismaPaymentRepository extends BaseReposito
             hasNextPage: paginationParams.page < totalPages,
             hasPreviousPage: paginationParams.page > 1,
         };
+    }
+    async getTotalRevenue() {
+        const result = await this.prisma.payment.aggregate({
+            where: {
+                status: PaymentEnums_1.PaymentStatus.SUCCEEDED
+            },
+            _sum: { amount: true }
+        });
+        return result._sum.amount || 0;
+    }
+    async getRevenueByDateRange(startDate, endDate) {
+        const result = await this.prisma.payment.aggregate({
+            where: {
+                status: PaymentEnums_1.PaymentStatus.SUCCEEDED,
+                created_at: { gte: startDate, lte: endDate }
+            },
+            _sum: { amount: true }
+        });
+        return result._sum.amount || 0;
+    }
+    async getRevenueByPurpose(purpose) {
+        const result = await this.prisma.payment.aggregate({
+            where: {
+                status: PaymentEnums_1.PaymentStatus.SUCCEEDED,
+                purpose: purpose
+            },
+            _sum: { amount: true }
+        });
+        return result._sum.amount || 0;
     }
 };
 exports.PrismaPaymentRepository = PrismaPaymentRepository;

@@ -4,6 +4,7 @@ export interface IUserRepository {
     findByIds(ids: string[]): Promise<User[]>;
     findByEmail(email: string): Promise<User | null>;
     findAll(): Promise<User[]>;
+    findAllAdmins(): Promise<User[]>;
     save(user: User): Promise<User>;
     update(user: User): Promise<User>;
     findWithPagination(filters: {
@@ -19,5 +20,11 @@ export interface IUserRepository {
     }>;
     addPurchasedCredits(userId: string, credits: number): Promise<User>;
     delete(id: string): Promise<void>;
+    countTotal(): Promise<number>;
+    countActive(): Promise<number>;
+    countByDateRange(startDate: Date, endDate: Date): Promise<number>;
+    findRecent(limit: number): Promise<User[]>;
+    getTotalWalletBalance(): Promise<number>;
+    countUsersWithBalance(): Promise<number>;
 }
 //# sourceMappingURL=IUserRepository.d.ts.map

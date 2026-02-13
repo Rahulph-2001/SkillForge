@@ -17,7 +17,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const messages_1 = require("../../../config/messages");
 let AdminController = class AdminController {
-    constructor(listUsersUseCase, suspendUserUseCase, unsuspendUserUseCase, listCommunitiesUseCase, updateCommunityUseCase, blockCommunityUseCase, unblockCommunityUseCase, responseBuilder) {
+    constructor(listUsersUseCase, suspendUserUseCase, unsuspendUserUseCase, listCommunitiesUseCase, updateCommunityUseCase, blockCommunityUseCase, unblockCommunityUseCase, responseBuilder, getDashboardStatsUseCase) {
         this.listUsersUseCase = listUsersUseCase;
         this.suspendUserUseCase = suspendUserUseCase;
         this.unsuspendUserUseCase = unsuspendUserUseCase;
@@ -26,6 +26,18 @@ let AdminController = class AdminController {
         this.blockCommunityUseCase = blockCommunityUseCase;
         this.unblockCommunityUseCase = unblockCommunityUseCase;
         this.responseBuilder = responseBuilder;
+        this.getDashboardStatsUseCase = getDashboardStatsUseCase;
+        this.getDashboardStats = async (req, res, next) => {
+            try {
+                const adminUserId = req.user.userId;
+                const result = await this.getDashboardStatsUseCase.execute(adminUserId);
+                const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.ADMIN.DASHBOARD_STATS_FETCHED);
+                res.status(response.statusCode).json(response.body);
+            }
+            catch (error) {
+                next(error);
+            }
+        };
     }
     async listUsers(req, res, next) {
         try {
@@ -178,6 +190,7 @@ exports.AdminController = AdminController = __decorate([
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IBlockCommunityUseCase)),
     __param(6, (0, inversify_1.inject)(types_1.TYPES.IUnblockCommunityUseCase)),
     __param(7, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object])
+    __param(8, (0, inversify_1.inject)(types_1.TYPES.IGetAdminDashboardStatsUseCase)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object, Object, Object])
 ], AdminController);
 //# sourceMappingURL=AdminController.js.map

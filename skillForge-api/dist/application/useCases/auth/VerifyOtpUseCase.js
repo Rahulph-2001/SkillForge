@@ -19,14 +19,16 @@ const User_1 = require("../../../domain/entities/User");
 const Email_1 = require("../../../shared/value-objects/Email");
 const AppError_1 = require("../../../domain/errors/AppError");
 const messages_1 = require("../../../config/messages");
+const Notification_1 = require("../../../domain/entities/Notification");
 let VerifyOtpUseCase = class VerifyOtpUseCase {
-    constructor(userRepository, otpRepository, emailService, jwtService, pendingRegistrationService, userDTOMapper) {
+    constructor(userRepository, otpRepository, emailService, jwtService, pendingRegistrationService, userDTOMapper, adminNotificationService) {
         this.userRepository = userRepository;
         this.otpRepository = otpRepository;
         this.emailService = emailService;
         this.jwtService = jwtService;
         this.pendingRegistrationService = pendingRegistrationService;
         this.userDTOMapper = userDTOMapper;
+        this.adminNotificationService = adminNotificationService;
     }
     async execute(request) {
         const { email: rawEmail, otpCode } = request;
@@ -77,6 +79,13 @@ let VerifyOtpUseCase = class VerifyOtpUseCase {
             user = await this.userRepository.save(newUser);
             // Clean up pending registration
             await this.pendingRegistrationService.deletePendingRegistration(rawEmail);
+            // Notify admins about new user registration
+            await this.adminNotificationService.notifyAllAdmins({
+                type: Notification_1.NotificationType.NEW_USER_REGISTERED,
+                title: 'New User Registration',
+                message: `${newUser.name} has registered on the platform.`,
+                data: { userId: newUser.id, email: newUser.email.value }
+            });
         }
         else if (user) {
             // Existing user verification
@@ -121,6 +130,7 @@ exports.VerifyOtpUseCase = VerifyOtpUseCase = __decorate([
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IJWTService)),
     __param(4, (0, inversify_1.inject)(types_1.TYPES.IPendingRegistrationService)),
     __param(5, (0, inversify_1.inject)(types_1.TYPES.IUserDTOMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object])
+    __param(6, (0, inversify_1.inject)(types_1.TYPES.IAdminNotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object, Object, Object])
 ], VerifyOtpUseCase);
 //# sourceMappingURL=VerifyOtpUseCase.js.map

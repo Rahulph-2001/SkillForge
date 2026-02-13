@@ -40,6 +40,9 @@ export declare class SkillRepository extends BaseRepository<Skill> implements IS
     create(skill: Skill): Promise<Skill>;
     update(skill: Skill): Promise<Skill>;
     delete(id: string): Promise<void>;
+    countTotal(): Promise<number>;
+    countPending(): Promise<number>;
+    countByDateRange(startDate: Date, endDate: Date): Promise<number>;
     private toDomain;
 }
 //# sourceMappingURL=SkillRepository.d.ts.map

@@ -6,13 +6,16 @@ import { ISubmitMCQTestUseCase } from './interfaces/ISubmitMCQTestUseCase';
 import { SubmitMCQRequestDTO } from '../../dto/mcq/SubmitMCQRequestDTO';
 import { SubmitMCQResponseDTO } from '../../dto/mcq/SubmitMCQResponseDTO';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
   constructor(
     @inject(TYPES.IMCQRepository) private mcqRepository: IMCQRepository,
-    @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository
-  ) {}
+    @inject(TYPES.ISkillRepository) private skillRepository: ISkillRepository,
+    @inject(TYPES.IAdminNotificationService) private adminNotificationService: IAdminNotificationService
+  ) { }
 
   async execute(request: SubmitMCQRequestDTO): Promise<SubmitMCQResponseDTO> {
     const { skillId, userId, questionIds, answers, timeTaken } = request;
@@ -50,7 +53,7 @@ export class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
     const details = questions.map((question, index) => {
       const userAnswer = answers[index];
       const isCorrect = userAnswer === question.correctAnswer;
-      
+
       if (isCorrect) {
         correctAnswers++;
       }
@@ -88,6 +91,14 @@ export class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
       // Update skill to "in-review" status (waiting for admin approval)
       skill.passMCQ(score);
       await this.skillRepository.update(skill);
+
+      // Notify admins that a skill has passed verification and is pending approval
+      await this.adminNotificationService.notifyAllAdmins({
+        type: NotificationType.NEW_SKILL_PENDING,
+        title: 'Skill Passed Verification',
+        message: `Skill "${skill.title}" has passed MCQ verification and is waiting for approval.`,
+        data: { skillId: skill.id, providerId: skill.providerId, score }
+      });
     }
 
     return {

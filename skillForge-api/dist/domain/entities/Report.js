@@ -24,6 +24,9 @@ class Report {
     get id() {
         return this.props.id;
     }
+    get reporterId() {
+        return this.props.reporterId;
+    }
     toJSON() {
         return { ...this.props };
     }

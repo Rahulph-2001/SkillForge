@@ -96,6 +96,11 @@ const NotificationsPage = () => {
       [NotificationType.INTERVIEW_SCHEDULED]: { icon: <Video className={iconClass} />, bgColor: 'bg-purple-100', iconColor: 'text-purple-600' },
       [NotificationType.SUBSCRIPTION_RENEWED]: { icon: <CreditCard className={iconClass} />, bgColor: 'bg-green-100', iconColor: 'text-green-600' },
       [NotificationType.PAYMENT_RECEIVED]: { icon: <CreditCard className={iconClass} />, bgColor: 'bg-green-100', iconColor: 'text-green-600' },
+      [NotificationType.NEW_USER_REGISTERED]: { icon: <Users className={iconClass} />, bgColor: 'bg-blue-100', iconColor: 'text-blue-600' },
+      [NotificationType.NEW_SKILL_PENDING]: { icon: <Star className={iconClass} />, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+      [NotificationType.NEW_REPORT_SUBMITTED]: { icon: <Shield className={iconClass} />, bgColor: 'bg-red-100', iconColor: 'text-red-600' },
+      [NotificationType.WITHDRAWAL_REQUESTED]: { icon: <CreditCard className={iconClass} />, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
+      [NotificationType.PROJECT_ESCROW_RELEASE_REQUESTED]: { icon: <CreditCard className={iconClass} />, bgColor: 'bg-yellow-100', iconColor: 'text-yellow-600' },
     };
     return iconMap[type] || { icon: <Bell className={iconClass} />, bgColor: 'bg-gray-100', iconColor: 'text-gray-600' };
   };
@@ -136,21 +141,19 @@ const NotificationsPage = () => {
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => { setActiveTab('all'); setPage(1); }}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            activeTab === 'all'
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'all'
               ? 'bg-gray-900 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
+            }`}
         >
           All <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-xs">{total}</span>
         </button>
         <button
           onClick={() => { setActiveTab('unread'); setPage(1); }}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            activeTab === 'unread'
+          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'unread'
               ? 'bg-blue-600 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
+            }`}
         >
           Unread <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-xs">{unreadCount}</span>
         </button>
@@ -176,11 +179,10 @@ const NotificationsPage = () => {
             return (
               <div
                 key={notification.id}
-                className={`group relative p-4 rounded-xl border transition-all ${
-                  notification.isRead
+                className={`group relative p-4 rounded-xl border transition-all ${notification.isRead
                     ? 'bg-white border-gray-200'
                     : 'bg-blue-50 border-blue-200 shadow-sm'
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-4">
                   <div className={`p-2.5 rounded-xl ${iconConfig.bgColor}`}>

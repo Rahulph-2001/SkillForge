@@ -238,6 +238,9 @@ export class User {
   get location(): string | null { return this._location; }
   get role(): UserRole { return this._role; }
   get credits(): number { return this._credits; }
+  get earnedCredits(): number { return this._earnedCredits; }
+  get bonusCredits(): number { return this._bonusCredits; }
+  get purchasedCredits(): number { return this._purchasedCredits; }
   get walletBalance(): number { return this._walletBalance; }
   get rating(): number { return this._rating; }
   get reviewCount(): number { return this._reviewCount; }

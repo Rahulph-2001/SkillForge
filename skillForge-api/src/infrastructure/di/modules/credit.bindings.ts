@@ -27,6 +27,39 @@ import { IGetCreditTransactionsUseCase } from '../../../application/useCases/cre
 import { CreditController } from '../../../presentation/controllers/credit/CreditController';
 import { CreditRoutes } from '../../../presentation/routes/credit/CreditRoutes';
 
+// Credit Redemption & Withdrawal Imports
+import { ISystemSettingsRepository } from '../../../domain/repositories/ISystemSettingsRepository';
+import { SystemSettingsRepository } from '../../database/repositories/SystemSettingsRepository';
+import { IWithdrawalRequestRepository } from '../../../domain/repositories/IWithdrawalRequestRepository';
+import { WithdrawalRequestRepository } from '../../database/repositories/WithdrawalRequestRepository';
+
+import { ISystemSettingsMapper } from '../../../application/mappers/interfaces/ISystemSettingsMapper';
+import { SystemSettingsMapper } from '../../../application/mappers/SystemSettingsMapper';
+import { IWithdrawalRequestMapper } from '../../../application/mappers/interfaces/IWithdrawalRequestMapper';
+import { WithdrawalRequestMapper } from '../../../application/mappers/WithdrawalRequestMapper';
+
+import { IGetWalletInfoUseCase } from '../../../application/useCases/user/wallet/interfaces/IGetWalletInfoUseCase';
+import { GetWalletInfoUseCase } from '../../../application/useCases/user/wallet/GetWalletInfoUseCase';
+import { IRedeemCreditsUseCase } from '../../../application/useCases/user/wallet/interfaces/IRedeemCreditsUseCase';
+import { RedeemCreditsUseCase } from '../../../application/useCases/user/wallet/RedeemCreditsUseCase';
+import { IRequestWithdrawalUseCase } from '../../../application/useCases/user/wallet/interfaces/IRequestWithdrawalUseCase';
+import { RequestWithdrawalUseCase } from '../../../application/useCases/user/wallet/RequestWithdrawalUseCase';
+
+import { IUpdateRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/interfaces/IUpdateRedemptionSettingsUseCase';
+import { UpdateRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/UpdateRedemptionSettingsUseCase';
+import { IGetWithdrawalRequestsUseCase } from '../../../application/useCases/admin/credit/interfaces/IGetWithdrawalRequestsUseCase';
+import { GetWithdrawalRequestsUseCase } from '../../../application/useCases/admin/credit/GetWithdrawalRequestsUseCase';
+import { IProcessWithdrawalUseCase } from '../../../application/useCases/admin/credit/interfaces/IProcessWithdrawalUseCase';
+import { ProcessWithdrawalUseCase } from '../../../application/useCases/admin/credit/ProcessWithdrawalUseCase';
+
+import { CreditRedemptionController } from '../../../presentation/controllers/credit/CreditRedemptionController';
+import { CreditRedemptionRoutes } from '../../../presentation/routes/credit/CreditRedemptionRoutes';
+import { AdminWithdrawalController } from '../../../presentation/controllers/admin/AdminWithdrawalController';
+import { AdminWithdrawalRoutes } from '../../../presentation/routes/admin/AdminWithdrawalRoutes';
+
+import { GetRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/GetRedemptionSettingsUseCase';
+import { IGetRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/interfaces/IGetRedemptionSettingsUseCase';
+
 export function registerCreditBindings(container: Container): void {
     // Repository
     container.bind<ICreditPackageRepository>(TYPES.ICreditPackageRepository)
@@ -65,4 +98,49 @@ export function registerCreditBindings(container: Container): void {
         .to(CreditController).inSingletonScope();
     container.bind<CreditRoutes>(TYPES.CreditRoutes)
         .to(CreditRoutes).inSingletonScope();
+
+    // =================================================================
+    // Credit Redemption & Withdrawal
+    // =================================================================
+
+    // Repositories
+    container.bind<ISystemSettingsRepository>(TYPES.ISystemSettingsRepository)
+        .to(SystemSettingsRepository).inSingletonScope();
+    container.bind<IWithdrawalRequestRepository>(TYPES.IWithdrawalRequestRepository)
+        .to(WithdrawalRequestRepository).inSingletonScope();
+
+    // Mappers
+    container.bind<ISystemSettingsMapper>(TYPES.ISystemSettingsMapper)
+        .to(SystemSettingsMapper).inSingletonScope();
+    container.bind<IWithdrawalRequestMapper>(TYPES.IWithdrawalRequestMapper)
+        .to(WithdrawalRequestMapper).inSingletonScope();
+
+    // Use Cases (User)
+    container.bind<IGetWalletInfoUseCase>(TYPES.IGetWalletInfoUseCase)
+        .to(GetWalletInfoUseCase).inSingletonScope();
+    container.bind<IRedeemCreditsUseCase>(TYPES.IRedeemCreditsUseCase)
+        .to(RedeemCreditsUseCase).inSingletonScope();
+    container.bind<IRequestWithdrawalUseCase>(TYPES.IRequestWithdrawalUseCase)
+        .to(RequestWithdrawalUseCase).inSingletonScope();
+
+    // Use Cases (Admin)
+    container.bind<IUpdateRedemptionSettingsUseCase>(TYPES.IUpdateRedemptionSettingsUseCase)
+        .to(UpdateRedemptionSettingsUseCase).inSingletonScope();
+    container.bind<IGetRedemptionSettingsUseCase>(TYPES.IGetRedemptionSettingsUseCase)
+        .to(GetRedemptionSettingsUseCase).inSingletonScope();
+    container.bind<IGetWithdrawalRequestsUseCase>(TYPES.IGetWithdrawalRequestsUseCase)
+        .to(GetWithdrawalRequestsUseCase).inSingletonScope();
+    container.bind<IProcessWithdrawalUseCase>(TYPES.IProcessWithdrawalUseCase)
+        .to(ProcessWithdrawalUseCase).inSingletonScope();
+
+    // Controllers & Routes
+    container.bind<CreditRedemptionController>(TYPES.CreditRedemptionController)
+        .to(CreditRedemptionController).inSingletonScope();
+    container.bind<CreditRedemptionRoutes>(TYPES.CreditRedemptionRoutes)
+        .to(CreditRedemptionRoutes).inSingletonScope();
+
+    container.bind<AdminWithdrawalController>(TYPES.AdminWithdrawalController)
+        .to(AdminWithdrawalController).inSingletonScope();
+    container.bind<AdminWithdrawalRoutes>(TYPES.AdminWithdrawalRoutes)
+        .to(AdminWithdrawalRoutes).inSingletonScope();
 }

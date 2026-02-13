@@ -78,6 +78,7 @@ export default function AdminNavbar() {
                     </div>
                     <div className="flex items-center gap-6">
                         <button
+                            onClick={() => navigate('/admin/notifications')}
                             className="text-gray-600 hover:text-gray-900 transition-colors"
                             aria-label="Notifications"
                         >

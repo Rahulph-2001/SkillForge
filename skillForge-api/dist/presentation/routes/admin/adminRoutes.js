@@ -74,6 +74,8 @@ let AdminRoutes = class AdminRoutes {
         this.router.get(routes_1.ENDPOINTS.ADMIN.PAYMENT_REQUESTS_PENDING, this.paymentRequestController.getPendingPaymentRequests.bind(this.paymentRequestController));
         // POST /api/v1/admin/payment-requests/:id/process
         this.router.post(routes_1.ENDPOINTS.ADMIN.PAYMENT_REQUEST_PROCESS, this.paymentRequestController.processPaymentRequest.bind(this.paymentRequestController));
+        // Dashboard Stats
+        this.router.get(routes_1.ENDPOINTS.ADMIN.DASHBOARD_STATS, this.adminController.getDashboardStats);
     }
 };
 exports.AdminRoutes = AdminRoutes;

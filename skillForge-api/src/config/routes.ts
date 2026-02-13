@@ -55,10 +55,15 @@ export const ROUTES = {
         SESSIONS: '/admin/sessions',
         REPORTS: '/admin/reports',
         CREDIT_PACKAGES: '/admin/credit-packages',
+        WITHDRAWALS: '/admin/withdrawals',
     },
 
     // Health Check
     HEALTH: '/health',
+
+    CREDIT_REDEMPTION: {
+        BASE: '/credit-redemption',
+    } as const,
 } as const;
 
 // Endpoint Paths (used within individual route files)
@@ -313,6 +318,7 @@ export const ENDPOINTS = {
         TRANSACTIONS: '/transactions',
         CREDITS: '/credits',
         STATS: '/stats',
+        CREDIT_STATS: '/credit-stats',
     },
 
     ADMIN_SESSION: {

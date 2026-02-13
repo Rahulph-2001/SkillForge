@@ -13,6 +13,8 @@ import { IUserDTOMapper } from '../../mappers/interfaces/IUserDTOMapper';
 import { VerifyOtpResponseDTO } from '../../dto/auth/VerifyOtpResponseDTO';
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from '../../../config/messages';
 import { IVerifyOtpUseCase } from './interfaces/IVerifyOtpUseCase';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class VerifyOtpUseCase implements IVerifyOtpUseCase {
@@ -22,7 +24,8 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
     @inject(TYPES.IEmailService) private emailService: IEmailService,
     @inject(TYPES.IJWTService) private jwtService: IJWTService,
     @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService,
-    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper
+    @inject(TYPES.IUserDTOMapper) private userDTOMapper: IUserDTOMapper,
+    @inject(TYPES.IAdminNotificationService) private adminNotificationService: IAdminNotificationService
   ) { }
 
   async execute(request: VerifyOtpDTO): Promise<VerifyOtpResponseDTO> {
@@ -80,6 +83,14 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
 
       // Clean up pending registration
       await this.pendingRegistrationService.deletePendingRegistration(rawEmail);
+
+      // Notify admins about new user registration
+      await this.adminNotificationService.notifyAllAdmins({
+        type: NotificationType.NEW_USER_REGISTERED,
+        title: 'New User Registration',
+        message: `${newUser.name} has registered on the platform.`,
+        data: { userId: newUser.id, email: newUser.email.value }
+      });
     } else if (user) {
       // Existing user verification
       user.verifyEmail();

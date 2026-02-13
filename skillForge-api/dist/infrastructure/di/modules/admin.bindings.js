@@ -5,6 +5,7 @@ const types_1 = require("../types");
 const ListUsersUseCase_1 = require("../../../application/useCases/admin/ListUsersUseCase");
 const SuspendUserUseCase_1 = require("../../../application/useCases/admin/SuspendUserUseCase");
 const UnsuspendUserUseCase_1 = require("../../../application/useCases/admin/UnsuspendUserUseCase");
+const GetAdminDashboardStatsUseCase_1 = require("../../../application/useCases/admin/GetAdminDashboardStatsUseCase");
 const ListCommunitiesUseCase_1 = require("../../../application/useCases/admin/ListCommunitiesUseCase");
 const UpdateCommunityByAdminUseCase_1 = require("../../../application/useCases/admin/UpdateCommunityByAdminUseCase");
 const BlockCommunityUseCase_1 = require("../../../application/useCases/admin/BlockCommunityUseCase");
@@ -20,6 +21,8 @@ const AdminSkillMapper_1 = require("../../../application/mappers/AdminSkillMappe
 const GetAdminWalletStatsUseCase_1 = require("../../../application/useCases/admin/GetAdminWalletStatsUseCase");
 const GetWalletTransactionsUseCase_1 = require("../../../application/useCases/admin/GetWalletTransactionsUseCase");
 const CreditAdminWalletUseCase_1 = require("../../../application/useCases/admin/CreditAdminWalletUseCase");
+const GetAdminCreditTransactionsUseCase_1 = require("../../../application/useCases/admin/GetAdminCreditTransactionsUseCase");
+const GetAdminCreditStatsUseCase_1 = require("../../../application/useCases/admin/GetAdminCreditStatsUseCase");
 const AdminListProjectsUseCase_1 = require("../../../application/useCases/admin/AdminListProjectsUseCase");
 const AdminGetProjectStatsUseCase_1 = require("../../../application/useCases/admin/AdminGetProjectStatsUseCase");
 const AdminController_1 = require("../../../presentation/controllers/admin/AdminController");
@@ -41,6 +44,8 @@ const bindAdminModule = (container) => {
     container.bind(types_1.TYPES.ISuspendUserUseCase).to(SuspendUserUseCase_1.SuspendUserUseCase);
     container.bind(types_1.TYPES.UnsuspendUserUseCase).to(UnsuspendUserUseCase_1.UnsuspendUserUseCase);
     container.bind(types_1.TYPES.IUnsuspendUserUseCase).to(UnsuspendUserUseCase_1.UnsuspendUserUseCase);
+    // Admin Dashboard Stats
+    container.bind(types_1.TYPES.IGetAdminDashboardStatsUseCase).to(GetAdminDashboardStatsUseCase_1.GetAdminDashboardStatsUseCase);
     // Admin Community Management Use Cases
     container.bind(types_1.TYPES.IListCommunitiesUseCase).to(ListCommunitiesUseCase_1.ListCommunitiesUseCase);
     container.bind(types_1.TYPES.IUpdateCommunityByAdminUseCase).to(UpdateCommunityByAdminUseCase_1.UpdateCommunityByAdminUseCase);
@@ -60,6 +65,8 @@ const bindAdminModule = (container) => {
     container.bind(types_1.TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase_1.GetAdminWalletStatsUseCase);
     container.bind(types_1.TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase_1.GetWalletTransactionsUseCase);
     container.bind(types_1.TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase_1.CreditAdminWalletUseCase);
+    container.bind(types_1.TYPES.IGetAdminCreditTransactionsUseCase).to(GetAdminCreditTransactionsUseCase_1.GetAdminCreditTransactionsUseCase);
+    container.bind(types_1.TYPES.IGetAdminCreditStatsUseCase).to(GetAdminCreditStatsUseCase_1.GetAdminCreditStatsUseCase);
     // Admin Project Management Use Cases
     container.bind(types_1.TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase_1.AdminListProjectsUseCase);
     container.bind(types_1.TYPES.IAdminGetProjectStatsUseCase).to(AdminGetProjectStatsUseCase_1.AdminGetProjectStatsUseCase);

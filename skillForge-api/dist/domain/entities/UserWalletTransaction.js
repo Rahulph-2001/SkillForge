@@ -10,6 +10,9 @@ var UserWalletTransactionType;
     UserWalletTransactionType["WITHDRAWAL"] = "WITHDRAWAL";
     UserWalletTransactionType["REFUND"] = "REFUND";
     UserWalletTransactionType["CREDIT_PURCHASE"] = "CREDIT_PURCHASE";
+    UserWalletTransactionType["COMMUNITY_JOIN"] = "COMMUNITY_JOIN";
+    UserWalletTransactionType["COMMUNITY_EARNING"] = "COMMUNITY_EARNING";
+    UserWalletTransactionType["PROJECT_PAYMENT"] = "PROJECT_PAYMENT";
 })(UserWalletTransactionType || (exports.UserWalletTransactionType = UserWalletTransactionType = {}));
 var UserWalletTransactionStatus;
 (function (UserWalletTransactionStatus) {
@@ -29,9 +32,8 @@ class UserWalletTransaction {
         if (!this.props.userId) {
             throw new Error('User ID is required');
         }
-        if (this.props.amount <= 0) {
-            throw new Error('Amount must be positive');
-        }
+        // Amount can be positive (earnings/purchases) or negative (spending/locking)
+        // No validation needed for amount sign
         if (!Object.values(UserWalletTransactionType).includes(this.props.type)) {
             throw new Error('Invalid transaction type');
         }

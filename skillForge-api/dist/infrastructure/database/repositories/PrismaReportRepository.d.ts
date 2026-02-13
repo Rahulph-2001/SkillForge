@@ -12,6 +12,8 @@ export declare class PrismaReportRepository implements IReportRepository {
     }>;
     update(report: Report): Promise<void>;
     count(filters?: ReportFilters): Promise<number>;
+    findPendingReports(limit: number): Promise<Report[]>;
+    countPending(): Promise<number>;
     private toDomain;
 }
 //# sourceMappingURL=PrismaReportRepository.d.ts.map

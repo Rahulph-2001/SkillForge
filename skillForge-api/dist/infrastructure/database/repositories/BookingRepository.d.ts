@@ -42,5 +42,10 @@ export declare class BookingRepository extends BaseRepository<Booking> implement
         upcoming: number;
         cancelled: number;
     }>;
+    countTotal(): Promise<number>;
+    countByStatus(status: BookingStatus): Promise<number>;
+    countByDateRange(startDate: Date, endDate: Date): Promise<number>;
+    countByStatusAndDateRange(status: BookingStatus, startDate: Date, endDate: Date): Promise<number>;
+    findRecent(limit: number): Promise<Booking[]>;
 }
 //# sourceMappingURL=BookingRepository.d.ts.map

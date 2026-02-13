@@ -22,6 +22,8 @@ export class AdminWalletRoutes {
 
         this.router.get(ENDPOINTS.ADMIN_WALLET.STATS, this.adminWalletController.getWalletStats.bind(this.adminWalletController));
         this.router.get(ENDPOINTS.ADMIN_WALLET.TRANSACTIONS, this.adminWalletController.getWalletTransactions.bind(this.adminWalletController));
+        this.router.get(ENDPOINTS.ADMIN_WALLET.CREDITS, this.adminWalletController.getCreditTransactions.bind(this.adminWalletController));
+        this.router.get(ENDPOINTS.ADMIN_WALLET.CREDIT_STATS, this.adminWalletController.getCreditStats.bind(this.adminWalletController));
     }
 }
 

@@ -97,6 +97,28 @@ let PrismaReportRepository = class PrismaReportRepository {
             where.status = filters.status;
         return this.prisma.report.count({ where });
     }
+    async findPendingReports(limit) {
+        const reports = await this.prisma.report.findMany({
+            where: {
+                status: "PENDING"
+            },
+            include: {
+                reporter: true
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+            take: limit
+        });
+        return reports.map(r => this.toDomain(r));
+    }
+    async countPending() {
+        return this.prisma.report.count({
+            where: {
+                status: "PENDING"
+            }
+        });
+    }
     toDomain(prismaReport) {
         return Report_1.Report.create({
             id: prismaReport.id,

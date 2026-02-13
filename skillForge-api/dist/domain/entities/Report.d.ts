@@ -39,6 +39,7 @@ export declare class Report {
     constructor(props: ReportProps);
     static create(props: ReportProps): Report;
     get id(): string | undefined;
+    get reporterId(): string;
     toJSON(): ReportProps;
 }
 //# sourceMappingURL=Report.d.ts.map

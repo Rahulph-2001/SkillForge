@@ -22,5 +22,8 @@ export declare class PrismaPaymentRepository extends BaseRepository<Payment> imp
         status?: PaymentStatus;
         search?: string;
     }): Promise<IPaginationResult<Payment>>;
+    getTotalRevenue(): Promise<number>;
+    getRevenueByDateRange(startDate: Date, endDate: Date): Promise<number>;
+    getRevenueByPurpose(purpose: PaymentPurpose): Promise<number>;
 }
 //# sourceMappingURL=PaymentRepository.d.ts.map

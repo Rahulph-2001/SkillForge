@@ -4,7 +4,8 @@ export interface IUserRepository {
   findById(id: string): Promise<User | null>;
   findByIds(ids: string[]): Promise<User[]>;
   findByEmail(email: string): Promise<User | null>;
-  findAll(): Promise<User[]>; // Added this method
+  findAll(): Promise<User[]>;
+  findAllAdmins(): Promise<User[]>;
 
   save(user: User): Promise<User>;
   update(user: User): Promise<User>;

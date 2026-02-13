@@ -245,4 +245,107 @@ export class UserWalletTransactionRepository implements IUserWalletTransactionRe
             }
         });
     }
+
+    async getTotalCreditsPurchased(): Promise<number> {
+        const transactions = await this.prisma.userWalletTransaction.findMany({
+            where: {
+                type: UserWalletTransactionType.CREDIT_PURCHASE as any,
+                status: UserWalletTransactionStatus.COMPLETED as any
+            },
+            select: {
+                metadata: true
+            }
+        });
+
+        return transactions.reduce((acc, t) => {
+            const credits = (t.metadata as any)?.creditsAdded;
+            return acc + (Number(credits) || 0);
+        }, 0);
+    }
+
+    async findAll(filters?: {
+        page?: number;
+        limit?: number;
+        type?: UserWalletTransactionType;
+        status?: UserWalletTransactionStatus;
+        search?: string;
+        startDate?: Date;
+        endDate?: Date;
+    }): Promise<PaginatedTransactions> {
+        const page = filters?.page || 1;
+        const limit = filters?.limit || 10;
+        const skip = (page - 1) * limit;
+
+        const where: any = {};
+
+        if (filters?.type) {
+            where.type = filters.type as any;
+        }
+
+        if (filters?.status) {
+            where.status = filters.status as any;
+        }
+
+        if (filters?.search) {
+            where.OR = [
+                { description: { contains: filters.search, mode: 'insensitive' } },
+                { referenceId: { contains: filters.search, mode: 'insensitive' } },
+                { source: { contains: filters.search, mode: 'insensitive' } },
+            ];
+        }
+
+        if (filters?.startDate || filters?.endDate) {
+            where.createdAt = {};
+            if (filters?.startDate) where.createdAt.gte = filters.startDate;
+            if (filters?.endDate) where.createdAt.lte = filters.endDate;
+        }
+
+        const [transactions, total] = await Promise.all([
+            this.prisma.userWalletTransaction.findMany({
+                where,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            avatarUrl: true
+                        }
+                    }
+                },
+                orderBy: { createdAt: 'desc' },
+                skip,
+                take: limit,
+            }),
+            this.prisma.userWalletTransaction.count({ where }),
+        ]);
+
+        return {
+            transactions: transactions.map(t => {
+                const transaction = UserWalletTransaction.fromDatabaseRow(t);
+                // Attach user info if needed, though fromDatabaseRow might not support it directly without modification
+                // If UserWalletTransaction entity doesn't have user details, we might need a localized DTO or extended entity.
+                // For now, let's assume we return the entity and maybe map it efficiently in the use case.
+                // Actually, the Prisma include fetches user. I should probably enrich the returned entity or return a DTO from repo?
+                // Domain repositories usually return Domain Entities.
+                // Let's attach user to metadata or extended property if possible?
+                // Or just rely on the fact that we might need to fetch users separately if strictly following DDD, 
+                // but "include" is more efficient.
+                // Let's cheat slightly and shove it in metadata or return as is?
+                // The `fromDatabaseRow` likely ignores extra fields.
+                // Let's create a new DTO or interface for this return type if needed, but for now `PaginatedTransactions` expects `UserWalletTransaction[]`.
+                // I will modify `PaginatedTransactions` or `UserWalletTransaction` to include optional user details?
+                // Or I can fetch users in the Use Case. That's safer for strict DDD.
+                // BUT, searching by user name won't work if I don't join.
+                // The search above searches description/refId.
+                // I'll stick to returning `UserWalletTransaction` and let the Use Case fetch user details if needed (or I can return the raw prisma result if I change the return type).
+                // Let's keep it simple: Return Entities. Use Case loads Users.
+                return transaction;
+            }),
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        };
+    }
 }

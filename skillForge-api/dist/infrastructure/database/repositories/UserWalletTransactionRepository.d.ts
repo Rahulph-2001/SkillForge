@@ -1,6 +1,6 @@
 import { Database } from '../Database';
 import { IUserWalletTransactionRepository, UserWalletTransactionFilters, PaginatedTransactions } from '../../../domain/repositories/IUserWalletTransactionRepository';
-import { UserWalletTransaction } from '../../../domain/entities/UserWalletTransaction';
+import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
 export declare class UserWalletTransactionRepository implements IUserWalletTransactionRepository {
     private readonly prisma;
     constructor(db: Database);
@@ -24,5 +24,21 @@ export declare class UserWalletTransactionRepository implements IUserWalletTrans
         totalSpent: number;
         totalPurchased: number;
     }>;
+    getTotalByType(type: UserWalletTransactionType): Promise<number>;
+    countByType(type: UserWalletTransactionType): Promise<number>;
+    getTotalByTypeAndDateRange(type: UserWalletTransactionType, startDate: Date, endDate: Date): Promise<number>;
+    countByTypeAndDateRange(type: UserWalletTransactionType, startDate: Date, endDate: Date): Promise<number>;
+    getTotalByTypeAndStatus(type: UserWalletTransactionType, status: UserWalletTransactionStatus): Promise<number>;
+    countByTypeAndStatus(type: UserWalletTransactionType, status: UserWalletTransactionStatus): Promise<number>;
+    getTotalCreditsPurchased(): Promise<number>;
+    findAll(filters?: {
+        page?: number;
+        limit?: number;
+        type?: UserWalletTransactionType;
+        status?: UserWalletTransactionStatus;
+        search?: string;
+        startDate?: Date;
+        endDate?: Date;
+    }): Promise<PaginatedTransactions>;
 }
 //# sourceMappingURL=UserWalletTransactionRepository.d.ts.map

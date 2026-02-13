@@ -15,15 +15,15 @@ export interface User {
 
 
 export interface ListUsersResponse {
-  users: User[];
-  pagination: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-  };
+    users: User[];
+    pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
 }
 
 
@@ -69,39 +69,39 @@ class AdminService {
     private readonly baseUrl = '/admin';
     // ... users methods ...
 
-async listUsers(
-  page = 1,
-  limit = 20,
-  search?: string,
-  role?: 'user' | 'admin',
-  isActive?: boolean
-): Promise<ListUsersResponse> {
-  try {
-    const params: Record<string, string | number> = { page, limit };
-    if (search) params.search = search;
-    if (role) params.role = role;
-    if (isActive !== undefined) params.isActive = isActive.toString();
+    async listUsers(
+        page = 1,
+        limit = 20,
+        search?: string,
+        role?: 'user' | 'admin',
+        isActive?: boolean
+    ): Promise<ListUsersResponse> {
+        try {
+            const params: Record<string, string | number> = { page, limit };
+            if (search) params.search = search;
+            if (role) params.role = role;
+            if (isActive !== undefined) params.isActive = isActive.toString();
 
-    const response = await api.get(`${this.baseUrl}/users`, { params });
+            const response = await api.get(`${this.baseUrl}/users`, { params });
 
-    if (response.data?.success && response.data?.data) {
-      return response.data.data;
+            if (response.data?.success && response.data?.data) {
+                return response.data.data;
+            }
+
+            if (response.data?.users) {
+                return response.data;
+            }
+
+            throw new Error('Invalid response structure from server');
+        } catch (error: any) {
+            const errorMessage = error?.response?.data?.message
+                || error?.response?.data?.error?.message
+                || error?.message
+                || 'Failed to load users';
+
+            throw new Error(errorMessage);
+        }
     }
-
-    if (response.data?.users) {
-      return response.data;
-    }
-
-    throw new Error('Invalid response structure from server');
-  } catch (error: any) {
-    const errorMessage = error?.response?.data?.message
-      || error?.response?.data?.error?.message
-      || error?.message
-      || 'Failed to load users';
-
-    throw new Error(errorMessage);
-  }
-}
 
 
     async suspendUser(userId: string, reason?: string): Promise<{ success: boolean; message: string }> {
@@ -301,6 +301,46 @@ async listUsers(
             throw error;
         }
     }
+
+    // --- Withdrawal Management Methods ---
+
+    async getWithdrawalRequests(page: number = 1, limit: number = 10, status?: string): Promise<WithdrawalRequestsResponse> {
+        try {
+            const params = new URLSearchParams({
+                page: page.toString(),
+                limit: limit.toString(),
+            });
+            if (status) params.append('status', status);
+
+            const response = await api.get(`${this.baseUrl}/withdrawals?${params.toString()}`);
+            return response.data;
+        } catch (error: any) {
+            console.error('Failed to get withdrawal requests:', error);
+            throw error;
+        }
+    }
+
+    async processWithdrawal(requestId: string, action: 'APPROVE' | 'REJECT', transactionId?: string, adminNote?: string): Promise<void> {
+        try {
+            await api.post(`${this.baseUrl}/withdrawals/${requestId}/process`, {
+                action,
+                transactionId,
+                adminNote
+            });
+        } catch (error: any) {
+            console.error('Failed to process withdrawal:', error);
+            throw error;
+        }
+    }
+
+    async setCreditConversionRate(rate: number): Promise<void> {
+        try {
+            await api.put(`${this.baseUrl}/settings/conversion-rate`, { rate });
+        } catch (error: any) {
+            console.error('Failed to set conversion rate:', error);
+            throw error;
+        }
+    }
 }
 
 // Project Management Types
@@ -454,6 +494,33 @@ export interface ListReportsResponse {
     totalPages: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
+}
+
+export interface WithdrawalRequest {
+    id: string;
+    userId: string;
+    amount: number;
+    currency: string;
+    status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'PROCESSED' | 'FAILED';
+    bankDetails: any;
+    adminNote?: string;
+    processedBy?: string;
+    processedAt?: string;
+    transactionId?: string;
+    createdAt: string;
+    user?: {
+        name: string;
+        email: string;
+        avatarUrl?: string;
+    };
+}
+
+export interface WithdrawalRequestsResponse {
+    requests: WithdrawalRequest[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
 }
 
 export default new AdminService();

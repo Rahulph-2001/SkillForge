@@ -38,6 +38,10 @@ import { GetWalletTransactionsUseCase } from '../../../application/useCases/admi
 import { IGetWalletTransactionsUseCase } from '../../../application/useCases/admin/interfaces/IGetWalletTransactionsUseCase';
 import { CreditAdminWalletUseCase } from '../../../application/useCases/admin/CreditAdminWalletUseCase';
 import { ICreditAdminWalletUseCase } from '../../../application/useCases/admin/interfaces/ICreditAdminWalletUseCase';
+import { GetAdminCreditTransactionsUseCase } from '../../../application/useCases/admin/GetAdminCreditTransactionsUseCase';
+import { IGetAdminCreditTransactionsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminCreditTransactionsUseCase';
+import { GetAdminCreditStatsUseCase } from '../../../application/useCases/admin/GetAdminCreditStatsUseCase';
+import { IGetAdminCreditStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminCreditStatsUseCase';
 import { AdminListProjectsUseCase } from '../../../application/useCases/admin/AdminListProjectsUseCase';
 import { IAdminListProjectsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListProjectsUseCase';
 import { AdminGetProjectStatsUseCase } from '../../../application/useCases/admin/AdminGetProjectStatsUseCase';
@@ -92,6 +96,8 @@ export const bindAdminModule = (container: Container): void => {
   container.bind<IGetAdminWalletStatsUseCase>(TYPES.IGetAdminWalletStatsUseCase).to(GetAdminWalletStatsUseCase);
   container.bind<IGetWalletTransactionsUseCase>(TYPES.IGetWalletTransactionsUseCase).to(GetWalletTransactionsUseCase);
   container.bind<ICreditAdminWalletUseCase>(TYPES.ICreditAdminWalletUseCase).to(CreditAdminWalletUseCase);
+  container.bind<IGetAdminCreditTransactionsUseCase>(TYPES.IGetAdminCreditTransactionsUseCase).to(GetAdminCreditTransactionsUseCase);
+  container.bind<IGetAdminCreditStatsUseCase>(TYPES.IGetAdminCreditStatsUseCase).to(GetAdminCreditStatsUseCase);
 
   // Admin Project Management Use Cases
   container.bind<IAdminListProjectsUseCase>(TYPES.IAdminListProjectsUseCase).to(AdminListProjectsUseCase);

@@ -280,6 +280,27 @@ let SkillRepository = class SkillRepository extends BaseRepository_1.BaseReposit
     async delete(id) {
         await super.delete(id);
     }
+    async countTotal() {
+        return await this.prisma.skill.count({
+            where: { isDeleted: false }
+        });
+    }
+    async countPending() {
+        return await this.prisma.skill.count({
+            where: {
+                isDeleted: false,
+                status: 'in-review'
+            }
+        });
+    }
+    async countByDateRange(startDate, endDate) {
+        return await this.prisma.skill.count({
+            where: {
+                isDeleted: false,
+                createdAt: { gte: startDate, lte: endDate }
+            }
+        });
+    }
     toDomain(data) {
         return new Skill_1.Skill({
             id: data.id,

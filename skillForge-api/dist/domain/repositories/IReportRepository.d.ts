@@ -21,5 +21,7 @@ export interface IReportRepository {
     }>;
     update(report: Report): Promise<void>;
     count(filters?: ReportFilters): Promise<number>;
+    findPendingReports(limit: number): Promise<Report[]>;
+    countPending(): Promise<number>;
 }
 //# sourceMappingURL=IReportRepository.d.ts.map

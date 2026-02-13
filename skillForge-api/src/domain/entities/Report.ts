@@ -57,6 +57,10 @@ export class Report {
         return this.props.id;
     }
 
+    get reporterId(): string {
+        return this.props.reporterId;
+    }
+
     public toJSON(): ReportProps {
         return { ...this.props };
     }

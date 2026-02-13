@@ -16,10 +16,12 @@ exports.SubmitMCQTestUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const AppError_1 = require("../../../domain/errors/AppError");
+const Notification_1 = require("../../../domain/entities/Notification");
 let SubmitMCQTestUseCase = class SubmitMCQTestUseCase {
-    constructor(mcqRepository, skillRepository) {
+    constructor(mcqRepository, skillRepository, adminNotificationService) {
         this.mcqRepository = mcqRepository;
         this.skillRepository = skillRepository;
+        this.adminNotificationService = adminNotificationService;
     }
     async execute(request) {
         const { skillId, userId, questionIds, answers, timeTaken } = request;
@@ -82,6 +84,13 @@ let SubmitMCQTestUseCase = class SubmitMCQTestUseCase {
             // Update skill to "in-review" status (waiting for admin approval)
             skill.passMCQ(score);
             await this.skillRepository.update(skill);
+            // Notify admins that a skill has passed verification and is pending approval
+            await this.adminNotificationService.notifyAllAdmins({
+                type: Notification_1.NotificationType.NEW_SKILL_PENDING,
+                title: 'Skill Passed Verification',
+                message: `Skill "${skill.title}" has passed MCQ verification and is waiting for approval.`,
+                data: { skillId: skill.id, providerId: skill.providerId, score }
+            });
         }
         return {
             attemptId,
@@ -99,6 +108,7 @@ exports.SubmitMCQTestUseCase = SubmitMCQTestUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IMCQRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
-    __metadata("design:paramtypes", [Object, Object])
+    __param(2, (0, inversify_1.inject)(types_1.TYPES.IAdminNotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object])
 ], SubmitMCQTestUseCase);
 //# sourceMappingURL=SubmitMCQTestUseCase.js.map

@@ -10,6 +10,10 @@ export declare const SUCCESS_MESSAGES: {
         readonly LIST_USERS_SUCCESS: "Users listed successfully.";
         readonly SUSPEND_USER_SUCCESS: (name: string) => string;
         readonly PASSWORD_RESET_SUCCESS: "Password reset successfully. You can now login with your new password.";
+        readonly DASHBOARD_STATS_FETCHED: "Dashboard statistics retrieved successfully";
+    };
+    readonly ADMIN: {
+        readonly DASHBOARD_STATS_FETCHED: "Dashboard statistics retrieved successfully";
     };
     readonly GENERAL: {
         readonly HEALTH_CHECK: "Service is healthy.";

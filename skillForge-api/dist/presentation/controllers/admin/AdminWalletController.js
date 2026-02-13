@@ -18,10 +18,12 @@ const types_1 = require("../../../infrastructure/di/types");
 const HttpStatusCode_1 = require("../../../domain/enums/HttpStatusCode");
 const messages_1 = require("../../../config/messages");
 let AdminWalletController = class AdminWalletController {
-    constructor(responseBuilder, getAdminWalletStatsUseCase, getWalletTransactionsUseCase) {
+    constructor(responseBuilder, getAdminWalletStatsUseCase, getWalletTransactionsUseCase, getAdminCreditTransactionsUseCase, getAdminCreditStatsUseCase) {
         this.responseBuilder = responseBuilder;
         this.getAdminWalletStatsUseCase = getAdminWalletStatsUseCase;
         this.getWalletTransactionsUseCase = getWalletTransactionsUseCase;
+        this.getAdminCreditTransactionsUseCase = getAdminCreditTransactionsUseCase;
+        this.getAdminCreditStatsUseCase = getAdminCreditStatsUseCase;
     }
     async getWalletStats(_req, res, next) {
         try {
@@ -48,6 +50,29 @@ let AdminWalletController = class AdminWalletController {
             next(error);
         }
     }
+    async getCreditTransactions(req, res, next) {
+        try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 20;
+            const search = req.query.search;
+            const result = await this.getAdminCreditTransactionsUseCase.execute(page, limit, search);
+            const response = this.responseBuilder.success(result, messages_1.SUCCESS_MESSAGES.WALLET.TRANSACTIONS_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getCreditStats(_req, res, next) {
+        try {
+            const stats = await this.getAdminCreditStatsUseCase.execute();
+            const response = this.responseBuilder.success(stats, messages_1.SUCCESS_MESSAGES.WALLET.STATS_FETCHED, HttpStatusCode_1.HttpStatusCode.OK);
+            res.status(response.statusCode).json(response.body);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 };
 exports.AdminWalletController = AdminWalletController;
 exports.AdminWalletController = AdminWalletController = __decorate([
@@ -55,6 +80,8 @@ exports.AdminWalletController = AdminWalletController = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IResponseBuilder)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IGetAdminWalletStatsUseCase)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IGetWalletTransactionsUseCase)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IGetAdminCreditTransactionsUseCase)),
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IGetAdminCreditStatsUseCase)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], AdminWalletController);
 //# sourceMappingURL=AdminWalletController.js.map

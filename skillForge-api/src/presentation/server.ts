@@ -43,6 +43,8 @@ import { ProjectMessageRoutes } from './routes/project/ProjectMessageRoutes';
 import { NotificationRoutes } from './routes/notification/notificationRoutes';
 import { CreditPackageRoutes } from './routes/credit/CreditPackageRoutes';
 import { CreditRoutes } from './routes/credit/CreditRoutes';
+import { CreditRedemptionRoutes } from './routes/credit/CreditRedemptionRoutes';
+import { AdminWithdrawalRoutes } from './routes/admin/AdminWithdrawalRoutes';
 
 
 
@@ -83,6 +85,8 @@ export class App {
         @inject(TYPES.NotificationRoutes) private readonly notificationRoutes: NotificationRoutes,
         @inject(TYPES.CreditPackageRoutes) private readonly creditPackageRoutes: CreditPackageRoutes,
         @inject(TYPES.CreditRoutes) private readonly creditRoutes: CreditRoutes,
+        @inject(TYPES.CreditRedemptionRoutes) private readonly creditRedemptionRoutes: CreditRedemptionRoutes,
+        @inject(TYPES.AdminWithdrawalRoutes) private readonly adminWithdrawalRoutes: AdminWithdrawalRoutes,
     ) {
         this.app = express();
         this.setupMiddlewares();
@@ -186,6 +190,8 @@ export class App {
 
         this.app.use(`${API_PREFIX}${ROUTES.NOTIFICATIONS}`, this.notificationRoutes.router)
         this.app.use(`${API_PREFIX}${ROUTES.ADMIN.CREDIT_PACKAGES}`, this.creditPackageRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.CREDIT_REDEMPTION.BASE}`, this.creditRedemptionRoutes.router);
+        this.app.use(`${API_PREFIX}${ROUTES.ADMIN.WITHDRAWALS}`, this.adminWithdrawalRoutes.router);
 
         // 404 Handler
         this.app.all('*', notFoundHandler);

@@ -37,6 +37,7 @@ exports.TYPES = {
     ISuspendUserUseCase: Symbol.for('ISuspendUserUseCase'),
     UnsuspendUserUseCase: Symbol.for('UnsuspendUserUseCase'),
     IUnsuspendUserUseCase: Symbol.for('IUnsuspendUserUseCase'),
+    IGetAdminDashboardStatsUseCase: Symbol.for('IGetAdminDashboardStatsUseCase'),
     ListCommunitiesUseCase: Symbol.for('ListCommunitiesUseCase'),
     IListCommunitiesUseCase: Symbol.for('IListCommunitiesUseCase'),
     UpdateCommunityByAdminUseCase: Symbol.for('UpdateCommunityByAdminUseCase'),
@@ -343,6 +344,8 @@ exports.TYPES = {
     AdminWalletController: Symbol.for('AdminWalletController'),
     AdminWalletRoutes: Symbol.for('AdminWalletRoutes'),
     IWalletTransactionRepository: Symbol.for('IWalletTransactionRepository'),
+    IGetAdminCreditTransactionsUseCase: Symbol.for('IGetAdminCreditTransactionsUseCase'),
+    IGetAdminCreditStatsUseCase: Symbol.for('IGetAdminCreditStatsUseCase'),
     // Admin Session Management
     IAdminListSessionsUseCase: Symbol.for('IAdminListSessionsUseCase'),
     IAdminGetSessionStatsUseCase: Symbol.for('IAdminGetSessionStatsUseCase'),
@@ -410,6 +413,7 @@ exports.TYPES = {
     // Notification System
     INotificationRepository: Symbol.for('INotificationRepository'),
     INotificationService: Symbol.for('INotificationService'),
+    IAdminNotificationService: Symbol.for('IAdminNotificationService'),
     INotificationMapper: Symbol.for('INotificationMapper'),
     IGetNotificationsUseCase: Symbol.for('IGetNotificationsUseCase'),
     IMarkNotificationAsReadUseCase: Symbol.for('IMarkNotificationAsReadUseCase'),

@@ -20,6 +20,9 @@ import walletService, { WalletData, WalletTransaction, WalletTransactionFilters 
 
 type TabType = 'all' | 'credits' | 'withdrawals' | 'pending';
 
+import RedeemModal from '../../components/wallet/RedeemModal';
+import WithdrawalModal from '../../components/wallet/WithdrawalModal';
+
 const WalletPage = () => {
     const [walletData, setWalletData] = useState<WalletData | null>(null);
     const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
@@ -32,6 +35,8 @@ const WalletPage = () => {
         limit: 10,
         totalPages: 0,
     });
+    const [isRedeemModalOpen, setIsRedeemModalOpen] = useState(false);
+    const [isWithdrawalModalOpen, setIsWithdrawalModalOpen] = useState(false);
 
     const fetchWalletData = useCallback(async () => {
         try {
@@ -48,7 +53,7 @@ const WalletPage = () => {
         try {
             const response = await walletService.getTransactions(filters);
             setTransactions(response.transactions);
-            setPagination(response.pagination);
+            setPagination(response.pagination || { total: 0, page: 1, limit: 10, totalPages: 0 });
         } catch (error) {
             console.error('Failed to fetch transactions:', error);
             toast.error('Failed to load transactions');
@@ -92,6 +97,11 @@ const WalletPage = () => {
         }
 
         fetchTransactions(filters);
+    };
+
+    const handleOperationSuccess = () => {
+        fetchWalletData();
+        fetchTransactions();
     };
 
     const getTransactionIcon = (type: WalletTransaction['type'], status: WalletTransaction['status']) => {
@@ -282,17 +292,23 @@ const WalletPage = () => {
                     <div className="bg-white rounded-xl p-6 shadow border border-gray-200">
                         <h3 className="font-semibold text-gray-900 mb-4">Quick Actions</h3>
                         <div className="space-y-3">
-                            <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors">
+                            <button
+                                onClick={() => setIsRedeemModalOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
+                            >
                                 <Download className="w-4 h-4" />
                                 Redeem Credits
                             </button>
-                            <button className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
+                            <button
+                                onClick={() => setIsWithdrawalModalOpen(true)}
+                                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors"
+                            >
                                 <Upload className="w-4 h-4" />
                                 Withdraw Money
                             </button>
                         </div>
                         <div className="mt-4 flex items-center gap-2 text-sm">
-                            {walletData?.verification.bank_verified ? (
+                            {walletData?.verification.bank_details?.verified ? (
                                 <>
                                     <BadgeCheck className="w-4 h-4 text-green-600" />
                                     <span className="text-green-600">KYC Verified</span>
@@ -320,11 +336,15 @@ const WalletPage = () => {
                         </li>
                         <li className="flex items-start gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span>Minimum redemption: 10 credits (₹500)</span>
+                            <span>Minimum redemption: {walletData?.minRedemptionCredits || 10} credits (₹{(walletData?.minRedemptionCredits || 10) * (walletData?.conversionRate || 0)})</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span>Redemption rate: ₹50 per credit</span>
+                            <span>Maximum redemption: {walletData?.maxRedemptionCredits || 1000} credits (₹{(walletData?.maxRedemptionCredits || 1000) * (walletData?.conversionRate || 0)})</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            <span>Redemption rate: ₹{walletData?.conversionRate || '...'} per credit</span>
                         </li>
                         <li className="flex items-start gap-2">
                             <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
@@ -378,13 +398,13 @@ const WalletPage = () => {
                                 <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
                                 Loading transactions...
                             </div>
-                        ) : transactions.length === 0 ? (
+                        ) : (transactions?.length || 0) === 0 ? (
                             <div className="p-8 text-center text-gray-500">
                                 <Wallet className="w-12 h-12 mx-auto mb-3 opacity-30" />
                                 No transactions found
                             </div>
                         ) : (
-                            transactions.map((transaction) => (
+                            (transactions || []).map((transaction) => (
                                 <div
                                     key={transaction.id}
                                     className="p-4 hover:bg-gray-50 transition-colors"
@@ -416,7 +436,7 @@ const WalletPage = () => {
                     </div>
 
                     {/* Pagination */}
-                    {pagination.totalPages > 1 && (
+                    {pagination?.totalPages > 1 && (
                         <div className="p-4 border-t border-gray-200 flex items-center justify-between">
                             <p className="text-sm text-gray-600">
                                 Showing {(pagination.page - 1) * pagination.limit + 1} to{' '}
@@ -443,8 +463,28 @@ const WalletPage = () => {
                     )}
                 </div>
             </div>
+
+            <RedeemModal
+                isOpen={isRedeemModalOpen}
+                onClose={() => setIsRedeemModalOpen(false)}
+                onSuccess={handleOperationSuccess}
+                maxRedeemableCredits={walletData?.credits?.redeemable || 0}
+                conversionRate={walletData?.conversionRate || 0}
+                minCredits={walletData?.minRedemptionCredits || 10}
+                maxCredits={walletData?.maxRedemptionCredits || 1000}
+            />
+
+            <WithdrawalModal
+                isOpen={isWithdrawalModalOpen}
+                onClose={() => setIsWithdrawalModalOpen(false)}
+                onSuccess={handleOperationSuccess}
+                currentBalance={walletData?.walletBalance || 0}
+                bankDetails={walletData?.verification?.bank_details}
+            />
         </div>
     );
 };
 
 export default WalletPage;
+
+

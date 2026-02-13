@@ -3,10 +3,12 @@ import { ISkillRepository } from '../../../domain/repositories/ISkillRepository'
 import { ISubmitMCQTestUseCase } from './interfaces/ISubmitMCQTestUseCase';
 import { SubmitMCQRequestDTO } from '../../dto/mcq/SubmitMCQRequestDTO';
 import { SubmitMCQResponseDTO } from '../../dto/mcq/SubmitMCQResponseDTO';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
 export declare class SubmitMCQTestUseCase implements ISubmitMCQTestUseCase {
     private mcqRepository;
     private skillRepository;
-    constructor(mcqRepository: IMCQRepository, skillRepository: ISkillRepository);
+    private adminNotificationService;
+    constructor(mcqRepository: IMCQRepository, skillRepository: ISkillRepository, adminNotificationService: IAdminNotificationService);
     execute(request: SubmitMCQRequestDTO): Promise<SubmitMCQResponseDTO>;
 }
 //# sourceMappingURL=SubmitMCQTestUseCase.d.ts.map

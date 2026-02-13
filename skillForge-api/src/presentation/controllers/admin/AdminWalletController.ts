@@ -5,14 +5,19 @@ import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { IGetAdminWalletStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminWalletStatsUseCase';
 import { IGetWalletTransactionsUseCase } from '../../../application/useCases/admin/interfaces/IGetWalletTransactionsUseCase';
+import { IGetAdminCreditTransactionsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminCreditTransactionsUseCase';
 import { SUCCESS_MESSAGES } from '../../../config/messages';
+
+import { IGetAdminCreditStatsUseCase } from '../../../application/useCases/admin/interfaces/IGetAdminCreditStatsUseCase';
 
 @injectable()
 export class AdminWalletController {
     constructor(
         @inject(TYPES.IResponseBuilder) private readonly responseBuilder: IResponseBuilder,
         @inject(TYPES.IGetAdminWalletStatsUseCase) private readonly getAdminWalletStatsUseCase: IGetAdminWalletStatsUseCase,
-        @inject(TYPES.IGetWalletTransactionsUseCase) private readonly getWalletTransactionsUseCase: IGetWalletTransactionsUseCase
+        @inject(TYPES.IGetWalletTransactionsUseCase) private readonly getWalletTransactionsUseCase: IGetWalletTransactionsUseCase,
+        @inject(TYPES.IGetAdminCreditTransactionsUseCase) private readonly getAdminCreditTransactionsUseCase: IGetAdminCreditTransactionsUseCase,
+        @inject(TYPES.IGetAdminCreditStatsUseCase) private readonly getAdminCreditStatsUseCase: IGetAdminCreditStatsUseCase
     ) { }
 
     async getWalletStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -41,6 +46,38 @@ export class AdminWalletController {
             const response = this.responseBuilder.success(
                 result,
                 SUCCESS_MESSAGES.WALLET.TRANSACTIONS_FETCHED,
+                HttpStatusCode.OK
+            );
+            res.status(response.statusCode).json(response.body);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getCreditTransactions(req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 20;
+            const search = req.query.search as string | undefined;
+
+            const result = await this.getAdminCreditTransactionsUseCase.execute(page, limit, search);
+            const response = this.responseBuilder.success(
+                result,
+                SUCCESS_MESSAGES.WALLET.TRANSACTIONS_FETCHED,
+                HttpStatusCode.OK
+            );
+            res.status(response.statusCode).json(response.body);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getCreditStats(_req: Request, res: Response, next: NextFunction): Promise<void> {
+        try {
+            const stats = await this.getAdminCreditStatsUseCase.execute();
+            const response = this.responseBuilder.success(
+                stats,
+                SUCCESS_MESSAGES.WALLET.STATS_FETCHED,
                 HttpStatusCode.OK
             );
             res.status(response.statusCode).json(response.body);

@@ -1,4 +1,4 @@
-import { ProjectRepository } from "../database/repositories/ProjectRepository";
+
 
 export const TYPES = {
   Database: Symbol.for('Database'),
@@ -385,6 +385,8 @@ export const TYPES = {
   AdminWalletController: Symbol.for('AdminWalletController'),
   AdminWalletRoutes: Symbol.for('AdminWalletRoutes'),
   IWalletTransactionRepository: Symbol.for('IWalletTransactionRepository'),
+  IGetAdminCreditTransactionsUseCase: Symbol.for('IGetAdminCreditTransactionsUseCase'),
+  IGetAdminCreditStatsUseCase: Symbol.for('IGetAdminCreditStatsUseCase'),
 
 
   // Admin Session Management
@@ -463,6 +465,7 @@ export const TYPES = {
   // Notification System
   INotificationRepository: Symbol.for('INotificationRepository'),
   INotificationService: Symbol.for('INotificationService'),
+  IAdminNotificationService: Symbol.for('IAdminNotificationService'),
   INotificationMapper: Symbol.for('INotificationMapper'),
   IGetNotificationsUseCase: Symbol.for('IGetNotificationsUseCase'),
   IMarkNotificationAsReadUseCase: Symbol.for('IMarkNotificationAsReadUseCase'),
@@ -488,4 +491,24 @@ export const TYPES = {
   IGetCreditTransactionsUseCase: Symbol.for('IGetCreditTransactionsUseCase'),
   CreditController: Symbol.for('CreditController'),
   CreditRoutes: Symbol.for('CreditRoutes'),
+  // Credit Redemption & Withdrawal
+  ISystemSettingsRepository: Symbol.for('ISystemSettingsRepository'),
+  IWithdrawalRequestRepository: Symbol.for('IWithdrawalRequestRepository'),
+
+  ISystemSettingsMapper: Symbol.for('ISystemSettingsMapper'),
+  IWithdrawalRequestMapper: Symbol.for('IWithdrawalRequestMapper'),
+
+  IUpdateRedemptionSettingsUseCase: Symbol.for('IUpdateRedemptionSettingsUseCase'),
+  IGetWalletInfoUseCase: Symbol.for('IGetWalletInfoUseCase'),
+  IRedeemCreditsUseCase: Symbol.for('IRedeemCreditsUseCase'),
+  IRequestWithdrawalUseCase: Symbol.for('IRequestWithdrawalUseCase'),
+  IGetWithdrawalRequestsUseCase: Symbol.for('IGetWithdrawalRequestsUseCase'),
+  IProcessWithdrawalUseCase: Symbol.for('IProcessWithdrawalUseCase'),
+  IGetRedemptionSettingsUseCase: Symbol.for('IGetRedemptionSettingsUseCase'),
+
+  CreditRedemptionController: Symbol.for('CreditRedemptionController'),
+  CreditRedemptionRoutes: Symbol.for('CreditRedemptionRoutes'),
+
+  AdminWithdrawalController: Symbol.for('AdminWithdrawalController'),
+  AdminWithdrawalRoutes: Symbol.for('AdminWithdrawalRoutes'),
 };

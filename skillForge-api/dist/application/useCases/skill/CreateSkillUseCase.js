@@ -16,11 +16,13 @@ exports.CreateSkillUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const Skill_1 = require("../../../domain/entities/Skill");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CreateSkillUseCase = class CreateSkillUseCase {
-    constructor(skillRepository, storageService, skillMapper) {
+    constructor(skillRepository, storageService, skillMapper, adminNotificationService) {
         this.skillRepository = skillRepository;
         this.storageService = storageService;
         this.skillMapper = skillMapper;
+        this.adminNotificationService = adminNotificationService;
     }
     async execute(userId, data, imageFile) {
         let imageUrl = null;
@@ -43,6 +45,13 @@ let CreateSkillUseCase = class CreateSkillUseCase {
             templateId: data.templateId || null
         });
         const createdSkill = await this.skillRepository.create(skill);
+        // Notify admins about new skill
+        await this.adminNotificationService.notifyAllAdmins({
+            type: Notification_1.NotificationType.NEW_SKILL_PENDING,
+            title: 'New Skill Submitted',
+            message: `A new skill "${createdSkill.title}" has been submitted for approval.`,
+            data: { skillId: createdSkill.id, providerId: createdSkill.providerId }
+        });
         return this.skillMapper.toResponseDTO(createdSkill);
     }
 };
@@ -52,6 +61,7 @@ exports.CreateSkillUseCase = CreateSkillUseCase = __decorate([
     __param(0, (0, inversify_1.inject)(types_1.TYPES.ISkillRepository)),
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IStorageService)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.ISkillMapper)),
-    __metadata("design:paramtypes", [Object, Object, Object])
+    __param(3, (0, inversify_1.inject)(types_1.TYPES.IAdminNotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object])
 ], CreateSkillUseCase);
 //# sourceMappingURL=CreateSkillUseCase.js.map

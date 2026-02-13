@@ -44,6 +44,7 @@ import AdminSessionManagementPage from '../pages/admin/AdminSessionManagementPag
 import AdminProjectsPage from '../pages/admin/AdminProjectsPage';
 import AdminReportsPage from '../pages/admin/AdminReportsPage';
 import AdminCreditManagementPage from '../pages/admin/AdminCreditManagementPage';
+import AdminWithdrawalManagementPage from '../pages/admin/AdminWithdrawalManagementPage';
 import MyApplicationsPage from '../pages/user/MyApplicationsPage';
 import ManageApplicationsPage from '../pages/user/ManageApplicationsPage';
 import MyProjectsDashboardPage from '../pages/user/MyProjectsDashboardPage';
@@ -52,6 +53,7 @@ import InterviewVideoCallPage from '../pages/user/InterviewVideoCallPage';
 import WalletPage from '../pages/user/WalletPage';
 import CreditManagementPage from '../pages/user/CreditManagementPage';
 import NotificationsPage from '@/pages/user/NotificationsPage';
+import AdminNotificationsPage from '../pages/admin/AdminNotificationsPage';
 
 const AppRoutes = () => {
     const { user } = useAppSelector((state) => state.auth);
@@ -403,6 +405,22 @@ const AppRoutes = () => {
                     element={
                         <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
                             <AdminCreditManagementPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/withdrawals"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminWithdrawalManagementPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/admin/notifications"
+                    element={
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                            <AdminNotificationsPage />
                         </ProtectedRoute>
                     }
                 />

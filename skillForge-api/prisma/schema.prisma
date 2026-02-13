@@ -75,6 +75,10 @@ enum UserWalletTransactionType {
   COMMUNITY_JOIN
   COMMUNITY_EARNING
   PROJECT_PAYMENT
+  WITHDRAWAL_REQUEST
+  WITHDRAWAL_PROCESSED
+  WITHDRAWAL_REJECTED
+  CREDIT_REDEMPTION_SUCCESS
 }
 
 enum UserWalletTransactionStatus {
@@ -160,6 +164,15 @@ enum NotificationType {
   INTERVIEW_SCHEDULED
   SUBSCRIPTION_RENEWED
   PAYMENT_RECEIVED
+  NEW_USER_REGISTERED
+  NEW_SKILL_PENDING
+  NEW_REPORT_SUBMITTED
+  WITHDRAWAL_REQUESTED
+  PROJECT_ESCROW_RELEASE_REQUESTED
+  NEW_PROJECT_CREATED
+  WITHDRAWAL_PROCESSED
+  WITHDRAWAL_REJECTED
+  CREDIT_REDEMPTION_SUCCESS
 }
 
 // --- Custom Models ---
@@ -570,6 +583,10 @@ model User {
   resolvedReports   Report[]            @relation("ResolvedBy")
   sentProjectMessages ProjectMessage[] @relation("ProjectMessageSender")
   notifications     Notification[]
+
+  processedWithdrawals WithdrawalRequest[] @relation("WithdrawalProcessor")
+  
+  withdrawalRequests WithdrawalRequest[] @relation("WithdrawalRequester")
 
   @@index([role])
   @@index([isActive])
@@ -1118,4 +1135,54 @@ model ProjectMessage {
   @@index([projectId])
   @@index([createdAt])
   @@map("project_messages")
+}
+
+
+// --- System Settings ---
+
+model SystemSettings {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique @db.VarChar(50) // e.g. "CREDIT_CONVERSION_RATE"
+  value       String   @db.Text
+  description String?  @db.Text
+  updatedBy   String?  @map("updated_by") @db.Uuid
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_settings")
+}
+
+// --- Withdrawal Requests ---
+
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSED
+  FAILED
+}
+
+model WithdrawalRequest {
+  id            String           @id @default(uuid()) @db.Uuid
+  userId        String           @map("user_id") @db.Uuid
+  amount        Decimal          @db.Decimal(10, 2)
+  currency      String           @default("INR") @db.VarChar(10)
+  status        WithdrawalStatus @default(PENDING)
+  
+  // Bank Details Snapshot
+  bankDetails   Json             @map("bank_details")
+
+  adminNote     String?          @map("admin_note") @db.Text
+  processedBy   String?          @map("processed_by") @db.Uuid
+  processedAt   DateTime?        @map("processed_at") @db.Timestamptz(6)
+  transactionId String?          @map("transaction_id") @db.Text
+
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime         @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user      User     @relation("WithdrawalRequester", fields: [userId], references: [id])
+  processor User?    @relation("WithdrawalProcessor", fields: [processedBy], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("withdrawal_requests")
 }

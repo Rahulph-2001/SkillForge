@@ -18,6 +18,7 @@ const Database_1 = require("../Database");
 const User_1 = require("../../../domain/entities/User");
 const types_1 = require("../../di/types");
 const BaseRepository_1 = require("../BaseRepository");
+const client_1 = require("@prisma/client");
 let UserRepository = class UserRepository extends BaseRepository_1.BaseRepository {
     constructor(db) {
         super(db, 'user');
@@ -48,6 +49,15 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
     }
     async findAll() {
         const users = await super.findAll();
+        return users.map((u) => User_1.User.fromDatabaseRow(u));
+    }
+    async findAllAdmins() {
+        const users = await this.prisma.user.findMany({
+            where: {
+                role: client_1.UserRole.admin,
+                isDeleted: false
+            }
+        });
         return users.map((u) => User_1.User.fromDatabaseRow(u));
     }
     mapUserDataToPrisma(user) {
@@ -144,6 +154,58 @@ let UserRepository = class UserRepository extends BaseRepository_1.BaseRepositor
             }
         });
         return User_1.User.fromDatabaseRow(updated);
+    }
+    async countTotal() {
+        return await this.prisma.user.count({
+            where: {
+                isDeleted: false,
+                role: client_1.UserRole.user
+            }
+        });
+    }
+    async countActive() {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        return await this.prisma.user.count({
+            where: {
+                isDeleted: false,
+                role: client_1.UserRole.user,
+                lastLogin: { gte: thirtyDaysAgo }
+            }
+        });
+    }
+    async countByDateRange(startDate, endDate) {
+        return await this.prisma.user.count({
+            where: {
+                isDeleted: false,
+                role: client_1.UserRole.user,
+                createdAt: { gte: startDate, lte: endDate }
+            }
+        });
+    }
+    async findRecent(limit) {
+        const users = await this.prisma.user.findMany({
+            where: { isDeleted: false, role: client_1.UserRole.user },
+            orderBy: { createdAt: 'desc' },
+            take: limit
+        });
+        return users.map(u => User_1.User.fromDatabaseRow(u));
+    }
+    async getTotalWalletBalance() {
+        const result = await this.prisma.user.aggregate({
+            where: { isDeleted: false, role: client_1.UserRole.user },
+            _sum: { walletBalance: true }
+        });
+        return Number(result._sum.walletBalance) || 0;
+    }
+    async countUsersWithBalance() {
+        return await this.prisma.user.count({
+            where: {
+                isDeleted: false,
+                role: client_1.UserRole.user,
+                walletBalance: { gt: 0 }
+            }
+        });
     }
 };
 exports.UserRepository = UserRepository;

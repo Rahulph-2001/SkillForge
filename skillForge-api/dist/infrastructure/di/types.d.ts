@@ -34,6 +34,7 @@ export declare const TYPES: {
     ISuspendUserUseCase: symbol;
     UnsuspendUserUseCase: symbol;
     IUnsuspendUserUseCase: symbol;
+    IGetAdminDashboardStatsUseCase: symbol;
     ListCommunitiesUseCase: symbol;
     IListCommunitiesUseCase: symbol;
     UpdateCommunityByAdminUseCase: symbol;
@@ -317,6 +318,8 @@ export declare const TYPES: {
     AdminWalletController: symbol;
     AdminWalletRoutes: symbol;
     IWalletTransactionRepository: symbol;
+    IGetAdminCreditTransactionsUseCase: symbol;
+    IGetAdminCreditStatsUseCase: symbol;
     IAdminListSessionsUseCase: symbol;
     IAdminGetSessionStatsUseCase: symbol;
     IAdminCancelSessionUseCase: symbol;
@@ -375,6 +378,7 @@ export declare const TYPES: {
     ProjectMessageRoutes: symbol;
     INotificationRepository: symbol;
     INotificationService: symbol;
+    IAdminNotificationService: symbol;
     INotificationMapper: symbol;
     IGetNotificationsUseCase: symbol;
     IMarkNotificationAsReadUseCase: symbol;

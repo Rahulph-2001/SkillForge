@@ -228,19 +228,25 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
                 },
             });
             // 4b. Log Wallet Transaction (SESSION_PAYMENT)
+            // Amount is NEGATIVE because credits are being locked/held in escrow
             // @ts-ignore
             await tx.userWalletTransaction.create({
                 data: {
                     userId: domainBooking.learnerId,
                     type: 'SESSION_PAYMENT',
-                    amount: sessionCost,
-                    currency: 'INR',
+                    amount: -sessionCost, // Negative amount - credits are being locked/held
+                    currency: 'CREDITS',
                     source: 'SESSION_BOOKING',
                     referenceId: created.id,
                     description: `Booking for ${domainBooking.skillTitle || 'Session'}`,
                     previousBalance: new client_1.Prisma.Decimal(Number(updatedLearner.credits) + sessionCost),
                     newBalance: new client_1.Prisma.Decimal(updatedLearner.credits),
                     status: 'COMPLETED',
+                    metadata: {
+                        sessionCost: sessionCost,
+                        skillTitle: domainBooking.skillTitle,
+                        providerId: domainBooking.providerId,
+                    },
                 },
             });
             // 5. Create Escrow Transaction Record
@@ -665,6 +671,49 @@ let BookingRepository = class BookingRepository extends BaseRepository_1.BaseRep
             this.prisma.booking.count({ where: { status: 'cancelled', isDeleted: false } }),
         ]);
         return { totalSessions, completed, upcoming, cancelled };
+    }
+    async countTotal() {
+        return await this.prisma.booking.count({
+            where: { isDeleted: false }
+        });
+    }
+    async countByStatus(status) {
+        return await this.prisma.booking.count({
+            where: {
+                isDeleted: false,
+                status: status
+            }
+        });
+    }
+    async countByDateRange(startDate, endDate) {
+        return await this.prisma.booking.count({
+            where: {
+                isDeleted: false,
+                createdAt: { gte: startDate, lte: endDate }
+            }
+        });
+    }
+    async countByStatusAndDateRange(status, startDate, endDate) {
+        return await this.prisma.booking.count({
+            where: {
+                isDeleted: false,
+                status: status,
+                createdAt: { gte: startDate, lte: endDate }
+            }
+        });
+    }
+    async findRecent(limit) {
+        const bookings = await this.prisma.booking.findMany({
+            where: { isDeleted: false },
+            include: {
+                skill: true,
+                provider: true,
+                learner: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit
+        });
+        return bookings.map(b => this.mapToDomain(b));
     }
 };
 exports.BookingRepository = BookingRepository;

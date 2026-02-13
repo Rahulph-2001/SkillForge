@@ -14,6 +14,10 @@ exports.SUCCESS_MESSAGES = {
         LIST_USERS_SUCCESS: 'Users listed successfully.',
         SUSPEND_USER_SUCCESS: (name) => `User ${name} has been suspended successfully`,
         PASSWORD_RESET_SUCCESS: 'Password reset successfully. You can now login with your new password.',
+        DASHBOARD_STATS_FETCHED: 'Dashboard statistics retrieved successfully',
+    },
+    ADMIN: {
+        DASHBOARD_STATS_FETCHED: 'Dashboard statistics retrieved successfully',
     },
     GENERAL: {
         HEALTH_CHECK: 'Service is healthy.',

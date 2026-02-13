@@ -4,6 +4,10 @@ export declare const PurchaseCreditPackageRequestSchema: z.ZodObject<{
     packageId: z.ZodString;
     paymentIntentId: z.ZodString;
 }, z.core.$strip>;
+export declare const PurchaseCreditPackageBodySchema: z.ZodObject<{
+    packageId: z.ZodString;
+    paymentIntentId: z.ZodString;
+}, z.core.$strip>;
 export type PurchaseCreditPackageRequestDTO = z.infer<typeof PurchaseCreditPackageRequestSchema>;
 export declare const PurchaseCreditPackageResponseSchema: z.ZodObject<{
     transactionId: z.ZodString;

@@ -5,12 +5,14 @@ import { IIncrementProjectPostUsageUseCase } from './interfaces/IIncrementProjec
 import { ICreateProjectUseCase } from './interfaces/ICreateProjectUseCase';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { ProjectResponseDTO } from '../../dto/project/ProjectResponseDTO';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
 export declare class CreateProjectUseCase implements ICreateProjectUseCase {
     private readonly projectRepository;
     private readonly userRepository;
     private readonly validateLimitUseCase;
     private readonly incrementUsageUseCase;
-    constructor(projectRepository: IProjectRepository, userRepository: IUserRepository, validateLimitUseCase: IValidateProjectPostLimitUseCase, incrementUsageUseCase: IIncrementProjectPostUsageUseCase);
+    private readonly adminNotificationService;
+    constructor(projectRepository: IProjectRepository, userRepository: IUserRepository, validateLimitUseCase: IValidateProjectPostLimitUseCase, incrementUsageUseCase: IIncrementProjectPostUsageUseCase, adminNotificationService: IAdminNotificationService);
     execute(userId: string, request: CreateProjectRequestDTO, paymentId?: string): Promise<ProjectResponseDTO>;
 }
 //# sourceMappingURL=CreateProjectUseCase.d.ts.map

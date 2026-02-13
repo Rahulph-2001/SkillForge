@@ -31,6 +31,8 @@ let AdminWalletRoutes = class AdminWalletRoutes {
         this.router.use(adminMiddleware_1.adminMiddleware);
         this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.STATS, this.adminWalletController.getWalletStats.bind(this.adminWalletController));
         this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.TRANSACTIONS, this.adminWalletController.getWalletTransactions.bind(this.adminWalletController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.CREDITS, this.adminWalletController.getCreditTransactions.bind(this.adminWalletController));
+        this.router.get(routes_1.ENDPOINTS.ADMIN_WALLET.CREDIT_STATS, this.adminWalletController.getCreditStats.bind(this.adminWalletController));
     }
 };
 exports.AdminWalletRoutes = AdminWalletRoutes;

@@ -30,7 +30,7 @@ let CreditRoutes = class CreditRoutes {
     initializeRoutes() {
         this.router.get(routes_1.ENDPOINTS.CREDIT.PACKAGES, this.controller.getPackages);
         this.router.use(authMiddleware_1.authMiddleware);
-        this.router.post(routes_1.ENDPOINTS.CREDIT.PURCHASE, (0, validationMiddleware_1.validateBody)(PurchaseCreditPackageDTO_1.PurchaseCreditPackageRequestSchema), this.controller.purchasePackage);
+        this.router.post(routes_1.ENDPOINTS.CREDIT.PURCHASE, (0, validationMiddleware_1.validateBody)(PurchaseCreditPackageDTO_1.PurchaseCreditPackageBodySchema), this.controller.purchasePackage);
         this.router.get(routes_1.ENDPOINTS.CREDIT.TRANSACTIONS, this.controller.getTransactions);
     }
 };

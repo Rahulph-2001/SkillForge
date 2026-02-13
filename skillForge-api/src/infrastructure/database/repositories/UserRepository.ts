@@ -44,6 +44,16 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
   }
 
+  async findAllAdmins(): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: UserRole.admin,
+        isDeleted: false
+      }
+    });
+    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+  }
+
   private mapUserDataToPrisma(user: User): Record<string, unknown> {
     const userData = user.toJSON();
     return {

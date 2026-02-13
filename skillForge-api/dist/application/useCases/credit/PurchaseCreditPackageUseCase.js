@@ -42,23 +42,28 @@ let PurchaseCreditPackageUseCase = class PurchaseCreditPackageUseCase {
         const discountMultiplier = (100 - creditPackage.discount) / 100;
         const finalPrice = creditPackage.price * discountMultiplier;
         const userJson = user.toJSON();
+        const currentWalletBalance = Number(userJson.walletBalance || 0);
         const currentCredits = userJson.credits || 0;
+        // For credit purchases, amount is NEGATIVE (money spent)
+        const newWalletBalance = currentWalletBalance - finalPrice;
         const transaction = UserWalletTransaction_1.UserWalletTransaction.create({
             id: (0, uuid_1.v4)(),
             userId: validatedRequest.userId,
             type: UserWalletTransaction_1.UserWalletTransactionType.CREDIT_PURCHASE,
-            amount: finalPrice,
+            amount: -finalPrice, // NEGATIVE - money spent on purchasing credits
             currency: 'INR',
             source: 'CREDIT_PACKAGE_PURCHASE',
             referenceId: validatedRequest.packageId,
             description: `Purchased ${creditPackage.credits} credits`,
             metadata: {
                 packageId: creditPackage.id,
-                credits: creditPackage.credits,
+                creditsAdded: creditPackage.credits, // Store credits in metadata
+                originalPrice: creditPackage.price,
+                discount: creditPackage.discount,
                 paymentIntentId: validatedRequest.paymentIntentId,
             },
-            previousBalance: 0,
-            newBalance: 0,
+            previousBalance: currentWalletBalance,
+            newBalance: newWalletBalance,
             status: UserWalletTransaction_1.UserWalletTransactionStatus.COMPLETED,
             createdAt: new Date(),
             updatedAt: new Date(),

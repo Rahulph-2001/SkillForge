@@ -40,8 +40,16 @@ export interface UserWalletDataDTO {
     };
     verification: {
         email_verified: boolean;
-        bank_verified: boolean;
+        bank_details: {
+            account_number: string | null;
+            ifsc_code: string | null;
+            bank_name: string | null;
+            verified: boolean;
+        };
     };
+    conversionRate: number;
+    minRedemptionCredits: number;
+    maxRedemptionCredits: number;
 }
 
 // Paginated transactions response

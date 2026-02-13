@@ -18,12 +18,14 @@ const types_1 = require("../../../infrastructure/di/types");
 const Project_1 = require("../../../domain/entities/Project");
 const AppError_1 = require("../../../domain/errors/AppError");
 const uuid_1 = require("uuid");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CreateProjectUseCase = class CreateProjectUseCase {
-    constructor(projectRepository, userRepository, validateLimitUseCase, incrementUsageUseCase) {
+    constructor(projectRepository, userRepository, validateLimitUseCase, incrementUsageUseCase, adminNotificationService) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.validateLimitUseCase = validateLimitUseCase;
         this.incrementUsageUseCase = incrementUsageUseCase;
+        this.adminNotificationService = adminNotificationService;
     }
     async execute(userId, request, paymentId) {
         // 1. Verify user exists
@@ -54,7 +56,14 @@ let CreateProjectUseCase = class CreateProjectUseCase {
         const savedProject = await this.projectRepository.create(project);
         // 5. Track usage (increment project post count)
         await this.incrementUsageUseCase.execute(userId);
-        // 6. Map to response DTO
+        // 6. Notify admins
+        await this.adminNotificationService.notifyAllAdmins({
+            type: Notification_1.NotificationType.NEW_PROJECT_CREATED,
+            title: 'New Project Created',
+            message: `A new project "${savedProject.title}" has been created by ${user.name}.`,
+            data: { projectId: savedProject.id, userId }
+        });
+        // 7. Map to response DTO
         return {
             id: savedProject.id,
             clientId: savedProject.clientId,
@@ -86,6 +95,7 @@ exports.CreateProjectUseCase = CreateProjectUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IValidateProjectPostLimitUseCase)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.IIncrementProjectPostUsageUseCase)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IAdminNotificationService)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], CreateProjectUseCase);
 //# sourceMappingURL=CreateProjectUseCase.js.map

@@ -15,9 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateReportUseCase = void 0;
 const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
+const Notification_1 = require("../../../domain/entities/Notification");
 let CreateReportUseCase = class CreateReportUseCase {
-    constructor(reportRepository) {
+    constructor(reportRepository, adminNotificationService) {
         this.reportRepository = reportRepository;
+        this.adminNotificationService = adminNotificationService;
     }
     async execute(data) {
         if (!data.reporterId)
@@ -26,7 +28,7 @@ let CreateReportUseCase = class CreateReportUseCase {
             throw new Error("Description is required");
         if (!data.type)
             throw new Error("Report type is required");
-        await this.reportRepository.create({
+        const report = await this.reportRepository.create({
             reporterId: data.reporterId,
             type: data.type,
             category: data.category,
@@ -34,12 +36,20 @@ let CreateReportUseCase = class CreateReportUseCase {
             targetUserId: data.targetUserId,
             projectId: data.projectId
         });
+        // Notify admins about new report
+        await this.adminNotificationService.notifyAllAdmins({
+            type: Notification_1.NotificationType.NEW_REPORT_SUBMITTED,
+            title: 'New Content Report',
+            message: `A new report has been submitted for ${data.type}.`,
+            data: { reportId: report.id, reporterId: report.reporterId }
+        });
     }
 };
 exports.CreateReportUseCase = CreateReportUseCase;
 exports.CreateReportUseCase = CreateReportUseCase = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)(types_1.TYPES.IReportRepository)),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)(types_1.TYPES.IAdminNotificationService)),
+    __metadata("design:paramtypes", [Object, Object])
 ], CreateReportUseCase);
 //# sourceMappingURL=CreateReportUseCase.js.map

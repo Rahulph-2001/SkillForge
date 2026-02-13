@@ -1,0 +1,1 @@
+{"version":3,"file":"IGetAdminDashboardStatsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IGetAdminDashboardStatsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,8BAA8B,EAAE,MAAM,8CAA8C,CAAC;AAE9F,MAAM,WAAW,8BAA8B;IAC7C,OAAO,CAAC,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,8BAA8B,CAAC,CAAC;CACvE"}

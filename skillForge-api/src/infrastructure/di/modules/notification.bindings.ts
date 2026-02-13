@@ -4,6 +4,8 @@ import { INotificationRepository } from "../../../domain/repositories/INotificat
 import { NotificationRepository } from "../../database/repositories/NotificationRepository";
 import { INotificationService } from "../../../domain/services/INotificationService";
 import { NotificationService } from "../../services/NotificationService";
+import { IAdminNotificationService } from "../../../domain/services/IAdminNotificationService";
+import { AdminNotificationService } from "../../services/AdminNotificationService";
 import { INotificationMapper } from "../../../application/mappers/interfaces/INotificationMapper";
 import { NotificationMapper } from "../../../application/mappers/NotificationMapper";
 import { IGetNotificationUseCase } from "../../../application/useCases/notification/interfaces/IGetNotificationsUseCase";
@@ -24,6 +26,8 @@ export const notificationBindings = new ContainerModule((bind) => {
     .to(NotificationRepository).inSingletonScope();
   bind<INotificationService>(TYPES.INotificationService)
     .to(NotificationService).inSingletonScope();
+  bind<IAdminNotificationService>(TYPES.IAdminNotificationService)
+    .to(AdminNotificationService).inSingletonScope();
   bind<INotificationMapper>(TYPES.INotificationMapper)
     .to(NotificationMapper).inSingletonScope();
   bind<IGetNotificationUseCase>(TYPES.IGetNotificationsUseCase)

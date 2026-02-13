@@ -12,8 +12,17 @@ export interface WalletData {
     };
     verification: {
         email_verified: boolean;
-        bank_verified: boolean;
+        bank_details: {
+            account_number: string | null;
+            ifsc_code: string | null;
+            bank_name: string | null;
+            verified: boolean;
+        };
     };
+    conversionRate?: number;
+    estimatedRedemptionValue?: number;
+    minRedemptionCredits?: number;
+    maxRedemptionCredits?: number;
 }
 
 export interface WalletTransaction {
@@ -70,7 +79,23 @@ const walletService = {
         if (filters?.limit) params.append('limit', filters.limit.toString());
 
         const response = await api.get(`/wallet/transactions?${params.toString()}`);
-        return response.data.data;
+        return response.data;
+    },
+
+    /**
+     * Redeem credits for cash
+     */
+    async redeemCredits(creditAmount: number): Promise<any> {
+        const response = await api.post('/credit-redemption/redeem', { creditsToRedeem: creditAmount });
+        return response.data;
+    },
+
+    /**
+     * Request withdrawal
+     */
+    async requestWithdrawal(amount: number, bankDetails: any): Promise<any> {
+        const response = await api.post('/credit-redemption/withdraw', { amount, bankDetails });
+        return response.data;
     },
 };
 

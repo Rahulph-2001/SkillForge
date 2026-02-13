@@ -3,9 +3,18 @@ import { Plus, Edit2, Ticket, TrendingUp, CreditCard, Users, Loader2, Ban, Check
 import { CreatePackageData } from '../../components/admin/credits/CreatePackageModal';
 import CreatePackageModal from '../../components/admin/credits/CreatePackageModal';
 import EditPackageModal, { EditPackageData } from '../../components/admin/credits/EditPackageModal';
-import { adminCreditService, CreditPackage } from '../../services/adminCreditService';
+import { adminCreditService, CreditPackage, AdminCreditStats } from '../../services/adminCreditService';
 import { toast } from 'react-hot-toast';
 import Pagination from '../../components/common/Pagination';
+
+const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(amount);
+};
 
 export default function AdminCreditManagementPage() {
     const [activeTab, setActiveTab] = useState<'transactions' | 'packages'>('packages');
@@ -16,38 +25,91 @@ export default function AdminCreditManagementPage() {
     const [loading, setLoading] = useState(true);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    // Pagination State
-    const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalItems, setTotalItems] = useState(0);
 
-    // Fetch packages
-    useEffect(() => {
-        const fetchPackages = async () => {
-            try {
-                setLoading(true);
-                const response = await adminCreditService.getAllPackages(page, limit);
-                setPackages(response.data);
-                setTotalPages(response.totalPages);
-                setTotalItems(response.total);
-            } catch (error) {
-                console.error('Failed to fetch packages:', error);
-                toast.error('Failed to load credit packages');
-            } finally {
-                setLoading(false);
-            }
-        };
 
-        if (activeTab === 'packages') {
-            fetchPackages();
+    // Pagination State for packages
+    const [packagePage, setPackagePage] = useState(1);
+    const [packageLimit, setPackageLimit] = useState(10);
+    const [packageTotalPages, setPackageTotalPages] = useState(1);
+    const [packageTotalItems, setPackageTotalItems] = useState(0);
+
+    // State for transactions
+    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactionPage, setTransactionPage] = useState(1);
+    const [transactionLimit, setTransactionLimit] = useState(10);
+    const [transactionTotalPages, setTransactionTotalPages] = useState(1);
+    const [transactionTotalItems, setTransactionTotalItems] = useState(0);
+
+    const [creditStats, setCreditStats] = useState<AdminCreditStats | null>(null);
+    const [conversionRate, setConversionRate] = useState<number | ''>('');
+    const [minCredits, setMinCredits] = useState<number | ''>('');
+    const [maxCredits, setMaxCredits] = useState<number | ''>('');
+
+    const loadPackages = async () => {
+        setLoading(true);
+        try {
+            const response = await adminCreditService.getAllPackages(packagePage, packageLimit);
+            setPackages(response.data);
+            setPackageTotalPages(response.totalPages);
+            setPackageTotalItems(response.total);
+        } catch (error) {
+            console.error('Failed to fetch packages:', error);
+            toast.error('Failed to load credit packages');
+        } finally {
+            setLoading(false);
         }
-    }, [activeTab, refreshTrigger, page, limit]);
+    };
+
+    const loadTransactions = async (page = 1) => {
+        setLoading(true);
+        try {
+            const response = await adminCreditService.getTransactions(page, transactionLimit);
+            setTransactions(response.transactions || []);
+            setTransactionPage(response.page);
+            setTransactionTotalPages(response.totalPages);
+            setTransactionTotalItems(response.total);
+        } catch (error) {
+            console.error('Failed to load transactions:', error);
+            toast.error('Failed to load transactions');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const loadStats = async () => {
+        try {
+            const data = await adminCreditService.getStats();
+            setCreditStats(data);
+        } catch (error) {
+            console.error('Failed to load credit stats:', error);
+        }
+    };
+
+    const loadRedemptionSettings = async () => {
+        try {
+            const settings = await adminCreditService.getRedemptionSettings();
+            setConversionRate(settings.rate);
+            setMinCredits(settings.minCredits);
+            setMaxCredits(settings.maxCredits);
+        } catch (error) {
+            console.error('Failed to load redemption settings:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'packages') {
+            loadPackages();
+        } else {
+            loadTransactions(transactionPage);
+        }
+        loadStats();
+        loadRedemptionSettings();
+    }, [activeTab, refreshTrigger, packagePage, packageLimit, transactionPage, transactionLimit]);
 
     const stats = [
         {
             label: "Total Revenue",
-            value: "₹0", // Placeholder for now
+            value: formatCurrency(creditStats?.totalRevenue || 0),
             subtext: "From credit sales",
             icon: TrendingUp,
             color: "text-green-600",
@@ -55,7 +117,7 @@ export default function AdminCreditManagementPage() {
         },
         {
             label: "Credits Sold",
-            value: "0", // Placeholder
+            value: creditStats ? creditStats.creditsSold.toLocaleString() : "0",
             subtext: "Total credits purchased",
             icon: Ticket,
             color: "text-blue-600",
@@ -63,7 +125,7 @@ export default function AdminCreditManagementPage() {
         },
         {
             label: "Avg Order Value",
-            value: "₹0", // Placeholder
+            value: formatCurrency(creditStats?.avgOrderValue || 0),
             subtext: "Per transaction",
             icon: CreditCard,
             color: "text-purple-600",
@@ -71,7 +133,7 @@ export default function AdminCreditManagementPage() {
         },
         {
             label: "Transactions",
-            value: "0", // Placeholder
+            value: creditStats ? creditStats.totalTransactions.toLocaleString() : "0",
             subtext: "Total purchases",
             icon: Users,
             color: "text-blue-600",
@@ -146,6 +208,76 @@ export default function AdminCreditManagementPage() {
                             <p className="text-sm text-gray-500">{stat.subtext}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Quick Actions / Settings */}
+                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
+                    <h2 className="text-lg font-bold text-gray-900 mb-4">Redemption Settings</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Conversion Rate (₹ per Credit)
+                            </label>
+                            <input
+                                type="number"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                placeholder="e.g. 50"
+                                value={conversionRate}
+                                onChange={(e) => setConversionRate(e.target.value === '' ? '' : Number(e.target.value))}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Min Redemption Credits
+                            </label>
+                            <input
+                                type="number"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                placeholder="e.g. 10"
+                                value={minCredits}
+                                onChange={(e) => setMinCredits(e.target.value === '' ? '' : Number(e.target.value))}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Max Redemption Credits
+                            </label>
+                            <input
+                                type="number"
+                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                placeholder="e.g. 1000"
+                                value={maxCredits}
+                                onChange={(e) => setMaxCredits(e.target.value === '' ? '' : Number(e.target.value))}
+                            />
+                        </div>
+                        <div className="md:col-span-3">
+                            <button
+                                onClick={() => {
+                                    const rate = Number(conversionRate);
+                                    if (rate > 0) {
+                                        adminCreditService.updateRedemptionSettings({
+                                            rate,
+                                            minCredits: minCredits !== '' ? Number(minCredits) : undefined,
+                                            maxCredits: maxCredits !== '' ? Number(maxCredits) : undefined
+                                        })
+                                            .then(() => {
+                                                toast.success('Redemption settings updated');
+                                                loadRedemptionSettings();
+                                            })
+                                            .catch(() => toast.error('Failed to update settings'));
+                                    } else {
+                                        toast.error('Please enter a valid conversion rate');
+                                    }
+                                }}
+                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium transition-colors"
+                            >
+                                Update Settings
+                            </button>
+                            <p className="text-xs text-gray-500 mt-2">
+                                Users will receive ₹{conversionRate || '...'} per credit. Range: {minCredits || 10} - {maxCredits || 1000} credits.
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Tabs */}
@@ -252,17 +384,17 @@ export default function AdminCreditManagementPage() {
                                 ))}
                             </div>
                             {/* Pagination */}
-                            {totalPages > 0 && (
+                            {packageTotalPages > 0 && (
                                 <div className="flex justify-center mt-6">
                                     <Pagination
-                                        currentPage={page}
-                                        totalPages={totalPages}
-                                        totalItems={totalItems}
-                                        limit={limit}
-                                        onPageChange={setPage}
+                                        currentPage={packagePage}
+                                        totalPages={packageTotalPages}
+                                        totalItems={packageTotalItems}
+                                        limit={packageLimit}
+                                        onPageChange={setPackagePage}
                                         onLimitChange={(newLimit: number) => {
-                                            setLimit(newLimit);
-                                            setPage(1);
+                                            setPackageLimit(newLimit);
+                                            setPackagePage(1);
                                         }}
                                         showLimitSelector={true}
                                         showInfo={true}
@@ -272,8 +404,100 @@ export default function AdminCreditManagementPage() {
                         </>
                     )
                 ) : (
-                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center text-gray-500">
-                        <p>Transactions table will be implemented here.</p>
+                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
+                            <h3 className="font-semibold text-gray-700">Transaction History</h3>
+                            <div className="flex gap-2">
+                                {/* Add filters here if needed */}
+                            </div>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm text-gray-600">
+                                <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-medium">
+                                    <tr>
+                                        <th className="px-6 py-3">User</th>
+                                        <th className="px-6 py-3">Amount</th>
+                                        <th className="px-6 py-3">Credits</th>
+                                        <th className="px-6 py-3">Type</th>
+                                        <th className="px-6 py-3">Status</th>
+                                        <th className="px-6 py-3">Date</th>
+                                        <th className="px-6 py-3">Reference</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200">
+                                    {transactions.length > 0 ? (
+                                        transactions.map((tx) => (
+                                            <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    {tx.user ? (
+                                                        <div className="flex items-center gap-3">
+                                                            <img src={tx.user.avatar || 'https://via.placeholder.com/32'} alt={tx.user.name} className="w-8 h-8 rounded-full object-cover" />
+                                                            <div>
+                                                                <div className="font-medium text-gray-900">{tx.user.name}</div>
+                                                                <div className="text-xs text-gray-500">{tx.user.email}</div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-400 italic">Unknown User</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-6 py-4 font-medium text-gray-900">
+                                                    {formatCurrency(Math.abs(tx.amount))}
+                                                </td>
+                                                <td className="px-6 py-4 text-primary font-medium">
+                                                    {tx.metadata?.creditsAdded || '-'}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                                                        {tx.type.replace(/_/g, ' ')}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${tx.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
+                                                        tx.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
+                                                            'bg-red-100 text-red-700'
+                                                        }`}>
+                                                        {tx.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-500">
+                                                    {new Date(tx.createdAt).toLocaleDateString()}
+                                                </td>
+                                                <td className="px-6 py-4 text-xs text-gray-400 font-mono">
+                                                    {tx.referenceId || '-'}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                                No transactions found.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {/* Pagination */}
+                        {transactionTotalPages > 1 && (
+                            <div className="flex justify-center mt-6 p-4">
+                                <Pagination
+                                    currentPage={transactionPage}
+                                    totalPages={transactionTotalPages}
+                                    totalItems={transactionTotalItems}
+                                    limit={transactionLimit}
+                                    onPageChange={loadTransactions}
+                                    onLimitChange={(newLimit: number) => {
+                                        setTransactionLimit(newLimit);
+                                        loadTransactions(1);
+                                    }}
+                                    showLimitSelector={true}
+                                    showInfo={true}
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </main>

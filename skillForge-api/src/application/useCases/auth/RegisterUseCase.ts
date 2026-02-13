@@ -5,6 +5,7 @@ import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { IOTPService } from '../../../domain/services/IOTPService';
 import { IEmailService } from '../../../domain/services/IEmailService';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
 import { IPendingRegistrationService } from '../../../domain/services/IPendingRegistrationService';
 import { Email } from '../../../shared/value-objects/Email';
 import { Password } from '../../../shared/value-objects/Password';
@@ -25,7 +26,7 @@ export class RegisterUseCase implements IRegisterUseCase {
     @inject(TYPES.IOTPService) private otpService: IOTPService,
     @inject(TYPES.IEmailService) private emailService: IEmailService,
     @inject(TYPES.IPendingRegistrationService) private pendingRegistrationService: IPendingRegistrationService
-  ) {}
+  ) { }
 
   async execute(request: RegisterDTO, registrationIp?: string): Promise<RegisterResponseDTO> {
     const { fullName, email: rawEmail, password } = request;
@@ -55,11 +56,11 @@ export class RegisterUseCase implements IRegisterUseCase {
       bonusCredits: env.DEFAULT_BONUS_CREDITS,
     });
 
-    
+
     const tempUserId = `temp_${Date.now()}_${rawEmail}`;
     const otpCode = this.otpService.generateOTP();
     console.log(otpCode)
-    
+
     const otp = new OTPToken({
       userId: tempUserId,
       otpType: 'email',

@@ -17,12 +17,15 @@ const inversify_1 = require("inversify");
 const types_1 = require("../../../infrastructure/di/types");
 const CommunityMember_1 = require("../../../domain/entities/CommunityMember");
 const AppError_1 = require("../../../domain/errors/AppError");
+const UserWalletTransaction_1 = require("../../../domain/entities/UserWalletTransaction");
+const uuid_1 = require("uuid");
 let JoinCommunityUseCase = class JoinCommunityUseCase {
-    constructor(communityRepository, userRepository, webSocketService, transactionService) {
+    constructor(communityRepository, userRepository, webSocketService, transactionService, userWalletTransactionRepository) {
         this.communityRepository = communityRepository;
         this.userRepository = userRepository;
         this.webSocketService = webSocketService;
         this.transactionService = transactionService;
+        this.userWalletTransactionRepository = userWalletTransactionRepository;
     }
     async execute(userId, communityId) {
         // 1. Find community
@@ -59,6 +62,24 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
             console.log(`[JoinCommunity] User credits after deduction: ${user.credits} (deducted ${community.creditsCost})`);
             const updatedUser = await repos.userRepository.update(user);
             console.log(`[JoinCommunity] User updated in DB. Credits in DB: ${updatedUser.credits}`);
+            // Transaction 1: Debit User
+            if (community.creditsCost > 0) {
+                await this.userWalletTransactionRepository.create(UserWalletTransaction_1.UserWalletTransaction.create({
+                    id: (0, uuid_1.v4)(),
+                    userId: userId,
+                    type: UserWalletTransaction_1.UserWalletTransactionType.COMMUNITY_JOIN,
+                    amount: community.creditsCost,
+                    currency: 'CREDITS',
+                    source: 'COMMUNITY_JOIN',
+                    referenceId: communityId,
+                    description: `Joined community: ${community.name}`,
+                    previousBalance: userCreditsBefore,
+                    newBalance: updatedUser.credits,
+                    status: UserWalletTransaction_1.UserWalletTransactionStatus.COMPLETED,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }));
+            }
             // Credit creator (if not joining own community)
             if (community.creditsCost > 0 && creator.id !== userId) {
                 const creatorCreditsBefore = creator.credits;
@@ -66,6 +87,22 @@ let JoinCommunityUseCase = class JoinCommunityUseCase {
                 console.log(`[JoinCommunity] Creator credits after addition: ${creator.credits} (added ${community.creditsCost})`);
                 const updatedCreator = await repos.userRepository.update(creator);
                 console.log(`[JoinCommunity] Creator updated in DB. Credits in DB: ${updatedCreator.credits}`);
+                // Transaction 2: Credit Creator
+                await this.userWalletTransactionRepository.create(UserWalletTransaction_1.UserWalletTransaction.create({
+                    id: (0, uuid_1.v4)(),
+                    userId: creator.id,
+                    type: UserWalletTransaction_1.UserWalletTransactionType.COMMUNITY_EARNING,
+                    amount: community.creditsCost,
+                    currency: 'CREDITS',
+                    source: 'COMMUNITY_JOIN',
+                    referenceId: communityId,
+                    description: `Member joined community: ${community.name}`,
+                    previousBalance: creatorCreditsBefore,
+                    newBalance: updatedCreator.credits,
+                    status: UserWalletTransaction_1.UserWalletTransactionStatus.COMPLETED,
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                }));
             }
             // Calculate subscription end date
             const subscriptionEndsAt = new Date();
@@ -132,6 +169,7 @@ exports.JoinCommunityUseCase = JoinCommunityUseCase = __decorate([
     __param(1, (0, inversify_1.inject)(types_1.TYPES.IUserRepository)),
     __param(2, (0, inversify_1.inject)(types_1.TYPES.IWebSocketService)),
     __param(3, (0, inversify_1.inject)(types_1.TYPES.ITransactionService)),
-    __metadata("design:paramtypes", [Object, Object, Object, Object])
+    __param(4, (0, inversify_1.inject)(types_1.TYPES.IUserWalletTransactionRepository)),
+    __metadata("design:paramtypes", [Object, Object, Object, Object, Object])
 ], JoinCommunityUseCase);
 //# sourceMappingURL=JoinCommunityUseCase.js.map

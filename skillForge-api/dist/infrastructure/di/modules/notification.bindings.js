@@ -5,6 +5,7 @@ const inversify_1 = require("inversify");
 const types_1 = require("../types");
 const NotificationRepository_1 = require("../../database/repositories/NotificationRepository");
 const NotificationService_1 = require("../../services/NotificationService");
+const AdminNotificationService_1 = require("../../services/AdminNotificationService");
 const NotificationMapper_1 = require("../../../application/mappers/NotificationMapper");
 const GetNotificationsUseCase_1 = require("../../../application/useCases/notification/GetNotificationsUseCase");
 const MarkNotificationAsReadUseCase_1 = require("../../../application/useCases/notification/MarkNotificationAsReadUseCase");
@@ -18,6 +19,8 @@ exports.notificationBindings = new inversify_1.ContainerModule((bind) => {
         .to(NotificationRepository_1.NotificationRepository).inSingletonScope();
     bind(types_1.TYPES.INotificationService)
         .to(NotificationService_1.NotificationService).inSingletonScope();
+    bind(types_1.TYPES.IAdminNotificationService)
+        .to(AdminNotificationService_1.AdminNotificationService).inSingletonScope();
     bind(types_1.TYPES.INotificationMapper)
         .to(NotificationMapper_1.NotificationMapper).inSingletonScope();
     bind(types_1.TYPES.IGetNotificationsUseCase)

@@ -10,6 +10,8 @@ import { ProjectResponseDTO } from '../../dto/project/ProjectResponseDTO';
 import { Project, ProjectStatus } from '../../../domain/entities/Project';
 import { ForbiddenError, NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { v4 as uuidv4 } from 'uuid';
+import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
+import { NotificationType } from '../../../domain/entities/Notification';
 
 @injectable()
 export class CreateProjectUseCase implements ICreateProjectUseCase {
@@ -17,13 +19,14 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
     @inject(TYPES.IProjectRepository) private readonly projectRepository: IProjectRepository,
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.IValidateProjectPostLimitUseCase) private readonly validateLimitUseCase: IValidateProjectPostLimitUseCase,
-    @inject(TYPES.IIncrementProjectPostUsageUseCase) private readonly incrementUsageUseCase: IIncrementProjectPostUsageUseCase
-  ) {}
+    @inject(TYPES.IIncrementProjectPostUsageUseCase) private readonly incrementUsageUseCase: IIncrementProjectPostUsageUseCase,
+    @inject(TYPES.IAdminNotificationService) private readonly adminNotificationService: IAdminNotificationService
+  ) { }
 
   async execute(userId: string, request: CreateProjectRequestDTO, paymentId?: string): Promise<ProjectResponseDTO> {
     // 1. Verify user exists
     const user = await this.userRepository.findById(userId);
-    
+
     if (!user) {
       throw new NotFoundError('User not found');
     }
@@ -55,7 +58,15 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
     // 5. Track usage (increment project post count)
     await this.incrementUsageUseCase.execute(userId);
 
-    // 6. Map to response DTO
+    // 6. Notify admins
+    await this.adminNotificationService.notifyAllAdmins({
+      type: NotificationType.NEW_PROJECT_CREATED,
+      title: 'New Project Created',
+      message: `A new project "${savedProject.title}" has been created by ${user.name}.`,
+      data: { projectId: savedProject.id, userId }
+    });
+
+    // 7. Map to response DTO
     return {
       id: savedProject.id!,
       clientId: savedProject.clientId,

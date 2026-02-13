@@ -29,6 +29,13 @@ var NotificationType;
     NotificationType["INTERVIEW_SCHEDULED"] = "INTERVIEW_SCHEDULED";
     NotificationType["SUBSCRIPTION_RENEWED"] = "SUBSCRIPTION_RENEWED";
     NotificationType["PAYMENT_RECEIVED"] = "PAYMENT_RECEIVED";
+    // Admin Notifications
+    NotificationType["NEW_USER_REGISTERED"] = "NEW_USER_REGISTERED";
+    NotificationType["NEW_SKILL_PENDING"] = "NEW_SKILL_PENDING";
+    NotificationType["NEW_REPORT_SUBMITTED"] = "NEW_REPORT_SUBMITTED";
+    NotificationType["WITHDRAWAL_REQUESTED"] = "WITHDRAWAL_REQUESTED";
+    NotificationType["PROJECT_ESCROW_RELEASE_REQUESTED"] = "PROJECT_ESCROW_RELEASE_REQUESTED";
+    NotificationType["NEW_PROJECT_CREATED"] = "NEW_PROJECT_CREATED";
 })(NotificationType || (exports.NotificationType = NotificationType = {}));
 class Notification {
     constructor(props) {

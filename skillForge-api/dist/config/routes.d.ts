@@ -245,6 +245,7 @@ export declare const ENDPOINTS: {
         readonly PROJECT_SUSPEND: "/projects/:projectId/suspend";
         readonly PAYMENT_REQUESTS_PENDING: "/payment-requests/pending";
         readonly PAYMENT_REQUEST_PROCESS: "/payment-requests/:id/process";
+        readonly DASHBOARD_STATS: "/dashboard/stats";
     };
     readonly ADMIN_SKILL: {
         readonly ROOT: "/";
@@ -260,6 +261,7 @@ export declare const ENDPOINTS: {
         readonly TRANSACTIONS: "/transactions";
         readonly CREDITS: "/credits";
         readonly STATS: "/stats";
+        readonly CREDIT_STATS: "/credit-stats";
     };
     readonly ADMIN_SESSION: {
         readonly ROOT: "/";

@@ -33,5 +33,21 @@ export interface IUserWalletTransactionRepository {
         totalSpent: number;
         totalPurchased: number;
     }>;
+    getTotalByType(type: UserWalletTransactionType): Promise<number>;
+    countByType(type: UserWalletTransactionType): Promise<number>;
+    getTotalByTypeAndDateRange(type: UserWalletTransactionType, startDate: Date, endDate: Date): Promise<number>;
+    countByTypeAndDateRange(type: UserWalletTransactionType, startDate: Date, endDate: Date): Promise<number>;
+    getTotalByTypeAndStatus(type: UserWalletTransactionType, status: UserWalletTransactionStatus): Promise<number>;
+    countByTypeAndStatus(type: UserWalletTransactionType, status: UserWalletTransactionStatus): Promise<number>;
+    getTotalCreditsPurchased(): Promise<number>;
+    findAll(filters?: {
+        page?: number;
+        limit?: number;
+        type?: UserWalletTransactionType;
+        status?: UserWalletTransactionStatus;
+        search?: string;
+        startDate?: Date;
+        endDate?: Date;
+    }): Promise<PaginatedTransactions>;
 }
 //# sourceMappingURL=IUserWalletTransactionRepository.d.ts.map
