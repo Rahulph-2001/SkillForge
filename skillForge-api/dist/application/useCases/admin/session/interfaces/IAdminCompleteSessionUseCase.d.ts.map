@@ -1,1 +1,0 @@
-{"version":3,"file":"IAdminCompleteSessionUseCase.d.ts","sourceRoot":"","sources":["../../../../../../src/application/useCases/admin/session/interfaces/IAdminCompleteSessionUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,4CAA4C,CAAC;AAEhF,MAAM,WAAW,4BAA4B;IACzC,OAAO,CAAC,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,kBAAkB,CAAC,CAAC;CAC3D"}

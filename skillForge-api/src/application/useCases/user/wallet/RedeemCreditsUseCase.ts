@@ -26,7 +26,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
         const creditsToRedeem = validatedData.creditsToRedeem;
 
         // Use Prisma transaction for atomicity
-        await this.db.getClient().$transaction(async (tx) => {
+        await this.db.getClient().$transaction(async (tx: any) => {
             // 1. Fetch User (with locking if possible, but optimistic concurrency is default in Prisma)
             const user = await tx.user.findUnique({ where: { id: userId } });
             if (!user) {

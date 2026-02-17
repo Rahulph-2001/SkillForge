@@ -1,1 +1,0 @@
-{"version":3,"file":"WalletDebitResponseDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/admin/WalletDebitResponseDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB;;GAEG;AACH,eAAO,MAAM,yBAAyB;;;;;;;;;iBASpC,CAAC;AAEH,MAAM,MAAM,sBAAsB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,yBAAyB,CAAC,CAAC"}

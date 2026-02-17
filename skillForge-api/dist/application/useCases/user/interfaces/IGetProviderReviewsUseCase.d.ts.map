@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetProviderReviewsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/user/interfaces/IGetProviderReviewsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,6CAA6C,CAAC;AAExF,MAAM,WAAW,0BAA0B;IACzC,OAAO,CAAC,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,yBAAyB,EAAE,CAAC,CAAC;CAC/D"}

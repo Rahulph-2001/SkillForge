@@ -1,1 +1,0 @@
-{"version":3,"file":"ILeaveVideoRoomUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/videoCall/interfaces/ILeaveVideoRoomUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,sBAAsB;IACnC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAG,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAA;CAC1D"}

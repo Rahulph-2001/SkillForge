@@ -1,1 +1,0 @@
-{"version":3,"file":"ActivateSubscriptionDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/subscription/ActivateSubscriptionDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AACxB,OAAO,EAAE,eAAe,EAAE,MAAM,yCAAyC,CAAC;AAE1E;;GAEG;AACH,eAAO,MAAM,iCAAiC;;;;;iBAK5C,CAAC;AAEH,MAAM,MAAM,8BAA8B,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,iCAAiC,CAAC,CAAC"}

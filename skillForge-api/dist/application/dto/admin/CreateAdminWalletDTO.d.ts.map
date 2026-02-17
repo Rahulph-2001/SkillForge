@@ -1,1 +1,0 @@
-{"version":3,"file":"CreateAdminWalletDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/admin/CreateAdminWalletDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,CAAC,EAAC,MAAM,KAAK,CAAA;AAErB,eAAO,MAAM,8BAA8B;;;;;;iBAMzC,CAAA;AAEF,MAAM,MAAM,2BAA2B,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,8BAA8B,CAAC,CAAA"}

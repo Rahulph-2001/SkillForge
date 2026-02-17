@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetNotificationsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/notification/interfaces/IGetNotificationsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAG,4BAA4B,EAAE,MAAM,gDAAgD,CAAC;AAE1H,MAAM,WAAW,uBAAuB;IACpC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,KAAK,EAAE,yBAAyB,GAAE,OAAO,CAAC,4BAA4B,CAAC,CAAA;CAElG"}

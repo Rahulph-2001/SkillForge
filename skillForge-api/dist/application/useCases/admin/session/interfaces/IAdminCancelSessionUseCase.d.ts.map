@@ -1,1 +1,0 @@
-{"version":3,"file":"IAdminCancelSessionUseCase.d.ts","sourceRoot":"","sources":["../../../../../../src/application/useCases/admin/session/interfaces/IAdminCancelSessionUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,4CAA4C,CAAC;AAEhF,MAAM,WAAW,0BAA0B;IACvC,OAAO,CAAC,SAAS,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,kBAAkB,CAAC,CAAC;CAC3E"}

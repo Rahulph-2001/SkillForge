@@ -1,4 +1,0 @@
-import { Request, Response, NextFunction } from 'express';
-export declare const asyncHandler: (fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>) => (req: Request, res: Response, next: NextFunction) => void;
-export declare const executeUseCase: <T>(fn: () => Promise<T>) => Promise<T>;
-//# sourceMappingURL=asyncHandler.d.ts.map

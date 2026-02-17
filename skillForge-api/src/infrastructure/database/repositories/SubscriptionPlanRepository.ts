@@ -24,49 +24,49 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
       }
     });
 
-    return plans.map((plan) => this.toDomain(plan));
+    return plans.map((plan: any) => this.toDomain(plan));
   }
 
- async findWithPagination(filters: {
-  page: number;
-  limit: number;
-  isActive?: boolean;
-}): Promise<{
-  plans: SubscriptionPlan[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}> {
-  const page = filters.page || 1;
-  const limit = filters.limit || 20;
-  const skip = (page - 1) * limit;
+  async findWithPagination(filters: {
+    page: number;
+    limit: number;
+    isActive?: boolean;
+  }): Promise<{
+    plans: SubscriptionPlan[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    const page = filters.page || 1;
+    const limit = filters.limit || 20;
+    const skip = (page - 1) * limit;
 
-  const where: any = {};
-  if (filters.isActive !== undefined) {
-    where.isActive = filters.isActive;
-  } else {
-    where.isActive = true;
+    const where: any = {};
+    if (filters.isActive !== undefined) {
+      where.isActive = filters.isActive;
+    } else {
+      where.isActive = true;
+    }
+
+    const total = await this.prisma.subscriptionPlanModel.count({ where });
+
+    const plans = await this.prisma.subscriptionPlanModel.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { price: 'asc' },
+      include: { features: true }
+    });
+
+    return {
+      plans: plans.map((plan: any) => this.toDomain(plan)),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
-
-  const total = await this.prisma.subscriptionPlanModel.count({ where });
-
-  const plans = await this.prisma.subscriptionPlanModel.findMany({
-    where,
-    skip,
-    take: limit,
-    orderBy: { price: 'asc' },
-    include: { features: true }
-  });
-
-  return {
-    plans: plans.map((plan) => this.toDomain(plan)),
-    total,
-    page,
-    limit,
-    totalPages: Math.ceil(total / limit),
-  };
-}
 
   async findById(id: string): Promise<SubscriptionPlan | null> {
     const plan = await this.prisma.subscriptionPlanModel.findUnique({

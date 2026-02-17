@@ -1,1 +1,0 @@
-{"version":3,"file":"ICreateReportUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/report/interfaces/ICreateReportUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,mDAAmD,CAAC;AAEpF,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,IAAI,EAAE,eAAe,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CACjD"}

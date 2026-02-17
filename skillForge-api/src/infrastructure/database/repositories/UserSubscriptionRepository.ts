@@ -53,7 +53,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             where: { planId },
         });
 
-        return data.map((item) => UserSubscription.fromJSON(item));
+        return data.map((item: any) => UserSubscription.fromJSON(item));
     }
 
     async findByStatus(status: SubscriptionStatus): Promise<UserSubscription[]> {
@@ -61,7 +61,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             where: { status: status as any },
         });
 
-        return data.map((item) => UserSubscription.fromJSON(item));
+        return data.map((item: any) => UserSubscription.fromJSON(item));
     }
 
     async findExpiring(days: number): Promise<UserSubscription[]> {
@@ -147,6 +147,6 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             },
         });
 
-        return data.map((item) => UserSubscription.fromJSON(item));
+        return data.map((item: any) => UserSubscription.fromJSON(item));
     }
 }

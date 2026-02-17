@@ -1,1 +1,0 @@
-{"version":3,"file":"IAdminGetSessionStatsUseCase.d.ts","sourceRoot":"","sources":["../../../../../../src/application/useCases/admin/session/interfaces/IAdminGetSessionStatsUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,4BAA4B;IACzC,OAAO,IAAI,OAAO,CAAC;QACf,aAAa,EAAE,MAAM,CAAC;QACtB,SAAS,EAAE,MAAM,CAAC;QAClB,QAAQ,EAAE,MAAM,CAAC;QACjB,SAAS,EAAE,MAAM,CAAC;KACrB,CAAC,CAAC;CACN"}

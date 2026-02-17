@@ -6,7 +6,7 @@ import { INotificationRepository, NotificationFilters, PaginatedNotifications } 
 
 @injectable()
 export class NotificationRepository implements INotificationRepository {
-  constructor(@inject(TYPES.Database) private readonly db: Database) {}
+  constructor(@inject(TYPES.Database) private readonly db: Database) { }
 
   private get prisma() {
     return this.db.getClient();
@@ -59,7 +59,7 @@ export class NotificationRepository implements INotificationRepository {
     ]);
 
     return {
-      notifications: notifications.map(n => Notification.fromDatabaseRow(n as unknown as Record<string, unknown>)),
+      notifications: notifications.map((n: any) => Notification.fromDatabaseRow(n as unknown as Record<string, unknown>)),
       total,
       page,
       limit,

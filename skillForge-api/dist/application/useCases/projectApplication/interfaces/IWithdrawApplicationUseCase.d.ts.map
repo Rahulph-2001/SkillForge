@@ -1,1 +1,0 @@
-{"version":3,"file":"IWithdrawApplicationUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/projectApplication/interfaces/IWithdrawApplicationUseCase.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,6BAA6B,EAAE,MAAM,+DAA+D,CAAC;AAE9G,MAAM,WAAW,2BAA2B;IAC1C,OAAO,CAAC,aAAa,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,6BAA6B,CAAC,CAAC;CAC7F"}

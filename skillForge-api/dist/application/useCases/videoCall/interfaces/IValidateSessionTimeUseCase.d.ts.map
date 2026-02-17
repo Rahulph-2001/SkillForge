@@ -1,1 +1,0 @@
-{"version":3,"file":"IValidateSessionTimeUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/videoCall/interfaces/IValidateSessionTimeUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,8BAA8B,EAAE,MAAM,+CAA+C,CAAC;AAE/F,MAAM,WAAW,2BAA2B;IAC1C,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,8BAA8B,CAAC,CAAC;CACrF"}

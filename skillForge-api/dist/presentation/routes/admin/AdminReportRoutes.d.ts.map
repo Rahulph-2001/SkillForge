@@ -1,1 +1,0 @@
-{"version":3,"file":"AdminReportRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/admin/AdminReportRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,qBAAqB,EAAE,MAAM,+CAA+C,CAAC;AAKtF,qBACa,iBAAiB;IAIe,OAAO,CAAC,qBAAqB;IAH/D,MAAM,EAAE,MAAM,CAAC;gBAG2B,qBAAqB,EAAE,qBAAqB;IAM7F,OAAO,CAAC,gBAAgB;CAO3B"}

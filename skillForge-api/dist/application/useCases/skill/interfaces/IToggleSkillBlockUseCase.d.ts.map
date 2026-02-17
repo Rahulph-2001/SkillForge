@@ -1,1 +1,0 @@
-{"version":3,"file":"IToggleSkillBlockUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/skill/interfaces/IToggleSkillBlockUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,mCAAmC,CAAC;AAE1D,MAAM,WAAW,wBAAwB;IACrC,OAAO,CAAC,OAAO,EAAE,MAAM,EAAE,UAAU,EAAE,MAAM,GAAG,OAAO,CAAC,KAAK,CAAC,CAAC;CAChE"}

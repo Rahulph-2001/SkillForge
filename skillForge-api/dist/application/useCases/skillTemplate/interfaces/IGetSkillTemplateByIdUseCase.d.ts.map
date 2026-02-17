@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetSkillTemplateByIdUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/skillTemplate/interfaces/IGetSkillTemplateByIdUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,2CAA2C,CAAC;AAE1E,MAAM,WAAW,4BAA4B;IACzC,OAAO,CAAC,WAAW,EAAE,MAAM,EAAE,UAAU,EAAE,MAAM,GAAG,OAAO,CAAC,aAAa,CAAC,CAAC;CAC5E"}

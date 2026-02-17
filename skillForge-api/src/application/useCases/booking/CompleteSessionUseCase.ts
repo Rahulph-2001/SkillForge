@@ -8,7 +8,7 @@ import { BookingStatus } from '../../../domain/entities/Booking';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ICompleteSessionUseCase, CompleteSessionRequestDTO } from './interfaces/ICompleteSessionUseCase';
 import { Database } from '../../../infrastructure/database/Database';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { INotificationService } from '../../../domain/services/INotificationService';
 import { NotificationType } from '../../../domain/entities/Notification';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
@@ -45,7 +45,7 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
         // Use transaction to ensure all updates are atomic
         const prisma = this.database.getClient() as PrismaClient;
 
-        await prisma.$transaction(async (tx) => {
+        await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // 1. Release escrow credits to provider
             await this.escrowRepository.releaseCredits(bookingId);
 

@@ -1,1 +1,0 @@
-{"version":3,"file":"IMarkNotificationAsReadUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/notification/interfaces/IMarkNotificationAsReadUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,EAAE,MAAM,mDAAmD,CAAC;AAE5F,MAAM,WAAW,8BAA8B;IAC3C,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,cAAc,EAAE,MAAM,GAAG,OAAO,CAAC,uBAAuB,CAAC,CAAC;CACrF"}

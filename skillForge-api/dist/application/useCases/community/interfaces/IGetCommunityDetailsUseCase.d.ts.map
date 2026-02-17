@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetCommunityDetailsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/community/interfaces/IGetCommunityDetailsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,6CAA6C,CAAC;AAEnF,MAAM,WAAW,2BAA2B;IAC1C,OAAO,CAAC,WAAW,EAAE,MAAM,EAAE,MAAM,CAAC,EAAE,MAAM,GAAG,OAAO,CAAC,oBAAoB,CAAC,CAAC;CAC9E"}

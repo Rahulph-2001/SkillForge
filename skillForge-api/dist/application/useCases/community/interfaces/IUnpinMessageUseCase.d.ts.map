@@ -1,1 +1,0 @@
-{"version":3,"file":"IUnpinMessageUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/community/interfaces/IUnpinMessageUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,8CAA8C,CAAC;AAEhF,MAAM,WAAW,oBAAoB;IACnC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,gBAAgB,CAAC,CAAC;CACvE"}

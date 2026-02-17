@@ -1,1 +1,0 @@
-{"version":3,"file":"CreditRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/credit/CreditRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,gBAAgB,EAAE,MAAM,2CAA2C,CAAC;AAM7E,qBACa,YAAY;IAIe,OAAO,CAAC,QAAQ,CAAC,UAAU;IAH/D,SAAgB,MAAM,EAAE,MAAM,CAAY;gBAGW,UAAU,EAAE,gBAAgB;IAKjF,OAAO,CAAC,gBAAgB;CAa3B"}

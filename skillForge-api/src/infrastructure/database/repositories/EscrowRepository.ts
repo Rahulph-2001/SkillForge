@@ -31,7 +31,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       orderBy: { createdAt: 'desc' },
     });
 
-    return escrows.map((e) => this.mapToDomain(e));
+    return escrows.map((e: any) => this.mapToDomain(e));
   }
 
   async findByProviderId(providerId: string): Promise<EscrowTransaction[]> {
@@ -40,7 +40,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       orderBy: { createdAt: 'desc' },
     });
 
-    return escrows.map((e) => this.mapToDomain(e));
+    return escrows.map((e: any) => this.mapToDomain(e));
   }
 
   async holdCredits(
@@ -49,7 +49,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
     providerId: string,
     amount: number
   ): Promise<EscrowTransaction> {
-    return await (this.prisma as PrismaClient).$transaction(async (tx) => {
+    return await (this.prisma as PrismaClient).$transaction(async (tx: Prisma.TransactionClient) => {
       const learner = await tx.user.findUnique({
         where: { id: learnerId },
       });
@@ -88,7 +88,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
   }
 
   async releaseCredits(bookingId: string): Promise<EscrowTransaction> {
-    return await (this.prisma as PrismaClient).$transaction(async (tx) => {
+    return await (this.prisma as PrismaClient).$transaction(async (tx: Prisma.TransactionClient) => {
       const escrow = await tx.escrowTransaction.findUnique({
         where: { bookingId },
       });
@@ -149,7 +149,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
   }
 
   async refundCredits(bookingId: string): Promise<EscrowTransaction> {
-    return await (this.prisma as PrismaClient).$transaction(async (tx) => {
+    return await (this.prisma as PrismaClient).$transaction(async (tx: Prisma.TransactionClient) => {
       const escrow = await tx.escrowTransaction.findUnique({
         where: { bookingId },
       });

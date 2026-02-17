@@ -1,1 +1,0 @@
-{"version":3,"file":"IJoinCommunityUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/community/interfaces/IJoinCommunityUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,0BAA0B,EAAE,MAAM,mDAAmD,CAAC;AAE/F,MAAM,WAAW,qBAAqB;IACpC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,WAAW,EAAE,MAAM,GAAG,OAAO,CAAC,0BAA0B,CAAC,CAAC;CACnF"}

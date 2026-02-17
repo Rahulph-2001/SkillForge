@@ -6,7 +6,7 @@ import { WalletTransaction } from '../../../domain/entities/WalletTransaction';
 
 @injectable()
 export class WalletTransactionRepository implements IWalletTransactionRepository {
-  constructor(@inject(TYPES.Database) private readonly db: Database) {}
+  constructor(@inject(TYPES.Database) private readonly db: Database) { }
 
   async create(transaction: WalletTransaction): Promise<WalletTransaction> {
     const data = transaction.toJSON();
@@ -56,7 +56,7 @@ export class WalletTransactionRepository implements IWalletTransactionRepository
     ]);
 
     return {
-      transactions: transactions.map(t => WalletTransaction.fromDatabaseRow(t)),
+      transactions: transactions.map((t: any) => WalletTransaction.fromDatabaseRow(t)),
       total,
     };
   }
@@ -107,7 +107,7 @@ export class WalletTransactionRepository implements IWalletTransactionRepository
     ]);
 
     return {
-      transactions: transactions.map(t => WalletTransaction.fromDatabaseRow(t)),
+      transactions: transactions.map((t: any) => WalletTransaction.fromDatabaseRow(t)),
       total,
     };
   }

@@ -108,7 +108,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
         const currentRecords = await this.findCurrentPeriodBySubscriptionId(subscriptionId);
 
         // Create new records for the new period with reset counts
-        const newRecords = currentRecords.map((record) => ({
+        const newRecords = currentRecords.map((record: any) => ({
             subscriptionId,
             featureKey: record.featureKey,
             usageCount: 0,
@@ -119,7 +119,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
 
         // Create all new records in a transaction
         await (this.prisma as PrismaClient).$transaction(
-            newRecords.map((record) =>
+            newRecords.map((record: any) =>
                 this.prisma.usageRecord.create({
                     data: record,
                 })

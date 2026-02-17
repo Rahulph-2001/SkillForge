@@ -43,7 +43,7 @@ export class InterviewRepository extends BaseRepository<Interview> implements II
             where: { applicationId },
             orderBy: { scheduledAt: 'desc' },
         });
-        return data.map(d => this.toDomain(d));
+        return data.map((d: any) => this.toDomain(d));
     }
 
     async update(interview: Interview): Promise<Interview> {
@@ -74,7 +74,7 @@ export class InterviewRepository extends BaseRepository<Interview> implements II
                 }
             }
         });
-        return data.map(d => this.toDomain(d));
+        return data.map((d: any) => this.toDomain(d));
     }
 
     private toDomain(data: any): Interview {

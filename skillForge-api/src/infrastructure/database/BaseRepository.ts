@@ -18,14 +18,14 @@ export abstract class BaseRepository<T> {
     this.prisma = client;
   }
 
- 
-  protected async create(data: Prisma.SelectSubset<T, Prisma.Args<T, 'create'>>): Promise<T> {
-   
+
+  protected async create(data: any): Promise<T> {
+
     const modelClient = (this.prisma as any)[this.model];
     return modelClient.create({ data }) as T;
   }
 
-  
+
   protected async findById(id: string): Promise<T | null> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -33,7 +33,7 @@ export abstract class BaseRepository<T> {
     return modelClient.findUnique({ where: { id } }) as T | null;
   }
 
-  
+
   protected async findByEmail(email: string): Promise<T | null> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -41,7 +41,7 @@ export abstract class BaseRepository<T> {
     return modelClient.findUnique({ where: { email } }) as T | null;
   }
 
-  
+
   protected async findAll(): Promise<T[]> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,15 +49,15 @@ export abstract class BaseRepository<T> {
     return modelClient.findMany() as T[];
   }
 
-  
-  protected async updateById(id: string, data: Prisma.SelectSubset<T, Prisma.Args<T, 'update'>>): Promise<T> {
+
+  protected async updateById(id: string, data: any): Promise<T> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const modelClient = (this.prisma as any)[this.model];
     return modelClient.update({ where: { id }, data }) as T;
   }
 
- 
+
   protected async delete(id: string): Promise<void> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -65,7 +65,7 @@ export abstract class BaseRepository<T> {
     await modelClient.update({ where: { id }, data: { isDeleted: true, deletedAt: new Date() } });
   }
 
-  
+
   protected async getOne(query: Record<string, unknown>): Promise<T | null> {
     // Using 'any' here is necessary for Prisma's dynamic model access pattern
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

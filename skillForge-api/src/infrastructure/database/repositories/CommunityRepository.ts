@@ -55,7 +55,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       where,
       orderBy: { createdAt: 'desc' },
     });
-    return communities.map(c => Community.fromDatabaseRow(c));
+    return communities.map((c: any) => Community.fromDatabaseRow(c));
   }
 
   public async findAllWithPagination(
@@ -95,7 +95,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
     ]);
 
     return {
-      communities: communities.map(c => Community.fromDatabaseRow(c)),
+      communities: communities.map((c: any) => Community.fromDatabaseRow(c)),
       total,
     };
   }
@@ -106,7 +106,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       where: { adminId },
       orderBy: { createdAt: 'desc' },
     });
-    return communities.map(c => Community.fromDatabaseRow(c));
+    return communities.map((c: any) => Community.fromDatabaseRow(c));
   }
 
   public async update(id: string, community: Community): Promise<Community> {
@@ -182,7 +182,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       orderBy: { joinedAt: 'desc' },
     });
 
-    return members.map(m => {
+    return members.map((m: any) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -324,7 +324,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       orderBy: { joinedAt: 'desc' },
     });
 
-    return members.map(m => {
+    return members.map((m: any) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -379,7 +379,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
         },
       },
     });
-    return expiredMembers.map(m => {
+    return expiredMembers.map((m: any) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -418,7 +418,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
         },
       },
     });
-    return expiredMembers.map(m => {
+    return expiredMembers.map((m: any) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {

@@ -54,7 +54,7 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             orderBy: { createdAt: 'desc' },
         });
 
-        return results.map(row => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async findPending(): Promise<ProjectPaymentRequest[]> {
@@ -71,7 +71,7 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             }
         });
 
-        return results.map(row => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async findPendingByType(type: ProjectPaymentRequestType): Promise<ProjectPaymentRequest[]> {
@@ -83,7 +83,7 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             orderBy: { createdAt: 'asc' },
         });
 
-        return results.map(row => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async update(request: ProjectPaymentRequest): Promise<ProjectPaymentRequest> {

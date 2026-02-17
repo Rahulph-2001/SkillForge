@@ -1,1 +1,0 @@
-{"version":3,"file":"IDeleteSubscriptionPlanUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/subscription/interfaces/IDeleteSubscriptionPlanUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,8BAA8B;IAC7C,OAAO,CAAC,WAAW,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC7D"}

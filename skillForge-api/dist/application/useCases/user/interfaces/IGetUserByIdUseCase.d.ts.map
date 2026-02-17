@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetUserByIdUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/user/interfaces/IGetUserByIdUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,kCAAkC,CAAC;AAExD,MAAM,WAAW,mBAAmB;IAClC,OAAO,CAAC,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CACxC"}

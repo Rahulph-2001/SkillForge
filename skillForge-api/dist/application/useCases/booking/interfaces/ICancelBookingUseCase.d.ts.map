@@ -1,1 +1,0 @@
-{"version":3,"file":"ICancelBookingUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/booking/interfaces/ICancelBookingUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,EAAE,MAAM,8CAA8C,CAAC;AAEvF,MAAM,WAAW,qBAAqB;IACpC,OAAO,CAAC,OAAO,EAAE,uBAAuB,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC1D"}

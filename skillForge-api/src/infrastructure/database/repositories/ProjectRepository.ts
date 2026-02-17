@@ -124,7 +124,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       orderBy: { createdAt: 'desc' },
     });
 
-    return projects.map((p) => this.mapToDomain(p));
+    return projects.map((p: any) => this.mapToDomain(p));
   }
 
   async findByClientIdAndStatus(clientId: string, status: ProjectStatus): Promise<Project[]> {
@@ -134,7 +134,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
       orderBy: { createdAt: 'desc' },
     });
 
-    return projects.map((p) => this.mapToDomain(p));
+    return projects.map((p: any) => this.mapToDomain(p));
   }
 
   async findByPaymentId(paymentId: string): Promise<Project | null> {
@@ -161,7 +161,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     });
 
     const projects = applications
-      .map((app) => app.project)
+      .map((app: any) => app.project)
       .filter((project) => project !== null && (
         (project.status as string) === 'In_Progress' ||
         (project.status as string) === 'Open' ||
@@ -170,7 +170,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
         (project.status as string) === 'Refund_Pending'
       ));
 
-    return projects.map((p) => this.mapToDomain(p));
+    return projects.map((p: any) => this.mapToDomain(p));
   }
 
   // --- List Operations ---
@@ -219,7 +219,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     });
 
     return {
-      projects: projects.map((p) => this.mapToDomain(p)),
+      projects: projects.map((p: any) => this.mapToDomain(p)),
       total,
       page,
       limit,
@@ -389,7 +389,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
     });
 
     return {
-      projects: projects.map((p) => this.mapToDomain(p)),
+      projects: projects.map((p: any) => this.mapToDomain(p)),
       total,
       page,
       limit,

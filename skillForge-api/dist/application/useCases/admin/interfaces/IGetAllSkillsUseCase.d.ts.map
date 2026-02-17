@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetAllSkillsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IGetAllSkillsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,QAAQ,EAAE,MAAM,wBAAwB,CAAC;AAElD,MAAM,WAAW,oBAAoB;IACnC,OAAO,IAAI,OAAO,CAAC,QAAQ,EAAE,CAAC,CAAC;CAChC"}

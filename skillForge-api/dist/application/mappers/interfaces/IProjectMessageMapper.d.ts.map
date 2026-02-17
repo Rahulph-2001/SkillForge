@@ -1,1 +1,0 @@
-{"version":3,"file":"IProjectMessageMapper.d.ts","sourceRoot":"","sources":["../../../../src/application/mappers/interfaces/IProjectMessageMapper.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,cAAc,EAAE,MAAM,yCAAyC,CAAC;AACzE,OAAO,EAAE,yBAAyB,EAAE,MAAM,qCAAqC,CAAC;AAEhF,MAAM,WAAW,qBAAqB;IAClC,aAAa,CAAC,OAAO,EAAE,cAAc,EAAE,aAAa,CAAC,EAAE,MAAM,GAAG,yBAAyB,CAAC;CAC7F"}

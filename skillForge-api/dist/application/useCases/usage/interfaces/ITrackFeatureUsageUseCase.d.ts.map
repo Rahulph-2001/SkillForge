@@ -1,1 +1,0 @@
-{"version":3,"file":"ITrackFeatureUsageUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/usage/interfaces/ITrackFeatureUsageUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,aAAa,EAAE,MAAM,kCAAkC,CAAC;AACjE,OAAO,EAAE,sBAAsB,EAAE,MAAM,2CAA2C,CAAC;AAEnF,MAAM,WAAW,yBAAyB;IACtC,OAAO,CAAC,GAAG,EAAE,aAAa,GAAG,OAAO,CAAC,sBAAsB,CAAC,CAAC;CAChE"}

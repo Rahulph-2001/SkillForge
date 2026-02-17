@@ -49,7 +49,7 @@ export class ProjectApplicationRepository
       where: { projectId },
       orderBy: { matchScore: 'desc' },
     });
-    return data.map(d => this.toDomain(d));
+    return data.map((d: any) => this.toDomain(d));
   }
 
   async findByApplicantId(applicantId: string): Promise<ProjectApplication[]> {
@@ -62,7 +62,7 @@ export class ProjectApplicationRepository
       },
       orderBy: { createdAt: 'desc' },
     });
-    return data.map(d => this.toDomain(d));
+    return data.map((d: any) => this.toDomain(d));
   }
 
   async findByProjectAndApplicant(projectId: string, applicantId: string): Promise<ProjectApplication | null> {
@@ -101,7 +101,7 @@ export class ProjectApplicationRepository
       },
       orderBy: { createdAt: 'desc' },
     });
-    return data.map(d => this.toDomain(d));
+    return data.map((d: any) => this.toDomain(d));
   }
 
   async update(application: ProjectApplication): Promise<ProjectApplication> {

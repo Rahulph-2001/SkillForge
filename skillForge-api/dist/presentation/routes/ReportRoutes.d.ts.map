@@ -1,1 +1,0 @@
-{"version":3,"file":"ReportRoutes.d.ts","sourceRoot":"","sources":["../../../src/presentation/routes/ReportRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,gBAAgB,EAAE,MAAM,iCAAiC,CAAC;AAInE,qBACa,YAAY;IAIe,OAAO,CAAC,gBAAgB;IAHrD,MAAM,EAAE,MAAM,CAAC;gBAGsB,gBAAgB,EAAE,gBAAgB;IAM9E,OAAO,CAAC,gBAAgB;CAI3B"}

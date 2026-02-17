@@ -56,7 +56,7 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
                 _avg: { rating: true },
                 _count: { rating: true },
             });
-            
+
 
             await tx.user.update({
                 where: { id: review.providerId },
@@ -97,7 +97,7 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
             where: { providerId },
             orderBy: { createdAt: 'desc' },
         });
-        return data.map((item) => this.mapToDomain(item));
+        return data.map((item: any) => this.mapToDomain(item));
     }
 
     async findByLearnerId(learnerId: string): Promise<Review[]> {
@@ -106,6 +106,6 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
             where: { learnerId },
             orderBy: { createdAt: 'desc' },
         });
-        return data.map((item) => this.mapToDomain(item));
+        return data.map((item: any) => this.mapToDomain(item));
     }
 }

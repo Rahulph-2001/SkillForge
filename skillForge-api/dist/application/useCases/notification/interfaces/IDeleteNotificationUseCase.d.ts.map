@@ -1,1 +1,0 @@
-{"version":3,"file":"IDeleteNotificationUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/notification/interfaces/IDeleteNotificationUseCase.ts"],"names":[],"mappings":"AACA,MAAM,WAAW,0BAA0B;IACvC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,cAAc,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAA;CACjE"}

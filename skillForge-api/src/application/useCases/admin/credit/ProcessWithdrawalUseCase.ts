@@ -21,7 +21,7 @@ export class ProcessWithdrawalUseCase implements IProcessWithdrawalUseCase {
     async execute(adminId: string, data: ProcessWithdrawalDTO): Promise<WithdrawalRequestResponseDTO> {
         const validatedData = ProcessWithdrawalSchema.parse(data);
 
-        return await this.db.getClient().$transaction(async (tx) => {
+        return await this.db.getClient().$transaction(async (tx: any) => {
             // 1. Fetch Request
             const requestData = await tx.withdrawalRequest.findUnique({ where: { id: validatedData.withdrawalId } });
             if (!requestData) {

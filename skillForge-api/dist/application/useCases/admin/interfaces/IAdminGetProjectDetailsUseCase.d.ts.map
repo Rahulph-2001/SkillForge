@@ -1,1 +1,0 @@
-{"version":3,"file":"IAdminGetProjectDetailsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IAdminGetProjectDetailsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,MAAM,2CAA2C,CAAC;AAEnF,MAAM,WAAW,8BAA8B;IAC7C,OAAO,CAAC,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,sBAAsB,CAAC,CAAC;CAC7D"}

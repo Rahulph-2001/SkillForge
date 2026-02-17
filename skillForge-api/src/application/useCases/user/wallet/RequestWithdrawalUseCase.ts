@@ -24,7 +24,7 @@ export class RequestWithdrawalUseCase implements IRequestWithdrawalUseCase {
     async execute(userId: string, data: RequestWithdrawalDTO): Promise<WithdrawalRequestResponseDTO> {
         const validatedData = RequestWithdrawalSchema.parse(data);
 
-        return await this.db.getClient().$transaction(async (tx) => {
+        return await this.db.getClient().$transaction(async (tx: any) => {
             // 1. Fetch User
             const user = await tx.user.findUnique({ where: { id: userId } });
             if (!user) {

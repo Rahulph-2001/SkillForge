@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetInterviewUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/interview/interfaces/IGetInterviewUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,6CAA6C,CAAC;AAEnF,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,aAAa,EAAE,MAAM,GAAG,OAAO,CAAC,oBAAoB,EAAE,CAAC,CAAC;CACnF"}

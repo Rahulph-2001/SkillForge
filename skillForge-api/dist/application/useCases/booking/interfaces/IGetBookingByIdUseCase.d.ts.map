@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetBookingByIdUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/booking/interfaces/IGetBookingByIdUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,yCAAyC,CAAC;AAE7E,MAAM,WAAW,sBAAsB;IACrC,OAAO,CAAC,SAAS,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,kBAAkB,CAAC,CAAC;CACzE"}

@@ -55,7 +55,7 @@ export class CommunityMessageRepository extends BaseRepository<CommunityMessage>
       take: limit,
       skip: offset,
     });
-    return messages.map(m => CommunityMessage.fromDatabaseRow(m));
+    return messages.map((m: any) => CommunityMessage.fromDatabaseRow(m));
   }
 
   public async findPinnedMessages(communityId: string): Promise<CommunityMessage[]> {
@@ -63,7 +63,7 @@ export class CommunityMessageRepository extends BaseRepository<CommunityMessage>
       where: { communityId, isPinned: true, isDeleted: false },
       orderBy: { pinnedAt: 'desc' },
     });
-    return messages.map(m => CommunityMessage.fromDatabaseRow(m));
+    return messages.map((m: any) => CommunityMessage.fromDatabaseRow(m));
   }
 
   public async update(message: CommunityMessage): Promise<CommunityMessage> {

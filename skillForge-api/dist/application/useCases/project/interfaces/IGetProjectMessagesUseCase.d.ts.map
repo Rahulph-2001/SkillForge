@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetProjectMessagesUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/project/interfaces/IGetProjectMessagesUseCase.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,yBAAyB,EAAE,MAAM,wCAAwC,CAAC;AAEnF,MAAM,WAAW,0BAA0B;IACvC,OAAO,CAAC,aAAa,EAAE,MAAM,EAAE,SAAS,EAAE,MAAM,GAAG,OAAO,CAAC,yBAAyB,EAAE,CAAC,CAAC;CAC3F"}

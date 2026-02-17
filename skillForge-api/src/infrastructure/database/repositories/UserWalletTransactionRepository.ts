@@ -257,7 +257,7 @@ export class UserWalletTransactionRepository implements IUserWalletTransactionRe
             }
         });
 
-        return transactions.reduce((acc, t) => {
+        return transactions.reduce((acc: any, t: any) => {
             const credits = (t.metadata as any)?.creditsAdded;
             return acc + (Number(credits) || 0);
         }, 0);

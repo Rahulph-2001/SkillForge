@@ -1,1 +1,0 @@
-{"version":3,"file":"SubmitMCQRequestDTO.d.ts","sourceRoot":"","sources":["../../../../src/application/dto/mcq/SubmitMCQRequestDTO.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,CAAC,EAAE,MAAM,KAAK,CAAC;AAExB,eAAO,MAAM,sBAAsB;;;;;;iBAgBjC,CAAC;AAEH,MAAM,MAAM,mBAAmB,GAAG,CAAC,CAAC,KAAK,CAAC,OAAO,sBAAsB,CAAC,CAAC"}

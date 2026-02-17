@@ -1,1 +1,0 @@
-{"version":3,"file":"IAdminManageReportUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IAdminManageReportUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,yBAAyB;IACtC,OAAO,CAAC,QAAQ,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,SAAS,GAAG,SAAS,GAAG,QAAQ,EAAE,UAAU,CAAC,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAC5H"}

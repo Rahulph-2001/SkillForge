@@ -1,1 +1,0 @@
-{"version":3,"file":"featureRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/feature/featureRoutes.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,iBAAiB,EAAE,MAAM,6CAA6C,CAAC;AAKhF,qBACa,aAAa;IAIe,OAAO,CAAC,QAAQ,CAAC,iBAAiB;IAHhE,MAAM,6CAAY;gBAG6B,iBAAiB,EAAE,iBAAiB;IAK1F,OAAO,CAAC,gBAAgB;CAmC3B"}

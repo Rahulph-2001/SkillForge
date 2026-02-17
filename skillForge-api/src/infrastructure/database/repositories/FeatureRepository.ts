@@ -44,7 +44,7 @@ export class PrismaFeatureRepository extends BaseRepository<Feature> implements 
             orderBy: { displayOrder: 'asc' },
         });
 
-        return data.map((item) => Feature.fromJSON(item));
+        return data.map((item: any) => Feature.fromJSON(item));
     }
 
     async update(feature: Feature): Promise<Feature> {
@@ -91,22 +91,22 @@ export class PrismaFeatureRepository extends BaseRepository<Feature> implements 
             orderBy: { displayOrder: 'asc' },
         });
 
-        return data.map((item) => Feature.fromJSON(item));
+        return data.map((item: any) => Feature.fromJSON(item));
     }
 
     async findLibraryFeatures(filters: { search?: string; isEnabled?: boolean; }, pagination: { skip: number; take: number; }): Promise<{ features: Feature[]; total: number; }> {
-        const where: any ={
+        const where: any = {
             planId: null
         };
 
-        if(filters.search){
+        if (filters.search) {
             where.OR = [
-                {name: { contains: filters.search, mode: 'insesitive'}},
-                {description: {contains: filters.search, mode: 'insensitive'}}
+                { name: { contains: filters.search, mode: 'insesitive' } },
+                { description: { contains: filters.search, mode: 'insensitive' } }
             ]
         }
 
-        if(typeof filters.isEnabled === 'boolean'){
+        if (typeof filters.isEnabled === 'boolean') {
             where.isEnabled = filters.isEnabled;
         }
 
@@ -116,14 +116,14 @@ export class PrismaFeatureRepository extends BaseRepository<Feature> implements 
                     where,
                     skip: pagination.skip,
                     take: pagination.take,
-                    orderBy: {displayOrder: 'asc'}
+                    orderBy: { displayOrder: 'asc' }
                 }),
-                this.prisma.feature.count({where})
+                this.prisma.feature.count({ where })
             ]
         );
 
         return {
-            features: feature.map((item)=> Feature.fromJSON(item)),
+            features: feature.map((item) => Feature.fromJSON(item)),
             total
         }
     }

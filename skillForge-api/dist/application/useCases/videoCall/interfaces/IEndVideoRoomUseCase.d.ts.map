@@ -1,1 +1,0 @@
-{"version":3,"file":"IEndVideoRoomUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/videoCall/interfaces/IEndVideoRoomUseCase.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,oBAAoB;IACjC,OAAO,CAAC,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,IAAI,CAAC,CAAA;CACzD"}

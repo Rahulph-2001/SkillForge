@@ -1,1 +1,0 @@
-{"version":3,"file":"mcqTestRoutes.d.ts","sourceRoot":"","sources":["../../../../src/presentation/routes/mcq/mcqTestRoutes.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,SAAS,CAAC;AAGjC,OAAO,EAAE,iBAAiB,EAAE,MAAM,yCAAyC,CAAC;AAI5E,qBACa,aAAa;IAIW,OAAO,CAAC,iBAAiB;IAH5D,OAAO,CAAC,MAAM,CAAS;gBAGoB,iBAAiB,EAAE,iBAAiB;IAM/E,OAAO,CAAC,WAAW;IAQZ,SAAS,IAAI,MAAM;CAG3B"}

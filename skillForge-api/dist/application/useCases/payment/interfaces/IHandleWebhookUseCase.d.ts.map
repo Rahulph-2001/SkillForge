@@ -1,1 +1,0 @@
-{"version":3,"file":"IHandleWebhookUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/payment/interfaces/IHandleWebhookUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,sCAAsC,CAAC;AAEvE,MAAM,WAAW,qBAAqB;IAClC,OAAO,CAAC,KAAK,EAAE,eAAe,GAAG,OAAO,CAAC,IAAI,CAAC,CAAC;CAClD"}

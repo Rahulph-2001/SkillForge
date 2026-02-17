@@ -66,7 +66,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
       orderBy: { createdAt: 'desc' },
     });
 
-    return questions.map((q) =>
+    return questions.map((q: any) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,
@@ -88,7 +88,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
       orderBy: { createdAt: 'desc' },
     });
 
-    return questions.map((q) =>
+    return questions.map((q: any) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,
@@ -163,7 +163,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
     const shuffled = questions.sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, count);
 
-    return selected.map((q) =>
+    return selected.map((q: any) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,

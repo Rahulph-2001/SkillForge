@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetProviderAvailabilityUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/availability/interfaces/IGetProviderAvailabilityUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,oBAAoB,EAAE,MAAM,kDAAkD,CAAC;AAExF,MAAM,WAAW,+BAA+B;IAC9C,OAAO,CAAC,UAAU,EAAE,MAAM,GAAG,OAAO,CAAC,oBAAoB,CAAC,CAAC;CAC5D"}

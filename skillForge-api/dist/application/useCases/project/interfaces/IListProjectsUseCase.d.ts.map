@@ -1,1 +1,0 @@
-{"version":3,"file":"IListProjectsUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/project/interfaces/IListProjectsUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,sBAAsB,EAAE,uBAAuB,EAAE,MAAM,sCAAsC,CAAC;AAEvG,MAAM,WAAW,oBAAoB;IACnC,OAAO,CAAC,OAAO,EAAE,sBAAsB,GAAG,OAAO,CAAC,uBAAuB,CAAC,CAAC;CAC5E"}

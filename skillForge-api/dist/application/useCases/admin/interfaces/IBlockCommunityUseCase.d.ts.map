@@ -1,1 +1,0 @@
-{"version":3,"file":"IBlockCommunityUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/admin/interfaces/IBlockCommunityUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,6CAA6C,CAAC;AAEvF;;;GAGG;AACH,MAAM,WAAW,sBAAsB;IACnC,OAAO,CAAC,OAAO,EAAE,wBAAwB,GAAG,OAAO,CAAC;QAAE,OAAO,EAAE,MAAM,CAAA;KAAE,CAAC,CAAC;CAC5E"}

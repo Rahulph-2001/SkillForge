@@ -1,1 +1,0 @@
-{"version":3,"file":"ICreateFeatureUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/feature/interfaces/ICreateFeatureUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,gBAAgB,EAAE,MAAM,uCAAuC,CAAC;AACzE,OAAO,EAAE,kBAAkB,EAAE,MAAM,yCAAyC,CAAC;AAE7E,MAAM,WAAW,qBAAqB;IAClC,OAAO,CAAC,GAAG,EAAE,gBAAgB,GAAG,OAAO,CAAC,kBAAkB,CAAC,CAAC;CAC/D"}

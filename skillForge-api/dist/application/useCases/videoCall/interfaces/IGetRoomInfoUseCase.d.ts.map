@@ -1,1 +1,0 @@
-{"version":3,"file":"IGetRoomInfoUseCase.d.ts","sourceRoot":"","sources":["../../../../../src/application/useCases/videoCall/interfaces/IGetRoomInfoUseCase.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,iDAAiD,CAAC;AAE3F,MAAM,WAAW,mBAAmB;IAChC,OAAO,CAAC,OAAO,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,GAAG,OAAO,CAAC,wBAAwB,CAAC,CAAA;CAC9E"}

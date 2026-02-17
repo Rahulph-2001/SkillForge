@@ -81,7 +81,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       orderBy: { createdAt: 'desc' },
     });
 
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findByLearnerId(learnerId: string): Promise<Booking[]> {
@@ -99,7 +99,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       orderBy: { createdAt: 'desc' },
     });
 
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findDuplicateBooking(
@@ -393,7 +393,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { createdAt: 'desc' },
     });
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findByLearnerIdAndStatus(learnerId: string, status: BookingStatus): Promise<Booking[]> {
@@ -407,7 +407,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { createdAt: 'desc' },
     });
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findOverlapping(providerId: string, date: Date, startTime: string, endTime: string): Promise<Booking[]> {
@@ -444,7 +444,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         review: { select: { id: true } },
       },
     });
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findInDateRange(providerId: string, startDate: Date, endDate: Date): Promise<Booking[]> {
@@ -477,7 +477,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { preferredDate: 'asc' },
     });
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findOverlappingWithBuffer(
@@ -522,7 +522,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         review: { select: { id: true } },
       },
     });
-    return bookings.map((b) => this.mapToDomain(b));
+    return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async countActiveBookingsByProviderAndDate(providerId: string, dateString: string): Promise<number> {
@@ -755,7 +755,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     ]);
 
     return {
-      data: bookings.map((b) => this.mapToDomain(b)),
+      data: bookings.map((b: any) => this.mapToDomain(b)),
       total,
     };
   }
