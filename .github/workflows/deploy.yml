@@ -45,42 +45,35 @@ jobs:
         env:
           ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no \
-          ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          # 1. Update Codebase (SSH)
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             set -e
-
             if [ ! -d SkillForge ]; then
               git clone https://github.com/Rahulph-2001/SkillForge.git
             fi
-
             cd SkillForge/skillForge-api
             git pull origin main
-
-            echo "$ENV_FILE" > .env
+          EOF
+          
+          # 2. Create local .env and Copy to Server (SCP)
+          echo "$ENV_FILE" > .env
+          scp -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no .env ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:SkillForge/skillForge-api/.env
+          
+          # 3. Start Application (SSH)
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e
+            cd SkillForge/skillForge-api
             
-            if [ -s .env ]; then
-              echo ".env file created successfully."
-              echo "Line count: $(wc -l < .env)"
-              
-              # DEBUG: Check if STRIPE_SECRET_KEY is present (safely)
-              if grep -q "STRIPE_SECRET_KEY" .env; then
-                echo "SUCCESS: STRIPE_SECRET_KEY found in .env"
-                # Print first 25 chars to confirm it's not empty/malformed
-                grep "STRIPE_SECRET_KEY" .env | head -c 25
-                echo "..."
-              else
-                echo "ERROR: STRIPE_SECRET_KEY is MISSING from .env!"
-                echo "Please update your GitHub Secret 'ENV_FILE' with the full content of your local .env file."
-                exit 1
-              fi
-            else
-              echo "ERROR: .env file is empty or missing!"
+            # Verify .env exists and has content
+            if [ ! -s .env ]; then
+              echo "ERROR: .env file is empty or missing after SCP!"
               exit 1
             fi
-
+            
+            echo "Environment file verified. Starting application..."
+            
             docker compose down
             docker compose build
             docker compose up -d
-
             docker ps
           EOF
