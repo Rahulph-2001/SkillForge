@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, AlertCircle, Building, Upload } from 'lucide-react';
+import { AlertCircle, Building, Upload } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import walletService from '../../services/walletService';
 
