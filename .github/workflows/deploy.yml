@@ -38,7 +38,7 @@ jobs:
           SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" | base64 -d > ~/.ssh/id_ed25519
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Deploy to EC2
@@ -55,10 +55,7 @@ jobs:
             cd SkillForge/skillForge-api
             git pull origin main
 
-            # Create .env safely
-            cat > .env << 'EOL'
-$ENV_FILE
-EOL
+            echo "$ENV_FILE" > .env
 
             docker compose down
             docker compose build
