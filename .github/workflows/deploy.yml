@@ -35,36 +35,34 @@ jobs:
 
       - name: Setup SSH
         env:
-            SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          echo "$SSH_KEY" | base64 -d > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
 
       - name: Deploy to EC2
+        env:
+          ENV_FILE: ${{ secrets.ENV_FILE }}
         run: |
-          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << EOF
             set -e
-            
-            # Clone repo if it doesn't exist
+
             if [ ! -d SkillForge ]; then
               git clone https://github.com/Rahulph-2001/SkillForge.git
             fi
-            
-            # Navigate to the correct subdirectory
+
             cd SkillForge/skillForge-api
-            
-            # Pull latest changes
             git pull origin main
-            
-            # Create .env file from secrets
-            echo "${{ secrets.ENV_FILE }}" > .env
-            
-            # Rebuild and restart containers
+
+            # Create .env safely
+            cat > .env << 'EOL'
+$ENV_FILE
+EOL
+
             docker compose down
             docker compose build
             docker compose up -d
-            
-            # Verify containers are running
+
             docker ps
           EOF
