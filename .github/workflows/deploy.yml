@@ -61,6 +61,18 @@ jobs:
             if [ -s .env ]; then
               echo ".env file created successfully."
               echo "Line count: $(wc -l < .env)"
+              
+              # DEBUG: Check if STRIPE_SECRET_KEY is present (safely)
+              if grep -q "STRIPE_SECRET_KEY" .env; then
+                echo "SUCCESS: STRIPE_SECRET_KEY found in .env"
+                # Print first 25 chars to confirm it's not empty/malformed
+                grep "STRIPE_SECRET_KEY" .env | head -c 25
+                echo "..."
+              else
+                echo "ERROR: STRIPE_SECRET_KEY is MISSING from .env!"
+                echo "Please update your GitHub Secret 'ENV_FILE' with the full content of your local .env file."
+                exit 1
+              fi
             else
               echo "ERROR: .env file is empty or missing!"
               exit 1
