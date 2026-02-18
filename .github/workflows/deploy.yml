@@ -1,0 +1,66 @@
+name: SkillForge Backend CI/CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: skillForge-api
+        run: npm install
+
+      - name: Build backend
+        working-directory: skillForge-api
+        run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            set -e
+            
+            # Clone repo if it doesn't exist
+            if [ ! -d SkillForge ]; then
+              git clone https://github.com/Rahulph-2001/SkillForge.git
+            fi
+            
+            # Navigate to the correct subdirectory
+            cd SkillForge/skillForge-api
+            
+            # Pull latest changes
+            git pull origin main
+            
+            # Rebuild and restart containers
+            docker compose down
+            docker compose build
+            docker compose up -d
+            
+            # Verify containers are running
+            docker ps
+          EOF
