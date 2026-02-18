@@ -57,6 +57,9 @@ jobs:
             # Pull latest changes
             git pull origin main
             
+            # Create .env file from secrets
+            echo "${{ secrets.ENV_FILE }}" > .env
+            
             # Rebuild and restart containers
             docker compose down
             docker compose build
