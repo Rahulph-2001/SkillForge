@@ -22,7 +22,16 @@ export class GetRoomInfoUseCase implements IGetRoomInfoUseCase {
 
     const participants = await this.presenceService.getParticipants(roomId);
     const iceServers: any[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
-    if (env.TURN_SERVER) iceServers.push({ urls: env.TURN_SERVER, username: env.TURN_USERNAME, credential: env.TURN_CREDENTIAL });
+    if (env.TURN_SERVER) {
+      iceServers.push({
+        urls: [
+          env.TURN_SERVER,
+          env.TURN_SERVER.replace(':3478', ':3478?transport=tcp'),
+        ],
+        username: env.TURN_USERNAME,
+        credential: env.TURN_CREDENTIAL,
+      });
+    }
 
     return this.roomMapper.toResponseDTO(room, participants.map(p => ({ userId: p.userId, joinedAt: p.joinedAt })), iceServers);
   }

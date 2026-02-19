@@ -182,7 +182,16 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
 
   private getIceServers() {
     const servers: any[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
-    if (env.TURN_SERVER) servers.push({ urls: env.TURN_SERVER, username: env.TURN_USERNAME, credential: env.TURN_CREDENTIAL });
+    if (env.TURN_SERVER) {
+      servers.push({
+        urls: [
+          env.TURN_SERVER,                           // turn:host:3478 (UDP)
+          env.TURN_SERVER.replace(':3478', ':3478?transport=tcp'), // TCP fallback
+        ],
+        username: env.TURN_USERNAME,
+        credential: env.TURN_CREDENTIAL,
+      });
+    }
     return servers;
   }
 }

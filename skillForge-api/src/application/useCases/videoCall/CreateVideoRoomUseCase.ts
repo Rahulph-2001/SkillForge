@@ -70,7 +70,14 @@ export class CreateVideoRoomUseCase implements ICreateVideoRoomUseCase {
   private getIceServers() {
     const servers: any[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
     if (env.TURN_SERVER) {
-      servers.push({ urls: env.TURN_SERVER, username: env.TURN_USERNAME, credential: env.TURN_CREDENTIAL });
+      servers.push({
+        urls: [
+          env.TURN_SERVER,
+          env.TURN_SERVER.replace(':3478', ':3478?transport=tcp'),
+        ],
+        username: env.TURN_USERNAME,
+        credential: env.TURN_CREDENTIAL,
+      });
     }
     return servers;
   }
