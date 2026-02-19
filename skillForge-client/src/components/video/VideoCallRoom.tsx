@@ -158,6 +158,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             }
 
             console.log('[VideoCall] Creating peer connection for peer:', peerId, 'createOffer:', shouldCreateOffer);
+            console.log('[VideoCall] Using ICE servers:', JSON.stringify(room.iceServers, null, 2));
             const pc = videoCallService.createPeerConnection(room.iceServers);
             peerConnectionRef.current = pc;
 
