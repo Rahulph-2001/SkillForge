@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Bell, MessageCircle, ChevronDown, LogOut, User, CreditCard } from 'lucide-react';
+import { Bell, ChevronDown, LogOut, User, CreditCard } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../../store/hooks';
 import { logout } from '../../../store/slices/authSlice';
