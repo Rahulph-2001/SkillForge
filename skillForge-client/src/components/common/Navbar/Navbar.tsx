@@ -255,7 +255,7 @@ export default function Navbar() {
                     />
 
                     {/* Drawer */}
-                    <div className="fixed inset-y-0 right-0 w-[300px] bg-card border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
+                    <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
                         <div className="p-4 flex items-center justify-between border-b border-border">
                             <span className="font-bold text-lg text-foreground">Menu</span>
                             <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-secondary rounded-lg">
