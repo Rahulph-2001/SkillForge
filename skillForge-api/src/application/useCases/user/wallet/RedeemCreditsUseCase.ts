@@ -107,13 +107,13 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
                 },
             });
 
-            // 5. Log Transaction
+            // 5. Log User Wallet Transaction
             await tx.userWalletTransaction.create({
                 data: {
                     userId: userId,
-                    type: UserWalletTransactionType.CREDIT_REDEMPTION_SUCCESS as any, // Cast to any to avoid potential Prisma enum mismatch
-                    amount: redemptionValue, // Positive amount added to wallet
-                    currency: 'INR', // Default currency
+                    type: UserWalletTransactionType.CREDIT_REDEMPTION_SUCCESS as any,
+                    amount: redemptionValue,
+                    currency: 'INR',
                     status: UserWalletTransactionStatus.COMPLETED,
                     source: 'SYSTEM',
                     description: `Redeemed ${creditsToRedeem} credits`,
@@ -130,6 +130,47 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
                     },
                     createdAt: new Date(),
                     updatedAt: new Date()
+                }
+            });
+
+            // 6. Debit Admin Wallet
+            const adminUser = await tx.user.findFirst({ where: { role: 'ADMIN' } });
+            if (!adminUser) {
+                throw new Error('No admin user found in the system');
+            }
+
+            const adminWalletBalance = Number(adminUser.walletBalance);
+            if (adminWalletBalance < redemptionValue) {
+                throw new Error('Insufficient admin wallet balance for credit redemption');
+            }
+
+            await tx.user.update({
+                where: { id: adminUser.id },
+                data: {
+                    walletBalance: { decrement: redemptionValue },
+                },
+            });
+
+            // 7. Log Admin Wallet Transaction
+            await tx.walletTransaction.create({
+                data: {
+                    adminId: adminUser.id,
+                    type: 'DEBIT',
+                    amount: redemptionValue,
+                    currency: 'INR',
+                    source: 'CREDIT_REDEMPTION',
+                    referenceId: userId,
+                    description: `Credit redemption payout: ${creditsToRedeem} credits to user`,
+                    previousBalance: adminWalletBalance,
+                    newBalance: adminWalletBalance - redemptionValue,
+                    status: 'COMPLETED',
+                    metadata: {
+                        userId,
+                        creditsRedeemed: creditsToRedeem,
+                        conversionRate,
+                    },
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
                 }
             });
         });
