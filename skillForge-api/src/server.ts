@@ -58,6 +58,11 @@ async function startServer() {
     const webSocketService = container.get<IWebSocketService>(TYPES.IWebSocketService);
     webSocketService.initialize(io);
 
+    // Initialize Video Call Signaling — CRITICAL: Without this, WebRTC offer/answer/ICE exchange never happens
+    const signalingService = container.get<any>(TYPES.IVideoCallSignalingService);
+    signalingService.initialize(io);
+    console.log('Video Call Signaling Service initialized');
+
     // Handle port already in use error
     server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {

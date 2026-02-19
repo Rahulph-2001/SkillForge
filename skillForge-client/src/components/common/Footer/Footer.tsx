@@ -95,7 +95,7 @@ export default function Footer() {
 
                 {/* Bottom */}
                 <div className="border-t border-gray-200 pt-8 text-center text-gray-600 text-sm">
-                    <p>&copy; 2025 SkillForge. All rights reserved</p>
+                    <p>&copy; 2026 SkillForge. All rights reserved</p>
                 </div>
             </div>
         </footer>
