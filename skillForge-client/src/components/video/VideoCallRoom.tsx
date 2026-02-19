@@ -107,6 +107,15 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
         }
     }, [localStream]);
 
+    // Sync remote stream to video element when React renders it
+    // This is critical because ontrack fires before React re-renders the conditional <video>
+    useEffect(() => {
+        if (remoteStream && remoteVideoRef.current) {
+            console.log('[VideoCall] Syncing remote stream to video element');
+            remoteVideoRef.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
     // WebRTC signaling
     useEffect(() => {
         if (!room || !user) return;
@@ -114,6 +123,12 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
         // Wait for local stream to be ready before starting signaling
         if (!localStreamRef.current) {
             console.log('[VideoCall] Waiting for local stream before starting signaling...');
+            return;
+        }
+
+        // If socket is already connected (re-run due to localStream becoming available), skip reconnect
+        if (socketRef.current?.connected) {
+            console.log('[VideoCall] Socket already connected, skipping reconnect');
             return;
         }
 
@@ -157,10 +172,9 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             pc.ontrack = (event) => {
                 console.log('[VideoCall] ✅ Received remote track:', event.track.kind, 'streams:', event.streams.length);
                 if (event.streams[0]) {
+                    // Only set state — the useEffect above will sync to the video element
+                    // after React re-renders and the <video> element exists in the DOM
                     setRemoteStream(event.streams[0]);
-                    if (remoteVideoRef.current) {
-                        remoteVideoRef.current.srcObject = event.streams[0];
-                    }
                 }
             };
 
@@ -305,12 +319,13 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
         return () => {
             console.log('[VideoCall] Cleaning up socket and peer connection');
             socket.disconnect();
+            socketRef.current = null;
             if (peerConnectionRef.current) {
                 peerConnectionRef.current.close();
                 peerConnectionRef.current = null;
             }
         };
-    }, [room, user, localStream]); // localStream triggers re-run when media is ready
+    }, [room, user, localStream]); // localStream is needed to trigger setup when media becomes ready
 
     // Control handlers
     const toggleCamera = () => {
