@@ -58,8 +58,8 @@ export default function Navbar() {
         <Link
             to={to}
             className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${isActive(to)
-                ? 'bg-primary text-primary-foreground dark:text-white'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-primary'
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
         >
             {children}
@@ -82,8 +82,8 @@ export default function Navbar() {
     // Authenticated Mobile Menu
     const AuthenticatedMobileMenu = () => (
         <div className="fixed inset-0 z-[100] md:hidden">
-            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
-            <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
+            <div className="fixed inset-0 z-[1] bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
+            <div className="fixed inset-y-0 right-0 z-[2] w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
                 <div className="p-4 flex items-center justify-between border-b border-border">
                     <span className="font-bold text-lg text-foreground">Menu</span>
                     <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-muted rounded-lg">
@@ -144,8 +144,8 @@ export default function Navbar() {
     // Unauthenticated Mobile Menu
     const UnauthenticatedMobileMenu = () => (
         <div className="fixed inset-0 z-[100] md:hidden">
-            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
-            <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
+            <div className="fixed inset-0 z-[1] bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
+            <div className="fixed inset-y-0 right-0 z-[2] w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
                 <div className="p-4 flex items-center justify-between border-b border-border">
                     <span className="font-bold text-lg text-foreground">Menu</span>
                     <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-muted rounded-lg">
