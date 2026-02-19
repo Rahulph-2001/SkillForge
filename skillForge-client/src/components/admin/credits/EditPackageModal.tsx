@@ -72,27 +72,27 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg max-w-md w-full p-6 relative">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card rounded-lg max-w-md w-full p-6 relative border border-border shadow-xl">
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                    className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
                 >
                     <X className="w-5 h-5" />
                 </button>
 
-                <h2 className="text-xl font-bold text-gray-900 mb-1">Edit Credit Package</h2>
-                <p className="text-gray-600 text-sm mb-6">Update package details and pricing</p>
+                <h2 className="text-xl font-bold text-foreground mb-1">Edit Credit Package</h2>
+                <p className="text-muted-foreground text-sm mb-6">Update package details and pricing</p>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-200">
+                    <div className="mb-4 p-3 bg-destructive/10 text-destructive text-sm rounded-lg border border-destructive/20">
                         {error}
                     </div>
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             Credits
                         </label>
                         <input
@@ -100,14 +100,14 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
                             name="credits"
                             value={formData.credits}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
                             placeholder="e.g. 100"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1">
+                        <label className="block text-sm font-semibold text-foreground mb-1">
                             Price (₹)
                         </label>
                         <input
@@ -115,7 +115,7 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
                             name="price"
                             value={formData.price}
                             onChange={handleChange}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
                             placeholder="e.g. 5000"
                             required
                         />
@@ -128,9 +128,9 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
                                 name="isPopular"
                                 checked={formData.isPopular}
                                 onChange={handleChange}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className="w-4 h-4 text-primary border-border rounded focus:ring-primary bg-background"
                             />
-                            <span className="text-gray-700 text-sm font-medium">Mark as popular</span>
+                            <span className="text-foreground text-sm font-medium">Mark as popular</span>
                         </label>
 
                         <label className="flex items-center gap-3 cursor-pointer">
@@ -139,9 +139,9 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
                                 name="isActive"
                                 checked={formData.isActive}
                                 onChange={handleChange}
-                                className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                className="w-4 h-4 text-primary border-border rounded focus:ring-primary bg-background"
                             />
-                            <span className="text-gray-700 text-sm font-medium">Active package</span>
+                            <span className="text-foreground text-sm font-medium">Active package</span>
                         </label>
                     </div>
 
@@ -149,14 +149,14 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex-1 px-4 py-2 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                            className="flex-1 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                         >
                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                             Save Changes

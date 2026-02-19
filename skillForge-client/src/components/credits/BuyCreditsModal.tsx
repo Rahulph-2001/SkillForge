@@ -131,30 +131,30 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
                         >
-                            <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl pointer-events-auto">
-                                <div className="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center sticky top-0 bg-white dark:bg-gray-900 z-10">
+                            <div className="bg-card rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl pointer-events-auto border border-border">
+                                <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
                                     <div>
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Buy Credits</h2>
-                                        <p className="text-gray-500 dark:text-gray-400 text-sm">Select a credit package that suits your needs</p>
+                                        <h2 className="text-2xl font-bold text-foreground">Buy Credits</h2>
+                                        <p className="text-muted-foreground text-sm">Select a credit package that suits your needs</p>
                                     </div>
                                     <button
                                         onClick={onClose}
                                         disabled={processing}
-                                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors disabled:opacity-50"
+                                        className="p-2 hover:bg-muted rounded-full transition-colors disabled:opacity-50"
                                     >
-                                        <FaTimes className="text-gray-500" />
+                                        <FaTimes className="text-muted-foreground" />
                                     </button>
                                 </div>
 
                                 <div className="p-6">
                                     {loading ? (
                                         <div className="text-center py-12">
-                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                                            <p className="text-gray-500">Loading packages...</p>
+                                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                                            <p className="text-muted-foreground">Loading packages...</p>
                                         </div>
                                     ) : packages.length === 0 ? (
                                         <div className="text-center py-12">
-                                            <p className="text-gray-500">No credit packages available at the moment.</p>
+                                            <p className="text-muted-foreground">No credit packages available at the moment.</p>
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -176,22 +176,22 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
                                     )}
 
                                     {/* Payment Section */}
-                                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-100 dark:border-gray-700">
+                                    <div className="bg-muted/40 rounded-xl p-6 border border-border">
                                         <div className="flex items-center gap-3 mb-4">
                                             <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                                                 <FaCreditCard className="text-blue-600 dark:text-blue-400" />
                                             </div>
                                             <div>
-                                                <h3 className="font-semibold text-gray-900 dark:text-white">Secure Payment</h3>
-                                                <p className="text-xs text-gray-500">Powered by Stripe - Your payment is encrypted and secure</p>
+                                                <h3 className="font-semibold text-foreground">Secure Payment</h3>
+                                                <p className="text-xs text-muted-foreground">Powered by Stripe - Your payment is encrypted and secure</p>
                                             </div>
                                         </div>
 
                                         <div className="flex justify-between items-center">
-                                            <div className="text-sm text-gray-500">
+                                            <div className="text-sm text-muted-foreground">
                                                 {selectedPackage ? (
                                                     <>
-                                                        <span className="font-medium text-gray-900 dark:text-white block">
+                                                        <span className="font-medium text-foreground block">
                                                             {selectedPackage.credits} Credits
                                                         </span>
                                                         <span className="text-xs">
@@ -204,14 +204,14 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
                                                         </span>
                                                     </>
                                                 ) : (
-                                                    <span className="text-gray-400">No package selected</span>
+                                                    <span className="text-muted-foreground">No package selected</span>
                                                 )}
                                             </div>
                                             <button
                                                 disabled={!selectedPackage || processing || loading}
                                                 onClick={handlePurchase}
                                                 className={`px-8 py-3 rounded-xl font-bold text-white flex items-center gap-2 transition-all ${!selectedPackage || processing || loading
-                                                    ? 'bg-gray-300 dark:bg-gray-700 cursor-not-allowed'
+                                                    ? 'bg-muted text-muted-foreground cursor-not-allowed'
                                                     : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:shadow-lg hover:scale-105'
                                                     }`}
                                             >

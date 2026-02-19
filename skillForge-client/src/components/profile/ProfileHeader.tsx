@@ -30,11 +30,11 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
   };
 
   return (
-    <div className="px-6 py-8 border-b border-gray-100">
+    <div className="px-6 py-8 border-b border-border">
       <div className="flex gap-6">
         {/* Avatar */}
         <div className="relative">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-300 to-blue-400 flex-shrink-0 overflow-hidden flex items-center justify-center">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 to-primary/40 flex-shrink-0 overflow-hidden flex items-center justify-center">
             {profile.avatarUrl ? (
               <img
                 src={profile.avatarUrl}
@@ -42,27 +42,27 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-3xl font-bold text-white">
+              <span className="text-3xl font-bold text-primary-foreground">
                 {getInitials(profile.name)}
               </span>
             )}
           </div>
-          <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+          <div className="absolute bottom-1 right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
         </div>
 
         {/* Profile Info */}
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h1 className="text-2xl font-bold text-gray-900">{profile.name}</h1>
+            <h1 className="text-2xl font-bold text-foreground">{profile.name}</h1>
             {profile.verification.isIdentityVerified && (
-              <CheckCircle className="w-5 h-5 text-blue-500 fill-current" />
+              <CheckCircle className="w-5 h-5 text-primary fill-current" />
             )}
           </div>
           {profile.bio && (
-            <p className="text-gray-600 mb-2">{profile.bio}</p>
+            <p className="text-muted-foreground mb-2">{profile.bio}</p>
           )}
-          <p className="text-gray-500 text-sm mb-3">{profile.email}</p>
-          <div className="flex gap-4 text-sm text-gray-600">
+          <p className="text-muted-foreground text-sm mb-3">{profile.email}</p>
+          <div className="flex gap-4 text-sm text-muted-foreground">
             {profile.location && (
               <div className="flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
@@ -78,7 +78,7 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
 
         {/* Message Button */}
         <div className="flex items-start">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium flex items-center gap-2 transition-colors">
+          <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-md font-medium flex items-center gap-2 transition-colors">
             <Mail className="w-4 h-4" />
             Message
           </button>

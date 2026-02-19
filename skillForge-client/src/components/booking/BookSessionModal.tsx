@@ -245,19 +245,19 @@ export default function BookSessionModal({
   const hasInsufficientBalance = userBalance < sessionCost;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-card rounded-lg shadow-xl w-full max-w-md mx-4 border border-border">
         {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-gray-200">
+        <div className="flex items-center justify-between p-5 border-b border-border">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">Book a Session</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-lg font-semibold text-foreground">Book a Session</h2>
+            <p className="text-sm text-muted-foreground mt-1">
               Schedule a 1 hour session with {providerName}
             </p>
           </div>
           <button
             onClick={handleCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Close modal"
           >
             <X size={20} />
@@ -268,14 +268,14 @@ export default function BookSessionModal({
         <div className="p-5 space-y-4">
           {/* Global Error */}
           {(errors as any).form && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded relative" role="alert">
               <span className="block sm:inline">{(errors as any).form}</span>
             </div>
           )}
 
           {/* Preferred Date */}
           <div>
-            <label htmlFor="preferred-date" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="preferred-date" className="block text-sm font-medium text-foreground mb-2">
               <CalendarIcon size={16} className="inline mr-1" />
               Preferred Date
             </label>
@@ -288,16 +288,16 @@ export default function BookSessionModal({
                 setErrors({ ...errors, date: undefined });
               }}
               min={new Date().toISOString().split('T')[0]}
-              className={`w-full px-3 py-2 border ${errors.date ? 'border-red-500' : 'border-gray-300'
-                } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm`}
+              className={`w-full px-3 py-2 bg-background border ${errors.date ? 'border-destructive' : 'border-border'
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-foreground placeholder-muted-foreground`}
               placeholder="dd-mm-yyyy"
             />
-            {errors.date && <p className="text-xs text-red-500 mt-1">{errors.date}</p>}
+            {errors.date && <p className="text-xs text-destructive mt-1">{errors.date}</p>}
           </div>
 
           {/* Preferred Time */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               <Clock size={16} className="inline mr-1" />
               Preferred Time
             </label>
@@ -309,10 +309,10 @@ export default function BookSessionModal({
                 onChange={(e) => handleHourChange(e.target.value)}
                 maxLength={2}
                 placeholder="HH"
-                className={`w-16 px-3 py-2 border ${errors.time ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
+                className={`w-16 px-3 py-2 bg-background border ${errors.time ? 'border-destructive' : 'border-border'
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-center font-medium text-foreground placeholder-muted-foreground`}
               />
-              <span className="text-gray-500 font-bold">:</span>
+              <span className="text-muted-foreground font-bold">:</span>
               {/* Minute */}
               <input
                 type="text"
@@ -320,17 +320,17 @@ export default function BookSessionModal({
                 onChange={(e) => handleMinuteChange(e.target.value)}
                 maxLength={2}
                 placeholder="MM"
-                className={`w-16 px-3 py-2 border ${errors.time ? 'border-red-500' : 'border-gray-300'
-                  } rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-center font-medium`}
+                className={`w-16 px-3 py-2 bg-background border ${errors.time ? 'border-destructive' : 'border-border'
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm text-center font-medium text-foreground placeholder-muted-foreground`}
               />
               {/* AM/PM Toggle */}
-              <div className="flex border border-gray-300 rounded-md overflow-hidden">
+              <div className="flex border border-border rounded-md overflow-hidden">
                 <button
                   type="button"
                   onClick={() => setTime({ ...time, period: 'AM' })}
                   className={`px-3 py-2 text-sm font-medium transition-colors ${time.period === 'AM'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card text-foreground hover:bg-muted'
                     }`}
                 >
                   AM
@@ -338,22 +338,22 @@ export default function BookSessionModal({
                 <button
                   type="button"
                   onClick={() => setTime({ ...time, period: 'PM' })}
-                  className={`px-3 py-2 text-sm font-medium transition-colors border-l border-gray-300 ${time.period === 'PM'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                  className={`px-3 py-2 text-sm font-medium transition-colors border-l border-border ${time.period === 'PM'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card text-foreground hover:bg-muted'
                     }`}
                 >
                   PM
                 </button>
               </div>
             </div>
-            {errors.time && <p className="text-xs text-red-500 mt-1">{errors.time}</p>}
-            <p className="text-xs text-gray-500 mt-1">Enter time in 12-hour format</p>
+            {errors.time && <p className="text-xs text-destructive mt-1">{errors.time}</p>}
+            <p className="text-xs text-muted-foreground mt-1">Enter time in 12-hour format</p>
           </div>
 
           {/* Message (Optional) */}
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
               Message (optional)
             </label>
             <textarea
@@ -361,25 +361,25 @@ export default function BookSessionModal({
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm resize-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-sm resize-none text-foreground placeholder-muted-foreground"
               placeholder="Any specific topics or questions you'd like to cover?"
             />
           </div>
 
           {/* Cost Summary */}
-          <div className="pt-4 border-t border-gray-200">
+          <div className="pt-4 border-t border-border">
             <div className="flex justify-between items-center text-sm mb-2">
-              <span className="text-gray-600">Session cost:</span>
-              <span className="font-semibold text-gray-900">{sessionCost} credits</span>
+              <span className="text-muted-foreground">Session cost:</span>
+              <span className="font-semibold text-foreground">{sessionCost} credits</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-600">Your balance:</span>
-              <span className={`font-semibold ${hasInsufficientBalance ? 'text-red-600' : 'text-gray-900'}`}>
+              <span className="text-muted-foreground">Your balance:</span>
+              <span className={`font-semibold ${hasInsufficientBalance ? 'text-destructive' : 'text-foreground'}`}>
                 {userBalance} credits
               </span>
             </div>
             {hasInsufficientBalance && (
-              <p className="text-xs text-red-500 mt-2">
+              <p className="text-xs text-destructive mt-2">
                 Insufficient credits. Please purchase more credits to book this session.
               </p>
             )}
@@ -387,18 +387,18 @@ export default function BookSessionModal({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-5 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 p-5 border-t border-border">
           <button
             onClick={handleCancel}
             disabled={isSubmitting}
-            className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-foreground border border-border rounded-md hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isSubmitting || hasInsufficientBalance}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? 'Booking...' : 'Send Booking Request'}
           </button>

@@ -27,14 +27,14 @@ export default function CommunityDetailsModal({
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-border">
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
-                    <h2 className="text-2xl font-bold text-gray-900">Community Details</h2>
+                <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex justify-between items-center z-10">
+                    <h2 className="text-2xl font-bold text-foreground">Community Details</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -44,7 +44,7 @@ export default function CommunityDetailsModal({
                 <div className="p-6 space-y-6">
                     {/* Community Image */}
                     {community.imageUrl ? (
-                        <div className="w-full h-64 rounded-lg overflow-hidden">
+                        <div className="w-full h-64 rounded-lg overflow-hidden border border-border">
                             <img
                                 src={community.imageUrl}
                                 alt={community.name}
@@ -52,87 +52,87 @@ export default function CommunityDetailsModal({
                             />
                         </div>
                     ) : (
-                        <div className="w-full h-64 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                            <Users className="w-24 h-24 text-white opacity-50" />
+                        <div className="w-full h-64 bg-gradient-to-br from-primary/20 to-primary/40 rounded-lg flex items-center justify-center border border-border">
+                            <Users className="w-24 h-24 text-primary opacity-50" />
                         </div>
                     )}
 
                     {/* Status Badge */}
                     <div className="flex items-center gap-2">
                         {community.isActive ? (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-full text-sm font-medium">
                                 <CheckCircle className="w-4 h-4" />
                                 Active
                             </span>
                         ) : (
-                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                            <span className="inline-flex items-center gap-1 px-3 py-1 bg-destructive/10 text-destructive rounded-full text-sm font-medium">
                                 <XCircle className="w-4 h-4" />
                                 Inactive
                             </span>
                         )}
-                        <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                        <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
                             {community.category}
                         </span>
                     </div>
 
                     {/* Community Name */}
                     <div>
-                        <h3 className="text-3xl font-bold text-gray-900 mb-2">{community.name}</h3>
-                        <p className="text-gray-600 text-lg leading-relaxed">{community.description}</p>
+                        <h3 className="text-3xl font-bold text-foreground mb-2">{community.name}</h3>
+                        <p className="text-muted-foreground text-lg leading-relaxed">{community.description}</p>
                     </div>
 
                     {/* Details Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Members Count */}
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                        <div className="bg-muted/40 rounded-lg p-4 border border-border">
+                            <div className="flex items-center gap-2 text-muted-foreground mb-1">
                                 <Users className="w-5 h-5" />
                                 <span className="text-sm font-medium">Members</span>
                             </div>
-                            <p className="text-2xl font-bold text-gray-900">{community.membersCount}</p>
+                            <p className="text-2xl font-bold text-foreground">{community.membersCount}</p>
                         </div>
 
                         {/* Credits Cost */}
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                        <div className="bg-muted/40 rounded-lg p-4 border border-border">
+                            <div className="flex items-center gap-2 text-muted-foreground mb-1">
                                 <DollarSign className="w-5 h-5" />
                                 <span className="text-sm font-medium">Membership Cost</span>
                             </div>
-                            <p className="text-2xl font-bold text-gray-900">
+                            <p className="text-2xl font-bold text-foreground">
                                 {community.creditsCost} credits
-                                <span className="text-sm font-normal text-gray-600 ml-2">/ {community.creditsPeriod}</span>
+                                <span className="text-sm font-normal text-muted-foreground ml-2">/ {community.creditsPeriod}</span>
                             </p>
                         </div>
 
                         {/* Admin ID */}
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                        <div className="bg-muted/40 rounded-lg p-4 border border-border">
+                            <div className="flex items-center gap-2 text-muted-foreground mb-1">
                                 <Shield className="w-5 h-5" />
                                 <span className="text-sm font-medium">Admin ID</span>
                             </div>
-                            <p className="text-sm font-mono text-gray-900 break-all">{community.adminId}</p>
+                            <p className="text-sm font-mono text-foreground break-all">{community.adminId}</p>
                         </div>
 
                         {/* Created Date */}
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <div className="flex items-center gap-2 text-gray-600 mb-1">
+                        <div className="bg-muted/40 rounded-lg p-4 border border-border">
+                            <div className="flex items-center gap-2 text-muted-foreground mb-1">
                                 <Calendar className="w-5 h-5" />
                                 <span className="text-sm font-medium">Created</span>
                             </div>
-                            <p className="text-sm text-gray-900">{formatDate(community.createdAt)}</p>
+                            <p className="text-sm text-foreground">{formatDate(community.createdAt)}</p>
                         </div>
                     </div>
 
                     {/* Last Updated */}
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-muted-foreground">
                         Last updated: {formatDate(community.updatedAt)}
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-3 pt-4 border-t border-gray-200">
+                    <div className="flex gap-3 pt-4 border-t border-border">
                         <button
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex-1 px-4 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
                         >
                             Close
                         </button>
@@ -142,7 +142,7 @@ export default function CommunityDetailsModal({
                                     onClose();
                                     onEdit();
                                 }}
-                                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                                className="flex-1 px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors"
                             >
                                 Edit Community
                             </button>
@@ -154,8 +154,8 @@ export default function CommunityDetailsModal({
                                     onDelete();
                                 }}
                                 className={`flex-1 px-4 py-3 font-semibold rounded-lg transition-colors ${community.isActive
-                                        ? 'bg-red-600 hover:bg-red-700 text-white'
-                                        : 'bg-green-600 hover:bg-green-700 text-white'
+                                    ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground'
+                                    : 'bg-green-600 hover:bg-green-700 text-white'
                                     }`}
                             >
                                 {community.isActive ? 'Block Community' : 'Unblock Community'}

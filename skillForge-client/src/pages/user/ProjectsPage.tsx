@@ -57,24 +57,24 @@ export default function ProjectsPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-6 pb-12">
+        <div className="min-h-screen bg-background pt-6 pb-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-blue-600 mb-1">Browse Projects</h1>
-                        <p className="text-gray-600 text-sm">Find freelance opportunities and showcase your skills</p>
+                        <h1 className="text-2xl font-bold text-primary mb-1">Browse Projects</h1>
+                        <p className="text-muted-foreground text-sm">Find freelance opportunities and showcase your skills</p>
                     </div>
                     <div className="flex gap-3">
                         <button
                             onClick={() => navigate('/my-projects')}
-                            className="bg-white text-blue-600 border border-blue-200 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            className="bg-card text-primary border border-primary/20 hover:bg-primary/5 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
                             My Projects
                         </button>
                         <button
                             onClick={() => navigate('/projects/create')}
-                            className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
                         >
                             <Plus className="w-4 h-4" />
                             Post a Project
@@ -83,21 +83,21 @@ export default function ProjectsPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm mb-6">
+                <div className="bg-card p-4 rounded-xl border border-border shadow-sm mb-6">
                     <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1 relative">
-                            <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                            <Search className="w-5 h-5 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                             <input
                                 type="text"
                                 placeholder="Search projects by title, skills..."
-                                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2 border border-input bg-background rounded-lg text-foreground focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all placeholder:text-muted-foreground"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-4">
                             <select
-                                className="border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
+                                className="border border-input rounded-lg px-4 py-2 text-sm text-foreground bg-background focus:ring-2 focus:ring-primary outline-none cursor-pointer"
                                 value={categoryFilter}
                                 onChange={(e) => setCategoryFilter(e.target.value)}
                             >
@@ -110,7 +110,7 @@ export default function ProjectsPage() {
                                 <option value="video-animation">Video & Animation</option>
                             </select>
                             <select
-                                className="border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
+                                className="border border-input rounded-lg px-4 py-2 text-sm text-foreground bg-background focus:ring-2 focus:ring-primary outline-none cursor-pointer"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
@@ -124,8 +124,8 @@ export default function ProjectsPage() {
                     </div>
 
                     {/* Sort Options */}
-                    <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100">
-                        <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
+                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
                             <Filter className="w-4 h-4" />
                             <span>Sort by:</span>
                         </div>
@@ -135,8 +135,8 @@ export default function ProjectsPage() {
                                     key={option}
                                     onClick={() => setSortBy(option)}
                                     className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${sortBy === option
-                                        ? 'bg-blue-600 text-white'
-                                        : 'text-gray-600 hover:bg-gray-100'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'text-muted-foreground hover:bg-muted'
                                         }`}
                                 >
                                     {option}
@@ -149,18 +149,18 @@ export default function ProjectsPage() {
                 {/* Listing */}
                 <div className="space-y-4">
                     {loading ? (
-                        <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                            <p className="text-gray-500">Loading projects...</p>
+                        <div className="text-center py-12 bg-card rounded-xl border border-border">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                            <p className="text-muted-foreground">Loading projects...</p>
                         </div>
                     ) : (
                         <>
-                            <p className="text-gray-500 text-sm mb-4">{total} projects found</p>
+                            <p className="text-muted-foreground text-sm mb-4">{total} projects found</p>
 
                             {projects.length === 0 ? (
-                                <div className="text-center py-12 bg-white rounded-xl border border-gray-200 border-dashed">
-                                    <p className="text-gray-500 mb-2">No projects found</p>
-                                    <p className="text-gray-400 text-sm">Check back later or post a new project</p>
+                                <div className="text-center py-12 bg-card rounded-xl border border-border border-dashed">
+                                    <p className="text-muted-foreground mb-2">No projects found</p>
+                                    <p className="text-muted-foreground/80 text-sm">Check back later or post a new project</p>
                                 </div>
                             ) : (
                                 projects.map((project) => (
@@ -170,7 +170,7 @@ export default function ProjectsPage() {
 
                             {/* Pagination Component */}
                             {totalPages > 0 && total > 0 && (
-                                <div className="mt-8 bg-white p-4 rounded-xl border border-gray-200">
+                                <div className="mt-8 bg-card p-4 rounded-xl border border-border">
                                     <Pagination
                                         currentPage={currentPage}
                                         totalPages={totalPages}

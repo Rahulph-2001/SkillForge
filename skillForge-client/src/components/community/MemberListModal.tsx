@@ -77,20 +77,20 @@ export default function MemberListModal({
 
     return (
         <>
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col border border-border">
                     {/* Header */}
-                    <div className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+                    <div className="bg-card border-b border-border px-6 py-4 flex justify-between items-center">
                         <div className="flex items-center gap-3">
-                            <Users className="w-6 h-6 text-blue-600" />
+                            <Users className="w-6 h-6 text-primary" />
                             <div>
-                                <h2 className="text-xl font-bold text-gray-900">Community Members</h2>
-                                <p className="text-sm text-gray-500">{members.length} total members</p>
+                                <h2 className="text-xl font-bold text-foreground">Community Members</h2>
+                                <p className="text-sm text-muted-foreground">{members.length} total members</p>
                             </div>
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <X className="w-6 h-6" />
                         </button>
@@ -100,32 +100,32 @@ export default function MemberListModal({
                     <div className="flex-1 overflow-y-auto p-6">
                         {loading ? (
                             <div className="flex justify-center py-8">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                             </div>
                         ) : members.length === 0 ? (
                             <div className="text-center py-8">
-                                <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                                <p className="text-gray-600">No members found</p>
+                                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                                <p className="text-muted-foreground">No members found</p>
                             </div>
                         ) : (
                             <div className="space-y-3">
                                 {members.map((member) => (
                                     <div
                                         key={member.id}
-                                        className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                                        className="flex items-center justify-between p-4 bg-muted/40 rounded-lg hover:bg-muted/70 transition-colors"
                                     >
                                         <div className="flex items-center gap-4">
                                             {/* Avatar */}
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg">
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-primary-foreground font-semibold text-lg">
                                                 {(member.userName ? member.userName.charAt(0) : 'U').toUpperCase()}
                                             </div>
 
                                             {/* Info */}
                                             <div>
-                                                <p className="font-semibold text-gray-900">
+                                                <p className="font-semibold text-foreground">
                                                     {member.userName || 'Unknown User'}
                                                 </p>
-                                                <div className="flex items-center gap-3 text-sm text-gray-500">
+                                                <div className="flex items-center gap-3 text-sm text-muted-foreground">
                                                     <span className="capitalize">{member.role}</span>
                                                     <span>•</span>
                                                     <span>
@@ -139,7 +139,7 @@ export default function MemberListModal({
                                         {isAdmin && member.role !== 'admin' && (
                                             <button
                                                 onClick={() => handleRemoveClick(member)}
-                                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                className="p-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                                                 title="Remove member"
                                             >
                                                 <UserMinus className="w-5 h-5" />
@@ -152,10 +152,10 @@ export default function MemberListModal({
                     </div>
 
                     {/* Footer */}
-                    <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                    <div className="bg-muted/10 px-6 py-4 border-t border-border">
                         <button
                             onClick={onClose}
-                            className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"
+                            className="w-full px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors"
                         >
                             Close
                         </button>

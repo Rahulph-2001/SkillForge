@@ -12,12 +12,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, communityId }) =
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300 ease-in-out">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 transition-all duration-300 ease-in-out">
+            <div className="bg-card rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] overflow-hidden flex flex-col relative animate-in fade-in zoom-in-95 duration-200 border border-border">
                 {/* Close Button - Custom positioned to overlay or sit nicely */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white text-gray-500 hover:text-red-500 p-2 rounded-full shadow-sm backdrop-blur-md transition-all duration-200"
+                    className="absolute top-4 right-4 z-50 bg-background/80 hover:bg-background text-muted-foreground hover:text-destructive p-2 rounded-full shadow-sm backdrop-blur-md transition-all duration-200 border border-border"
                     title="Close Chat"
                 >
                     <X className="w-5 h-5" />

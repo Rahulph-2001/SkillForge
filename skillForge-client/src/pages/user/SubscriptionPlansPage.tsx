@@ -94,9 +94,9 @@ function FAQSection() {
   };
 
   return (
-    <div className="bg-white border-t border-gray-200 py-20">
+    <div className="bg-card border-t border-border py-20">
       <div className="max-w-3xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-gray-900 mb-12 text-center">
+        <h2 className="text-3xl font-bold text-foreground mb-12 text-center">
           Frequently Asked Questions
         </h2>
 
@@ -104,22 +104,22 @@ function FAQSection() {
           {faqs.map((faq, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg overflow-hidden hover:border-gray-300 transition"
+              className="border border-border rounded-lg overflow-hidden hover:border-muted-foreground/50 transition"
             >
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition"
+                className="w-full px-6 py-4 flex items-center justify-between hover:bg-muted/50 transition"
               >
-                <span className="text-left font-semibold text-gray-900">{faq.question}</span>
+                <span className="text-left font-semibold text-foreground">{faq.question}</span>
                 <ChevronDown
-                  className={`w-5 h-5 text-gray-600 flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
+                  className={`w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform ${openIndex === index ? 'rotate-180' : ''
                     }`}
                 />
               </button>
 
               {openIndex === index && (
-                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                <div className="px-6 py-4 bg-muted/30 border-t border-border">
+                  <p className="text-muted-foreground leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>
@@ -148,13 +148,13 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
     <div
       className={`relative rounded-2xl p-8 transition-all duration-300 border-2 ${isCenter
         ? `${getBorderColor(plan.color)} shadow-2xl`
-        : 'border-gray-200'
-        } ${getPlanGradient(plan.color)}`}
+        : 'border-border'
+        } ${getPlanGradient(plan.color)} dark:bg-card dark:bg-none`}
     >
       {/* Most Popular Badge */}
       {isCenter && !isCurrentPlan && (
         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="inline-block px-4 py-1 bg-blue-500 text-white text-xs font-bold rounded-full">
+          <span className="inline-block px-4 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full">
             Most Popular
           </span>
         </div>
@@ -165,8 +165,8 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
 
       {/* Title & Badge */}
       <div className="flex items-center gap-2 mb-2">
-        <h3 className="text-xl font-bold text-gray-900">{plan.name}</h3>
-        <span className="text-xs px-2 py-1 bg-white rounded-full font-semibold text-gray-700 shadow-sm">
+        <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+        <span className="text-xs px-2 py-1 bg-background rounded-full font-semibold text-foreground shadow-sm">
           {plan.badge}
         </span>
       </div>
@@ -174,8 +174,8 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
       {/* Price */}
       <div className="mb-6">
         <div className="flex items-baseline gap-1">
-          <span className="text-3xl font-bold text-gray-900">₹{plan.price}</span>
-          <span className="text-gray-600">/month</span>
+          <span className="text-3xl font-bold text-foreground">₹{plan.price}</span>
+          <span className="text-muted-foreground">/month</span>
         </div>
       </div>
 
@@ -193,10 +193,10 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
           onClick={() => onSubscribe(plan)}
           disabled={isFree || isProcessing}
           className={`w-full py-3 px-4 rounded-lg font-medium mb-8 transition-colors ${isFree
-            ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+            ? 'bg-muted text-muted-foreground cursor-not-allowed'
             : isCenter
-              ? 'bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50'
-              : 'bg-white text-gray-900 hover:bg-gray-50 border border-gray-300 disabled:opacity-50'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50'
+              : 'bg-card text-foreground hover:bg-muted border border-border disabled:opacity-50'
             }`}
         >
           {isProcessing ? 'Processing...' : isFree ? 'Free Plan' : 'Subscribe Now'}
@@ -204,8 +204,8 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
       )}
 
       {/* Limits */}
-      <div className="space-y-3 mb-6 pb-6 border-b border-gray-300">
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+      <div className="space-y-3 mb-6 pb-6 border-b border-border">
+        <div className="flex items-center gap-2 text-sm text-foreground">
           <span className="text-lg">📌</span>
           <span className="font-medium">
             {plan.projectPosts === null
@@ -213,7 +213,7 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
               : `${plan.projectPosts} project post${plan.projectPosts !== 1 ? 's' : ''}/month`}
           </span>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-700">
+        <div className="flex items-center gap-2 text-sm text-foreground">
           <span className="text-lg">👥</span>
           <span className="font-medium">
             {plan.createCommunity === null
@@ -225,11 +225,11 @@ function PricingCard({ plan, isCenter, onSubscribe, isProcessing, currentSubscri
 
       {/* Features */}
       <div className="space-y-3">
-        <p className="text-xs font-semibold text-gray-700 mb-3">FEATURES INCLUDED:</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-3">FEATURES INCLUDED:</p>
         {plan.features.map((feature) => (
           <div key={feature.id} className="flex items-start gap-3">
             <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-            <span className="text-sm text-gray-700">{feature.name}</span>
+            <span className="text-sm text-foreground">{feature.name}</span>
           </div>
         ))}
       </div>
@@ -567,20 +567,20 @@ export default function SubscriptionPlansPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background text-foreground">
 
       {/* Header */}
       <div className="pt-12 pb-8 text-center px-4">
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium hover:bg-blue-100 transition"
+          className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium hover:bg-primary/20 transition"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </button>
 
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Choose Your Plan</h1>
-        <p className="text-gray-600 max-w-2xl mx-auto mb-8">
+        <h1 className="text-4xl font-bold text-foreground mb-4">Choose Your Plan</h1>
+        <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
           Unlock the full potential of SkillForge with premium features. Create communities, post projects, and grow
           your network.
         </p>
@@ -589,9 +589,9 @@ export default function SubscriptionPlansPage() {
       {/* Current Subscription Section */}
       {currentSubscription && (
         <div className="max-w-4xl mx-auto px-4 mb-12">
-        
+
           <div className="max-w-4xl mx-auto px-4 mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Current Subscription</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">Your Current Subscription</h2>
             <CurrentSubscriptionCard
               subscription={currentSubscription}
               onCancel={handleCancelSubscription}

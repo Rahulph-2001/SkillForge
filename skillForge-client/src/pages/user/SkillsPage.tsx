@@ -125,19 +125,19 @@ export default function SkillsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-background">
+      <div className="bg-card border-b border-border">
         <div className="mx-auto max-w-7xl px-6 py-8">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
-                  <Users className="h-5 w-5 text-blue-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                  <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900">My Skills Management</h1>
+                <h1 className="text-2xl font-bold text-foreground">My Skills Management</h1>
               </div>
-              <p className="mb-2 text-gray-600">Create, manage, and track your skill offerings</p>
-              <p className="flex items-center gap-1 text-sm text-green-600">
+              <p className="mb-2 text-muted-foreground">Create, manage, and track your skill offerings</p>
+              <p className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
                 <CheckCircle className="h-4 w-4" />
                 All sessions are virtual - teach from anywhere!
               </p>
@@ -145,13 +145,13 @@ export default function SkillsPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/provider/availability')}
-                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                className="flex items-center gap-2 rounded-lg border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Availability Settings
               </button>
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                className="flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 <Plus className="h-5 w-5" />
                 Add New Skill
@@ -163,11 +163,11 @@ export default function SkillsPage() {
 
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-5">
-          <StatCard icon="👥" label="Total Skills" value={stats.total} bgColor="bg-blue-50" />
-          <StatCard icon="✅" label="Approved" value={stats.approved} bgColor="bg-green-50" />
-          <StatCard icon="⏳" label="MCQ Pending" value={stats.pending} bgColor="bg-blue-50" />
-          <StatCard icon="⚠️" label="In Review" value={stats.inReview} bgColor="bg-amber-50" />
-          <StatCard icon="⭐" label="Total Sessions" value={stats.sessions} bgColor="bg-purple-50" />
+          <StatCard icon="👥" label="Total Skills" value={stats.total} bgColor="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" />
+          <StatCard icon="✅" label="Approved" value={stats.approved} bgColor="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400" />
+          <StatCard icon="⏳" label="MCQ Pending" value={stats.pending} bgColor="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400" />
+          <StatCard icon="⚠️" label="In Review" value={stats.inReview} bgColor="bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400" />
+          <StatCard icon="⭐" label="Total Sessions" value={stats.sessions} bgColor="bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" />
         </div>
 
         {/* Filter Tabs */}
@@ -175,8 +175,8 @@ export default function SkillsPage() {
           <button
             onClick={() => handleFilterChange("all")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "all"
-              ? "bg-blue-600 text-white"
-              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
           >
             All Skills
@@ -185,44 +185,44 @@ export default function SkillsPage() {
           <button
             onClick={() => handleFilterChange("approved")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "approved"
-              ? "bg-blue-600 text-white"
-              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
           >
             Approved
-            <span className={`ml-2 font-bold ${activeFilter === "approved" ? "text-white" : "text-green-600"}`}>
+            <span className={`ml-2 font-bold ${activeFilter === "approved" ? "text-primary-foreground" : "text-green-600 dark:text-green-400"}`}>
               {stats.approved}
             </span>
           </button>
           <button
             onClick={() => handleFilterChange("pending")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "pending"
-              ? "bg-blue-600 text-white"
-              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
           >
             MCQ Pending
-            <span className={`ml-2 font-bold ${activeFilter === "pending" ? "text-white" : "text-blue-600"}`}>
+            <span className={`ml-2 font-bold ${activeFilter === "pending" ? "text-primary-foreground" : "text-blue-600 dark:text-blue-400"}`}>
               {stats.pending}
             </span>
           </button>
           <button
             onClick={() => handleFilterChange("in-review")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "in-review"
-              ? "bg-blue-600 text-white"
-              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
           >
             In Review
-            <span className={`ml-2 font-bold ${activeFilter === "in-review" ? "text-white" : "text-amber-600"}`}>
+            <span className={`ml-2 font-bold ${activeFilter === "in-review" ? "text-primary-foreground" : "text-amber-600 dark:text-amber-400"}`}>
               {stats.inReview}
             </span>
           </button>
           <button
             onClick={() => handleFilterChange("rejected")}
             className={`flex-shrink-0 rounded-lg px-6 py-3 text-sm font-medium transition-colors ${activeFilter === "rejected"
-              ? "bg-blue-600 text-white"
-              : "border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              ? "bg-primary text-primary-foreground"
+              : "border border-border bg-card text-muted-foreground hover:bg-muted"
               }`}
           >
             Rejected
@@ -232,7 +232,7 @@ export default function SkillsPage() {
 
         {loading && skills.length === 0 ? (
           <div className="flex justify-center p-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
           <>
@@ -254,16 +254,16 @@ export default function SkillsPage() {
 
             {/* Empty State */}
             {skills.length === 0 && !loading && (
-              <div className="text-center py-12 bg-white rounded-xl border border-gray-200">
-                <Users className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 mb-2">No skills found</p>
-                <p className="text-gray-400 text-sm">Add a new skill to get started</p>
+              <div className="text-center py-12 bg-card rounded-xl border border-border">
+                <Users className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
+                <p className="text-muted-foreground mb-2">No skills found</p>
+                <p className="text-muted-foreground/80 text-sm">Add a new skill to get started</p>
               </div>
             )}
 
             {/* Pagination */}
             {totalPages > 0 && total > 0 && (
-              <div className="mt-8 bg-white p-4 rounded-xl border border-gray-200">
+              <div className="mt-8 bg-card p-4 rounded-xl border border-border">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}

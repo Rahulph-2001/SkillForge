@@ -46,10 +46,10 @@ export default function ReviewModal({ bookingId, onSubmitted }: ReviewModalProps
 
     return (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-                <div className="bg-[#0A0F29] px-6 py-8 text-center">
-                    <h2 className="text-2xl font-bold text-white mb-2">Session Completed!</h2>
-                    <p className="text-gray-400">Please rate your experience with the mentor</p>
+            <div className="bg-card rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300 border border-border">
+                <div className="bg-primary/10 px-6 py-8 text-center border-b border-border">
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Session Completed!</h2>
+                    <p className="text-muted-foreground">Please rate your experience with the mentor</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -67,14 +67,14 @@ export default function ReviewModal({ bookingId, onSubmitted }: ReviewModalProps
                                 >
                                     <Star
                                         className={`w-10 h-10 ${(hoverRating || rating) >= star
-                                                ? 'fill-yellow-400 text-yellow-400'
-                                                : 'text-gray-300'
+                                            ? 'fill-yellow-400 text-yellow-400'
+                                            : 'text-muted-foreground/30'
                                             }`}
                                     />
                                 </button>
                             ))}
                         </div>
-                        <p className="text-sm font-medium text-gray-600">
+                        <p className="text-sm font-medium text-muted-foreground">
                             {rating === 5 && 'Excellent!'}
                             {rating === 4 && 'Very Good'}
                             {rating === 3 && 'Good'}
@@ -86,17 +86,17 @@ export default function ReviewModal({ bookingId, onSubmitted }: ReviewModalProps
 
                     {/* Review Text */}
                     <div className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
+                        <label className="text-sm font-medium text-foreground">
                             Your Review <span className="text-red-500">*</span>
                         </label>
                         <textarea
                             value={review}
                             onChange={(e) => setReview(e.target.value)}
                             placeholder="Share your experience... (min 10 characters)"
-                            className="w-full h-32 px-4 py-3 rounded-xl border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
+                            className="w-full h-32 px-4 py-3 rounded-xl bg-background border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all resize-none text-foreground placeholder-muted-foreground"
                             required
                         />
-                        <p className="text-xs text-right text-gray-400">
+                        <p className="text-xs text-right text-muted-foreground">
                             {review.length}/2000
                         </p>
                     </div>
@@ -105,10 +105,10 @@ export default function ReviewModal({ bookingId, onSubmitted }: ReviewModalProps
                     <button
                         type="submit"
                         disabled={isSubmitting || rating === 0 || review.trim().length < 10}
-                        className="w-full flex items-center justify-center gap-2 bg-[#0A0F29] text-white py-3.5 rounded-xl font-medium hover:bg-blue-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-primary text-primary-foreground py-3.5 rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isSubmitting ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
                         ) : (
                             <>
                                 <Send className="w-4 h-4" />

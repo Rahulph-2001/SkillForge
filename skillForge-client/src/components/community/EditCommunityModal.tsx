@@ -117,14 +117,14 @@ export default function EditCommunityModal({
 
     return (
         <>
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border">
                     {/* Header */}
-                    <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
-                        <h2 className="text-2xl font-bold text-gray-900">Edit Community</h2>
+                    <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex justify-between items-center z-10">
+                        <h2 className="text-2xl font-bold text-foreground">Edit Community</h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <X className="w-6 h-6" />
                         </button>
@@ -134,7 +134,7 @@ export default function EditCommunityModal({
                     <form onSubmit={handleSubmit} className="p-6 space-y-6">
                         {/* Community Name */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Community Name
                             </label>
                             <input
@@ -144,13 +144,13 @@ export default function EditCommunityModal({
                                 maxLength={100}
                                 value={formData.name}
                                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder-muted-foreground"
                             />
                         </div>
 
                         {/* Description */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Description
                             </label>
                             <textarea
@@ -159,22 +159,22 @@ export default function EditCommunityModal({
                                 maxLength={1000}
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground"
                                 rows={4}
                             />
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-muted-foreground mt-1">
                                 {formData.description.length}/1000 characters
                             </p>
                         </div>
 
                         {/* Category */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <label className="block text-sm font-medium text-foreground mb-2">Category</label>
                             <select
                                 required
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                             >
                                 {CATEGORIES.map((cat) => (
                                     <option key={cat} value={cat}>
@@ -187,7 +187,7 @@ export default function EditCommunityModal({
                         {/* Credits */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-foreground mb-2">
                                     Credits Cost
                                 </label>
                                 <input
@@ -197,23 +197,23 @@ export default function EditCommunityModal({
                                     onChange={(e) =>
                                         setFormData({ ...formData, creditsCost: parseInt(e.target.value) || 0 })
                                     }
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Period</label>
+                                <label className="block text-sm font-medium text-foreground mb-2">Period</label>
                                 <input
                                     type="text"
                                     value={formData.creditsPeriod}
                                     onChange={(e) => setFormData({ ...formData, creditsPeriod: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                                 />
                             </div>
                         </div>
 
                         {/* Image Upload with Cropper */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-foreground mb-2">
                                 Community Image
                             </label>
                             {imagePreview ? (
@@ -222,7 +222,7 @@ export default function EditCommunityModal({
                                         <img
                                             src={imagePreview}
                                             alt="Preview"
-                                            className="w-full h-48 object-cover rounded-lg"
+                                            className="w-full h-48 object-cover rounded-lg border border-border"
                                         />
                                         <button
                                             type="button"
@@ -230,7 +230,7 @@ export default function EditCommunityModal({
                                                 setImage(null);
                                                 setImagePreview(null);
                                             }}
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                                            className="absolute top-2 right-2 bg-destructive text-destructive-foreground p-2 rounded-full hover:bg-destructive/90 transition-colors"
                                         >
                                             <X className="w-4 h-4" />
                                         </button>
@@ -238,18 +238,18 @@ export default function EditCommunityModal({
                                     <button
                                         type="button"
                                         onClick={() => document.getElementById('image-upload')?.click()}
-                                        className="w-full px-4 py-2 border-2 border-blue-500 text-blue-600 font-medium rounded-lg hover:bg-blue-50 transition-colors flex items-center justify-center gap-2"
+                                        className="w-full px-4 py-2 border-2 border-primary text-primary font-medium rounded-lg hover:bg-primary/10 transition-colors flex items-center justify-center gap-2"
                                     >
                                         <ImageIcon className="w-5 h-5" />
                                         Change Image
                                     </button>
                                 </div>
                             ) : (
-                                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
                                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <Upload className="w-10 h-10 text-gray-400 mb-3" />
-                                        <p className="text-sm text-gray-500">Click to upload image</p>
-                                        <p className="text-xs text-gray-400 mt-1">Max 5MB</p>
+                                        <Upload className="w-10 h-10 text-muted-foreground mb-3" />
+                                        <p className="text-sm text-muted-foreground">Click to upload image</p>
+                                        <p className="text-xs text-muted-foreground mt-1">Max 5MB</p>
                                     </div>
                                     <input
                                         id="image-upload"
@@ -274,14 +274,14 @@ export default function EditCommunityModal({
                             <button
                                 type="button"
                                 onClick={onClose}
-                                className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                                className="flex-1 px-4 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isSubmitting ? 'Saving...' : 'Save Changes'}
                             </button>

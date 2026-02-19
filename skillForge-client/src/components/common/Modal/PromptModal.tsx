@@ -71,20 +71,20 @@ export default function PromptModal({
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    <div
+      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="dialog"
       aria-modal="true"
       aria-labelledby="prompt-modal-title"
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in border border-border">
         {/* Close Button */}
         <div className="flex justify-end mb-2">
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -93,21 +93,21 @@ export default function PromptModal({
 
         {/* Icon */}
         <div className="flex justify-center mb-4">
-          <div className="bg-blue-100 rounded-full p-3">
-            <MessageSquare className="w-12 h-12 text-blue-600" strokeWidth={2} />
+          <div className="bg-primary/10 rounded-full p-3">
+            <MessageSquare className="w-12 h-12 text-primary" strokeWidth={2} />
           </div>
         </div>
 
         {/* Title */}
-        <h2 
+        <h2
           id="prompt-modal-title"
-          className="text-xl font-bold text-gray-900 text-center mb-2"
+          className="text-xl font-bold text-foreground text-center mb-2"
         >
           {title}
         </h2>
 
         {/* Message */}
-        <p className="text-gray-600 text-center mb-6">
+        <p className="text-muted-foreground text-center mb-6">
           {message}
         </p>
 
@@ -121,13 +121,12 @@ export default function PromptModal({
               setValue(e.target.value);
               if (error) setError(null);
             }}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-              error ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className={`w-full px-4 py-2 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${error ? 'border-destructive' : 'border-border'
+              } text-foreground placeholder-muted-foreground`}
             placeholder={placeholder}
           />
           {error && (
-            <p className="text-red-500 text-sm mt-1 ml-1">{error}</p>
+            <p className="text-destructive text-sm mt-1 ml-1">{error}</p>
           )}
         </div>
 
@@ -135,13 +134,13 @@ export default function PromptModal({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2.5 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
           >
             {cancelText}
           </button>
           <button
             onClick={handleConfirm}
-            className="flex-1 px-4 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex-1 px-4 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors"
           >
             {confirmText}
           </button>

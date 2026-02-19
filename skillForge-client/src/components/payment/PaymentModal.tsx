@@ -71,18 +71,18 @@ function CheckoutForm({ amount, onSuccess, onError, onClose }: {
                     type="button"
                     onClick={onClose}
                     disabled={isProcessing}
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="flex-1 px-4 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 text-foreground"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={!stripe || isProcessing}
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
+                    className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 flex justify-center items-center gap-2"
                 >
                     {isProcessing ? (
                         <>
-                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin"></div>
                             Processing...
                         </>
                     ) : (
@@ -99,10 +99,10 @@ export default function PaymentModal({ isOpen, onClose, clientSecret, amount, on
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-            <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl transform transition-all scale-100 animate-in zoom-in-95 duration-200">
+            <div className="bg-card rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl transform transition-all scale-100 animate-in zoom-in-95 duration-200 border border-border">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Complete Payment</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+                    <h2 className="text-xl font-bold text-foreground">Complete Payment</h2>
+                    <button onClick={onClose} className="text-muted-foreground hover:text-foreground transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>

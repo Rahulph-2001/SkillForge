@@ -459,44 +459,44 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
     const fileMessages = messages.filter(m => m.type === 'file' || m.type === 'image' || m.type === 'video');
 
     return (
-        <div className={`flex flex-col bg-white ${isModal ? 'h-full' : 'h-screen'}`}>
+        <div className={`flex flex-col bg-background ${isModal ? 'h-full' : 'h-screen'}`}>
             {/* Header */}
-            <div className="bg-white border-b border-gray-100 px-6 py-4 flex-shrink-0">
+            <div className="bg-card border-b border-border px-6 py-4 flex-shrink-0">
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-4">
                         {!isModal && (
-                            <button onClick={() => navigate('/communities')} className="lg:hidden text-gray-500">
+                            <button onClick={() => navigate('/communities')} className="lg:hidden text-muted-foreground hover:text-foreground">
                                 <ArrowLeft className="w-6 h-6" />
                             </button>
                         )}
 
                         <div>
                             <div className="flex items-center gap-3">
-                                <h1 className="text-xl font-bold text-gray-900">{community.name}</h1>
-                                <span className="px-2 py-0.5 bg-gray-100 text-xs font-medium text-gray-600 rounded-full">{community.category}</span>
+                                <h1 className="text-xl font-bold text-foreground">{community.name}</h1>
+                                <span className="px-2 py-0.5 bg-muted text-xs font-medium text-muted-foreground rounded-full">{community.category}</span>
                                 {/* Edit button for community creator */}
                                 {community.adminId === user?.id && (
                                     <button
                                         onClick={() => setShowEditModal(true)}
-                                        className="text-gray-400 hover:text-blue-600 transition-colors"
+                                        className="text-muted-foreground hover:text-primary transition-colors"
                                         title="Edit Community"
                                     >
                                         <Edit className="w-4 h-4" />
                                     </button>
                                 )}
                                 {community.isAdmin && (
-                                    <button onClick={() => navigate(`/communities/${id}/settings`)} className="text-gray-400 hover:text-gray-600">
+                                    <button onClick={() => navigate(`/communities/${id}/settings`)} className="text-muted-foreground hover:text-foreground">
                                         <Settings className="w-4 h-4" />
                                     </button>
                                 )}
                             </div>
-                            <div className="text-sm text-gray-500 mt-0.5 line-clamp-1 max-w-xl">
+                            <div className="text-sm text-muted-foreground mt-0.5 line-clamp-1 max-w-xl">
                                 {community.description}
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-6 text-sm text-gray-500">
+                    <div className="flex items-center gap-6 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <Users className="w-4 h-4" />
                             <span>{community.membersCount.toLocaleString()} members</span>
@@ -505,7 +505,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                             <Clock className="w-4 h-4" />
                             <span>{community.creditsPeriod} remaining</span>
                         </div>
-                        <button onClick={() => setShowLeaveConfirm(true)} className="text-gray-400 hover:text-red-500 transition-colors" title="Leave Community">
+                        <button onClick={() => setShowLeaveConfirm(true)} className="text-muted-foreground hover:text-destructive transition-colors" title="Leave Community">
                             <LogOut className="w-5 h-5" />
                         </button>
                     </div>
@@ -518,8 +518,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                             key={tab}
                             onClick={() => setActiveTab(tab as any)}
                             className={`pb-2 text-sm font-semibold capitalize transition-all border-b-2 ${activeTab === tab
-                                ? 'text-gray-900 border-gray-900'
-                                : 'text-gray-500 border-transparent hover:text-gray-700'
+                                ? 'text-primary border-primary'
+                                : 'text-muted-foreground border-transparent hover:text-foreground'
                                 }`}
                         >
                             {tab}
@@ -529,28 +529,28 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 overflow-hidden bg-gray-50/50 relative">
+            <div className="flex-1 overflow-hidden bg-muted/30 relative">
 
                 {/* CHAT TAB */}
                 {activeTab === 'chat' && (
-                    <div className="h-full flex flex-col bg-[#efeae2] relative">
+                    <div className="h-full flex flex-col bg-[#efeae2] dark:bg-background relative">
                         {/* Background Pattern */}
-                        <div className="absolute inset-0 opacity-[0.04] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
+                        <div className="absolute inset-0 opacity-[0.04] pointer-events-none dark:opacity-[0.02] dark:invert" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}></div>
 
                         {/* Pinned Message */}
                         {pinnedMessage && (
-                            <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 px-4 py-2 flex items-center gap-3 flex-shrink-0 z-10 shadow-sm mx-4 mt-2 rounded-lg cursor-pointer" onClick={() => {
+                            <div className="bg-card/95 backdrop-blur-sm border-b border-border px-4 py-2 flex items-center gap-3 flex-shrink-0 z-10 shadow-sm mx-4 mt-2 rounded-lg cursor-pointer" onClick={() => {
                                 const el = document.getElementById(`message-${pinnedMessage.id}`);
                                 el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                             }}>
-                                <Pin className="w-3.5 h-3.5 text-blue-600 shrink-0 fill-current" />
+                                <Pin className="w-3.5 h-3.5 text-primary shrink-0 fill-current" />
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-0.5">
-                                        <span className="text-xs font-bold text-blue-900 line-clamp-1">{pinnedMessage.senderName}</span>
+                                        <span className="text-xs font-bold text-primary line-clamp-1">{pinnedMessage.senderName}</span>
                                     </div>
-                                    <p className="text-xs text-gray-600 line-clamp-1">{pinnedMessage.content}</p>
+                                    <p className="text-xs text-muted-foreground line-clamp-1">{pinnedMessage.content}</p>
                                 </div>
-                                <button onClick={(e) => { e.stopPropagation(); setPinnedMessage(null); }} className="text-gray-400 hover:text-gray-600">
+                                <button onClick={(e) => { e.stopPropagation(); setPinnedMessage(null); }} className="text-muted-foreground hover:text-foreground">
                                     <span className="sr-only">Dismiss</span>
                                     &times;
                                 </button>
@@ -568,7 +568,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                     <button
                                         onClick={loadMoreMessages}
                                         disabled={loadingMore}
-                                        className="px-4 py-1.5 bg-white/80 shadow-sm rounded-full text-xs font-medium text-gray-600 hover:bg-white transition-all disabled:opacity-50"
+                                        className="px-4 py-1.5 bg-card/80 shadow-sm rounded-full text-xs font-medium text-muted-foreground hover:bg-card transition-all disabled:opacity-50"
                                     >
                                         {loadingMore ? 'Loading history...' : 'Load older messages'}
                                     </button>
@@ -577,9 +577,9 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
 
                             {/* Empty State */}
                             {messages.length === 0 && !loading && (
-                                <div className="flex flex-col items-center justify-center h-[60%] text-center text-gray-500">
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-3">
-                                        <Send className="w-6 h-6 text-gray-400 ml-1" />
+                                <div className="flex flex-col items-center justify-center h-[60%] text-center text-muted-foreground">
+                                    <div className="w-16 h-16 bg-card rounded-full flex items-center justify-center shadow-sm mb-3">
+                                        <Send className="w-6 h-6 text-muted-foreground ml-1" />
                                     </div>
                                     <p className="text-sm font-medium">No messages yet</p>
                                     <p className="text-xs mt-1">Be the first to say hello!</p>
@@ -614,7 +614,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                             <div className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                                                 {/* Sender Name (only for others) */}
                                                 {!isMe && (
-                                                    <div className="text-xs font-semibold text-gray-700 mb-1 px-3">
+                                                    <div className="text-xs font-semibold text-muted-foreground mb-1 px-3">
                                                         {message.senderName}
                                                     </div>
                                                 )}
@@ -623,8 +623,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                 <div
                                                     onContextMenu={(e) => handleContextMenu(e, message)}
                                                     className={`relative px-3 py-2 rounded-lg shadow-sm cursor-pointer ${isMe
-                                                        ? 'bg-blue-600 text-white'
-                                                        : 'bg-white text-gray-900'
+                                                        ? 'bg-primary text-primary-foreground'
+                                                        : 'bg-card text-card-foreground'
                                                         } ${message.isPinned ? 'ring-2 ring-yellow-400/50' : ''}`}
                                                 >
                                                     {message.isPinned && <Pin className="w-3 h-3 absolute -top-1.5 -right-1.5 bg-yellow-100 text-yellow-600 rounded-full p-0.5 box-content border border-white z-10" />}
@@ -695,8 +695,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                                         key={idx}
                                                                         onClick={() => handleReaction(message.id, reaction.emoji)}
                                                                         className={`group relative px-2.5 py-1 rounded-full text-sm flex items-center gap-1 transition-all duration-200 hover:scale-105 ${hasUserReacted
-                                                                            ? 'bg-blue-100 border-2 border-blue-400 shadow-sm'
-                                                                            : 'bg-white border border-gray-200 hover:bg-gray-50 shadow-sm'
+                                                                            ? 'bg-primary/20 border-2 border-primary shadow-sm'
+                                                                            : 'bg-card border border-border hover:bg-muted shadow-sm'
                                                                             }`}
                                                                     >
                                                                         <span className="text-base">{reaction.emoji}</span>
@@ -742,7 +742,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                                 e.stopPropagation();
                                                                 toggleEmojiPicker(message.id);
                                                             }}
-                                                            className={`p-1 rounded-full shadow-sm ${isMe ? 'bg-gray-100 text-gray-600 hover:bg-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                                                            className={`p-1 rounded-full shadow-sm ${isMe ? 'bg-muted text-muted-foreground hover:bg-card' : 'bg-card text-muted-foreground hover:bg-muted'}`}
                                                         >
                                                             <Smile className="w-3.5 h-3.5" />
                                                         </button>
@@ -751,7 +751,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                                 e.stopPropagation();
                                                                 handleContextMenu(e, message);
                                                             }}
-                                                            className={`p-1 rounded-full shadow-sm ${isMe ? 'bg-gray-100 text-gray-600 hover:bg-white' : 'bg-white text-gray-600 hover:bg-gray-50'}`}
+                                                            className={`p-1 rounded-full shadow-sm ${isMe ? 'bg-muted text-muted-foreground hover:bg-card' : 'bg-card text-muted-foreground hover:bg-muted'}`}
                                                         >
                                                             <MoreVertical className="w-3.5 h-3.5" />
                                                         </button>
@@ -795,7 +795,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                             {/* File Preview */}
                             {selectedFile && (
                                 <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
-                                    <div className="flex items-center justify-between bg-white rounded-lg p-2 shadow-sm">
+                                    <div className="flex items-center justify-between bg-card rounded-lg p-2 shadow-sm">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                             {filePreview && selectedFile.type.startsWith('image/') ? (
                                                 <img src={filePreview} alt="preview" className="w-12 h-12 object-cover rounded" />

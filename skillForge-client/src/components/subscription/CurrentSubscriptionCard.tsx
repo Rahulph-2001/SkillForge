@@ -33,38 +33,38 @@ export default function CurrentSubscriptionCard({
 
     // Get plan color based on status
     const getPlanColor = () => {
-        if (subscription.status === 'CANCELED') return 'bg-gray-100 border-gray-300'; // Actually CANCELED usually means expired/inactive
-        if (subscription.status === 'EXPIRED') return 'bg-red-50 border-red-300';
-        if (subscription.status === 'PAST_DUE') return 'bg-red-50 border-red-300';
-        if (subscription.status === 'TRIALING') return 'bg-blue-50 border-blue-300';
-        if (subscription.willCancelAtPeriodEnd) return 'bg-yellow-50 border-yellow-300';
-        return 'bg-gradient-to-br from-orange-50 to-orange-100 border-orange-300';
+        if (subscription.status === 'CANCELED') return 'bg-muted border-border';
+        if (subscription.status === 'EXPIRED') return 'bg-destructive/10 border-destructive/30';
+        if (subscription.status === 'PAST_DUE') return 'bg-destructive/10 border-destructive/30';
+        if (subscription.status === 'TRIALING') return 'bg-primary/10 border-primary/30';
+        if (subscription.willCancelAtPeriodEnd) return 'bg-yellow-500/10 border-yellow-500/30';
+        return 'bg-gradient-to-br from-accent/10 to-accent/20 border-accent/30';
     };
 
     const getStatusBadge = () => {
         if (subscription.status === 'PAST_DUE') {
             return (
-                <span className="px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-destructive/20 text-destructive text-xs font-semibold rounded-full">
                     Past Due
                 </span>
             );
         }
         if (subscription.willCancelAtPeriodEnd) {
             return (
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-yellow-500/20 text-yellow-600 text-xs font-semibold rounded-full">
                     Cancels on {formatDate(subscription.currentPeriodEnd)}
                 </span>
             );
         }
         if (subscription.status === 'TRIALING') {
             return (
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-primary/20 text-primary text-xs font-semibold rounded-full">
                     Trial Period
                 </span>
             );
         }
         return (
-            <span className="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+            <span className="px-3 py-1 bg-green-500/20 text-green-600 text-xs font-semibold rounded-full">
                 Active
             </span>
         );
@@ -81,11 +81,11 @@ export default function CurrentSubscriptionCard({
         <div className={`rounded-2xl p-6 border-2 ${getPlanColor()} shadow-lg transition-all`}>
             <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 bg-white rounded-full shadow-sm">
-                        <Crown className={`w-6 h-6 ${subscription.status === 'PAST_DUE' ? 'text-red-500' : 'text-orange-500'}`} />
+                    <div className="p-3 bg-card rounded-full shadow-sm">
+                        <Crown className={`w-6 h-6 ${subscription.status === 'PAST_DUE' ? 'text-destructive' : 'text-primary'}`} />
                     </div>
                     <div>
-                        <h3 className="text-xl font-bold text-gray-900">
+                        <h3 className="text-xl font-bold text-foreground">
                             {subscription.planName || 'Current Plan'}
                         </h3>
                         {getStatusBadge()}
@@ -94,8 +94,8 @@ export default function CurrentSubscriptionCard({
             </div>
 
             <div className="space-y-3 mb-6">
-                <div className="flex items-center gap-2 text-gray-700">
-                    <Calendar className="w-5 h-5 text-gray-500" />
+                <div className="flex items-center gap-2 text-foreground">
+                    <Calendar className="w-5 h-5 text-muted-foreground" />
                     <span className="text-sm">
                         <span className="font-medium">{getValidUntilLabel()}</span> {formatDate(subscription.currentPeriodEnd)}
                     </span>
@@ -104,7 +104,7 @@ export default function CurrentSubscriptionCard({
                 {daysRemaining > 0 && (
                     <div className="flex items-center gap-2">
                         <div className="w-5 h-5" /> {/* Spacer */}
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-muted-foreground">
                             {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
                         </span>
                     </div>
@@ -116,20 +116,17 @@ export default function CurrentSubscriptionCard({
                 {!isHighestTier && subscription.status === 'ACTIVE' && !subscription.willCancelAtPeriodEnd && (
                     <button
                         onClick={onUpgrade}
-                        className="flex-1 py-2 px-4 bg-orange-500 text-white font-medium rounded-lg hover:bg-orange-600 transition-colors shadow-sm"
+                        className="flex-1 py-2 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
                     >
                         Upgrade Plan
                     </button>
                 )}
 
-
-
-                {/* Cancel Button: Visible if Active/Trialing/PastDue and NOT canceling */}
                 {/* Cancel Button: Visible if Active/Trialing/PastDue and NOT canceling */}
                 {['ACTIVE', 'TRIALING', 'PAST_DUE'].includes(subscription.status) && !subscription.willCancelAtPeriodEnd && (
                     <button
                         onClick={onCancel}
-                        className="flex-1 py-2 px-4 bg-white border-2 border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                        className="flex-1 py-2 px-4 bg-card border-2 border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors flex items-center justify-center gap-2"
                     >
                         <X className="w-4 h-4" />
                         Cancel Subscription
@@ -140,7 +137,7 @@ export default function CurrentSubscriptionCard({
                 {subscription.willCancelAtPeriodEnd && (
                     <button
                         onClick={onReactivate || onUpgrade}
-                        className="flex-1 py-2 px-4 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
+                        className="flex-1 py-2 px-4 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm"
                     >
                         Reactivate Subscription
                     </button>
@@ -148,8 +145,8 @@ export default function CurrentSubscriptionCard({
             </div>
 
             {subscription.willCancelAtPeriodEnd && (
-                <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                    <p className="text-sm text-yellow-800">
+                <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                    <p className="text-sm text-yellow-600">
                         Your subscription is set to cancel. You can continue enjoying benefits until {formatDate(subscription.currentPeriodEnd)}.
                         <br />To keep your benefits, simply reactivate or select a plan below.
                     </p>
@@ -157,8 +154,8 @@ export default function CurrentSubscriptionCard({
             )}
 
             {subscription.status === 'PAST_DUE' && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-800 font-medium">
+                <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                    <p className="text-sm text-destructive font-medium">
                         Your last payment failed. Please update your payment method or select a plan to restore full access.
                     </p>
                 </div>

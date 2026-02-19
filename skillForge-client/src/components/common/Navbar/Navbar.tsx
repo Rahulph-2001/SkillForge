@@ -71,11 +71,101 @@ export default function Navbar() {
             onClick={onClick}
             className={`block px-4 py-3 rounded-lg font-medium text-base transition-colors ${isActive(to)
                 ? 'bg-primary/10 text-primary dark:text-primary-foreground'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                : 'text-foreground hover:bg-muted dark:hover:bg-muted/80'
                 }`}
         >
             {children}
         </Link>
+    );
+
+    // Authenticated Mobile Menu
+    const AuthenticatedMobileMenu = () => (
+        <div className="fixed inset-0 z-50 md:hidden">
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
+            <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
+                <div className="p-4 flex items-center justify-between border-b border-border">
+                    <span className="font-bold text-lg text-foreground">Menu</span>
+                    <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-muted rounded-lg">
+                        <X className="w-6 h-6 text-muted-foreground hover:text-foreground" />
+                    </button>
+                </div>
+                <div className="p-4 space-y-6">
+                    <div className="flex items-center gap-3 pb-4 border-b border-border">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border">
+                            {user?.avatar ? (
+                                <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
+                            ) : (
+                                <span className="text-primary font-bold">{user?.name?.charAt(0).toUpperCase() || 'U'}</span>
+                            )}
+                        </div>
+                        <div>
+                            <p className="font-semibold text-foreground">{user?.name || 'User'}</p>
+                            <p className="text-xs text-muted-foreground">{user?.email || ''}</p>
+                        </div>
+                    </div>
+                    <nav className="space-y-1">
+                        <MobileNavLink to="/home" onClick={() => setShowMobileMenu(false)}>Home</MobileNavLink>
+                        <MobileNavLink to="/explore" onClick={() => setShowMobileMenu(false)}>Browse Skills</MobileNavLink>
+                        <MobileNavLink to="/projects" onClick={() => setShowMobileMenu(false)}>Projects</MobileNavLink>
+                        <MobileNavLink to="/communities" onClick={() => setShowMobileMenu(false)}>Communities</MobileNavLink>
+                        <MobileNavLink to="/my-skills" onClick={() => setShowMobileMenu(false)}>My Skills</MobileNavLink>
+                    </nav>
+                    <div className="h-px bg-border" />
+                    <div className="space-y-1">
+                        <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Account</p>
+                        <MobileNavLink to="/profile" onClick={() => setShowMobileMenu(false)}>My Profile</MobileNavLink>
+                        <MobileNavLink to="/credits" onClick={() => setShowMobileMenu(false)}>
+                            <div className="flex items-center justify-between w-full">
+                                <span>Manage Credits</span>
+                                <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-400 text-xs px-2 py-0.5 rounded-full">{user?.credits || 0} cr</span>
+                            </div>
+                        </MobileNavLink>
+                        <MobileNavLink to="/plans" onClick={() => setShowMobileMenu(false)}>My Subscription</MobileNavLink>
+                    </div>
+                    <div className="pt-4 border-t border-border space-y-4">
+                        <div className="flex items-center justify-between px-4">
+                            <span className="text-sm font-medium text-foreground">Theme</span>
+                            <ThemeToggle />
+                        </div>
+                        <button
+                            onClick={() => { setShowMobileMenu(false); handleLogout(); }}
+                            className="w-full flex items-center gap-2 px-4 py-3 text-destructive font-medium hover:bg-destructive/10 rounded-lg transition-colors"
+                        >
+                            <LogOut className="w-5 h-5" />
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    // Unauthenticated Mobile Menu
+    const UnauthenticatedMobileMenu = () => (
+        <div className="fixed inset-0 z-50 md:hidden">
+            <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
+            <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
+                <div className="p-4 flex items-center justify-between border-b border-border">
+                    <span className="font-bold text-lg text-foreground">Menu</span>
+                    <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-muted rounded-lg">
+                        <X className="w-6 h-6 text-muted-foreground hover:text-foreground" />
+                    </button>
+                </div>
+                <div className="p-4 space-y-6">
+                    <nav className="space-y-1">
+                        <MobileNavLink to="/" onClick={() => setShowMobileMenu(false)}>Home</MobileNavLink>
+                        <MobileNavLink to="/login" onClick={() => setShowMobileMenu(false)}>Log In</MobileNavLink>
+                        <MobileNavLink to="/signup" onClick={() => setShowMobileMenu(false)}>Sign Up</MobileNavLink>
+                    </nav>
+                    <div className="pt-4 border-t border-border space-y-4">
+                        <div className="flex items-center justify-between px-4">
+                            <span className="text-sm font-medium text-foreground">Theme</span>
+                            <ThemeToggle />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 
     if (!isAuthenticated) {
@@ -91,8 +181,8 @@ export default function Navbar() {
                         <span className="font-bold text-lg text-foreground">SkillForge</span>
                     </Link>
 
-                    {/* Right side */}
-                    <div className="flex items-center gap-4">
+                    {/* Desktop Right Side */}
+                    <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
                         <Link to="/login" className="text-muted-foreground font-medium hover:text-foreground transition-colors">
                             Log In
@@ -104,7 +194,21 @@ export default function Navbar() {
                             Get Started
                         </Link>
                     </div>
+
+                    {/* Mobile Menu Button */}
+                    <div className="flex items-center gap-4 md:hidden">
+                        <div className="sm:hidden">
+                            <ThemeToggle />
+                        </div>
+                        <button
+                            onClick={() => setShowMobileMenu(true)}
+                            className="p-2 hover:bg-muted rounded-lg transition-colors"
+                        >
+                            <Menu className="w-6 h-6 text-foreground" />
+                        </button>
+                    </div>
                 </div>
+                {showMobileMenu && <UnauthenticatedMobileMenu />}
             </header>
         );
     }
@@ -171,8 +275,8 @@ export default function Navbar() {
                         <span className="text-xs text-amber-600/80 dark:text-amber-500/80">credits</span>
                     </Link>
 
-                    <Link to="/notifications" className="relative p-2 hover:bg-secondary rounded-lg transition-colors">
-                        <Bell className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                    <Link to="/notifications" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
+                        <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
                         {unreadNotificationCount > 0 && (
                             <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full px-1 border-2 border-background">
                                 {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
@@ -183,7 +287,7 @@ export default function Navbar() {
                     {/* Mobile Menu Button */}
                     <button
                         onClick={() => setShowMobileMenu(true)}
-                        className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+                        className="md:hidden p-2 hover:bg-muted rounded-lg transition-colors"
                     >
                         <Menu className="w-6 h-6 text-foreground" />
                     </button>
@@ -213,7 +317,7 @@ export default function Navbar() {
                                 <div className="fixed inset-0 z-10" onClick={() => setShowUserMenu(false)} />
                                 <div className="absolute right-0 mt-2 w-56 bg-card text-card-foreground rounded-lg shadow-lg border border-border py-2 z-20 animate-in fade-in zoom-in-95 duration-200">
                                     <div className="px-4 py-3 border-b border-border">
-                                        <p className="text-sm font-semibold truncate">{user?.name}</p>
+                                        <p className="text-sm font-semibold truncate">{user?.name || 'User'}</p>
                                         <p className="text-xs text-muted-foreground mt-1">{user?.credits || 0} credits available</p>
                                     </div>
                                     <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
@@ -246,83 +350,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Menu Overlay */}
-            {showMobileMenu && (
-                <div className="fixed inset-0 z-50 md:hidden">
-                    {/* Backdrop */}
-                    <div
-                        className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
-                        onClick={() => setShowMobileMenu(false)}
-                    />
-
-                    {/* Drawer */}
-                    <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
-                        <div className="p-4 flex items-center justify-between border-b border-border">
-                            <span className="font-bold text-lg text-foreground">Menu</span>
-                            <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-secondary rounded-lg">
-                                <X className="w-6 h-6 text-muted-foreground" />
-                            </button>
-                        </div>
-
-                        <div className="p-4 space-y-6">
-                            {/* User Info (Mobile) */}
-                            <div className="flex items-center gap-3 pb-4 border-b border-border">
-                                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border">
-                                    {user?.avatar ? (
-                                        <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <span className="text-primary font-bold">{user?.name?.charAt(0).toUpperCase()}</span>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-foreground">{user?.name}</p>
-                                    <p className="text-xs text-muted-foreground">{user?.email}</p>
-                                </div>
-                            </div>
-
-                            {/* Navigation Links */}
-                            <nav className="space-y-1">
-                                <MobileNavLink to="/home" onClick={() => setShowMobileMenu(false)}>Home</MobileNavLink>
-                                <MobileNavLink to="/explore" onClick={() => setShowMobileMenu(false)}>Browse Skills</MobileNavLink>
-                                <MobileNavLink to="/projects" onClick={() => setShowMobileMenu(false)}>Projects</MobileNavLink>
-                                <MobileNavLink to="/communities" onClick={() => setShowMobileMenu(false)}>Communities</MobileNavLink>
-                                <MobileNavLink to="/my-skills" onClick={() => setShowMobileMenu(false)}>My Skills</MobileNavLink>
-                            </nav>
-
-                            {/* Section Divider */}
-                            <div className="h-px bg-border" />
-
-                            {/* Profile Links */}
-                            <div className="space-y-1">
-                                <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Account</p>
-                                <MobileNavLink to="/profile" onClick={() => setShowMobileMenu(false)}>My Profile</MobileNavLink>
-                                <MobileNavLink to="/credits" onClick={() => setShowMobileMenu(false)}>
-                                    <div className="flex items-center justify-between w-full">
-                                        <span>Manage Credits</span>
-                                        <span className="bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-400 text-xs px-2 py-0.5 rounded-full">{user?.credits} cr</span>
-                                    </div>
-                                </MobileNavLink>
-                                <MobileNavLink to="/plans" onClick={() => setShowMobileMenu(false)}>My Subscription</MobileNavLink>
-                            </div>
-
-                            {/* Settings & Logout */}
-                            <div className="pt-4 border-t border-border space-y-4">
-                                <div className="flex items-center justify-between px-4">
-                                    <span className="text-sm font-medium text-foreground">Theme</span>
-                                    <ThemeToggle />
-                                </div>
-
-                                <button
-                                    onClick={() => { setShowMobileMenu(false); handleLogout(); }}
-                                    className="w-full flex items-center gap-2 px-4 py-3 text-destructive font-medium hover:bg-destructive/10 rounded-lg transition-colors"
-                                >
-                                    <LogOut className="w-5 h-5" />
-                                    Sign Out
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {showMobileMenu && <AuthenticatedMobileMenu />}
         </header>
     );
 }

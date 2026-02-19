@@ -67,12 +67,12 @@ export default function ProviderProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-background">
       {/* Back Button */}
-      <div className="px-6 py-4 border-b border-gray-100">
+      <div className="px-6 py-4 border-b border-border">
         <button
           onClick={handleBack}
-          className="flex items-center gap-2 text-gray-700 hover:text-gray-900 transition-colors"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
           <span className="font-medium">Back</span>
@@ -83,20 +83,20 @@ export default function ProviderProfilePage() {
       <ProfileHeader profile={profile} />
 
       {/* Stats */}
-      <div className="px-6 py-8 grid grid-cols-3 gap-8 border-b border-gray-100">
+      <div className="px-6 py-8 grid grid-cols-3 gap-8 border-b border-border">
         <div className="text-center">
-          <div className="text-3xl font-bold text-gray-900">{profile.rating}</div>
-          <div className="text-sm text-gray-600 flex items-center justify-center gap-1 mt-1">
+          <div className="text-3xl font-bold text-foreground">{profile.rating}</div>
+          <div className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
             <span className="text-yellow-400">★</span> Rating
           </div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-bold text-gray-900">{profile.reviewCount}</div>
-          <div className="text-sm text-gray-600">Reviews</div>
+          <div className="text-3xl font-bold text-foreground">{profile.reviewCount}</div>
+          <div className="text-sm text-muted-foreground">Reviews</div>
         </div>
         <div className="text-center">
-          <div className="text-3xl font-bold text-gray-900">{profile.totalSessionsCompleted}</div>
-          <div className="text-sm text-gray-600">Sessions</div>
+          <div className="text-3xl font-bold text-foreground">{profile.totalSessionsCompleted}</div>
+          <div className="text-sm text-muted-foreground">Sessions</div>
         </div>
       </div>
 

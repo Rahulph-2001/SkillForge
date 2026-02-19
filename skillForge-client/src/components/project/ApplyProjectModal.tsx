@@ -71,17 +71,17 @@ export default function ApplyProjectModal({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-border">
                 {/* Header */}
-                <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center rounded-t-2xl">
+                <div className="sticky top-0 bg-card border-b border-border px-6 py-4 flex justify-between items-center rounded-t-2xl z-10">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Apply for Project</h2>
-                        <p className="text-sm text-gray-600 mt-1">{project.title}</p>
+                        <h2 className="text-2xl font-bold text-foreground">Apply for Project</h2>
+                        <p className="text-sm text-muted-foreground mt-1">{project.title}</p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 transition-colors"
+                        className="text-muted-foreground hover:text-foreground transition-colors"
                     >
                         <X className="w-6 h-6" />
                     </button>
@@ -91,7 +91,7 @@ export default function ApplyProjectModal({
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Cover Letter */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                             Cover Letter <span className="text-red-500">*</span>
                         </label>
                         <textarea
@@ -100,11 +100,11 @@ export default function ApplyProjectModal({
                             value={formData.coverLetter}
                             onChange={(e) => setFormData({ ...formData, coverLetter: e.target.value })}
                             placeholder="Explain why you're the best fit for this project. Highlight your relevant experience and skills..."
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                            className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground"
                             minLength={50}
                             maxLength={5000}
                         />
-                        <div className="flex justify-between text-sm text-gray-500 mt-1">
+                        <div className="flex justify-between text-sm text-muted-foreground mt-1">
                             <span>Min 50 characters</span>
                             <span>{formData.coverLetter.length}/5000</span>
                         </div>
@@ -112,7 +112,7 @@ export default function ApplyProjectModal({
 
                     {/* Proposed Duration */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                             Proposed Duration <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -121,16 +121,16 @@ export default function ApplyProjectModal({
                             value={formData.proposedDuration}
                             onChange={(e) => setFormData({ ...formData, proposedDuration: e.target.value })}
                             placeholder="e.g., 4 weeks, 2 months"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder-muted-foreground"
                         />
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             How long will it take you to complete this project?
                         </p>
                     </div>
 
                     {/* Proposed Budget */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-foreground mb-2">
                             Proposed Budget (Credits)
                         </label>
                         <input
@@ -138,16 +138,16 @@ export default function ApplyProjectModal({
                             min="0"
                             value={formData.proposedBudget}
                             onChange={(e) => setFormData({ ...formData, proposedBudget: parseInt(e.target.value) || 0 })}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                         />
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                             Project budget: {project.budget.toLocaleString()} credits
                         </p>
                     </div>
 
                     {/* Info Box */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <p className="text-sm text-blue-900">
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+                        <p className="text-sm text-foreground">
                             <strong>Note:</strong> Your application will be reviewed by the project creator.
                             We use advanced AI to highlight your most relevant skills to the employer.
                         </p>
@@ -158,14 +158,14 @@ export default function ApplyProjectModal({
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                            className="flex-1 px-4 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            className="flex-1 px-4 py-3 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
                                 <>
