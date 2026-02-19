@@ -65,21 +65,21 @@ export default function AdminNavbar() {
     ]
 
     return (
-        <header className="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+        <header className="bg-card border-b border-border sticky top-0 z-40 shadow-sm">
             <div className="max-w-full">
                 {/* Top Bar */}
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">
+                        <div className="w-8 h-8 bg-primary rounded flex items-center justify-center text-primary-foreground font-bold text-sm">
                             S
                         </div>
-                        <span className="font-bold text-lg text-gray-900">SkillForge</span>
-                        <span className="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">ADMIN</span>
+                        <span className="font-bold text-lg text-foreground">SkillForge</span>
+                        <span className="bg-destructive text-destructive-foreground px-2 py-1 rounded text-xs font-bold">ADMIN</span>
                     </div>
                     <div className="flex items-center gap-6">
                         <button
                             onClick={() => navigate('/admin/notifications')}
-                            className="text-gray-600 hover:text-gray-900 transition-colors"
+                            className="text-muted-foreground hover:text-foreground transition-colors"
                             aria-label="Notifications"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,7 +93,7 @@ export default function AdminNavbar() {
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="text-gray-600 hover:text-gray-900 text-sm font-medium transition-colors px-3 py-1.5 rounded-md hover:bg-gray-100"
+                            className="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors px-3 py-1.5 rounded-md hover:bg-muted"
                         >
                             Logout
                         </button>
@@ -101,15 +101,15 @@ export default function AdminNavbar() {
                 </div>
 
                 {/* Navigation Tabs */}
-                <nav className="flex overflow-x-auto border-t border-gray-200 bg-white scrollbar-hide">
+                <nav className="flex overflow-x-auto border-t border-border bg-card scrollbar-hide">
                     <div className="flex min-w-full">
                         {navItems.map((item) => (
                             <button
                                 key={item.label}
                                 onClick={() => navigate(item.path)}
                                 className={`flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === item.label
-                                    ? 'border-b-2 border-blue-600 text-blue-600 bg-blue-50/50'
-                                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 border-b-2 border-transparent'
+                                    ? 'border-b-2 border-primary text-primary bg-primary/5'
+                                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border-b-2 border-transparent'
                                     }`}
                             >
                                 {item.label}

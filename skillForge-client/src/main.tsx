@@ -8,6 +8,7 @@ import { store, persistor } from './store/store.ts'
 import { repairStorage, checkStorageHealth } from './utils/storageUtils'
 import { ErrorBoundary } from './components/common/ErrorBoundary'
 import { WebSocketProvider } from './contexts/WebSocketContext'
+import { ThemeProvider } from './context/ThemeContext'
 import './index.css'
 
 // Check and repair storage before app loads
@@ -98,7 +99,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
       <Provider store={store}>
-        <AppWrapper />
+        <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
+          <AppWrapper />
+        </ThemeProvider>
       </Provider>
     </ErrorBoundary>
   </React.StrictMode>,

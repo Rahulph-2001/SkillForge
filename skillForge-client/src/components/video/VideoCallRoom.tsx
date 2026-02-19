@@ -417,31 +417,31 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
     const displayRemoteName = isProvider ? sessionInfo.learnerName : sessionInfo.providerName;
 
     return (
-        <div className="h-screen bg-[#1a2332] flex flex-col overflow-hidden">
+        <div className="h-screen bg-background flex flex-col overflow-hidden">
             {/* Header */}
-            <header className="flex items-center justify-between px-4 py-3 bg-[#1a2332] border-b border-gray-700/50">
+            <header className="flex items-center justify-between px-4 py-3 bg-card border-b border-border">
                 <div className="flex items-center gap-3">
                     {/* Provider Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center overflow-hidden">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border">
                         {sessionInfo?.providerAvatar ? (
                             <img src={sessionInfo.providerAvatar} alt="" className="w-full h-full object-cover" />
                         ) : (
-                            <User className="w-5 h-5 text-white" />
+                            <User className="w-5 h-5 text-primary" />
                         )}
                     </div>
 
                     {/* Session Info */}
                     <div>
-                        <h1 className="text-white font-semibold text-sm">
+                        <h1 className="text-foreground font-semibold text-sm">
                             {sessionInfo?.skillTitle || 'Video Session'}
                         </h1>
-                        <p className="text-gray-400 text-xs">with {displayRemoteName}</p>
+                        <p className="text-muted-foreground text-xs">with {displayRemoteName}</p>
                     </div>
 
                     {/* Live Badge */}
-                    <div className="flex items-center gap-1.5 bg-red-600 px-2.5 py-1 rounded-full ml-2">
+                    <div className="flex items-center gap-1.5 bg-destructive px-2.5 py-1 rounded-full ml-2">
                         <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                        <span className="text-white text-xs font-medium">LIVE</span>
+                        <span className="text-destructive-foreground text-xs font-medium">LIVE</span>
                     </div>
                 </div>
 
@@ -457,12 +457,12 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                     )}
 
                     {/* Grid View */}
-                    <button className="text-gray-400 hover:text-white transition p-2">
+                    <button className="text-muted-foreground hover:text-foreground transition p-2 hover:bg-secondary rounded-lg">
                         <Grid3X3 className="w-5 h-5" />
                     </button>
 
                     {/* More Options */}
-                    <button className="text-gray-400 hover:text-white transition p-2">
+                    <button className="text-muted-foreground hover:text-foreground transition p-2 hover:bg-secondary rounded-lg">
                         <MoreVertical className="w-5 h-5" />
                     </button>
                 </div>
@@ -471,7 +471,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             {/* Main Content */}
             <main className="flex-1 relative p-4 overflow-hidden">
                 {/* Remote Video (Main) */}
-                <div className="w-full h-full rounded-xl overflow-hidden bg-[#243447] flex items-center justify-center">
+                <div className="w-full h-full rounded-xl overflow-hidden bg-muted flex items-center justify-center border border-border">
                     {remoteStream ? (
                         <video
                             ref={remoteVideoRef}
@@ -481,16 +481,16 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                         />
                     ) : (
                         <div className="text-center">
-                            <div className="w-20 h-20 mx-auto mb-4 text-gray-500">
+                            <div className="w-20 h-20 mx-auto mb-4 text-muted-foreground">
                                 <Video className="w-full h-full" />
                             </div>
-                            <p className="text-gray-400 text-sm">Video feed from {displayRemoteName}</p>
+                            <p className="text-muted-foreground text-sm">Video feed from {displayRemoteName}</p>
                         </div>
                     )}
                 </div>
 
                 {/* Local Video (PiP - Top Right) */}
-                <div className="absolute top-8 right-8 w-48 h-32 rounded-lg overflow-hidden bg-[#2a5a6a] shadow-2xl border border-gray-600/30">
+                <div className="absolute top-8 right-8 w-48 h-32 rounded-lg overflow-hidden bg-card shadow-2xl border border-border">
                     {localStream && isCameraOn ? (
                         <video
                             ref={localVideoRef}
@@ -501,19 +501,19 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                             style={{ transform: 'scaleX(-1)' }}
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-[#2a5a6a]">
-                            <User className="w-12 h-12 text-[#5a9aaa]" />
+                        <div className="w-full h-full flex items-center justify-center bg-secondary">
+                            <User className="w-12 h-12 text-muted-foreground" />
                         </div>
                     )}
                     {/* You Label */}
-                    <div className="absolute bottom-2 right-2 bg-gray-900/80 px-2 py-0.5 rounded text-white text-xs">
+                    <div className="absolute bottom-2 right-2 bg-black/60 px-2 py-0.5 rounded text-foreground text-xs backdrop-blur-sm">
                         You
                     </div>
                 </div>
             </main>
 
             {/* Controls Bar */}
-            <footer className="bg-[#232f3e] border-t border-gray-700 px-6 py-4">
+            <footer className="bg-card border-t border-border px-6 py-4">
                 <div className="flex items-center justify-between max-w-5xl mx-auto">
                     {/* Left Controls */}
                     <div className="flex items-center gap-3">
@@ -521,8 +521,8 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                         <button
                             onClick={toggleCamera}
                             className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${isCameraOn
-                                ? 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
-                                : 'bg-red-600 text-white hover:bg-red-700'
+                                ? 'bg-secondary text-foreground hover:bg-secondary/80'
+                                : 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
                                 }`}
                             title={isCameraOn ? 'Turn off camera' : 'Turn on camera'}
                         >
@@ -533,8 +533,8 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                         <button
                             onClick={toggleMic}
                             className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${isMicOn
-                                ? 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
-                                : 'bg-red-600 text-white hover:bg-red-700'
+                                ? 'bg-secondary text-foreground hover:bg-secondary/80'
+                                : 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
                                 }`}
                             title={isMicOn ? 'Mute' : 'Unmute'}
                         >
@@ -545,8 +545,8 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                         <button
                             onClick={toggleScreenShare}
                             className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${isScreenSharing
-                                ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                : 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
+                                ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                                : 'bg-secondary text-foreground hover:bg-secondary/80'
                                 }`}
                             title={isScreenSharing ? 'Stop sharing' : 'Share screen'}
                         >
@@ -555,7 +555,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
                         {/* Volume Slider */}
                         <div className="flex items-center gap-2 ml-3">
-                            <Volume2 className="w-5 h-5 text-gray-400" />
+                            <Volume2 className="w-5 h-5 text-muted-foreground" />
                             <div className="relative w-20">
                                 <input
                                     type="range"
@@ -563,10 +563,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                                     max="100"
                                     value={volume}
                                     onChange={handleVolumeChange}
-                                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
-                                    style={{
-                                        background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${volume}%, #4b5563 ${volume}%, #4b5563 100%)`,
-                                    }}
+                                    className="w-full h-1.5 rounded-full appearance-none cursor-pointer bg-muted"
                                 />
                             </div>
                         </div>
@@ -575,7 +572,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                     {/* Center - End Session Button */}
                     <button
                         onClick={internalEndSession}
-                        className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-lg font-medium transition"
+                        className="flex items-center gap-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground px-5 py-2.5 rounded-lg font-medium transition"
                     >
                         <PhoneOff className="w-5 h-5" />
                         <span>End Session</span>
@@ -585,7 +582,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                     {onSessionEnd && (
                         <button
                             onClick={onSessionEnd}
-                            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium transition text-sm"
+                            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-foreground px-4 py-2 rounded-lg font-medium transition text-sm"
                             title="Test: Simulates session timer expiry"
                         >
                             <Clock className="w-4 h-4" />
@@ -605,13 +602,13 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                             setShowSettings(false);
                             if (!showChat) setUnreadMessages(0);
                         }}
-                        className={`relative w-11 h-11 rounded-lg flex items-center justify-center transition ${showChat ? 'bg-blue-600 text-white' : 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
+                        className={`relative w-11 h-11 rounded-lg flex items-center justify-center transition ${showChat ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground hover:bg-secondary/80'
                             }`}
                         title="Chat"
                     >
                         <MessageSquare className="w-5 h-5" />
                         {unreadMessages > 0 && !showChat && (
-                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 rounded-full text-xs flex items-center justify-center font-medium">
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary rounded-full text-xs flex items-center justify-center font-medium text-primary-foreground border border-background">
                                 {unreadMessages}
                             </span>
                         )}
@@ -624,7 +621,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                             setShowChat(false);
                             setShowSettings(false);
                         }}
-                        className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${showParticipants ? 'bg-blue-600 text-white' : 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
+                        className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${showParticipants ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground hover:bg-secondary/80'
                             }`}
                         title="Participants"
                     >
@@ -638,7 +635,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                             setShowChat(false);
                             setShowParticipants(false);
                         }}
-                        className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${showSettings ? 'bg-blue-600 text-white' : 'bg-[#3d4f61] text-white hover:bg-[#4a5f73]'
+                        className={`w-11 h-11 rounded-lg flex items-center justify-center transition ${showSettings ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground hover:bg-secondary/80'
                             }`}
                         title="Settings"
                     >
@@ -653,26 +650,26 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
             {/* Chat Panel */}
             {showChat && (
-                <div className="fixed right-0 top-0 bottom-0 w-80 bg-[#1e2936] border-l border-gray-700 shadow-2xl z-50 flex flex-col">
-                    <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <h3 className="text-white font-semibold">Chat</h3>
-                        <button onClick={() => setShowChat(false)} className="text-gray-400 hover:text-white">
+                <div className="fixed right-0 top-0 bottom-0 w-80 bg-card border-l border-border shadow-2xl z-50 flex flex-col">
+                    <div className="p-4 border-b border-border flex items-center justify-between">
+                        <h3 className="text-foreground font-semibold">Chat</h3>
+                        <button onClick={() => setShowChat(false)} className="text-muted-foreground hover:text-foreground">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
                     <div className="flex-1 p-4 overflow-y-auto">
                         {messages.length === 0 ? (
-                            <p className="text-gray-500 text-sm text-center">No messages yet</p>
+                            <p className="text-muted-foreground text-sm text-center">No messages yet</p>
                         ) : (
                             messages.map((msg, i) => (
                                 <div key={i} className="mb-3">
-                                    <span className="text-blue-400 text-sm font-medium">{msg.from}</span>
-                                    <p className="text-white text-sm">{msg.text}</p>
+                                    <span className="text-primary text-sm font-medium">{msg.from}</span>
+                                    <p className="text-foreground text-sm">{msg.text}</p>
                                 </div>
                             ))
                         )}
                     </div>
-                    <div className="p-4 border-t border-gray-700">
+                    <div className="p-4 border-t border-border">
                         <div className="flex gap-2">
                             <input
                                 type="text"
@@ -680,11 +677,11 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                                 onChange={(e) => setChatMessage(e.target.value)}
                                 onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
                                 placeholder="Type a message..."
-                                className="flex-1 bg-[#2a3744] text-white text-sm px-3 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-blue-500"
+                                className="flex-1 bg-input text-foreground text-sm px-3 py-2 rounded-lg border border-border focus:outline-none focus:border-blue-500"
                             />
                             <button
                                 onClick={sendChatMessage}
-                                className="p-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                className="p-2 bg-primary text-foreground rounded-lg hover:bg-blue-700"
                             >
                                 <Send className="w-4 h-4" />
                             </button>
@@ -695,22 +692,22 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
             {/* Participants Panel */}
             {showParticipants && (
-                <div className="fixed right-0 top-0 bottom-0 w-80 bg-[#1e2936] border-l border-gray-700 shadow-2xl z-50">
-                    <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <h3 className="text-white font-semibold">Participants ({participants.length + 1})</h3>
-                        <button onClick={() => setShowParticipants(false)} className="text-gray-400 hover:text-white">
+                <div className="fixed right-0 top-0 bottom-0 w-80 bg-card border-l border-border shadow-2xl z-50">
+                    <div className="p-4 border-b border-border flex items-center justify-between">
+                        <h3 className="text-foreground font-semibold">Participants ({participants.length + 1})</h3>
+                        <button onClick={() => setShowParticipants(false)} className="text-muted-foreground hover:text-foreground">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
                     <div className="p-4">
                         {/* Current user */}
-                        <div className="flex items-center gap-3 py-3 border-b border-gray-700">
-                            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center">
-                                <User className="w-5 h-5 text-white" />
+                        <div className="flex items-center gap-3 py-3 border-b border-border">
+                            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                                <User className="w-5 h-5 text-foreground" />
                             </div>
                             <div>
-                                <span className="text-white text-sm">You</span>
-                                <p className="text-gray-500 text-xs">Host</p>
+                                <span className="text-foreground text-sm">You</span>
+                                <p className="text-muted-foreground text-xs">Host</p>
                             </div>
                         </div>
                         {/* Other participants */}
@@ -719,9 +716,9 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                             .map((p) => (
                                 <div key={p.userId} className="flex items-center gap-3 py-3">
                                     <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
-                                        <User className="w-5 h-5 text-white" />
+                                        <User className="w-5 h-5 text-foreground" />
                                     </div>
-                                    <span className="text-white text-sm">{p.userName || displayRemoteName}</span>
+                                    <span className="text-foreground text-sm">{p.userName || displayRemoteName}</span>
                                 </div>
                             ))}
                     </div>
@@ -730,36 +727,36 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
             {/* Settings Panel */}
             {showSettings && (
-                <div className="fixed right-0 top-0 bottom-0 w-80 bg-[#1e2936] border-l border-gray-700 shadow-2xl z-50">
-                    <div className="p-4 border-b border-gray-700 flex items-center justify-between">
-                        <h3 className="text-white font-semibold">Settings</h3>
-                        <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">
+                <div className="fixed right-0 top-0 bottom-0 w-80 bg-card border-l border-border shadow-2xl z-50">
+                    <div className="p-4 border-b border-border flex items-center justify-between">
+                        <h3 className="text-foreground font-semibold">Settings</h3>
+                        <button onClick={() => setShowSettings(false)} className="text-muted-foreground hover:text-foreground">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
                     <div className="p-4 space-y-6">
                         <div>
-                            <h4 className="text-gray-400 text-sm mb-3">Audio</h4>
+                            <h4 className="text-muted-foreground text-sm mb-3">Audio</h4>
                             <div className="flex items-center justify-between">
-                                <span className="text-white text-sm">Microphone</span>
+                                <span className="text-foreground text-sm">Microphone</span>
                                 <span className={`text-sm ${isMicOn ? 'text-green-400' : 'text-red-400'}`}>
                                     {isMicOn ? 'On' : 'Off'}
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <h4 className="text-gray-400 text-sm mb-3">Video</h4>
+                            <h4 className="text-muted-foreground text-sm mb-3">Video</h4>
                             <div className="flex items-center justify-between">
-                                <span className="text-white text-sm">Camera</span>
+                                <span className="text-foreground text-sm">Camera</span>
                                 <span className={`text-sm ${isCameraOn ? 'text-green-400' : 'text-red-400'}`}>
                                     {isCameraOn ? 'On' : 'Off'}
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <h4 className="text-gray-400 text-sm mb-3">Connection</h4>
+                            <h4 className="text-muted-foreground text-sm mb-3">Connection</h4>
                             <div className="flex items-center justify-between">
-                                <span className="text-white text-sm">Status</span>
+                                <span className="text-foreground text-sm">Status</span>
                                 <span className={`text-sm ${connectionState === 'connected' ? 'text-green-400' : 'text-yellow-400'}`}>
                                     {connectionState === 'connected' ? 'Connected' : 'Connecting...'}
                                 </span>
@@ -820,7 +817,7 @@ function SessionTimer({
     }, [sessionStartAt, sessionDurationMinutes, isExpired, onExpire]);
 
     return (
-        <div className={`px-3 py-1 rounded-full text-sm font-medium font-mono ${remainingTime === '00:00' ? 'bg-red-900/50 text-red-400' : 'bg-gray-800 text-white'
+        <div className={`px-3 py-1 rounded-full text-sm font-medium font-mono ${remainingTime === '00:00' ? 'bg-red-900/50 text-red-400' : 'bg-gray-800 text-foreground'
             }`}>
             {remainingTime}
         </div>

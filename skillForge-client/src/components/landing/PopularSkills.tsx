@@ -37,16 +37,16 @@ export default function PopularSkills() {
 
     if (loading) {
         return (
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
                 <div className="max-w-6xl mx-auto text-center">
-                    <p>Loading popular skills...</p>
+                    <p className="text-muted-foreground">Loading popular skills...</p>
                 </div>
             </section>
         );
     }
 
     return (
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-secondary/30">
             <LoginModal
                 isOpen={isLoginModalOpen}
                 onClose={() => setIsLoginModalOpen(false)}
@@ -55,8 +55,8 @@ export default function PopularSkills() {
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-16">
-                    <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Popular Skills</h2>
-                    <p className="text-gray-600">Explore what our community is learning and teaching</p>
+                    <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Popular Skills</h2>
+                    <p className="text-muted-foreground">Explore what our community is learning and teaching</p>
                 </div>
 
                 {/* Skills Grid */}
@@ -64,15 +64,15 @@ export default function PopularSkills() {
                     {skills.map((skill) => (
                         <div
                             key={skill.id}
-                            className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow cursor-pointer"
+                            className="bg-card text-card-foreground rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow cursor-pointer border border-border"
                             onClick={() => handleSkillClick(skill.id)}
                         >
                             {/* Image */}
-                            <div className="relative h-48 w-full overflow-hidden bg-gray-200">
+                            <div className="relative h-48 w-full overflow-hidden bg-muted">
                                 {skill.imageUrl ? (
                                     <img src={skill.imageUrl} alt={skill.title} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary flex items-center justify-center">
                                         <span className="text-4xl">
                                             {skill.category === 'Music' ? '🎸' :
                                                 skill.category === 'Programming' ? '💻' :
@@ -84,16 +84,16 @@ export default function PopularSkills() {
 
                             {/* Content */}
                             <div className="p-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-2 truncate">{skill.title}</h3>
-                                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{skill.description}</p>
+                                <h3 className="text-lg font-bold text-foreground mb-2 truncate">{skill.title}</h3>
+                                <p className="text-muted-foreground text-sm mb-4 line-clamp-2">{skill.description}</p>
 
                                 {/* Rating and students */}
                                 <div className="flex items-center gap-4 text-sm">
                                     <div className="flex items-center gap-1">
                                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                        <span className="text-gray-700 font-semibold">{Number(skill.rating || 0).toFixed(1)}</span>
+                                        <span className="text-foreground font-semibold">{Number(skill.rating || 0).toFixed(1)}</span>
                                     </div>
-                                    <span className="text-gray-600">
+                                    <span className="text-muted-foreground">
                                         {skill.provider.reviewCount || skill.totalSessions || 0} reviews
                                     </span>
                                 </div>
@@ -106,7 +106,7 @@ export default function PopularSkills() {
                 <div className="text-center">
                     <button
                         onClick={() => navigate(user ? '/home' : '/signup')}
-                        className="text-blue-600 font-semibold hover:text-blue-700 transition-colors"
+                        className="text-primary font-semibold hover:text-primary/80 transition-colors"
                     >
                         Join to Explore 200+ Skills
                     </button>

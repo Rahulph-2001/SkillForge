@@ -85,17 +85,17 @@ export default function MyProjectsDashboardPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-background py-8 transition-colors duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">My Projects</h1>
-                        <p className="text-gray-600 mt-1">Manage your projects and applications</p>
+                        <h1 className="text-2xl font-bold text-foreground">My Projects</h1>
+                        <p className="text-muted-foreground mt-1">Manage your projects and applications</p>
                     </div>
                     <button
                         onClick={() => navigate('/projects/create')}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+                        className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
                     >
                         <Plus className="w-5 h-5" />
                         Create Project
@@ -103,7 +103,7 @@ export default function MyProjectsDashboardPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-8 overflow-hidden">
+                <div className="bg-card rounded-xl shadow-sm border border-border mb-8 overflow-hidden">
                     <div className="flex overflow-x-auto scrollbar-hide">
                         {TABS.map((tab) => {
                             const Icon = tab.icon;
@@ -113,15 +113,15 @@ export default function MyProjectsDashboardPage() {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`relative flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors whitespace-nowrap min-w-fit
-                                        ${isActive ? 'text-blue-600 bg-blue-50/50' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}
+                                        ${isActive ? 'text-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'}
                                     `}
                                 >
-                                    <Icon className={`w-4 h-4 ${isActive ? 'text-blue-600' : 'text-gray-400'}`} />
+                                    <Icon className={`w-4 h-4 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                                     {tab.label}
                                     {isActive && (
                                         <motion.div
                                             layoutId="activeTab"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
+                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"
                                         />
                                     )}
                                 </button>
@@ -237,52 +237,52 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
     return (
         <div className="space-y-6">
             {projects.map((project) => (
-                <div key={project.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-200">
+                <div key={project.id} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-all duration-200">
                     {/* Header Row */}
                     <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
                         <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
                                 <h3
-                                    className="text-lg font-bold text-blue-600 hover:underline cursor-pointer"
+                                    className="text-lg font-bold text-primary hover:underline cursor-pointer"
                                     onClick={() => navigate(`/projects/${project.id}`)}
                                 >
                                     {project.title}
                                 </h3>
                                 <span className={`px-2.5 py-0.5 rounded text-xs font-semibold
-                                    ${project.status === 'Open' ? 'bg-blue-100 text-blue-700' :
-                                        project.status === 'In_Progress' ? 'bg-gray-100 text-gray-700' :
-                                            project.status === 'Payment_Pending' ? 'bg-indigo-100 text-indigo-700' :
-                                                project.status === 'Refund_Pending' ? 'bg-red-100 text-red-700' :
-                                                    'bg-green-100 text-green-700'}`}>
+                                    ${project.status === 'Open' ? 'bg-primary/10 text-primary' :
+                                        project.status === 'In_Progress' ? 'bg-secondary text-secondary-foreground' :
+                                            project.status === 'Payment_Pending' ? 'bg-indigo-500/10 text-indigo-500' :
+                                                project.status === 'Refund_Pending' ? 'bg-destructive/10 text-destructive' :
+                                                    'bg-green-500/10 text-green-500'}`}>
                                     {project.status.replace('_', ' ')}
                                 </span>
                             </div>
-                            <p className="text-gray-600 text-sm leading-relaxed line-clamp-2 max-w-3xl">
+                            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2 max-w-3xl">
                                 {project.description}
                             </p>
                         </div>
                     </div>
 
                     {/* Metrics Row */}
-                    <div className="flex flex-wrap text-sm gap-y-3 gap-x-8 text-gray-500 mb-6 relative">
+                    <div className="flex flex-wrap text-sm gap-y-3 gap-x-8 text-muted-foreground mb-6 relative">
                         {/* DEBUG BADGE - Remove in production */}
-                        <div className="absolute top-[-30px] right-0 text-[10px] text-gray-400 font-mono border border-gray-200 px-1 rounded">
+                        <div className="absolute top-[-30px] right-0 text-[10px] text-muted-foreground font-mono border border-border px-1 rounded">
                             DEBUG: {project.status}
                         </div>
 
-                        <div className="flex items-center gap-2 font-medium text-green-700">
+                        <div className="flex items-center gap-2 font-medium text-green-600 dark:text-green-400">
                             <span className="text-lg">₹ {project.budget.toLocaleString()}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4 text-gray-400" />
+                            <Users className="w-4 h-4 text-muted-foreground/70" />
                             <span>{project.applicationsCount} applications</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4 text-gray-400" />
+                            <Clock className="w-4 h-4 text-muted-foreground/70" />
                             <span>{project.duration}</span>
                         </div>
                         {['In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending'].includes(project.status) && (
-                            <div className="flex items-center gap-2 px-2 py-0.5 bg-amber-50 rounded text-amber-700 font-medium text-xs border border-amber-100">
+                            <div className="flex items-center gap-2 px-2 py-0.5 bg-amber-500/10 rounded text-amber-600 dark:text-amber-400 font-medium text-xs border border-amber-500/20">
                                 <Lock className="w-3 h-3" />
                                 In Escrow
                             </div>
@@ -291,32 +291,32 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
 
                     {/* Working With Section (For In Progress / Pending) */}
                     {['In_Progress', 'Pending_Completion', 'Payment_Pending', 'Refund_Pending', 'Completed'].includes(project.status) && project.acceptedContributor && (
-                        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-gray-100">
+                        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4 border-t border-border">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden border border-gray-100">
+                                <div className="w-10 h-10 rounded-full bg-muted overflow-hidden border border-border">
                                     {project.acceptedContributor.avatarUrl ? (
                                         <img src={project.acceptedContributor.avatarUrl} alt={project.acceptedContributor.name} className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-500 font-bold">
+                                        <div className="w-full h-full flex items-center justify-center bg-muted text-muted-foreground font-bold">
                                             {project.acceptedContributor.name.charAt(0)}
                                         </div>
                                     )}
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500">Working with</p>
-                                    <p className="text-sm font-bold text-gray-900">{project.acceptedContributor.name}</p>
+                                    <p className="text-xs text-muted-foreground">Working with</p>
+                                    <p className="text-sm font-bold text-foreground">{project.acceptedContributor.name}</p>
                                 </div>
                             </div>
 
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => navigate(`/projects/${project.id}?chat=true`)}
-                                    className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded text-foreground text-sm font-medium hover:bg-secondary transition-colors"
                                 >
                                     <MessageSquare className="w-4 h-4" />
                                     Chat
                                 </button>
-                                <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                                <button className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded text-foreground text-sm font-medium hover:bg-secondary transition-colors">
                                     <Phone className="w-4 h-4" />
                                     Call
                                 </button>
@@ -326,9 +326,9 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
 
                     {/* Review Block */}
                     {project.status === 'Pending_Completion' && (
-                        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                            <h4 className="text-sm font-bold text-blue-900 mb-2">Review Project Completion</h4>
-                            <p className="text-blue-800 text-sm mb-4">
+                        <div className="mt-6 bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                            <h4 className="text-sm font-bold text-blue-700 dark:text-blue-400 mb-2">Review Project Completion</h4>
+                            <p className="text-blue-600 dark:text-blue-300 text-sm mb-4">
                                 Has the contributor completed the project to your satisfaction? Your payment of <span className="font-bold">₹{project.budget.toLocaleString()}</span> is held in escrow.
                             </p>
                             <div className="flex flex-wrap gap-3">
@@ -341,7 +341,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                                 </button>
                                 <button
                                     onClick={() => handleRejectClick(project.id)}
-                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                                    className="flex items-center gap-2 px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg text-sm font-bold transition-colors shadow-sm"
                                 >
                                     <XCircle className="w-4 h-4" />
                                     Reject & Dispute
@@ -351,7 +351,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                     )}
 
                     {project.status === 'Payment_Pending' && (
-                        <div className="mt-6 bg-indigo-50 border border-indigo-200 rounded-lg p-4 flex items-center gap-3 text-indigo-800">
+                        <div className="mt-6 bg-indigo-500/10 border border-indigo-500/20 rounded-lg p-4 flex items-center gap-3 text-indigo-700 dark:text-indigo-400">
                             <Clock className="w-5 h-5" />
                             <div>
                                 <h4 className="font-bold text-sm">Payment Release Pending Approval</h4>
@@ -361,7 +361,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                     )}
 
                     {project.status === 'Refund_Pending' && (
-                        <div className="mt-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3 text-red-800">
+                        <div className="mt-6 bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-3 text-destructive">
                             <Clock className="w-5 h-5" />
                             <div>
                                 <h4 className="font-bold text-sm">Refund Pending Approval</h4>
@@ -374,11 +374,11 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                 </div>
             ))}
             {isRejectModalOpen && selectedProjectId && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+                    <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 border border-border">
                         <div className="p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Reject Project Completion</h3>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <h3 className="text-lg font-bold text-foreground mb-2">Reject Project Completion</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
                                 Please provide a detailed reason for rejecting the project completion. This will be reviewed by an admin during the dispute resolution process.
                             </p>
 
@@ -386,25 +386,25 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                                 value={rejectionReason}
                                 onChange={(e) => setRejectionReason(e.target.value)}
                                 placeholder="Explain why the work is not satisfactory..."
-                                className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none text-sm"
+                                className="w-full h-32 px-4 py-3 bg-background border border-input rounded-lg focus:ring-2 focus:ring-destructive focus:border-destructive resize-none text-sm text-foreground placeholder:text-muted-foreground"
                             />
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
+                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/50 border-t border-border">
                             <button
                                 onClick={() => {
                                     setIsRejectModalOpen(false);
                                     setRejectionReason('');
                                     setSelectedProjectId(null);
                                 }}
-                                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                className="px-4 py-2 text-muted-foreground font-medium hover:bg-secondary rounded-lg transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleConfirmRejection}
                                 disabled={!rejectionReason.trim()}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Confirm Rejection
                             </button>
@@ -479,31 +479,31 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
     return (
         <div className="space-y-6">
             {projects.map((project) => (
-                <div key={project.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+                <div key={project.id} className="bg-card rounded-xl border border-border p-6 shadow-sm">
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row justify-between items-start mb-6 gap-4">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <h3
                                     onClick={() => navigate(`/projects/${project.id}`)}
-                                    className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer"
+                                    className="text-lg font-semibold text-primary hover:underline cursor-pointer"
                                 >
                                     {project.title}
                                 </h3>
                                 <span className={`text-xs px-2 py-0.5 rounded font-medium 
-                                    ${project.status === 'In_Progress' ? 'bg-amber-100 text-amber-800' :
-                                        project.status === 'Pending_Completion' ? 'bg-purple-100 text-purple-800' :
-                                            project.status === 'Payment_Pending' ? 'bg-indigo-100 text-indigo-800' :
-                                                project.status === 'Refund_Pending' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-600'}`}>
+                                    ${project.status === 'In_Progress' ? 'bg-amber-500/10 text-amber-600' :
+                                        project.status === 'Pending_Completion' ? 'bg-purple-500/10 text-purple-600' :
+                                            project.status === 'Payment_Pending' ? 'bg-indigo-500/10 text-indigo-600' :
+                                                project.status === 'Refund_Pending' ? 'bg-destructive/10 text-destructive' :
+                                                    'bg-secondary text-muted-foreground'}`}>
                                     {project.status.replace('_', ' ')}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2 text-xl font-bold text-gray-900">
+                            <div className="flex items-center gap-2 text-xl font-bold text-foreground">
                                 <span>₹ {project.budget.toLocaleString()}</span>
                             </div>
                         </div>
-                        <div className="flex gap-8 text-sm text-gray-500">
+                        <div className="flex gap-8 text-sm text-muted-foreground">
                             <div className="flex items-center gap-2">
                                 <Clock className="w-4 h-4" />
                                 <span>{project.duration}</span>
@@ -516,31 +516,31 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                     </div>
 
                     {/* Creator Info */}
-                    <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-100">
+                    <div className="flex items-center justify-between mb-8 pb-8 border-b border-border">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gray-200 overflow-hidden">
+                            <div className="w-10 h-10 rounded-full bg-muted overflow-hidden">
                                 {project.client?.avatarUrl ? (
                                     <img src={project.client.avatarUrl} alt={project.client.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-500 font-bold bg-gray-100">
+                                    <div className="w-full h-full flex items-center justify-center text-muted-foreground font-bold bg-muted">
                                         {project.client?.name?.charAt(0) || '?'}
                                     </div>
                                 )}
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500">Project Creator</p>
-                                <p className="text-sm font-semibold text-gray-900">{project.client?.name || 'Unknown'}</p>
+                                <p className="text-xs text-muted-foreground">Project Creator</p>
+                                <p className="text-sm font-semibold text-foreground">{project.client?.name || 'Unknown'}</p>
                             </div>
                         </div>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => navigate(`/projects/${project.id}?chat=true`)}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded text-foreground text-sm font-medium hover:bg-secondary transition-colors"
                             >
                                 <MessageSquare className="w-4 h-4" />
                                 Chat
                             </button>
-                            <button className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                            <button className="flex items-center gap-2 px-3 py-1.5 bg-card border border-border rounded text-foreground text-sm font-medium hover:bg-secondary transition-colors">
                                 <Phone className="w-4 h-4" />
                                 Call
                             </button>
@@ -549,15 +549,15 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
 
                     {/* Project Details */}
                     <div className="mb-6">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">Project Details</h4>
-                        <div className="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                            <p className="text-sm text-gray-600 leading-relaxed mb-4">
+                        <h4 className="text-sm font-medium text-foreground mb-3">Project Details</h4>
+                        <div className="bg-muted/30 rounded-lg p-4 border border-border">
+                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                                 {project.description}
                             </p>
                             {project.tags && project.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {project.tags.map((tag, idx) => (
-                                        <span key={idx} className="bg-white border border-gray-200 text-gray-600 text-xs px-2.5 py-1 rounded-full">
+                                        <span key={idx} className="bg-card border border-border text-muted-foreground text-xs px-2.5 py-1 rounded-full">
                                             {tag}
                                         </span>
                                     ))}
@@ -567,26 +567,26 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                     </div>
 
                     {/* Action Footer */}
-                    <div className="flex justify-end pt-4 border-t border-gray-100">
+                    <div className="flex justify-end pt-4 border-t border-border">
                         {project.status === 'Completed' ? (
-                            <div className="flex items-center gap-2 text-green-600 font-medium text-sm bg-green-50 px-3 py-2 rounded-lg">
+                            <div className="flex items-center gap-2 text-green-600 font-medium text-sm bg-green-500/10 px-3 py-2 rounded-lg">
                                 <span className="text-lg">✓</span>
                                 Project Completed
                             </div>
                         ) : project.status === 'Pending_Completion' ? (
-                            <div className="flex items-center gap-2 text-purple-600 font-medium text-sm bg-purple-50 px-3 py-2 rounded-lg">
+                            <div className="flex items-center gap-2 text-purple-600 font-medium text-sm bg-purple-500/10 px-3 py-2 rounded-lg">
                                 <Clock className="w-4 h-4" />
                                 Verification Pending
                             </div>
                         ) : project.status === 'Refund_Pending' ? (
                             <div className="flex items-center gap-3">
-                                <div className="flex items-center gap-2 text-red-600 font-medium text-sm bg-red-50 px-3 py-2 rounded-lg">
+                                <div className="flex items-center gap-2 text-destructive font-medium text-sm bg-destructive/10 px-3 py-2 rounded-lg">
                                     <AlertTriangle className="w-4 h-4" />
                                     Refund Requested
                                 </div>
                                 <button
                                     onClick={() => handleOpenReportModal(project)}
-                                    className="flex items-center gap-2 px-4 py-2 border border-red-200 text-red-700 font-medium rounded-lg hover:bg-red-50 transition-colors"
+                                    className="flex items-center gap-2 px-4 py-2 border border-destructive/30 text-destructive font-medium rounded-lg hover:bg-destructive/10 transition-colors"
                                 >
                                     Report Dispute
                                 </button>
@@ -596,9 +596,9 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                                 onClick={() => handleMarkComplete(project.id)}
                                 disabled={loadingProjectId === project.id}
                                 className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-colors shadow-sm ${loadingProjectId === project.id
-                                    ? 'bg-blue-400 cursor-not-allowed'
-                                    : 'bg-blue-600 hover:bg-blue-700'
-                                    } text-white`}
+                                    ? 'bg-primary/70 cursor-not-allowed'
+                                    : 'bg-primary hover:bg-primary/90'
+                                    } text-primary-foreground`}
                             >
                                 {loadingProjectId === project.id ? (
                                     <>
@@ -619,20 +619,20 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
 
             {/* Report Dispute Modal */}
             {isReportModalOpen && selectedReportProject && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+                    <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 border border-border">
                         <div className="p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Report Dispute</h3>
-                            <p className="text-sm text-gray-600 mb-4">
+                            <h3 className="text-lg font-bold text-foreground mb-2">Report Dispute</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
                                 If you believe the client's refund request is unjustified, please provide details below. An admin will review the project chat and work logic.
                             </p>
 
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Reason</label>
                                 <select
                                     value={reportCategory}
                                     onChange={(e) => setReportCategory(e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-sm text-foreground"
                                 >
                                     <option value="Payment Dispute">Payment Dispute - Work Completed</option>
                                     <option value="Unresponsive Client">Unresponsive Client</option>
@@ -642,27 +642,27 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                <label className="block text-sm font-medium text-foreground mb-1">Description</label>
                                 <textarea
                                     value={reportDescription}
                                     onChange={(e) => setReportDescription(e.target.value)}
                                     placeholder="Explain your side of the story..."
-                                    className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"
+                                    className="w-full h-32 px-4 py-3 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none text-sm text-foreground placeholder:text-muted-foreground"
                                 />
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
+                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/50 border-t border-border">
                             <button
                                 onClick={() => setIsReportModalOpen(false)}
-                                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                className="px-4 py-2 text-muted-foreground font-medium hover:bg-secondary rounded-lg transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSubmitReport}
                                 disabled={!reportDescription.trim()}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Submit Report
                             </button>
@@ -724,75 +724,83 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                 const isShortlisted = app.status === 'SHORTLISTED';
 
                 return (
-                    <div key={app.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                    <div key={app.id} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
                         <div className="flex justify-between items-start mb-4">
                             <div>
                                 <h3
-                                    className="text-lg font-semibold text-gray-900 mb-1 hover:text-blue-600 cursor-pointer"
+                                    className="text-lg font-semibold text-foreground mb-1 hover:text-primary cursor-pointer transition-colors"
                                     onClick={() => navigate(`/projects/${app.projectId}`)}
                                 >
                                     {app.project?.title || 'Unknown Project'}
                                 </h3>
-                                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                    ${app.status === 'ACCEPTED' ? 'bg-green-100 text-green-800' :
-                                        app.status === 'SHORTLISTED' ? 'bg-blue-100 text-blue-800' :
-                                            app.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                                'bg-gray-100 text-gray-800'}`}>
-                                    {app.status}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                        ${app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600' :
+                                            app.status === 'SHORTLISTED' ? 'bg-primary/10 text-primary' :
+                                                app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' :
+                                                    'bg-secondary text-muted-foreground'}`}>
+                                        {app.status}
+                                    </span>
+                                    {interviewState === 'upcoming' && (
+                                        <span className="text-xs font-medium text-primary bg-primary/5 px-2 py-0.5 rounded flex items-center gap-1">
+                                            <Calendar className="w-3 h-3" />
+                                            Interview Scheduled
+                                        </span>
+                                    )}
+                                </div>
                             </div>
 
                             {app.matchScore && (
                                 <div className="flex flex-col items-end">
-                                    <span className="text-sm text-gray-500">LLM Match Score</span>
-                                    <span className="text-lg font-bold text-blue-600">{app.matchScore}%</span>
+                                    <span className="text-sm text-muted-foreground">LLM Match Score</span>
+                                    <span className="text-lg font-bold text-primary">{app.matchScore}%</span>
                                 </div>
                             )}
                         </div>
 
                         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4 text-sm">
                             <div>
-                                <span className="block text-gray-500 text-xs">Proposed Budget</span>
-                                <span className="font-medium">
+                                <span className="block text-muted-foreground text-xs">Proposed Budget</span>
+                                <span className="font-medium text-foreground">
                                     {app.proposedBudget ? `₹${app.proposedBudget.toLocaleString()}` : 'N/A'}
                                 </span>
                             </div>
                             <div>
-                                <span className="block text-gray-500 text-xs">Proposed Duration</span>
-                                <span className="font-medium">{app.proposedDuration || 'N/A'}</span>
+                                <span className="block text-muted-foreground text-xs">Proposed Duration</span>
+                                <span className="font-medium text-foreground">{app.proposedDuration || 'N/A'}</span>
                             </div>
                             <div>
-                                <span className="block text-gray-500 text-xs">Applied On</span>
-                                <span className="font-medium">{new Date(app.appliedAt).toLocaleDateString()}</span>
+                                <span className="block text-muted-foreground text-xs">Applied On</span>
+                                <span className="font-medium text-foreground">{new Date(app.appliedAt).toLocaleDateString()}</span>
                             </div>
                         </div>
 
                         {/* Dynamic Interview Section */}
                         {isShortlisted && interview && (
-                            <div className="bg-blue-50 border border-blue-100 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="bg-primary/5 border border-primary/10 p-4 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-4">
                                 <div>
-                                    <h4 className="text-sm font-semibold text-blue-900 flex items-center gap-2">
+                                    <h4 className="text-sm font-semibold text-primary flex items-center gap-2">
                                         <Video className="w-4 h-4" />
                                         Video Interview
                                     </h4>
 
                                     {interviewState === 'upcoming' && (
-                                        <p className="text-xs text-blue-700 mt-1">
+                                        <p className="text-xs text-primary/80 mt-1">
                                             Scheduled for: <span className="font-medium">{new Date(interview.scheduledAt).toLocaleString()}</span>
                                         </p>
                                     )}
                                     {interviewState === 'active' && (
-                                        <p className="text-xs text-blue-700 mt-1">
+                                        <p className="text-xs text-primary/80 mt-1">
                                             The interview has started. Please join now.
                                         </p>
                                     )}
                                     {interviewState === 'completed' && (
-                                        <p className="text-xs text-blue-700 mt-1">
-                                            This interview has worked completed.
+                                        <p className="text-xs text-muted-foreground mt-1">
+                                            This interview is completed.
                                         </p>
                                     )}
                                     {interviewState === 'none' && (
-                                        <p className="text-xs text-blue-700 mt-1">
+                                        <p className="text-xs text-muted-foreground mt-1">
                                             Waiting for the client to schedule.
                                         </p>
                                     )}
@@ -801,7 +809,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                                 {interviewState === 'active' && (
                                     <button
                                         onClick={() => navigate(`/session/interview/${interview.id}/call`)}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm animate-pulse flex items-center gap-2"
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm animate-pulse flex items-center gap-2"
                                     >
                                         <Video className="w-4 h-4" />
                                         Join Now
@@ -809,7 +817,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                                 )}
 
                                 {interviewState === 'upcoming' && (
-                                    <div className="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-medium border border-blue-200">
+                                    <div className="px-4 py-2 bg-card text-primary rounded-lg text-sm font-medium border border-border shadow-sm">
                                         Starts in {Math.ceil((new Date(interview.scheduledAt).getTime() - new Date().getTime()) / (1000 * 60 * 60))}h
                                     </div>
                                 )}
@@ -817,7 +825,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                         )}
 
                         {isShortlisted && !interview && (
-                            <div className="bg-gray-50 border border-gray-100 p-3 rounded-lg text-xs text-gray-500">
+                            <div className="bg-muted/50 border border-border p-3 rounded-lg text-xs text-muted-foreground mt-4">
                                 Application Shortlisted. Waiting for client to schedule an interview.
                             </div>
                         )}
@@ -895,19 +903,19 @@ function ApplicantsTab({
                 const isInterviewScheduled = !!interview;
 
                 return (
-                    <div key={app.id} className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow">
+                    <div key={app.id} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
                         {/* Header: Project Badge & Status */}
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                                <span className="text-sm text-gray-500">Application for:</span>
-                                <span className="text-sm font-medium text-blue-600">{app.project?.title}</span>
+                                <span className="text-sm text-muted-foreground">Application for:</span>
+                                <span className="text-sm font-medium text-primary cursor-pointer hover:underline" onClick={() => navigate(`/projects/${app.projectId}`)}>{app.project?.title}</span>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium 
-                                ${app.status === 'PENDING' ? 'bg-gray-100 text-gray-600' :
-                                    app.status === 'SHORTLISTED' ? 'bg-blue-100 text-blue-700' :
-                                        app.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' :
-                                            app.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
-                                                'bg-gray-100 text-gray-800'}`}>
+                                ${app.status === 'PENDING' ? 'bg-secondary text-muted-foreground' :
+                                    app.status === 'SHORTLISTED' ? 'bg-primary/10 text-primary' :
+                                        app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600' :
+                                            app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' :
+                                                'bg-secondary text-foreground'}`}>
                                 {app.status === 'SHORTLISTED' && isInterviewScheduled
                                     ? (interviewState === 'completed' ? 'Interview Completed' : 'Interview Scheduled')
                                     : app.status}
@@ -916,21 +924,21 @@ function ApplicantsTab({
 
                         {/* Profile Section */}
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden border border-gray-100">
+                            <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center overflow-hidden border border-border">
                                 {app.applicant?.avatarUrl ? (
                                     <img src={app.applicant.avatarUrl} alt={app.applicant.name} className="w-full h-full object-cover" />
                                 ) : (
-                                    <span className="text-lg font-bold text-gray-500">{app.applicant?.name?.charAt(0)}</span>
+                                    <span className="text-lg font-bold text-muted-foreground">{app.applicant?.name?.charAt(0)}</span>
                                 )}
                             </div>
                             <div>
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-base font-bold text-gray-900">{app.applicant?.name || 'Unknown User'}</h3>
+                                    <h3 className="text-base font-bold text-foreground">{app.applicant?.name || 'Unknown User'}</h3>
                                     <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <div className="flex items-center gap-1 text-xs text-gray-500 font-medium">
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium">
                                     <span className="text-amber-500">★</span>
                                     <span>{app.applicant?.rating || 'New'}</span>
                                 </div>
@@ -939,10 +947,10 @@ function ApplicantsTab({
 
                         {/* AI Match Score Banner */}
                         {app.matchScore && (
-                            <div className="bg-teal-50 border border-teal-100 rounded-lg p-4 mb-6">
+                            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 mb-6">
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-bold text-teal-900 mb-1">AI Match Score:</span>
-                                    <div className="text-sm text-teal-800">
+                                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 mb-1">AI Match Score:</span>
+                                    <div className="text-sm text-emerald-700 dark:text-emerald-300">
                                         <span className="font-bold">{app.matchScore}%</span>
                                         <span className="mx-1">-</span>
                                         <span>
@@ -957,27 +965,27 @@ function ApplicantsTab({
 
                         {/* Proposal Text */}
                         <div className="mb-6">
-                            <h4 className="text-sm font-bold text-gray-900 mb-2">Proposal:</h4>
-                            <p className="text-sm text-gray-600 leading-relaxed">
+                            <h4 className="text-sm font-bold text-foreground mb-2">Proposal:</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 {app.coverLetter}
                             </p>
                         </div>
 
                         {/* Details Row (Duration, Budget, Applied) */}
-                        <div className="flex flex-wrap gap-12 mb-6 border-b border-gray-100 pb-6">
+                        <div className="flex flex-wrap gap-12 mb-6 border-b border-border pb-6">
                             <div>
-                                <span className="block text-xs text-gray-500 mb-1">Duration</span>
-                                <span className="block text-sm font-bold text-gray-900">{app.proposedDuration || 'N/A'}</span>
+                                <span className="block text-xs text-muted-foreground mb-1">Duration</span>
+                                <span className="block text-sm font-bold text-foreground">{app.proposedDuration || 'N/A'}</span>
                             </div>
                             <div>
-                                <span className="block text-xs text-gray-500 mb-1">Budget</span>
-                                <span className="block text-sm font-bold text-gray-900">
+                                <span className="block text-xs text-muted-foreground mb-1">Budget</span>
+                                <span className="block text-sm font-bold text-foreground">
                                     {app.proposedBudget ? `₹${app.proposedBudget.toLocaleString()}` : 'N/A'}
                                 </span>
                             </div>
                             <div>
-                                <span className="block text-xs text-gray-500 mb-1">Applied</span>
-                                <span className="block text-sm font-bold text-gray-900">
+                                <span className="block text-xs text-muted-foreground mb-1">Applied</span>
+                                <span className="block text-sm font-bold text-foreground">
                                     {new Date(app.appliedAt).toLocaleDateString()}
                                 </span>
                             </div>
@@ -990,7 +998,7 @@ function ApplicantsTab({
                                 <>
                                     {/* Future Interview */}
                                     {interviewState === 'upcoming' && (
-                                        <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm font-medium border border-blue-100">
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium border border-primary/20">
                                             <Calendar className="w-4 h-4" />
                                             Scheduled: {new Date(interview.scheduledAt).toLocaleString()}
                                         </div>
@@ -1010,7 +1018,7 @@ function ApplicantsTab({
                                     {/* Completed Interview (Decision Buttons) */}
                                     {interviewState === 'completed' && (
                                         <>
-                                            <div className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium mr-2">
+                                            <div className="px-3 py-2 bg-secondary text-muted-foreground rounded-lg text-sm font-medium mr-2">
                                                 Interview Completed
                                             </div>
                                             <button
@@ -1021,19 +1029,13 @@ function ApplicantsTab({
                                             </button>
                                             <button
                                                 onClick={() => handleStatusUpdate(app.id, 'REJECTED')}
-                                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-bold transition-colors shadow-sm"
+                                                className="px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg text-sm font-bold transition-colors shadow-sm"
                                             >
                                                 Reject
                                             </button>
                                         </>
                                     )}
 
-                                    {/* Allow Accept/Reject even if upcoming/active (optional, but requested flow implies strict 'after')
-                                        However, typically owners might want to cancel/reject early. 
-                                        Based on prompt "after the interview completed... can decide", we prioritize that flow.
-                                        But we can leave a small 'Reject' option for cancellation if needed, 
-                                        but for strict flow let's keep it clean as requested.
-                                    */}
                                 </>
                             ) : (
                                 /* Case 2: Pending/Reviewed (Decision or Schedule) */
@@ -1041,20 +1043,20 @@ function ApplicantsTab({
                                     <>
                                         <button
                                             onClick={() => onScheduleInterview(app.id)}
-                                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg text-sm font-bold transition-colors"
+                                            className="flex items-center gap-2 px-4 py-2 bg-card border border-border hover:bg-secondary text-foreground rounded-lg text-sm font-bold transition-colors"
                                         >
                                             <Calendar className="w-4 h-4" />
                                             Schedule Interview
                                         </button>
                                         <button
                                             onClick={() => handleStatusUpdate(app.id, 'ACCEPTED')}
-                                            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-bold transition-colors"
+                                            className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg text-sm font-bold transition-colors"
                                         >
                                             Accept
                                         </button>
                                         <button
                                             onClick={() => handleStatusUpdate(app.id, 'REJECTED')}
-                                            className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg text-sm font-bold transition-colors"
+                                            className="px-6 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg text-sm font-bold transition-colors"
                                         >
                                             Reject
                                         </button>
@@ -1062,9 +1064,9 @@ function ApplicantsTab({
                                 ) : (
                                     /* Case 3: Final States */
                                     <div className={`px-4 py-2 rounded-lg text-sm font-medium border
-                                        ${app.status === 'ACCEPTED' ? 'bg-green-50 text-green-700 border-green-200' :
-                                            app.status === 'REJECTED' ? 'bg-red-50 text-red-700 border-red-200' :
-                                                'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                        ${app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                                            app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+                                                'bg-secondary text-muted-foreground border-border'}`}>
                                         {app.status === 'ACCEPTED' ? 'Application Accepted' :
                                             app.status === 'REJECTED' ? 'Application Rejected' :
                                                 app.status === 'WITHDRAWN' ? 'Application Withdrawn' : app.status}
@@ -1081,16 +1083,16 @@ function ApplicantsTab({
 
 function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: any) {
     return (
-        <div className="py-16 text-center bg-white rounded-xl border border-gray-200 border-dashed">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Icon className="w-8 h-8 text-gray-400" />
+        <div className="py-16 text-center bg-card rounded-xl border border-border border-dashed">
+            <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <Icon className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">{title}</h3>
-            <p className="text-gray-500 mb-6 max-w-sm mx-auto">{description}</p>
+            <h3 className="text-lg font-medium text-foreground mb-1">{title}</h3>
+            <p className="text-muted-foreground mb-6 max-w-sm mx-auto">{description}</p>
             {actionLabel && (
                 <button
                     onClick={onAction}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
                 >
                     <Plus className="w-4 h-4" />
                     {actionLabel}

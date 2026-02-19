@@ -66,11 +66,11 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
     };
 
     return (
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <div className="w-full max-w-md bg-card text-card-foreground rounded-lg shadow-lg p-8 border border-border">
             {/* Back button */}
             <button
                 onClick={() => navigate('/')}
-                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-8 transition"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
             >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="font-semibold">Back</span>
@@ -78,15 +78,15 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
             {/* Heading */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-3">Welcome back</h1>
-                <p className="text-gray-600">Log in to your SkillForge account</p>
+                <h1 className="text-3xl font-bold text-foreground mb-3">Welcome back</h1>
+                <p className="text-muted-foreground">Log in to your SkillForge account</p>
             </div>
 
             {/* Google Login Button */}
             <button
                 type="button"
                 onClick={handleGoogleLogin}
-                className="w-full border-2 border-gray-300 rounded-lg py-3 px-4 font-semibold text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2 mb-4"
+                className="w-full border-2 border-border rounded-lg py-3 px-4 font-semibold text-foreground hover:bg-secondary transition-colors flex items-center justify-center gap-2 mb-4"
             >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -111,66 +111,66 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
             {/* Divider */}
             <div className="flex items-center gap-4 my-6">
-                <div className="flex-1 border-t border-gray-300"></div>
-                <span className="text-gray-500 text-sm uppercase">Or continue with email</span>
-                <div className="flex-1 border-t border-gray-300"></div>
+                <div className="flex-1 border-t border-border"></div>
+                <span className="text-muted-foreground text-sm uppercase">Or continue with email</span>
+                <div className="flex-1 border-t border-border"></div>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Email Field */}
                 <div>
-                    <label className="block text-gray-900 font-semibold mb-2">Email</label>
+                    <label className="block text-foreground font-semibold mb-2">Email</label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="you@example.com"
-                            className={`w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'
-                                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                            className={`w-full pl-10 pr-4 py-3 bg-background border ${errors.email ? 'border-destructive' : 'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                     </div>
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    {errors.email && <p className="text-destructive text-xs mt-1">{errors.email}</p>}
                 </div>
 
                 {/* Password Field */}
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <label className="block text-gray-900 font-semibold">Password</label>
-                        <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors">
+                        <label className="block text-foreground font-semibold">Password</label>
+                        <Link to="/forgot-password" className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
                             Forgot password?
                         </Link>
                     </div>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             value={formData.password}
                             onChange={handleChange}
                             placeholder="••••••••"
-                            className={`w-full pl-10 pr-10 py-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'
-                                } rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                            className={`w-full pl-10 pr-10 py-3 bg-background border ${errors.password ? 'border-destructive' : 'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                         </button>
                     </div>
-                    {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
+                    {errors.password && <p className="text-destructive text-xs mt-1">{errors.password}</p>}
                 </div>
 
                 {/* Submit Button */}
                 <button
                     type="submit"
                     disabled={!formData.email || !formData.password}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold py-3 px-4 rounded-lg transition-colors"
+                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed text-primary-foreground font-bold py-3 px-4 rounded-lg transition-colors"
                 >
                     Log In
                 </button>
@@ -178,9 +178,9 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
 
             {/* Sign Up Link */}
             <div className="text-center mt-6">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                     Don't have an account?{' '}
-                    <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                    <Link to="/signup" className="text-primary hover:text-primary/80 font-semibold transition-colors">
                         Sign up for free
                     </Link>
                 </p>

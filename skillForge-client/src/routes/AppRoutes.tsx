@@ -426,6 +426,8 @@ const AppRoutes = () => {
                 />
             </Route>
 
+
+
             {/* Auth Routes (No Layout) */}
             <Route
                 path="/signup"

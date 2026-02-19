@@ -50,7 +50,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4 transition-colors duration-300">
             {/* Success Modal */}
             <SuccessModal
                 isOpen={showSuccessModal}
@@ -72,10 +72,10 @@ export default function SignupPage() {
 
             {/* Loading Overlay */}
             {loading && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-8 flex flex-col items-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                        <p className="mt-4 text-gray-700 font-medium">Creating your account...</p>
+                <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="bg-card text-card-foreground rounded-lg p-8 flex flex-col items-center shadow-lg border border-border">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                        <p className="mt-4 font-medium">Creating your account...</p>
                     </div>
                 </div>
             )}

@@ -164,11 +164,11 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
     const passwordsMatch = formData.password === formData.confirmPassword && formData.confirmPassword !== '';
 
     return (
-        <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+        <div className="w-full max-w-md bg-card text-card-foreground rounded-lg shadow-lg p-8 border border-border">
             {/* Back button */}
             <button
                 onClick={() => navigate('/')}
-                className="flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-6 transition"
+                className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
             >
                 <ArrowLeft className="w-5 h-5" />
                 <span className="font-medium">Back</span>
@@ -176,8 +176,8 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
 
             {/* Heading */}
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Create your account</h1>
-                <p className="text-gray-500">Join SkillForge and get 20 free credits to start</p>
+                <h1 className="text-3xl font-bold text-foreground mb-2">Create your account</h1>
+                <p className="text-muted-foreground">Join SkillForge and get 20 free credits to start</p>
             </div>
 
             {/* OAuth buttons */}
@@ -185,7 +185,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                 <button
                     type="button"
                     onClick={handleGoogleSignup}
-                    className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg py-3 px-4 hover:bg-gray-50 transition font-medium text-gray-700"
+                    className="flex-1 flex items-center justify-center gap-2 border border-border rounded-lg py-3 px-4 hover:bg-secondary transition-colors font-medium text-foreground"
                 >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                         <path
@@ -211,18 +211,18 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
 
             {/* Divider */}
             <div className="flex items-center gap-4 mb-6">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Or continue with email</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
+                <div className="flex-1 h-px bg-border"></div>
+                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Or continue with email</span>
+                <div className="flex-1 h-px bg-border"></div>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
                 {/* Full Name */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Full Name</label>
+                    <label className="block text-sm font-semibold text-foreground mb-2">Full Name</label>
                     <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type="text"
                             name="name"
@@ -230,24 +230,24 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             placeholder="John Doe"
-                            className={`w-full pl-10 pr-10 py-3 border ${errors.name && touched.name ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                                } rounded-lg focus:outline-none focus:ring-2 ${errors.name && touched.name ? 'focus:ring-red-500' : 'focus:ring-blue-500'
-                                } focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                            className={`w-full pl-10 pr-10 py-3 bg-background border ${errors.name && touched.name ? 'border-destructive bg-destructive/10' : 'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 ${errors.name && touched.name ? 'focus:ring-destructive' : 'focus:ring-primary'
+                                } focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                         {errors.name && touched.name && (
-                            <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-red-500" />
+                            <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-destructive" />
                         )}
                     </div>
                     {errors.name && touched.name && (
-                        <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+                        <p className="text-destructive text-sm mt-1">{errors.name}</p>
                     )}
                 </div>
 
                 {/* Email */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Email</label>
+                    <label className="block text-sm font-semibold text-foreground mb-2">Email</label>
                     <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type="email"
                             name="email"
@@ -255,24 +255,24 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             placeholder="you@example.com"
-                            className={`w-full pl-10 pr-10 py-3 border ${errors.email && touched.email ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                                } rounded-lg focus:outline-none focus:ring-2 ${errors.email && touched.email ? 'focus:ring-red-500' : 'focus:ring-blue-500'
-                                } focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                            className={`w-full pl-10 pr-10 py-3 bg-background border ${errors.email && touched.email ? 'border-destructive bg-destructive/10' : 'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 ${errors.email && touched.email ? 'focus:ring-destructive' : 'focus:ring-primary'
+                                } focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                         {errors.email && touched.email && (
-                            <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-red-500" />
+                            <AlertCircle className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-destructive" />
                         )}
                     </div>
                     {errors.email && touched.email && (
-                        <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                        <p className="text-destructive text-sm mt-1">{errors.email}</p>
                     )}
                 </div>
 
                 {/* Password */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Password</label>
+                    <label className="block text-sm font-semibold text-foreground mb-2">Password</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="password"
@@ -280,37 +280,37 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             placeholder="••••••••"
-                            className={`w-full pl-10 pr-12 py-3 border ${errors.password && touched.password ? 'border-red-500 bg-red-50' : 'border-gray-200'
-                                } rounded-lg focus:outline-none focus:ring-2 ${errors.password && touched.password ? 'focus:ring-red-500' : 'focus:ring-blue-500'
-                                } focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                            className={`w-full pl-10 pr-12 py-3 bg-background border ${errors.password && touched.password ? 'border-destructive bg-destructive/10' : 'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 ${errors.password && touched.password ? 'focus:ring-destructive' : 'focus:ring-primary'
+                                } focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             {errors.password && touched.password && (
-                                <AlertCircle className="w-5 h-5 text-red-500" />
+                                <AlertCircle className="w-5 h-5 text-destructive" />
                             )}
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="text-gray-400 hover:text-gray-600 transition"
+                                className="text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
                         </div>
                     </div>
                     {errors.password && touched.password && (
-                        <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+                        <p className="text-destructive text-sm mt-1">{errors.password}</p>
                     )}
                     {/* Password Strength Indicator */}
                     {formData.password && touched.password && (
                         <div className="mt-2">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs text-gray-600">Password strength:</span>
-                                <span className={`text-xs font-semibold ${passwordStrength.label === 'Weak' ? 'text-red-600' :
-                                    passwordStrength.label === 'Fair' ? 'text-yellow-600' :
-                                        passwordStrength.label === 'Good' ? 'text-blue-600' : 'text-green-600'
+                                <span className="text-xs text-muted-foreground">Password strength:</span>
+                                <span className={`text-xs font-semibold ${passwordStrength.label === 'Weak' ? 'text-destructive' :
+                                    passwordStrength.label === 'Fair' ? 'text-yellow-600 dark:text-yellow-500' :
+                                        passwordStrength.label === 'Good' ? 'text-blue-600 dark:text-blue-500' : 'text-green-600 dark:text-green-500'
                                     }`}>{passwordStrength.label}</span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div className="w-full bg-secondary rounded-full h-1.5">
                                 <div
                                     className={`h-1.5 rounded-full transition-all ${passwordStrength.color}`}
                                     style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
@@ -318,14 +318,14 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             </div>
                         </div>
                     )}
-                    <p className="text-xs text-gray-500 mt-2">Must be at least 8 characters</p>
+                    <p className="text-xs text-muted-foreground mt-2">Must be at least 8 characters</p>
                 </div>
 
                 {/* Confirm Password */}
                 <div>
-                    <label className="block text-sm font-semibold text-gray-900 mb-2">Confirm Password</label>
+                    <label className="block text-sm font-semibold text-foreground mb-2">Confirm Password</label>
                     <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                         <input
                             type={showConfirmPassword ? 'text' : 'password'}
                             name="confirmPassword"
@@ -333,17 +333,17 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             placeholder="••••••••"
-                            className={`w-full pl-10 pr-12 py-3 border ${errors.confirmPassword && touched.confirmPassword ? 'border-red-500 bg-red-50' :
-                                !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'border-green-500 bg-green-50' :
-                                    'border-gray-200'
-                                } rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword && touched.confirmPassword ? 'focus:ring-red-500' :
+                            className={`w-full pl-10 pr-12 py-3 bg-background border ${errors.confirmPassword && touched.confirmPassword ? 'border-destructive bg-destructive/10' :
+                                !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'border-green-500 bg-green-500/10' :
+                                    'border-input'
+                                } rounded-lg focus:outline-none focus:ring-2 ${errors.confirmPassword && touched.confirmPassword ? 'focus:ring-destructive' :
                                     !errors.confirmPassword && touched.confirmPassword && formData.confirmPassword ? 'focus:ring-green-500' :
-                                        'focus:ring-blue-500'
-                                } focus:border-transparent transition text-gray-900 placeholder-gray-400`}
+                                        'focus:ring-primary'
+                                } focus:border-transparent transition-colors text-foreground placeholder:text-muted-foreground`}
                         />
                         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
                             {errors.confirmPassword && touched.confirmPassword && (
-                                <AlertCircle className="w-5 h-5 text-red-500" />
+                                <AlertCircle className="w-5 h-5 text-destructive" />
                             )}
                             {!errors.confirmPassword && touched.confirmPassword && formData.confirmPassword && (
                                 <CheckCircle className="w-5 h-5 text-green-500" />
@@ -351,17 +351,17 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                             <button
                                 type="button"
                                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                className="text-gray-400 hover:text-gray-600 transition"
+                                className="text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
                         </div>
                     </div>
                     {errors.confirmPassword && touched.confirmPassword && (
-                        <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
+                        <p className="text-destructive text-sm mt-1">{errors.confirmPassword}</p>
                     )}
                     {!errors.confirmPassword && touched.confirmPassword && formData.confirmPassword && (
-                        <p className="text-green-600 text-sm mt-1 flex items-center gap-1">
+                        <p className="text-green-600 dark:text-green-500 text-sm mt-1 flex items-center gap-1">
                             <span>Passwords match!</span>
                         </p>
                     )}
@@ -374,15 +374,15 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                         id="terms"
                         checked={agreed}
                         onChange={(e) => setAgreed(e.target.checked)}
-                        className="w-5 h-5 mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        className="w-5 h-5 mt-0.5 rounded border-input text-primary focus:ring-primary cursor-pointer"
                     />
-                    <label htmlFor="terms" className="text-sm text-gray-700">
+                    <label htmlFor="terms" className="text-sm text-foreground">
                         I agree to the{' '}
-                        <Link to="/terms" className="text-blue-600 hover:underline font-medium">
+                        <Link to="/terms" className="text-primary hover:underline font-medium">
                             Terms of Service
                         </Link>{' '}
                         and{' '}
-                        <Link to="/privacy" className="text-blue-600 hover:underline font-medium">
+                        <Link to="/privacy" className="text-primary hover:underline font-medium">
                             Privacy Policy
                         </Link>
                     </label>
@@ -392,7 +392,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                 <button
                     type="submit"
                     disabled={!formData.name || !formData.email || !isPasswordValid || !passwordsMatch || !agreed}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition mt-6"
+                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed text-primary-foreground font-semibold py-3 px-4 rounded-lg transition-colors mt-6"
                 >
                     Create Account
                 </button>
@@ -400,9 +400,9 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
 
             {/* Login link */}
             <div className="text-center mt-6">
-                <p className="text-gray-600">
+                <p className="text-muted-foreground">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-blue-600 hover:underline font-medium">
+                    <Link to="/login" className="text-primary hover:underline font-medium">
                         Log in
                     </Link>
                 </p>
