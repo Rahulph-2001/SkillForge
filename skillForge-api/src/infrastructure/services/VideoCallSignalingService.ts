@@ -12,13 +12,19 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
   constructor(
     @inject(TYPES.IVideoCallPresenceService) private presenceService: IVideoCallPresenceService,
     @inject(TYPES.IVideoCallRoomRepository) private roomRepository: IVideoCallRoomRepository
-  ) {}
+  ) { }
 
   initialize(io: SocketIOServer): void {
     this.io = io;
     io.on('connection', (socket: Socket) => {
-      const userId = socket.data.userId;
-      if (!userId) { socket.disconnect(); return; }
+      // WebSocketService stores the decoded JWT as socket.data.user (with userId property)
+      const userId = socket.data.user?.userId || socket.data.userId;
+      if (!userId) {
+        console.error('[VideoCallSignaling] No userId found on socket, disconnecting:', socket.id);
+        socket.disconnect();
+        return;
+      }
+      console.log(`[VideoCallSignaling] Socket connected: ${socket.id}, userId: ${userId}`);
 
       socket.on('video:join-room', async ({ roomId }) => {
         try { await this.handleJoinRoom(userId, roomId, socket); }

@@ -111,34 +111,49 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
     useEffect(() => {
         if (!room || !user || !localStream) return;
 
-        const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+        // IMPORTANT: Strip /api/v1 from URL — Socket.IO connects to the base server, not the API path
+        const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
+        console.log('[VideoCall] Connecting Socket.IO to:', SOCKET_URL);
+
+        const socket = io(SOCKET_URL, {
             withCredentials: true,
         });
         socketRef.current = socket;
 
         socket.on('connect', () => {
+            console.log('[VideoCall] Socket connected, joining room:', room.id);
             socket.emit('video:join-room', { roomId: room.id });
         });
 
+        socket.on('connect_error', (err) => {
+            console.error('[VideoCall] Socket connection error:', err.message);
+            toast.error('Failed to connect to video call server');
+        });
+
         socket.on('video:room-joined', ({ participants: p }) => {
+            console.log('[VideoCall] Room joined, participants:', p);
             setParticipants(p);
             setConnectionState('connected');
 
             p.forEach((participant: Participant) => {
                 if (participant.userId !== user?.id) {
+                    console.log('[VideoCall] Creating offer for existing participant:', participant.userId);
                     createPeerConnection(participant.userId, true);
                 }
             });
         });
 
         socket.on('video:user-joined', ({ userId, participants: p }) => {
+            console.log('[VideoCall] New user joined:', userId);
             setParticipants(p);
             if (userId !== user?.id) {
+                console.log('[VideoCall] Waiting for offer from new user:', userId);
                 createPeerConnection(userId, false);
             }
         });
 
         socket.on('video:user-left', ({ userId }) => {
+            console.log('[VideoCall] User left:', userId);
             setParticipants((prev) => prev.filter((p) => p.userId !== userId));
             setRemoteStream(null);
             if (peerConnectionRef.current) {
@@ -148,6 +163,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
         });
 
         socket.on('video:offer', async ({ offer, fromUserId }) => {
+            console.log('[VideoCall] Received offer from:', fromUserId);
             if (!peerConnectionRef.current) {
                 await createPeerConnection(fromUserId, false);
             }
@@ -155,43 +171,62 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             const answer = await peerConnectionRef.current?.createAnswer();
             await peerConnectionRef.current?.setLocalDescription(answer);
             socket.emit('video:answer', { roomId: room.id, answer, toUserId: fromUserId });
+            console.log('[VideoCall] Sent answer to:', fromUserId);
         });
 
         socket.on('video:answer', async ({ answer }) => {
+            console.log('[VideoCall] Received answer');
             await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(answer));
         });
 
         socket.on('video:ice-candidate', async ({ candidate }) => {
             if (candidate) {
-                await peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                try {
+                    await peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
+                } catch (err) {
+                    console.warn('[VideoCall] Failed to add ICE candidate:', err);
+                }
             }
         });
 
         socket.on('video:error', ({ message }) => {
+            console.error('[VideoCall] Server error:', message);
             toast.error(message);
         });
 
         return () => {
+            console.log('[VideoCall] Cleaning up socket and peer connection');
             socket.disconnect();
             peerConnectionRef.current?.close();
             localStreamRef.current?.getTracks().forEach(track => track.stop());
         };
-    }, [room, user]); // Removed localStream from dependencies to prevent stopping tracks
+    }, [room, user, localStream]); // Include localStream to ensure signaling starts only after media is ready
 
     const createPeerConnection = useCallback(
         async (peerId: string, createOffer: boolean) => {
-            if (!room || !socketRef.current || !localStreamRef.current) return;
+            if (!room || !socketRef.current || !localStreamRef.current) {
+                console.warn('[VideoCall] Cannot create peer connection - missing:', {
+                    room: !!room,
+                    socket: !!socketRef.current,
+                    localStream: !!localStreamRef.current
+                });
+                return;
+            }
 
+            console.log('[VideoCall] Creating peer connection for peer:', peerId, 'createOffer:', createOffer);
             const pc = videoCallService.createPeerConnection(room.iceServers);
             peerConnectionRef.current = pc;
 
             // Add local tracks
-            localStreamRef.current.getTracks().forEach((track) => {
+            const tracks = localStreamRef.current.getTracks();
+            console.log('[VideoCall] Adding', tracks.length, 'local tracks to peer connection');
+            tracks.forEach((track) => {
                 pc.addTrack(track, localStreamRef.current!);
             });
 
             // Handle remote stream
             pc.ontrack = (event) => {
+                console.log('[VideoCall] Received remote track:', event.track.kind, 'streams:', event.streams.length);
                 setRemoteStream(event.streams[0]);
                 if (remoteVideoRef.current) {
                     remoteVideoRef.current.srcObject = event.streams[0];
@@ -209,7 +244,12 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                 }
             };
 
+            pc.oniceconnectionstatechange = () => {
+                console.log('[VideoCall] ICE connection state:', pc.iceConnectionState);
+            };
+
             pc.onconnectionstatechange = () => {
+                console.log('[VideoCall] Connection state:', pc.connectionState);
                 if (pc.connectionState === 'connected') {
                     setConnectionState('connected');
                 } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
