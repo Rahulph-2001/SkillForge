@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
     Video, VideoOff, Mic, MicOff, Monitor, Volume2, PhoneOff,
     MessageSquare, Users, Settings, MoreVertical, Grid3X3, Clock,
@@ -109,111 +109,49 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
     // WebRTC signaling
     useEffect(() => {
-        if (!room || !user || !localStream) return;
+        if (!room || !user) return;
+
+        // Wait for local stream to be ready before starting signaling
+        if (!localStreamRef.current) {
+            console.log('[VideoCall] Waiting for local stream before starting signaling...');
+            return;
+        }
 
         // IMPORTANT: Strip /api/v1 from URL — Socket.IO connects to the base server, not the API path
         const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
         console.log('[VideoCall] Connecting Socket.IO to:', SOCKET_URL);
 
+        // Extract auth token from cookie for explicit authentication
+        // This is critical for cross-origin connections (Vercel frontend → EC2 backend)
+        const token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('accessToken='))
+            ?.split('=')[1];
+
+        console.log('[VideoCall] Auth token found:', !!token);
+
         const socket = io(SOCKET_URL, {
             withCredentials: true,
+            transports: ['websocket', 'polling'],
+            auth: { token },
         });
         socketRef.current = socket;
 
-        socket.on('connect', () => {
-            console.log('[VideoCall] Socket connected, joining room:', room.id);
-            socket.emit('video:join-room', { roomId: room.id });
-        });
-
-        socket.on('connect_error', (err) => {
-            console.error('[VideoCall] Socket connection error:', err.message);
-            toast.error('Failed to connect to video call server');
-        });
-
-        socket.on('video:room-joined', ({ participants: p }) => {
-            console.log('[VideoCall] Room joined, participants:', p);
-            setParticipants(p);
-            setConnectionState('connected');
-
-            p.forEach((participant: Participant) => {
-                if (participant.userId !== user?.id) {
-                    console.log('[VideoCall] Creating offer for existing participant:', participant.userId);
-                    createPeerConnection(participant.userId, true);
-                }
-            });
-        });
-
-        socket.on('video:user-joined', ({ userId, participants: p }) => {
-            console.log('[VideoCall] New user joined:', userId);
-            setParticipants(p);
-            if (userId !== user?.id) {
-                console.log('[VideoCall] Waiting for offer from new user:', userId);
-                createPeerConnection(userId, false);
-            }
-        });
-
-        socket.on('video:user-left', ({ userId }) => {
-            console.log('[VideoCall] User left:', userId);
-            setParticipants((prev) => prev.filter((p) => p.userId !== userId));
-            setRemoteStream(null);
-            if (peerConnectionRef.current) {
-                peerConnectionRef.current.close();
-                peerConnectionRef.current = null;
-            }
-        });
-
-        socket.on('video:offer', async ({ offer, fromUserId }) => {
-            console.log('[VideoCall] Received offer from:', fromUserId);
-            if (!peerConnectionRef.current) {
-                await createPeerConnection(fromUserId, false);
-            }
-            await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(offer));
-            const answer = await peerConnectionRef.current?.createAnswer();
-            await peerConnectionRef.current?.setLocalDescription(answer);
-            socket.emit('video:answer', { roomId: room.id, answer, toUserId: fromUserId });
-            console.log('[VideoCall] Sent answer to:', fromUserId);
-        });
-
-        socket.on('video:answer', async ({ answer }) => {
-            console.log('[VideoCall] Received answer');
-            await peerConnectionRef.current?.setRemoteDescription(new RTCSessionDescription(answer));
-        });
-
-        socket.on('video:ice-candidate', async ({ candidate }) => {
-            if (candidate) {
-                try {
-                    await peerConnectionRef.current?.addIceCandidate(new RTCIceCandidate(candidate));
-                } catch (err) {
-                    console.warn('[VideoCall] Failed to add ICE candidate:', err);
-                }
-            }
-        });
-
-        socket.on('video:error', ({ message }) => {
-            console.error('[VideoCall] Server error:', message);
-            toast.error(message);
-        });
-
-        return () => {
-            console.log('[VideoCall] Cleaning up socket and peer connection');
-            socket.disconnect();
-            peerConnectionRef.current?.close();
-            localStreamRef.current?.getTracks().forEach(track => track.stop());
-        };
-    }, [room, user, localStream]); // Include localStream to ensure signaling starts only after media is ready
-
-    const createPeerConnection = useCallback(
-        async (peerId: string, createOffer: boolean) => {
-            if (!room || !socketRef.current || !localStreamRef.current) {
-                console.warn('[VideoCall] Cannot create peer connection - missing:', {
-                    room: !!room,
-                    socket: !!socketRef.current,
-                    localStream: !!localStreamRef.current
-                });
+        // --- Helper: Create Peer Connection (defined inside useEffect to avoid stale closures) ---
+        const setupPeerConnection = async (peerId: string, shouldCreateOffer: boolean) => {
+            if (!localStreamRef.current) {
+                console.warn('[VideoCall] Cannot create peer connection - no local stream');
                 return;
             }
 
-            console.log('[VideoCall] Creating peer connection for peer:', peerId, 'createOffer:', createOffer);
+            // Close existing peer connection if any
+            if (peerConnectionRef.current) {
+                console.log('[VideoCall] Closing existing peer connection before creating new one');
+                peerConnectionRef.current.close();
+                peerConnectionRef.current = null;
+            }
+
+            console.log('[VideoCall] Creating peer connection for peer:', peerId, 'createOffer:', shouldCreateOffer);
             const pc = videoCallService.createPeerConnection(room.iceServers);
             peerConnectionRef.current = pc;
 
@@ -226,17 +164,20 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
 
             // Handle remote stream
             pc.ontrack = (event) => {
-                console.log('[VideoCall] Received remote track:', event.track.kind, 'streams:', event.streams.length);
-                setRemoteStream(event.streams[0]);
-                if (remoteVideoRef.current) {
-                    remoteVideoRef.current.srcObject = event.streams[0];
+                console.log('[VideoCall] ✅ Received remote track:', event.track.kind, 'streams:', event.streams.length);
+                if (event.streams[0]) {
+                    setRemoteStream(event.streams[0]);
+                    if (remoteVideoRef.current) {
+                        remoteVideoRef.current.srcObject = event.streams[0];
+                    }
                 }
             };
 
             // Handle ICE candidates
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
-                    socketRef.current?.emit('video:ice-candidate', {
+                    console.log('[VideoCall] Sending ICE candidate to:', peerId);
+                    socket.emit('video:ice-candidate', {
                         roomId: room.id,
                         candidate: event.candidate.toJSON(),
                         toUserId: peerId,
@@ -251,25 +192,134 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             pc.onconnectionstatechange = () => {
                 console.log('[VideoCall] Connection state:', pc.connectionState);
                 if (pc.connectionState === 'connected') {
+                    console.log('[VideoCall] ✅ Peer connection ESTABLISHED!');
                     setConnectionState('connected');
                 } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    console.log('[VideoCall] ❌ Peer connection', pc.connectionState);
                     setConnectionState('disconnected');
                 }
             };
 
-            // Create offer if initiator
-            if (createOffer) {
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                socketRef.current?.emit('video:offer', {
-                    roomId: room.id,
-                    offer: pc.localDescription,
-                    toUserId: peerId,
-                });
+            // Create offer if this side is the initiator
+            if (shouldCreateOffer) {
+                try {
+                    const offer = await pc.createOffer();
+                    await pc.setLocalDescription(offer);
+                    console.log('[VideoCall] Sending offer to:', peerId);
+                    socket.emit('video:offer', {
+                        roomId: room.id,
+                        offer: pc.localDescription,
+                        toUserId: peerId,
+                    });
+                } catch (err) {
+                    console.error('[VideoCall] Error creating offer:', err);
+                }
             }
-        },
-        [room]
-    );
+
+            return pc;
+        };
+
+        // --- Socket event handlers ---
+        socket.on('connect', () => {
+            console.log('[VideoCall] ✅ Socket connected:', socket.id, 'joining room:', room.id);
+            socket.emit('video:join-room', { roomId: room.id });
+        });
+
+        socket.on('connect_error', (err) => {
+            console.error('[VideoCall] ❌ Socket connection error:', err.message);
+            toast.error('Failed to connect to video call server');
+        });
+
+        socket.on('video:room-joined', ({ participants: p }) => {
+            console.log('[VideoCall] Room joined, participants:', JSON.stringify(p));
+            setParticipants(p);
+            setConnectionState('connected');
+
+            // If other participants exist, create an offer to connect to them
+            p.forEach((participant: Participant) => {
+                if (participant.userId !== user?.id) {
+                    console.log('[VideoCall] Found existing participant, creating offer for:', participant.userId);
+                    setupPeerConnection(participant.userId, true);
+                }
+            });
+        });
+
+        socket.on('video:user-joined', ({ userId: joinedUserId, participants: p }) => {
+            console.log('[VideoCall] New user joined:', joinedUserId);
+            setParticipants(p);
+            // Don't create peer connection here — wait for the joiner to send an offer
+            // The joining user (who received video:room-joined with existing participants) is the offerer
+        });
+
+        socket.on('video:user-left', ({ userId: leftUserId }) => {
+            console.log('[VideoCall] User left:', leftUserId);
+            setParticipants((prev) => prev.filter((p) => p.userId !== leftUserId));
+            setRemoteStream(null);
+            if (peerConnectionRef.current) {
+                peerConnectionRef.current.close();
+                peerConnectionRef.current = null;
+            }
+        });
+
+        socket.on('video:offer', async ({ offer, fromUserId }) => {
+            console.log('[VideoCall] 📨 Received offer from:', fromUserId);
+            try {
+                // Create a peer connection to handle the incoming offer (we are the answerer)
+                await setupPeerConnection(fromUserId, false);
+
+                if (peerConnectionRef.current) {
+                    await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(offer));
+                    const answer = await peerConnectionRef.current.createAnswer();
+                    await peerConnectionRef.current.setLocalDescription(answer);
+                    console.log('[VideoCall] 📤 Sending answer to:', fromUserId);
+                    socket.emit('video:answer', { roomId: room.id, answer: peerConnectionRef.current.localDescription, toUserId: fromUserId });
+                }
+            } catch (err) {
+                console.error('[VideoCall] Error handling offer:', err);
+            }
+        });
+
+        socket.on('video:answer', async ({ answer, fromUserId }) => {
+            console.log('[VideoCall] 📨 Received answer from:', fromUserId);
+            try {
+                if (peerConnectionRef.current) {
+                    await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
+                    console.log('[VideoCall] ✅ Remote description set from answer');
+                }
+            } catch (err) {
+                console.error('[VideoCall] Error handling answer:', err);
+            }
+        });
+
+        socket.on('video:ice-candidate', async ({ candidate, fromUserId }) => {
+            if (candidate) {
+                try {
+                    if (peerConnectionRef.current) {
+                        await peerConnectionRef.current.addIceCandidate(new RTCIceCandidate(candidate));
+                        console.log('[VideoCall] Added ICE candidate from:', fromUserId);
+                    } else {
+                        console.warn('[VideoCall] Received ICE candidate but no peer connection exists yet');
+                    }
+                } catch (err) {
+                    console.warn('[VideoCall] Failed to add ICE candidate:', err);
+                }
+            }
+        });
+
+        socket.on('video:error', ({ message }) => {
+            console.error('[VideoCall] Server error:', message);
+            toast.error(message);
+        });
+
+        return () => {
+            console.log('[VideoCall] Cleaning up socket and peer connection');
+            socket.disconnect();
+            if (peerConnectionRef.current) {
+                peerConnectionRef.current.close();
+                peerConnectionRef.current = null;
+            }
+        };
+    }, [room, user, localStream]); // localStream triggers re-run when media is ready
 
     // Control handlers
     const toggleCamera = () => {
