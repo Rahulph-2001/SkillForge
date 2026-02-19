@@ -8,11 +8,13 @@ interface PaymentFailureModalProps {
 }
 
 export default function PaymentFailureModal({
-    isOpen: _isOpen,
+    isOpen,
     onClose,
     error,
     onRetry
 }: PaymentFailureModalProps) {
+    if (!isOpen) return null;
+
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
             <div className="bg-card rounded-2xl shadow-xl max-w-md w-full overflow-hidden transform transition-all scale-100 animate-in zoom-in-95 duration-200 border border-border">
