@@ -46,20 +46,20 @@ export default function ProjectChatModal({ isOpen, onClose, projectId, currentUs
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
-                            className="bg-white rounded-2xl shadow-xl w-full max-w-lg h-[650px] max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto"
+                            className="bg-card rounded-2xl shadow-xl w-full max-w-lg h-[650px] max-h-[90vh] overflow-hidden flex flex-col pointer-events-auto"
                         >
                             {/* Header */}
-                            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                            <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-card sticky top-0 z-10">
                                 <div>
-                                    <h3 className="text-lg font-bold text-gray-900">Project Chat</h3>
-                                    <p className="text-xs text-gray-500 flex items-center gap-1">
+                                    <h3 className="text-lg font-bold text-foreground">Project Chat</h3>
+                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
                                         <span className="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
                                         {isClient ? 'Chatting with Contributor' : 'Chatting with Project Owner'}
                                     </p>
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500 hover:text-gray-700"
+                                    className="p-2 hover:bg-muted rounded-full transition-colors text-muted-foreground hover:text-foreground"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>

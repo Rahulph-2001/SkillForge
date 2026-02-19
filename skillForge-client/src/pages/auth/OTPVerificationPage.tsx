@@ -118,12 +118,12 @@ export default function OTPVerificationPage() {
     };
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="min-h-screen bg-background flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Header */}
                 <div className="text-center space-y-2 mb-8">
-                    <h1 className="text-2xl font-bold text-gray-900">Enter the code we just sent you</h1>
-                    <p className="text-gray-600">
+                    <h1 className="text-2xl font-bold text-foreground">Enter the code we just sent you</h1>
+                    <p className="text-muted-foreground">
                         Please enter the 6-digit code sent to{' '}
                         <span className="font-semibold">{email}</span> to verify your account.
                     </p>
@@ -131,10 +131,10 @@ export default function OTPVerificationPage() {
                     <div className="mt-4">
                         <p
                             className={`text-sm font-medium ${countdown <= 30
-                                    ? 'text-red-600'
-                                    : countdown <= 60
-                                        ? 'text-orange-600'
-                                        : 'text-gray-600'
+                                ? 'text-red-600'
+                                : countdown <= 60
+                                    ? 'text-orange-600'
+                                    : 'text-muted-foreground'
                                 }`}
                         >
                             {!isExpired ? (
@@ -170,7 +170,7 @@ export default function OTPVerificationPage() {
                         // This is handled by OTPInput onComplete
                     }}
                     disabled={loading}
-                    className="w-full py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+                    className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
                 >
                     {loading ? 'Verifying...' : 'Verify'}
                 </button>
@@ -179,7 +179,7 @@ export default function OTPVerificationPage() {
                 <div className="text-center">
                     <button
                         onClick={() => navigate('/signup')}
-                        className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                        className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                         ← Back to Signup
                     </button>

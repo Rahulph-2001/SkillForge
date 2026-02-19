@@ -223,10 +223,10 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white shadow-xl">
-          <div className="sticky top-0 flex items-center justify-between border-b border-gray-200 bg-white px-6 py-4 z-10">
-            <h2 className="text-lg font-bold text-gray-900">Add New Skill</h2>
-            <button type="button" onClick={onClose} className="text-gray-400 hover:text-gray-600">
+        <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-card shadow-xl">
+          <div className="sticky top-0 flex items-center justify-between border-b border-border bg-card px-6 py-4 z-10">
+            <h2 className="text-lg font-bold text-foreground">Add New Skill</h2>
+            <button type="button" onClick={onClose} className="text-muted-foreground hover:text-foreground">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -234,40 +234,40 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
           <form onSubmit={handleSubmit} className="space-y-6 px-6 py-6">
             {/* Skill Template Selection */}
             <div>
-              <label className="mb-2 block text-sm font-bold text-gray-900">Select Skill Template (Optional)</label>
+              <label className="mb-2 block text-sm font-bold text-foreground">Select Skill Template (Optional)</label>
               <div className="relative">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
                     value={templateSearch}
                     onChange={(e) => setTemplateSearch(e.target.value)}
                     onFocus={() => setShowTemplateDropdown(true)}
                     placeholder="Search skill templates..."
-                    className="w-full rounded-lg border-2 border-gray-300 pl-10 pr-4 py-3 text-sm focus:border-blue-500 outline-none"
+                    className="w-full rounded-lg border-2 border-border pl-10 pr-4 py-3 text-sm focus:border-ring outline-none bg-background text-foreground"
                   />
                 </div>
                 {showTemplateDropdown && (
-                  <div className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-60 overflow-auto">
+                  <div className="absolute z-20 w-full bg-card border border-border rounded-lg mt-1 shadow-lg max-h-60 overflow-auto">
                     {loadingTemplates ? (
                       <div className="flex items-center justify-center py-4">
-                        <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
-                        <span className="ml-2 text-sm text-gray-600">Loading templates...</span>
+                        <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                        <span className="ml-2 text-sm text-muted-foreground">Loading templates...</span>
                       </div>
                     ) : filteredTemplates.length > 0 ? (
                       filteredTemplates.map((template) => (
                         <div
                           key={template.id}
                           onClick={() => handleTemplateSelect(template)}
-                          className={`px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-b-0 ${formData.templateId === template.id ? 'bg-blue-100' : ''
+                          className={`px-4 py-3 hover:bg-primary/10 cursor-pointer border-b last:border-b-0 ${formData.templateId === template.id ? 'bg-primary/15' : ''
                             }`}
                         >
-                          <div className="font-medium text-sm text-gray-900">{template.title}</div>
-                          <div className="text-xs text-gray-500 mt-1">{template.category} • {template.levels.join(', ')}</div>
+                          <div className="font-medium text-sm text-foreground">{template.title}</div>
+                          <div className="text-xs text-muted-foreground mt-1">{template.category} • {template.levels.join(', ')}</div>
                         </div>
                       ))
                     ) : (
-                      <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                      <div className="px-4 py-3 text-sm text-muted-foreground text-center">
                         No templates found
                       </div>
                     )}
@@ -295,41 +295,41 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-gray-900">Title <span className="text-red-500">*</span></label>
-              <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-sm focus:border-blue-500 outline-none" />
+              <label className="mb-2 block text-sm font-bold text-foreground">Title <span className="text-red-500">*</span></label>
+              <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full rounded-lg border-2 border-border px-4 py-3 text-sm focus:border-ring outline-none bg-background text-foreground" />
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-gray-900">Description <span className="text-red-500">*</span></label>
-              <textarea name="description" value={formData.description} onChange={handleChange} required rows={3} className="w-full rounded-lg border-2 border-gray-300 px-4 py-3 text-sm focus:border-blue-500 outline-none resize-none" />
+              <label className="mb-2 block text-sm font-bold text-foreground">Description <span className="text-red-500">*</span></label>
+              <textarea name="description" value={formData.description} onChange={handleChange} required rows={3} className="w-full rounded-lg border-2 border-border px-4 py-3 text-sm focus:border-ring outline-none resize-none bg-background text-foreground" />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-2 block text-sm font-bold text-gray-900">Category</label>
+                <label className="mb-2 block text-sm font-bold text-foreground">Category</label>
                 <div className="relative">
-                  <button type="button" onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                  <button type="button" onClick={() => setShowCategoryDropdown(!showCategoryDropdown)} className="w-full text-left border-2 border-border rounded-lg px-4 py-3 text-sm bg-background text-foreground">
                     {formData.category || "Select"}
                   </button>
                   {showCategoryDropdown && (
-                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
+                    <div className="absolute z-10 w-full bg-card border border-border rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
                       {categories.map(c => (
-                        <div key={c} onClick={() => handleCategorySelect(c)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{c}</div>
+                        <div key={c} onClick={() => handleCategorySelect(c)} className="px-4 py-2 hover:bg-muted cursor-pointer text-sm text-foreground">{c}</div>
                       ))}
                     </div>
                   )}
                 </div>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-bold text-gray-900">Level</label>
+                <label className="mb-2 block text-sm font-bold text-foreground">Level</label>
                 <div className="relative">
-                  <button type="button" onClick={() => setShowLevelDropdown(!showLevelDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                  <button type="button" onClick={() => setShowLevelDropdown(!showLevelDropdown)} className="w-full text-left border-2 border-border rounded-lg px-4 py-3 text-sm bg-background text-foreground">
                     {formData.level || "Select"}
                   </button>
                   {showLevelDropdown && (
-                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg">
+                    <div className="absolute z-10 w-full bg-card border border-border rounded-lg mt-1 shadow-lg">
                       {levels.map(l => (
-                        <div key={l} onClick={() => handleLevelSelect(l)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">{l}</div>
+                        <div key={l} onClick={() => handleLevelSelect(l)} className="px-4 py-2 hover:bg-muted cursor-pointer text-sm text-foreground">{l}</div>
                       ))}
                     </div>
                   )}
@@ -339,15 +339,15 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-2 block text-sm font-bold text-gray-900">Duration (Hours) <span className="text-red-500">*</span></label>
+                <label className="mb-2 block text-sm font-bold text-foreground">Duration (Hours) <span className="text-red-500">*</span></label>
                 <div className="relative">
-                  <button type="button" onClick={() => setShowDurationDropdown(!showDurationDropdown)} className="w-full text-left border-2 border-gray-300 rounded-lg px-4 py-3 text-sm">
+                  <button type="button" onClick={() => setShowDurationDropdown(!showDurationDropdown)} className="w-full text-left border-2 border-border rounded-lg px-4 py-3 text-sm bg-background text-foreground">
                     {formData.durationHours ? `${formData.durationHours} hour${formData.durationHours !== '1' ? 's' : ''}` : "Select hours"}
                   </button>
                   {showDurationDropdown && (
-                    <div className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
+                    <div className="absolute z-10 w-full bg-card border border-border rounded-lg mt-1 shadow-lg max-h-48 overflow-auto">
                       {durationOptions.map(hours => (
-                        <div key={hours} onClick={() => handleDurationSelect(hours)} className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                        <div key={hours} onClick={() => handleDurationSelect(hours)} className="px-4 py-2 hover:bg-muted cursor-pointer text-sm text-foreground">
                           {hours} hour{hours !== 1 ? 's' : ''}
                         </div>
                       ))}
@@ -356,20 +356,20 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
                 </div>
               </div>
               <div>
-                <label className="mb-2 block text-sm font-bold text-gray-900">Credits/Hour <span className="text-red-500">*</span></label>
-                <input type="number" name="creditsHour" value={formData.creditsHour} onChange={handleChange} required min="0" className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-sm outline-none focus:border-blue-500" />
+                <label className="mb-2 block text-sm font-bold text-foreground">Credits/Hour <span className="text-red-500">*</span></label>
+                <input type="number" name="creditsHour" value={formData.creditsHour} onChange={handleChange} required min="0" className="w-full border-2 border-border rounded-lg px-4 py-3 text-sm outline-none focus:border-ring bg-background text-foreground" />
               </div>
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-gray-900">Tags</label>
+              <label className="mb-2 block text-sm font-bold text-foreground">Tags</label>
               <div className="flex gap-2">
-                <input type="text" name="tagInput" value={formData.tagInput} onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())} className="flex-1 border-2 border-gray-300 rounded-lg px-4 py-2 text-sm outline-none focus:border-blue-500" placeholder="Add tag" />
-                <button type="button" onClick={handleAddTag} className="bg-gray-900 text-white px-4 rounded-lg text-sm">Add</button>
+                <input type="text" name="tagInput" value={formData.tagInput} onChange={handleChange} onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTag())} className="flex-1 border-2 border-border rounded-lg px-4 py-2 text-sm outline-none focus:border-ring bg-background text-foreground" placeholder="Add tag" />
+                <button type="button" onClick={handleAddTag} className="bg-foreground text-background px-4 rounded-lg text-sm">Add</button>
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {formData.tags.map((t, i) => (
-                  <span key={i} className="bg-gray-200 px-2 py-1 rounded-full text-xs flex items-center gap-1">
+                  <span key={i} className="bg-muted px-2 py-1 rounded-full text-xs flex items-center gap-1 text-muted-foreground">
                     {t} <button type="button" onClick={() => handleRemoveTag(i)}>&times;</button>
                   </span>
                 ))}
@@ -377,17 +377,17 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
             </div>
 
             <div>
-              <label className="mb-2 block text-sm font-bold text-gray-900">Skill Image</label>
+              <label className="mb-2 block text-sm font-bold text-foreground">Skill Image</label>
               {!previewUrl ? (
-                <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm transition-colors ${dragActive ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"}`}>
+                <div onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} className={`cursor-pointer rounded-lg border-2 border-dashed p-8 text-center text-sm transition-colors ${dragActive ? "border-ring bg-primary/10" : "border-border hover:border-muted-foreground"}`}>
                   <input ref={fileInputRef} id="file-upload" type="file" accept="image/*" onChange={handleFileInput} className="hidden" />
                   <label htmlFor="file-upload" className="block cursor-pointer">
-                    <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                    <p className="text-gray-600">Click or drag to upload skill image</p>
+                    <Upload className="mx-auto mb-2 h-8 w-8 text-muted-foreground" />
+                    <p className="text-muted-foreground">Click or drag to upload skill image</p>
                   </label>
                 </div>
               ) : (
-                <div className="relative mt-2 w-full h-48 rounded-lg overflow-hidden border border-gray-200 group">
+                <div className="relative mt-2 w-full h-48 rounded-lg overflow-hidden border border-border group">
                   <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
                   <button type="button" onClick={handleRemoveImage} className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                     <Trash2 className="w-4 h-4" />
@@ -396,9 +396,9 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
               )}
             </div>
 
-            <div className="flex gap-4 border-t border-gray-200 pt-6">
-              <button type="button" onClick={onClose} className="flex-1 rounded-lg border-2 border-gray-300 px-6 py-3 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-50">Cancel</button>
-              <button type="submit" className="flex-1 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-blue-700">Publish Skill</button>
+            <div className="flex gap-4 border-t border-border pt-6">
+              <button type="button" onClick={onClose} className="flex-1 rounded-lg border-2 border-border px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted">Cancel</button>
+              <button type="submit" className="flex-1 rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">Publish Skill</button>
             </div>
           </form>
         </div>

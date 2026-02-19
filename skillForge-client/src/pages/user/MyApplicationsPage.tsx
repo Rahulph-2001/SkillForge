@@ -89,32 +89,32 @@ export default function MyApplicationsPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8">
+        <div className="min-h-screen bg-background py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">My Applications</h1>
-                        <p className="text-gray-600 mt-1">Manage your project applications</p>
+                        <h1 className="text-2xl font-bold text-foreground">My Applications</h1>
+                        <p className="text-muted-foreground mt-1">Manage your project applications</p>
                     </div>
                 </div>
 
                 {applications.length === 0 ? (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-12 text-center">
                         <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Briefcase className="w-8 h-8 text-blue-600" />
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No applications yet</h3>
-                        <p className="text-gray-500 mb-6">Start exploring projects and find your next opportunity.</p>
+                        <h3 className="text-lg font-medium text-foreground mb-2">No applications yet</h3>
+                        <p className="text-muted-foreground mb-6">Start exploring projects and find your next opportunity.</p>
                         <button
                             onClick={() => navigate('/projects')}
-                            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                            className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                         >
                             Browse Projects
                         </button>
@@ -132,14 +132,14 @@ export default function MyApplicationsPage() {
                             return (
                                 <div
                                     key={application.id}
-                                    className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-shadow"
+                                    className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow"
                                 >
                                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <h3
                                                     onClick={() => navigate(`/projects/${application.projectId}`)}
-                                                    className="text-lg font-semibold text-gray-900 hover:text-blue-600 cursor-pointer"
+                                                    className="text-lg font-semibold text-foreground hover:text-primary cursor-pointer"
                                                 >
                                                     {application.project?.title || 'Unknown Project'}
                                                 </h3>
@@ -148,7 +148,7 @@ export default function MyApplicationsPage() {
                                                 </span>
                                             </div>
 
-                                            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+                                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                                                 <div className="flex items-center gap-1">
                                                     <Calendar className="w-4 h-4" />
                                                     <span>Applied on {new Date(application.appliedAt).toLocaleDateString()}</span>
@@ -184,7 +184,7 @@ export default function MyApplicationsPage() {
                                                     )}
 
                                                     {interviewState === 'completed' && (
-                                                        <div className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg text-sm font-medium">
+                                                        <div className="px-3 py-1.5 bg-muted text-muted-foreground rounded-lg text-sm font-medium">
                                                             Interview Completed
                                                         </div>
                                                     )}
@@ -193,7 +193,7 @@ export default function MyApplicationsPage() {
 
                                             {application.matchScore && (
                                                 <div className="mt-3 flex items-center gap-2">
-                                                    <div className="flex-1 max-w-xs bg-gray-100 rounded-full h-2">
+                                                    <div className="flex-1 max-w-xs bg-muted rounded-full h-2">
                                                         <div
                                                             className="bg-blue-600 h-2 rounded-full"
                                                             style={{ width: `${application.matchScore}%` }}
@@ -217,7 +217,7 @@ export default function MyApplicationsPage() {
                                             )}
                                             <button
                                                 onClick={() => navigate(`/projects/${application.projectId}`)}
-                                                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <ChevronRight className="w-5 h-5" />
                                             </button>

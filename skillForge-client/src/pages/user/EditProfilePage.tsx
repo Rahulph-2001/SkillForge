@@ -170,11 +170,11 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
 
         <div className="flex flex-col justify-center items-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading profile...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>
     );
@@ -185,11 +185,11 @@ export default function EditProfilePage() {
 
 
       {/* Header */}
-      <div className="bg-white px-6 py-4 border-b border-gray-200">
+      <div className="bg-card px-6 py-4 border-b border-border">
         <div className="max-w-3xl mx-auto">
           <button
             onClick={() => navigate('/profile')}
-            className="flex items-center gap-2 text-gray-800 hover:text-gray-600 transition"
+            className="flex items-center gap-2 text-foreground hover:text-muted-foreground transition"
           >
             <ArrowLeft size={20} />
             <span className="font-medium">Back to Profile</span>
@@ -199,8 +199,8 @@ export default function EditProfilePage() {
 
       {/* Main Content */}
       <div className="max-w-3xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Edit Profile</h1>
+        <div className="bg-card rounded-lg shadow-md p-6">
+          <h1 className="text-2xl font-bold text-foreground mb-6">Edit Profile</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Avatar Upload */}
@@ -210,10 +210,10 @@ export default function EditProfilePage() {
                   <img
                     src={avatarPreview}
                     alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
+                    className="w-32 h-32 rounded-full object-cover border-4 border-card shadow-lg"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center border-4 border-white shadow-lg">
+                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center border-4 border-card shadow-lg">
                     <span className="text-white font-bold text-4xl">
                       {formData.name.charAt(0).toUpperCase()}
                     </span>
@@ -222,7 +222,7 @@ export default function EditProfilePage() {
                 <button
                   type="button"
                   onClick={handleAvatarClick}
-                  className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition"
+                  className="absolute bottom-0 right-0 p-2 bg-primary text-primary-foreground rounded-full shadow-lg hover:bg-primary/90 transition"
                 >
                   <Camera size={20} />
                 </button>
@@ -234,14 +234,14 @@ export default function EditProfilePage() {
                 onChange={handleAvatarChange}
                 className="hidden"
               />
-              <p className="text-sm text-gray-500 mt-3">
+              <p className="text-sm text-muted-foreground mt-3">
                 Click the camera icon to upload a new photo (max 5MB)
               </p>
             </div>
 
             {/* Name */}
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
                 Name *
               </label>
               <input
@@ -251,14 +251,14 @@ export default function EditProfilePage() {
                 value={formData.name}
                 onChange={handleInputChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="Enter your name"
               />
             </div>
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="location" className="block text-sm font-medium text-foreground mb-2">
                 Location
               </label>
               <input
@@ -267,14 +267,14 @@ export default function EditProfilePage() {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent"
                 placeholder="e.g., San Francisco, CA"
               />
             </div>
 
             {/* Bio */}
             <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="bio" className="block text-sm font-medium text-foreground mb-2">
                 Bio
               </label>
               <textarea
@@ -283,10 +283,10 @@ export default function EditProfilePage() {
                 value={formData.bio}
                 onChange={handleInputChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent resize-none"
                 placeholder="Tell us about yourself..."
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 {formData.bio.length}/500 characters
               </p>
             </div>
@@ -296,7 +296,7 @@ export default function EditProfilePage() {
               <button
                 type="button"
                 onClick={() => navigate('/profile')}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+                className="flex-1 px-4 py-2 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition"
                 disabled={saving}
               >
                 Cancel
@@ -304,7 +304,7 @@ export default function EditProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? (
                   <>

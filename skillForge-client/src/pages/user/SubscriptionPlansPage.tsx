@@ -45,7 +45,7 @@ const getPlanGradient = (color: string): string => {
     purple: 'bg-gradient-to-br from-purple-50 to-purple-100',
     orange: 'bg-gradient-to-br from-orange-50 to-orange-100',
   };
-  return gradients[color] || 'bg-gradient-to-br from-gray-50 to-gray-100';
+  return gradients[color] || 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-muted dark:to-muted';
 };
 
 /**
@@ -302,18 +302,18 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, onSubscribe, isPr
               <button
                 onClick={handlePrev}
                 disabled={currentSlide === 0}
-                className="p-2 rounded-full border border-gray-300 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-full border border-border hover:border-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed transition"
                 aria-label="Previous plans"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-600" />
+                <ChevronLeft className="w-5 h-5 text-muted-foreground" />
               </button>
               <button
                 onClick={handleNext}
                 disabled={currentSlide >= totalSlides - 1}
-                className="p-2 rounded-full border border-gray-300 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                className="p-2 rounded-full border border-border hover:border-muted-foreground disabled:opacity-50 disabled:cursor-not-allowed transition"
                 aria-label="Next plans"
               >
-                <ChevronRight className="w-5 h-5 text-gray-600" />
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
 
@@ -323,7 +323,7 @@ function PricingCarousel({ plans, currentSlide, onSlideChange, onSubscribe, isPr
                 <button
                   key={index}
                   onClick={() => onSlideChange(index)}
-                  className={`h-2 rounded-full transition-all ${currentSlide === index ? 'bg-blue-500 w-8' : 'bg-gray-300 w-2'
+                  className={`h-2 rounded-full transition-all ${currentSlide === index ? 'bg-primary w-8' : 'bg-muted-foreground/30 w-2'
                     }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
@@ -530,11 +530,11 @@ export default function SubscriptionPlansPage() {
   // Loading State
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading subscription plans...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading subscription plans...</p>
           </div>
         </div>
         <Footer />
@@ -545,17 +545,17 @@ export default function SubscriptionPlansPage() {
   // Error State
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="min-h-screen bg-background">
         <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-4">
+          <div className="bg-card rounded-lg shadow-lg p-8 max-w-md mx-4">
             <div className="text-red-500 text-center mb-4">
               <span className="text-4xl">⚠️</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 text-center mb-2">Error Loading Plans</h2>
-            <p className="text-gray-600 text-center mb-4">{error}</p>
+            <h2 className="text-xl font-bold text-foreground text-center mb-2">Error Loading Plans</h2>
+            <p className="text-muted-foreground text-center mb-4">{error}</p>
             <button
               onClick={loadPlans}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
             >
               Try Again
             </button>
@@ -605,7 +605,7 @@ export default function SubscriptionPlansPage() {
 
       {/* Available Plans Section */}
       <div className="max-w-7xl mx-auto px-4 mb-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+        <h2 className="text-2xl font-bold text-foreground mb-8 text-center">
           {currentSubscription ? 'Available Plans' : 'Choose Your Plan'}
         </h2>
       </div>
@@ -613,11 +613,11 @@ export default function SubscriptionPlansPage() {
       {/* Carousel Section */}
       <div className="px-4 pb-20">
         {plans.length === 0 ? (
-          <div className="max-w-md mx-auto bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
-            <p className="text-gray-600 mb-4">No subscription plans available at this time.</p>
+          <div className="max-w-md mx-auto bg-card rounded-lg shadow-sm border border-border p-8 text-center">
+            <p className="text-muted-foreground mb-4">No subscription plans available at this time.</p>
             <button
               onClick={() => navigate(-1)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
             >
               Go Back
             </button>

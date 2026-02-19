@@ -122,8 +122,8 @@ const NotificationsPage = () => {
             <Bell className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-            <p className="text-sm text-gray-500">{unreadCount} unread notifications</p>
+            <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
+            <p className="text-sm text-muted-foreground">{unreadCount} unread notifications</p>
           </div>
         </div>
         {unreadCount > 0 && (
@@ -142,8 +142,8 @@ const NotificationsPage = () => {
         <button
           onClick={() => { setActiveTab('all'); setPage(1); }}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'all'
-              ? 'bg-gray-900 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            ? 'bg-foreground text-background'
+            : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
         >
           All <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-xs">{total}</span>
@@ -151,8 +151,8 @@ const NotificationsPage = () => {
         <button
           onClick={() => { setActiveTab('unread'); setPage(1); }}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'unread'
-              ? 'bg-blue-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            ? 'bg-blue-600 text-white'
+            : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
         >
           Unread <span className="ml-1 px-2 py-0.5 rounded-full bg-white/20 text-xs">{unreadCount}</span>
@@ -163,14 +163,14 @@ const NotificationsPage = () => {
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="animate-pulse bg-gray-100 rounded-xl h-24" />
+            <div key={i} className="animate-pulse bg-muted rounded-xl h-24" />
           ))}
         </div>
       ) : notifications.length === 0 ? (
         <div className="text-center py-16">
-          <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No notifications</h3>
-          <p className="text-gray-500">You're all caught up!</p>
+          <Bell className="w-16 h-16 text-muted-foreground/40 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-foreground mb-2">No notifications</h3>
+          <p className="text-muted-foreground">You're all caught up!</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -180,8 +180,8 @@ const NotificationsPage = () => {
               <div
                 key={notification.id}
                 className={`group relative p-4 rounded-xl border transition-all ${notification.isRead
-                    ? 'bg-white border-gray-200'
-                    : 'bg-blue-50 border-blue-200 shadow-sm'
+                  ? 'bg-card border-border'
+                  : 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-900 shadow-sm'
                   }`}
               >
                 <div className="flex items-start gap-4">
@@ -191,14 +191,14 @@ const NotificationsPage = () => {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className={`font-semibold ${notification.isRead ? 'text-gray-700' : 'text-gray-900'}`}>
+                        <h3 className={`font-semibold ${notification.isRead ? 'text-muted-foreground' : 'text-foreground'}`}>
                           {notification.title}
                         </h3>
-                        <p className={`text-sm mt-0.5 ${notification.isRead ? 'text-gray-500' : 'text-gray-600'}`}>
+                        <p className={`text-sm mt-0.5 ${notification.isRead ? 'text-muted-foreground' : 'text-foreground/80'}`}>
                           {notification.message}
                         </p>
                       </div>
-                      <span className="text-xs text-gray-400 whitespace-nowrap">
+                      <span className="text-xs text-muted-foreground whitespace-nowrap">
                         {formatTime(notification.createdAt)}
                       </span>
                     </div>
@@ -214,7 +214,7 @@ const NotificationsPage = () => {
                   </div>
                   <button
                     onClick={() => handleDelete(notification.id)}
-                    className="opacity-0 group-hover:opacity-100 p-2 text-gray-400 hover:text-red-500 transition-all"
+                    className="opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-red-500 transition-all"
                     title="Delete notification"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -232,17 +232,17 @@ const NotificationsPage = () => {
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-muted-foreground bg-muted rounded-lg hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
-          <span className="px-4 py-2 text-sm text-gray-600">
+          <span className="px-4 py-2 text-sm text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page === totalPages}
-            className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-muted-foreground bg-muted rounded-lg hover:bg-muted/80 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>

@@ -148,10 +148,10 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm overflow-y-auto">
-            <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl my-8">
-                <div className="flex items-center justify-between border-b border-gray-100 p-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Edit Skill</h2>
-                    <button onClick={onClose} className="rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600">
+            <div className="w-full max-w-2xl rounded-xl bg-card shadow-xl my-8">
+                <div className="flex items-center justify-between border-b border-border p-6">
+                    <h2 className="text-xl font-semibold text-foreground">Edit Skill</h2>
+                    <button onClick={onClose} className="rounded-lg p-2 text-muted-foreground hover:bg-muted hover:text-foreground">
                         <X className="h-5 w-5" />
                     </button>
                 </div>
@@ -160,23 +160,23 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
                     <div className="grid gap-6">
                         {/* Title - Read Only */}
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">
-                                Skill Title <span className="text-xs text-gray-500">(Cannot be changed)</span>
+                            <label className="mb-1 block text-sm font-medium text-muted-foreground">
+                                Skill Title <span className="text-xs text-muted-foreground">(Cannot be changed)</span>
                             </label>
                             <input
                                 type="text"
                                 value={formData.title}
                                 disabled
-                                className="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-gray-500"
+                                className="w-full rounded-lg border border-border bg-muted px-4 py-2 text-muted-foreground"
                             />
                         </div>
 
                         {/* Image Upload */}
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">Skill Image</label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">Skill Image</label>
                             <div className="flex items-start gap-4">
                                 {imagePreview && (
-                                    <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-lg border-2 border-gray-200">
+                                    <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-lg border-2 border-border">
                                         <img
                                             src={imagePreview}
                                             alt="Skill preview"
@@ -195,12 +195,12 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
                                     <button
                                         type="button"
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="flex items-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-sm font-medium text-gray-700 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                                        className="flex items-center gap-2 rounded-lg border-2 border-dashed border-border bg-muted px-4 py-3 text-sm font-medium text-foreground hover:border-ring hover:bg-primary/10 hover:text-primary"
                                     >
                                         <Upload className="h-4 w-4" />
                                         {imagePreview ? 'Change Image' : 'Upload Image'}
                                     </button>
-                                    <p className="mt-2 text-xs text-gray-500">
+                                    <p className="mt-2 text-xs text-muted-foreground">
                                         Recommended: 800x600px, max 5MB
                                     </p>
                                 </div>
@@ -209,50 +209,50 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
 
                         {/* Description */}
                         <div>
-                            <label className="mb-1 block text-sm font-medium text-gray-700">Description</label>
+                            <label className="mb-1 block text-sm font-medium text-foreground">Description</label>
                             <textarea
                                 required
                                 rows={4}
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                className="w-full rounded-lg border border-border px-4 py-2 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring bg-background text-foreground"
                             />
                         </div>
 
                         <div className="grid gap-6 md:grid-cols-2">
                             {/* Duration */}
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700">Duration (Hours)</label>
+                                <label className="mb-1 block text-sm font-medium text-foreground">Duration (Hours)</label>
                                 <input
                                     type="number"
                                     required
                                     min="1"
                                     value={formData.durationHours}
                                     onChange={(e) => setFormData({ ...formData, durationHours: Number(e.target.value) })}
-                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full rounded-lg border border-border px-4 py-2 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring bg-background text-foreground"
                                 />
                             </div>
 
                             {/* Credits */}
                             <div>
-                                <label className="mb-1 block text-sm font-medium text-gray-700">Credits per Hour</label>
+                                <label className="mb-1 block text-sm font-medium text-foreground">Credits per Hour</label>
                                 <input
                                     type="number"
                                     required
                                     min="1"
                                     value={formData.creditsHour}
                                     onChange={(e) => setFormData({ ...formData, creditsHour: Number(e.target.value) })}
-                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    className="w-full rounded-lg border border-border px-4 py-2 focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring bg-background text-foreground"
                                 />
                             </div>
                         </div>
 
                         {/* Tags with Suggestions */}
                         <div className="relative">
-                            <label className="mb-1 block text-sm font-medium text-gray-700">
-                                Tags <span className="text-xs text-gray-500">(Select from options or type custom)</span>
+                            <label className="mb-1 block text-sm font-medium text-foreground">
+                                Tags <span className="text-xs text-muted-foreground">(Select from options or type custom)</span>
                             </label>
-                            <div className="flex flex-wrap gap-2 rounded-lg border border-gray-300 p-2 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+                            <div className="flex flex-wrap gap-2 rounded-lg border border-border p-2 focus-within:border-ring focus-within:ring-1 focus-within:ring-ring">
                                 {formData.tags?.map((tag) => (
                                     <span key={tag} className="flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-sm text-blue-700">
                                         {tag}
@@ -279,13 +279,13 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
 
                             {/* Tag Suggestions Dropdown */}
                             {showTagSuggestions && filteredTags.length > 0 && (
-                                <div className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                                <div className="absolute z-10 mt-1 max-h-48 w-full overflow-auto rounded-lg border border-border bg-card shadow-lg">
                                     {filteredTags.map((tag) => (
                                         <button
                                             key={tag}
                                             type="button"
                                             onClick={() => handleAddTag(tag)}
-                                            className="w-full px-4 py-2 text-left text-sm hover:bg-blue-50 hover:text-blue-600"
+                                            className="w-full px-4 py-2 text-left text-sm hover:bg-primary/10 hover:text-primary"
                                         >
                                             {tag}
                                         </button>
@@ -299,14 +299,14 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                            className="rounded-lg px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-muted"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                            className="flex items-center gap-2 rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
                         >
                             {loading ? (
                                 <>

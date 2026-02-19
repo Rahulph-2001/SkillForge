@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
         <div className="flex items-center justify-center min-h-screen px-4">
             <div className="w-full max-w-md">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">Forgot Password ?</h1>
+                    <h1 className="text-3xl font-bold text-foreground">Forgot Password ?</h1>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
@@ -61,7 +61,7 @@ export default function ForgotPasswordPage() {
                                 setEmail(e.target.value)
                                 setError("")
                             }}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-gray-700 placeholder-gray-400 focus:outline-none focus:border-blue-500 transition"
+                            className="w-full px-4 py-3 border border-border rounded-lg text-center text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary transition bg-background"
                             disabled={loading}
                         />
                         {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Sending...' : 'Verify Email'}
                     </button>

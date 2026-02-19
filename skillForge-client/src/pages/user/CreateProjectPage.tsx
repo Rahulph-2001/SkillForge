@@ -119,12 +119,12 @@ export default function CreateProjectPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-6 pb-12">
+        <div className="min-h-screen bg-background pt-6 pb-12">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Link */}
                 <button
                     onClick={() => navigate('/projects')}
-                    className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition-colors text-sm font-medium"
+                    className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors text-sm font-medium"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back to Projects
@@ -132,34 +132,34 @@ export default function CreateProjectPage() {
 
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-2xl font-bold text-blue-600 mb-1">Post a New Project</h1>
-                    <p className="text-gray-600 text-sm">Create a project and find the perfect contributor</p>
+                    <h1 className="text-2xl font-bold text-primary mb-1">Post a New Project</h1>
+                    <p className="text-muted-foreground text-sm">Create a project and find the perfect contributor</p>
                 </div>
 
                 {/* Info Banner */}
-                <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8 flex items-center gap-3">
-                    <Info className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <p className="text-sm text-blue-800">
+                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900 rounded-lg p-4 mb-8 flex items-center gap-3">
+                    <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                    <p className="text-sm text-blue-800 dark:text-blue-300">
                         <span className="font-semibold">7</span> project posts remaining this month (Professional Plan)
-                        <button className="ml-2 text-blue-600 hover:text-blue-700 underline font-medium">Upgrade</button>
+                        <button className="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 underline font-medium">Upgrade</button>
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Project Details Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-6">Project Details</h2>
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-6">Project Details</h2>
 
                         <div className="space-y-6">
                             {/* Title */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Project Title <span className="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
                                     required
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400"
+                                    className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all placeholder-muted-foreground"
                                     placeholder="e.g., E-commerce Website Development"
                                     value={formData.title}
                                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
@@ -168,13 +168,13 @@ export default function CreateProjectPage() {
 
                             {/* Description */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Project Description <span className="text-red-500">*</span>
                                 </label>
                                 <textarea
                                     required
                                     rows={5}
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400 resize-none"
+                                    className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all placeholder-muted-foreground resize-none"
                                     placeholder="Provide a detailed description of your project, including requirements, deliverables, and any specific expectations..."
                                     value={formData.description}
                                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -183,12 +183,12 @@ export default function CreateProjectPage() {
 
                             {/* Category */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Category <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     required
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all bg-white text-gray-700 cursor-pointer"
+                                    className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all cursor-pointer"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                 >
@@ -204,13 +204,13 @@ export default function CreateProjectPage() {
 
                             {/* Required Skills */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Required Skills <span className="text-red-500">*</span>
                                 </label>
                                 <div className="flex gap-2 mb-2">
                                     <input
                                         type="text"
-                                        className="flex-1 px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400"
+                                        className="flex-1 px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all placeholder-muted-foreground"
                                         placeholder="e.g., React, Node.js, MongoDB"
                                         value={currSkill}
                                         onChange={(e) => setCurrSkill(e.target.value)}
@@ -219,7 +219,7 @@ export default function CreateProjectPage() {
                                     <button
                                         type="button"
                                         onClick={handleAddSkill}
-                                        className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                                        className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors"
                                     >
                                         <Plus className="w-5 h-5" />
                                     </button>
@@ -245,30 +245,30 @@ export default function CreateProjectPage() {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Budget */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-foreground mb-1">
                                         Budget (₹ Rupees) <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="number"
                                         required
                                         min="0"
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400"
+                                        className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all placeholder-muted-foreground"
                                         placeholder="25000"
                                         value={formData.budget}
                                         onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">Amount will be held in escrow until project completion</p>
+                                    <p className="text-xs text-muted-foreground mt-1">Amount will be held in escrow until project completion</p>
                                 </div>
 
                                 {/* Estimated Duration */}
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-foreground mb-1">
                                         Estimated Duration <span className="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
                                         required
-                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all placeholder-gray-400"
+                                        className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all placeholder-muted-foreground"
                                         placeholder="e.g., 4-6 weeks"
                                         value={formData.duration}
                                         onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
@@ -278,12 +278,12 @@ export default function CreateProjectPage() {
 
                             {/* Deadline */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     Application Deadline (Optional)
                                 </label>
                                 <input
                                     type="date"
-                                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-gray-700"
+                                    className="w-full px-4 py-2 border border-border rounded-lg bg-background text-foreground focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all"
                                     value={formData.deadline}
                                     onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
                                 />
@@ -292,8 +292,8 @@ export default function CreateProjectPage() {
                     </div>
 
                     {/* Payment & Escrow Info */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment & Escrow</h2>
+                    <div className="bg-card rounded-xl shadow-sm border border-border p-6">
+                        <h2 className="text-lg font-semibold text-foreground mb-4">Payment & Escrow</h2>
 
                         <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-5">
                             <div className="flex gap-3">
@@ -317,14 +317,14 @@ export default function CreateProjectPage() {
                         <button
                             type="button"
                             onClick={() => navigate('/projects')}
-                            className="flex-1 px-6 py-3 border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+                            className="flex-1 px-6 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors shadow-sm"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={isProcessing}
-                            className="flex-1 px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-6 py-3 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isProcessing ? 'Processing...' : 'Post Project & Pay to Escrow'}
                         </button>

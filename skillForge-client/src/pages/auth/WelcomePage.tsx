@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function WelcomePage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-background dark:from-blue-950/20 dark:to-background">
             <div className="max-w-2xl mx-auto px-6 py-12">
                 {/* Header with rotating coin icon */}
                 <div className="text-center mb-12">
@@ -14,8 +14,8 @@ export default function WelcomePage() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className="text-4xl font-bold text-gray-900 mb-3">Welcome to SkillForge!</h1>
-                    <p className="text-gray-600 text-lg">
+                    <h1 className="text-4xl font-bold text-foreground mb-3">Welcome to SkillForge!</h1>
+                    <p className="text-muted-foreground text-lg">
                         You've just received 20 starter credits to begin your learning journey
                     </p>
                 </div>
@@ -40,10 +40,10 @@ export default function WelcomePage() {
 
                 {/* How the Credit System Works */}
                 <div className="mb-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">How the Credit System Works</h2>
+                    <h2 className="text-2xl font-bold text-foreground mb-6 text-center">How the Credit System Works</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Earn Credits Card */}
-                        <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
+                        <div className="bg-card border-2 border-border rounded-2xl p-8 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
                                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path
@@ -54,21 +54,21 @@ export default function WelcomePage() {
                                     />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Earn Credits</h3>
-                            <p className="text-gray-600">
+                            <h3 className="text-xl font-bold text-foreground mb-3">Earn Credits</h3>
+                            <p className="text-muted-foreground">
                                 Teach what you know and earn credits. 1 hour of teaching typically earns 8-12 credits.
                             </p>
                         </div>
 
                         {/* Spend Credits Card */}
-                        <div className="bg-white border-2 border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow">
+                        <div className="bg-card border-2 border-border rounded-2xl p-8 hover:shadow-lg transition-shadow">
                             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
                                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path d="M13 10V3L4 14h7v7l9-11h-7z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-3">Spend Credits</h3>
-                            <p className="text-gray-600">
+                            <h3 className="text-xl font-bold text-foreground mb-3">Spend Credits</h3>
+                            <p className="text-muted-foreground">
                                 Use credits to learn new skills. Most sessions cost between 6-15 credits per hour.
                             </p>
                         </div>
@@ -77,7 +77,7 @@ export default function WelcomePage() {
 
                 {/* What You Can Learn */}
                 <div className="mb-12">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">What You Can Learn</h2>
+                    <h2 className="text-2xl font-bold text-foreground mb-6">What You Can Learn</h2>
                     <div className="space-y-4">
                         {[
                             { title: 'Web Development Basics', duration: '1 hour session', credits: 10 },
@@ -86,11 +86,11 @@ export default function WelcomePage() {
                         ].map((course, idx) => (
                             <div
                                 key={idx}
-                                className="bg-gray-50 border border-gray-200 rounded-lg p-6 flex items-center justify-between hover:bg-gray-100 transition-colors"
+                                className="bg-muted border border-border rounded-lg p-6 flex items-center justify-between hover:bg-muted/80 transition-colors"
                             >
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{course.title}</h3>
-                                    <p className="text-gray-600 text-sm">{course.duration}</p>
+                                    <h3 className="font-bold text-foreground">{course.title}</h3>
+                                    <p className="text-muted-foreground text-sm">{course.duration}</p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center gap-2">
@@ -125,8 +125,8 @@ export default function WelcomePage() {
                             </svg>
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">Join a Thriving Community</h3>
-                            <p className="text-gray-700">
+                            <h3 className="text-lg font-bold text-foreground mb-2">Join a Thriving Community</h3>
+                            <p className="text-foreground/80">
                                 Connect with over 5,000 learners and teachers. Share knowledge, build relationships, and grow together
                                 in our supportive community.
                             </p>
@@ -138,7 +138,7 @@ export default function WelcomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                     <Link
                         to="/home"
-                        className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
                         Set Up Profile
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,14 +147,14 @@ export default function WelcomePage() {
                     </Link>
                     <Link
                         to="/home"
-                        className="w-full sm:w-auto text-gray-700 font-semibold hover:text-gray-900 transition-colors"
+                        className="w-full sm:w-auto text-muted-foreground font-semibold hover:text-foreground transition-colors"
                     >
                         Skip for Now
                     </Link>
                 </div>
 
                 {/* Footer Text */}
-                <p className="text-center text-gray-500 text-sm mt-6">
+                <p className="text-center text-muted-foreground text-sm mt-6">
                     You can always complete your profile later from settings
                 </p>
             </div>

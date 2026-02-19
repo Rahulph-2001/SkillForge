@@ -190,10 +190,10 @@ const SubscriptionManagement: React.FC = () => {
     return (
       <>
 
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading subscription data...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading subscription data...</p>
           </div>
         </div>
       </>
@@ -205,18 +205,18 @@ const SubscriptionManagement: React.FC = () => {
     return (
       <>
 
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-md">
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <div className="bg-card rounded-lg shadow-lg p-8 max-w-md">
             <div className="text-red-500 text-center mb-4">
               <span className="text-4xl">⚠️</span>
             </div>
-            <h2 className="text-xl font-bold text-gray-900 text-center mb-2">
+            <h2 className="text-xl font-bold text-foreground text-center mb-2">
               Error Loading Data
             </h2>
-            <p className="text-gray-600 text-center mb-4">{error}</p>
+            <p className="text-muted-foreground text-center mb-4">{error}</p>
             <button
               onClick={loadData}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
             >
               Try Again
             </button>
@@ -229,16 +229,16 @@ const SubscriptionManagement: React.FC = () => {
   return (
     <>
 
-      <div className="min-h-screen bg-gray-50 p-8 font-sans antialiased">
+      <div className="min-h-screen bg-background p-8 font-sans antialiased">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">
             <Crown className="w-8 h-8 text-yellow-500" />
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-foreground">
               Subscription Management
             </h1>
           </div>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Monitor subscriptions and manage plans
           </p>
         </div>
@@ -296,27 +296,27 @@ const SubscriptionManagement: React.FC = () => {
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">
+              <h2 className="text-xl font-bold text-foreground mb-2">
                 Current Subscription Plans
               </h2>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Manage pricing and features for all subscription tiers
               </p>
             </div>
             <button
               onClick={handleCreatePlan}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
             >
               + Create New Plan
             </button>
           </div>
 
           {plans.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-              <p className="text-gray-600 mb-4">No subscription plans found</p>
+            <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+              <p className="text-muted-foreground mb-4">No subscription plans found</p>
               <button
                 onClick={handleCreatePlan}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold transition-colors"
               >
                 Create Your First Plan
               </button>

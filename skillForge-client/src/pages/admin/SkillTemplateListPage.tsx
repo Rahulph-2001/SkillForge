@@ -110,35 +110,35 @@ export default function SkillTemplateListPage() {
 
   if (loading && templates.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading templates...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading templates...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
 
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
             <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-semibold">ST</span>
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-primary-foreground text-sm font-semibold">ST</span>
               </div>
-              <h1 className="text-3xl font-bold text-blue-600">Skill Templates Management</h1>
+              <h1 className="text-3xl font-bold text-primary">Skill Templates Management</h1>
             </div>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Manage predefined skill templates for accurate MCQ verification and standardized skills.
             </p>
           </div>
           <button
             onClick={() => navigate("/admin/skill-templates/new")}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
           >
             <Plus className="w-5 h-5" />
             Add Skill Template
@@ -170,30 +170,30 @@ export default function SkillTemplateListPage() {
         </div>
 
         {/* Filters */}
-        <div className="bg-white rounded-lg p-4 mb-8 border border-gray-200">
+        <div className="bg-card rounded-lg p-4 mb-8 border border-border">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Search */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Search Templates</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Search Templates</label>
               <div className="relative">
-                <Search className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
                 <input
                   type="text"
                   placeholder="Search by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
                 />
               </div>
             </div>
 
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Category</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
                 <option value="All">All</option>
                 <option value="Technology">Technology</option>
@@ -209,11 +209,11 @@ export default function SkillTemplateListPage() {
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Status</label>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               >
                 <option value="All Status">All Status</option>
                 <option value="Active">Active</option>
@@ -239,7 +239,7 @@ export default function SkillTemplateListPage() {
           ))}
 
           {templates.length === 0 && !loading && (
-            <div className="col-span-full text-center text-gray-500 py-12 border border-dashed border-gray-300 rounded-lg">
+            <div className="col-span-full text-center text-muted-foreground py-12 border border-dashed border-border rounded-lg">
               No templates found. Try changing filters or add a new template.
             </div>
           )}
@@ -299,10 +299,10 @@ export default function SkillTemplateListPage() {
 
 function StatCard({ icon, label, value }: { icon: React.ReactNode; label: string; value: number | string }) {
   return (
-    <div className="bg-white rounded-lg p-6 border border-gray-200 text-center">
+    <div className="bg-card rounded-lg p-6 border border-border text-center">
       <div className="flex justify-center mb-3">{icon}</div>
-      <p className="text-gray-600 text-sm mb-1">{label}</p>
-      <p className="text-3xl font-bold text-gray-800">{value}</p>
+      <p className="text-muted-foreground text-sm mb-1">{label}</p>
+      <p className="text-3xl font-bold text-foreground">{value}</p>
     </div>
   )
 }
@@ -321,20 +321,20 @@ function TemplateCard({
   const isBlocked = !template.isActive
 
   return (
-    <div className={`bg-white rounded-lg p-6 border ${isBlocked ? 'border-red-200 bg-red-50/30' : 'border-gray-200'
+    <div className={`bg-card rounded-lg p-6 border ${isBlocked ? 'border-red-200 bg-red-50/30 dark:bg-red-950/10' : 'border-border'
       } hover:shadow-md transition-shadow`}>
       {/* Header with Title and Actions */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-lg font-semibold text-gray-800">{template.title}</h3>
+            <h3 className="text-lg font-semibold text-foreground">{template.title}</h3>
             {isBlocked && (
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">
                 Blocked
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-600 mb-2">{template.category}</p>
+          <p className="text-sm text-muted-foreground mb-2">{template.category}</p>
           <StatusBadge status={template.status} />
         </div>
         <div className="flex items-center gap-2">
@@ -345,36 +345,36 @@ function TemplateCard({
           >
             <FileQuestion className="w-4 h-4 text-purple-600" />
           </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" onClick={onEdit}>
-            <Edit2 className="w-4 h-4 text-gray-600" />
+          <button className="p-2 hover:bg-muted rounded-lg transition-colors" onClick={onEdit}>
+            <Edit2 className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
       </div>
 
       {/* Credits, MCQ, and Pass Range */}
-      <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-200">
+      <div className="grid grid-cols-3 gap-4 mb-4 pb-4 border-b border-border">
         <div>
-          <p className="text-xs text-gray-500 mb-1">Credit Range</p>
-          <p className="font-semibold text-gray-800">
+          <p className="text-xs text-muted-foreground mb-1">Credit Range</p>
+          <p className="font-semibold text-foreground">
             {template.creditsMin}-{template.creditsMax}
           </p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-1">MCQ Bank</p>
-          <p className="font-semibold text-gray-800">{template.mcqCount}</p>
+          <p className="text-xs text-muted-foreground mb-1">MCQ Bank</p>
+          <p className="font-semibold text-foreground">{template.mcqCount}</p>
         </div>
         <div>
-          <p className="text-xs text-gray-500 mb-1">Pass Range</p>
-          <p className="font-semibold text-gray-800">{template.passRange}%</p>
+          <p className="text-xs text-muted-foreground mb-1">Pass Range</p>
+          <p className="font-semibold text-foreground">{template.passRange}%</p>
         </div>
       </div>
 
       {/* Levels */}
       <div className="mb-4">
-        <p className="text-xs text-gray-500 mb-2">Levels</p>
+        <p className="text-xs text-muted-foreground mb-2">Levels</p>
         <div className="flex flex-wrap gap-2">
           {template.levels.map((level) => (
-            <span key={level} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-md">
+            <span key={level} className="px-2 py-1 bg-muted text-muted-foreground text-xs rounded-md">
               {level}
             </span>
           ))}
@@ -384,8 +384,8 @@ function TemplateCard({
       {/* Block/Unblock Button */}
       <button
         className={`w-full px-4 py-2 border rounded-lg font-medium transition-colors ${isBlocked
-            ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'
-            : 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
+          ? 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'
+          : 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
           }`}
         onClick={onToggleStatus}
       >
@@ -399,5 +399,5 @@ function StatusBadge({ status }: { status: "Active" | "Inactive" }) {
   if (status === "Active") {
     return <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
   }
-  return <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">Inactive</span>
+  return <span className="px-2 py-1 bg-muted text-muted-foreground text-xs font-semibold rounded-full">Inactive</span>
 }

@@ -110,10 +110,10 @@ export default function MCQTestPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mx-auto" />
-          <p className="mt-4 text-gray-600">Loading test...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
+          <p className="mt-4 text-muted-foreground">Loading test...</p>
         </div>
       </div>
     );
@@ -121,12 +121,12 @@ export default function MCQTestPage() {
 
   if (!testSession) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Test not found</p>
+          <p className="text-muted-foreground">Test not found</p>
           <button
             onClick={() => navigate("/my-skills")}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
           >
             Back to My Skills
           </button>
@@ -137,10 +137,10 @@ export default function MCQTestPage() {
 
   if (showResults && testResult && testSession) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-background py-8">
         <div className="max-w-4xl mx-auto px-6">
           {/* Results Header */}
-          <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+          <div className="bg-card rounded-lg shadow-md p-8 mb-6">
             <div className="text-center">
               {testResult.passed ? (
                 <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
@@ -150,24 +150,24 @@ export default function MCQTestPage() {
               <h1 className="text-3xl font-bold mb-2">
                 {testResult.passed ? "Congratulations!" : "Keep Practicing!"}
               </h1>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {testResult.passed
                   ? "You have passed the test!"
                   : "You didn't pass this time, but don't give up!"}
               </p>
               <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Score</p>
+                <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">Score</p>
                   <p className="text-2xl font-bold text-blue-600">{testResult.score}%</p>
                 </div>
-                <div className="bg-green-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Correct</p>
+                <div className="bg-green-50 dark:bg-green-950/30 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">Correct</p>
                   <p className="text-2xl font-bold text-green-600">
                     {testResult.correctAnswers}/{testResult.totalQuestions}
                   </p>
                 </div>
-                <div className="bg-purple-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-600">Required</p>
+                <div className="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">Required</p>
                   <p className="text-2xl font-bold text-purple-600">{testResult.passingScore}%</p>
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default function MCQTestPage() {
           </div>
 
           {/* Answer Review */}
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-card rounded-lg shadow-md p-6 mb-6">
             <h2 className="text-xl font-bold mb-4">Answer Review</h2>
             <div className="space-y-6">
               {testResult.details.map((detail, idx) => {
@@ -195,7 +195,7 @@ export default function MCQTestPage() {
                         <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-1" />
                       )}
                       <div className="flex-1">
-                        <p className="font-semibold text-gray-900">
+                        <p className="font-semibold text-foreground">
                           Q{idx + 1}. {question.question}
                         </p>
                       </div>
@@ -208,10 +208,10 @@ export default function MCQTestPage() {
                           <div
                             key={optIdx}
                             className={`p-2 rounded text-sm ${isCorrectAnswer
-                                ? "bg-green-200 text-green-900 font-medium"
-                                : isUserAnswer
-                                  ? "bg-red-200 text-red-900"
-                                  : "bg-white text-gray-700"
+                              ? "bg-green-200 text-green-900 font-medium"
+                              : isUserAnswer
+                                ? "bg-red-200 text-red-900"
+                                : "bg-card text-muted-foreground"
                               }`}
                           >
                             {String.fromCharCode(65 + optIdx)}. {option}
@@ -236,14 +236,14 @@ export default function MCQTestPage() {
           <div className="flex gap-4 justify-center">
             <button
               onClick={() => navigate("/my-skills")}
-              className="px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
               Back to My Skills
             </button>
             {!testResult.passed && (
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Retry Test
               </button>
@@ -259,39 +259,39 @@ export default function MCQTestPage() {
   const answeredCount = selectedAnswers.filter((ans) => ans !== -1).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+      <div className="bg-card border-b border-border sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <button
               onClick={() => navigate("/my-skills")}
-              className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-5 h-5" />
               <span>Back</span>
             </button>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
               Skill Verification Test
             </div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl font-bold text-gray-900">MCQ Verification Test</h1>
-              <p className="text-sm text-gray-600">
+              <h1 className="text-xl font-bold text-foreground">MCQ Verification Test</h1>
+              <p className="text-sm text-muted-foreground">
                 {testSession.level} Level • {testSession.questions.length} Questions
               </p>
             </div>
             <div className="text-right">
-              <p className="text-sm text-gray-600">Progress</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p className="text-sm text-muted-foreground">Progress</p>
+              <p className="text-lg font-semibold text-primary">
                 {answeredCount}/{testSession.questions.length}
               </p>
             </div>
           </div>
-          <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+          <div className="mt-3 w-full bg-muted rounded-full h-2">
             <div
-              className="bg-blue-600 h-2 rounded-full transition-all"
+              className="bg-primary h-2 rounded-full transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -300,12 +300,12 @@ export default function MCQTestPage() {
 
       {/* Question Content */}
       <div className="max-w-4xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-lg shadow-md p-8">
+        <div className="bg-card rounded-lg shadow-md p-8">
           <div className="mb-6">
             <span className="text-sm font-medium text-blue-600">
               Question {currentQuestion + 1} of {testSession.questions.length}
             </span>
-            <h2 className="text-2xl font-bold text-gray-900 mt-2">{question.question}</h2>
+            <h2 className="text-2xl font-bold text-foreground mt-2">{question.question}</h2>
           </div>
 
           <div className="space-y-3">
@@ -314,36 +314,36 @@ export default function MCQTestPage() {
                 key={idx}
                 onClick={() => handleAnswerSelect(currentQuestion, idx)}
                 className={`w-full text-left p-4 rounded-lg border-2 transition-all ${selectedAnswers[currentQuestion] === idx
-                    ? "border-blue-600 bg-blue-50"
-                    : "border-gray-300 hover:border-gray-400 bg-white"
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-border hover:border-muted-foreground bg-card"
                   }`}
               >
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedAnswers[currentQuestion] === idx
-                        ? "border-blue-600 bg-blue-600"
-                        : "border-gray-300"
+                      ? "border-blue-600 bg-blue-600"
+                      : "border-border"
                       }`}
                   >
                     {selectedAnswers[currentQuestion] === idx && (
                       <div className="w-2 h-2 bg-white rounded-full" />
                     )}
                   </div>
-                  <span className="font-medium text-gray-700">
+                  <span className="font-medium text-muted-foreground">
                     {String.fromCharCode(65 + idx)}.
                   </span>
-                  <span className="text-gray-900">{option}</span>
+                  <span className="text-foreground">{option}</span>
                 </div>
               </button>
             ))}
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border">
             <button
               onClick={() => setCurrentQuestion((prev) => Math.max(0, prev - 1))}
               disabled={currentQuestion === 0}
-              className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 border border-border rounded-lg hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
@@ -354,10 +354,10 @@ export default function MCQTestPage() {
                   key={idx}
                   onClick={() => setCurrentQuestion(idx)}
                   className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${idx === currentQuestion
-                      ? "bg-blue-600 text-white"
-                      : selectedAnswers[idx] !== -1
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                    ? "bg-blue-600 text-white"
+                    : selectedAnswers[idx] !== -1
+                      ? "bg-green-100 text-green-700"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80"
                     }`}
                 >
                   {idx + 1}
@@ -377,7 +377,7 @@ export default function MCQTestPage() {
             ) : (
               <button
                 onClick={() => setCurrentQuestion((prev) => Math.min(testSession.questions.length - 1, prev + 1))}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Next
               </button>

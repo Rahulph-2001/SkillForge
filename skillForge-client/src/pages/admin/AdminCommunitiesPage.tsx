@@ -247,7 +247,7 @@ const AdminCommunitiesPage: React.FC = () => {
                                             </div>
                                         )}
                                         <div className="absolute top-3 right-3 flex gap-2">
-                                            <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-md text-xs font-semibold text-gray-700 uppercase tracking-wide">
+                                            <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-md text-xs font-semibold text-foreground uppercase tracking-wide">
                                                 {community.category}
                                             </span>
                                             {!community.isActive && (

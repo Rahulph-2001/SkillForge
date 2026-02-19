@@ -271,17 +271,17 @@ export const AvailabilitySettingsPage: React.FC = () => {
                 <select
                     value={initialHour12}
                     onChange={(e) => onChange(convertTo24Hour(`${e.target.value}:${minutes}`, initialAmpm))}
-                    className="rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 py-1 px-2 text-sm"
+                    className="rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary py-1 px-2 text-sm"
                 >
                     {Array.from({ length: 12 }, (_, i) => i + 1).map(h => (
                         <option key={h} value={h.toString().padStart(2, '0')}>{h.toString().padStart(2, '0')}</option>
                     ))}
                 </select>
-                <span className="text-gray-400">:</span>
+                <span className="text-muted-foreground">:</span>
                 <select
                     value={minutes}
                     onChange={(e) => onChange(convertTo24Hour(`${initialHour12}:${e.target.value}`, initialAmpm))}
-                    className="rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 py-1 px-2 text-sm"
+                    className="rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary py-1 px-2 text-sm"
                 >
                     {['00', '15', '30', '45'].map(m => (
                         <option key={m} value={m}>{m}</option>
@@ -290,7 +290,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
                 <select
                     value={initialAmpm}
                     onChange={(e) => onChange(convertTo24Hour(`${initialHour12}:${minutes}`, e.target.value))}
-                    className="rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 py-1 px-2 text-sm"
+                    className="rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary py-1 px-2 text-sm"
                 >
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
@@ -314,11 +314,11 @@ export const AvailabilitySettingsPage: React.FC = () => {
                 type="info"
             />
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-900">Availability Settings</h1>
+                <h1 className="text-2xl font-bold text-foreground">Availability Settings</h1>
                 <button
                     onClick={handleSaveRequest}
                     disabled={saving}
-                    className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50"
                 >
                     <Save size={20} />
                     {saving ? 'Saving...' : 'Save Changes'}
@@ -326,19 +326,19 @@ export const AvailabilitySettingsPage: React.FC = () => {
             </div>
 
             {/* General Settings */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6 space-y-6">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <Clock className="text-indigo-600" />
+                    <Clock className="text-primary" />
                     General Preferences
                 </h2>
 
                 <div className="grid grid-cols-1 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Timezone</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Timezone</label>
                         <select
                             value={availability.timezone}
                             onChange={(e) => setAvailability(prev => ({ ...prev, timezone: e.target.value }))}
-                            className="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary"
                         >
                             {(Intl as any).supportedValuesOf('timeZone').map((tz: string) => (
                                 <option key={tz} value={tz}>{tz}</option>
@@ -347,11 +347,11 @@ export const AvailabilitySettingsPage: React.FC = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Buffer Time (minutes)</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Buffer Time (minutes)</label>
                         <select
                             value={availability.bufferTime}
                             onChange={(e) => setAvailability(prev => ({ ...prev, bufferTime: Number(e.target.value) }))}
-                            className="w-full rounded-lg border-gray-300 focus:ring-indigo-500 focus:border-indigo-500"
+                            className="w-full rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary"
                         >
                             {[0, 15, 30, 45, 60].map(min => (
                                 <option key={min} value={min}>{min} minutes</option>
@@ -362,9 +362,9 @@ export const AvailabilitySettingsPage: React.FC = () => {
             </div>
 
             {/* Weekly Schedule */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 space-y-6">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-6 space-y-6">
                 <h2 className="text-lg font-semibold flex items-center gap-2">
-                    <Calendar className="text-indigo-600" />
+                    <Calendar className="text-primary" />
                     Weekly Schedule
                 </h2>
 
@@ -373,21 +373,21 @@ export const AvailabilitySettingsPage: React.FC = () => {
                         const schedule = availability.weeklySchedule || normalizeWeeklySchedule({});
                         const daySchedule = schedule[day];
                         return (
-                            <div key={day} className="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+                            <div key={day} className="border-b border-border pb-6 last:border-0 last:pb-0">
                                 <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <input
                                             type="checkbox"
                                             checked={daySchedule.enabled}
                                             onChange={(e) => updateSchedule(day, { enabled: e.target.checked })}
-                                            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            className="rounded border-border text-primary focus:ring-ring"
                                         />
-                                        <span className="font-medium text-gray-900 w-24">{day}</span>
+                                        <span className="font-medium text-foreground w-24">{day}</span>
                                     </div>
                                     {daySchedule.enabled && (
                                         <button
                                             onClick={() => addSlot(day)}
-                                            className="text-sm text-indigo-600 hover:text-indigo-700 flex items-center gap-1"
+                                            className="text-sm text-primary hover:text-primary/80 flex items-center gap-1"
                                         >
                                             <Plus size={16} /> Add Slot
                                         </button>
@@ -402,14 +402,14 @@ export const AvailabilitySettingsPage: React.FC = () => {
                                                     value={slot.start}
                                                     onChange={(val) => updateSlot(day, index, 'start', val)}
                                                 />
-                                                <span className="text-gray-400">-</span>
+                                                <span className="text-muted-foreground">-</span>
                                                 <TimeSelector
                                                     value={slot.end}
                                                     onChange={(val) => updateSlot(day, index, 'end', val)}
                                                 />
                                                 <button
                                                     onClick={() => removeSlot(day, index)}
-                                                    className="text-gray-400 hover:text-red-500 ml-2"
+                                                    className="text-muted-foreground hover:text-destructive ml-2"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>

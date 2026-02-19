@@ -226,7 +226,7 @@ export default function AdminSkillVerificationPage() {
     {
       value: skills.filter((s) => s.isBlocked).length,
       label: 'Blocked',
-      color: 'text-gray-800',
+      color: 'text-foreground',
     },
     {
       value: skills.filter((s) => s.status === 'rejected').length,
@@ -265,7 +265,7 @@ export default function AdminSkillVerificationPage() {
         );
       default:
         return (
-          <span className="inline-block bg-gray-100 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full">
+          <span className="inline-block bg-muted text-foreground text-xs font-semibold px-3 py-1 rounded-full">
             {status}
           </span>
         );
@@ -273,40 +273,40 @@ export default function AdminSkillVerificationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
 
 
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Skills Verification</h1>
-          <p className="text-gray-600">Review and manage skill verification requests</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Skills Verification</h1>
+          <p className="text-muted-foreground">Review and manage skill verification requests</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stats.map((stat) => (
-            <div key={stat.label} className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div key={stat.label} className="bg-card rounded-lg p-6 border border-border shadow-sm">
               <p className={`text-4xl font-bold ${stat.color} mb-2`}>{stat.value}</p>
-              <p className="text-gray-600 text-sm">{stat.label}</p>
+              <p className="text-muted-foreground text-sm">{stat.label}</p>
             </div>
           ))}
         </div>
 
         {/* Skills Table */}
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+        <div className="bg-card rounded-lg border border-border shadow-sm">
           {/* Header */}
-          <div className="border-b border-gray-200 p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-1">
+          <div className="border-b border-border p-6">
+            <h2 className="text-xl font-bold text-foreground mb-1">
               All Skills ({totalItems})
             </h2>
-            <p className="text-gray-600 text-sm">Review and approve skill verification requests</p>
+            <p className="text-muted-foreground text-sm">Review and approve skill verification requests</p>
           </div>
 
           {/* Search and Filter */}
-          <div className="border-b border-gray-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="border-b border-border p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search skills, providers, categories..."
@@ -315,7 +315,7 @@ export default function AdminSkillVerificationPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
               />
             </div>
             <select
@@ -324,7 +324,7 @@ export default function AdminSkillVerificationPage() {
                 setFilter(e.target.value as FilterType);
                 setCurrentPage(1);
               }}
-              className="md:ml-4 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="md:ml-4 px-4 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ring bg-background text-foreground"
             >
               <option value="all">All Skills</option>
               <option value="in-review">Pending Review</option>
@@ -337,8 +337,8 @@ export default function AdminSkillVerificationPage() {
           {/* Loading State */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <span className="ml-3 text-gray-600">Loading skills...</span>
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              <span className="ml-3 text-muted-foreground">Loading skills...</span>
             </div>
           ) : (
             <>
@@ -346,33 +346,33 @@ export default function AdminSkillVerificationPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                    <tr className="border-b border-border bg-muted">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Skill
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Provider
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Category
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Level
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         MCQ Score
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Status
                       </th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                      <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
                         Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {displayedSkills.map((skill) => (
-                      <tr key={skill.id} className="border-b border-gray-200 hover:bg-gray-50">
+                      <tr key={skill.id} className="border-b border-border hover:bg-muted/50">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             {skill.imageUrl ? (
@@ -387,18 +387,18 @@ export default function AdminSkillVerificationPage() {
                               </div>
                             )}
                             <div>
-                              <p className="font-medium text-gray-900">{skill.title}</p>
-                              <p className="text-xs text-gray-500">
+                              <p className="font-medium text-foreground">{skill.title}</p>
+                              <p className="text-xs text-muted-foreground">
                                 {skill.durationHours}h • {skill.creditsPerHour} credits/hr
                               </p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <p className="text-sm text-gray-900">{skill.providerName}</p>
-                          <p className="text-xs text-gray-500">{skill.providerEmail}</p>
+                          <p className="text-sm text-foreground">{skill.providerName}</p>
+                          <p className="text-xs text-muted-foreground">{skill.providerEmail}</p>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600">{skill.category}</td>
+                        <td className="px-6 py-4 text-sm text-muted-foreground">{skill.category}</td>
                         <td className="px-6 py-4">
                           <span className="inline-block bg-purple-100 text-purple-800 text-xs font-medium px-2 py-1 rounded">
                             {skill.level}
@@ -415,12 +415,12 @@ export default function AdminSkillVerificationPage() {
                               >
                                 {skill.mcqScore}%
                               </span>
-                              <span className="text-gray-500 text-xs ml-1">
+                              <span className="text-muted-foreground text-xs ml-1">
                                 (Pass: {skill.mcqPassingScore}%)
                               </span>
                             </div>
                           ) : (
-                            <span className="text-gray-400 text-sm">Not taken</span>
+                            <span className="text-muted-foreground text-sm">Not taken</span>
                           )}
                         </td>
                         <td className="px-6 py-4">{getStatusBadge(skill.status, skill.isBlocked)}</td>
@@ -485,7 +485,7 @@ export default function AdminSkillVerificationPage() {
                     ))}
                     {displayedSkills.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                        <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
                           <p className="text-lg font-medium mb-1">No skills found</p>
                           <p className="text-sm">
                             {searchQuery
@@ -515,16 +515,16 @@ export default function AdminSkillVerificationPage() {
       {/* Rejection Modal */}
       {rejectModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Reject Skill</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-card rounded-lg max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-foreground mb-4">Reject Skill</h3>
+            <p className="text-muted-foreground mb-4">
               Please provide a reason for rejecting this skill. This will be visible to the provider.
             </p>
             <textarea
               value={rejectionReason}
               onChange={(e) => setRejectionReason(e.target.value)}
               placeholder="Enter rejection reason..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none bg-background text-foreground"
               rows={4}
             />
             <div className="flex items-center gap-3 mt-6">
@@ -535,7 +535,7 @@ export default function AdminSkillVerificationPage() {
                   setRejectionReason('');
                 }}
                 disabled={actionLoading}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -556,16 +556,16 @@ export default function AdminSkillVerificationPage() {
       {viewModalOpen && selectedSkill && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 overflow-y-auto">
           <div className="min-h-screen px-4 py-8 flex items-center justify-center">
-            <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full my-8 relative">
+            <div className="bg-card rounded-xl shadow-2xl max-w-4xl w-full my-8 relative">
               {/* Header - Sticky */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 rounded-t-xl flex items-center justify-between z-10">
-                <h3 className="text-2xl font-bold text-gray-900">Skill Details</h3>
+              <div className="sticky top-0 bg-card border-b border-border px-6 py-4 rounded-t-xl flex items-center justify-between z-10">
+                <h3 className="text-2xl font-bold text-foreground">Skill Details</h3>
                 <button
                   onClick={() => {
                     setViewModalOpen(false);
                     setSelectedSkill(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 transition p-2 hover:bg-gray-100 rounded-lg"
+                  className="text-muted-foreground hover:text-foreground transition p-2 hover:bg-muted rounded-lg"
                 >
                   <X className="w-6 h-6" />
                 </button>
@@ -576,7 +576,7 @@ export default function AdminSkillVerificationPage() {
                 <div className="space-y-6">
                   {/* Skill Image */}
                   {selectedSkill.imageUrl && (
-                    <div className="w-full rounded-lg overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200">
+                    <div className="w-full rounded-lg overflow-hidden bg-gradient-to-br from-muted to-muted/50 border border-border">
                       <img
                         src={selectedSkill.imageUrl}
                         alt={selectedSkill.title}
@@ -588,44 +588,44 @@ export default function AdminSkillVerificationPage() {
                   {/* Basic Info */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Skill Title</label>
-                      <p className="text-lg font-medium text-gray-900">{selectedSkill.title}</p>
+                      <label className="text-sm font-semibold text-muted-foreground">Skill Title</label>
+                      <p className="text-lg font-medium text-foreground">{selectedSkill.title}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Category</label>
-                      <p className="text-lg text-gray-900">{selectedSkill.category}</p>
+                      <label className="text-sm font-semibold text-muted-foreground">Category</label>
+                      <p className="text-lg text-foreground">{selectedSkill.category}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Level</label>
-                      <p className="text-lg text-gray-900">
-                        <span className="inline-block bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded">
+                      <label className="text-sm font-semibold text-muted-foreground">Level</label>
+                      <p className="text-lg text-foreground">
+                        <span className="inline-block bg-primary/10 text-primary text-sm font-medium px-3 py-1 rounded">
                           {selectedSkill.level}
                         </span>
                       </p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Status</label>
+                      <label className="text-sm font-semibold text-muted-foreground">Status</label>
                       <p className="text-lg">{getStatusBadge(selectedSkill.status, selectedSkill.isBlocked)}</p>
                     </div>
                   </div>
 
                   {/* Description */}
                   <div>
-                    <label className="text-sm font-semibold text-gray-600">Description</label>
-                    <p className="text-gray-700 mt-1 whitespace-pre-wrap">{selectedSkill.description}</p>
+                    <label className="text-sm font-semibold text-muted-foreground">Description</label>
+                    <p className="text-foreground/80 mt-1 whitespace-pre-wrap">{selectedSkill.description}</p>
                   </div>
 
                   {/* Provider Info */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-3">Provider Information</h4>
+                  <div className="bg-muted rounded-lg p-4">
+                    <h4 className="font-semibold text-foreground mb-3">Provider Information</h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="text-sm font-semibold text-gray-600">Name</label>
-                        <p className="text-gray-900">{selectedSkill.providerName}</p>
+                        <label className="text-sm font-semibold text-muted-foreground">Name</label>
+                        <p className="text-foreground">{selectedSkill.providerName}</p>
                       </div>
                       <div>
-                        <label className="text-sm font-semibold text-gray-600">Email</label>
-                        <p className="text-gray-900">{selectedSkill.providerEmail}</p>
+                        <label className="text-sm font-semibold text-muted-foreground">Email</label>
+                        <p className="text-foreground">{selectedSkill.providerEmail}</p>
                       </div>
                     </div>
                   </div>
@@ -633,26 +633,26 @@ export default function AdminSkillVerificationPage() {
                   {/* Skill Details */}
                   <div className="grid grid-cols-3 gap-4">
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Duration</label>
-                      <p className="text-lg font-medium text-gray-900">{selectedSkill.durationHours} hours</p>
+                      <label className="text-sm font-semibold text-muted-foreground">Duration</label>
+                      <p className="text-lg font-medium text-foreground">{selectedSkill.durationHours} hours</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Credits/Hour</label>
-                      <p className="text-lg font-medium text-gray-900">{selectedSkill.creditsPerHour}</p>
+                      <label className="text-sm font-semibold text-muted-foreground">Credits/Hour</label>
+                      <p className="text-lg font-medium text-foreground">{selectedSkill.creditsPerHour}</p>
                     </div>
                     <div>
-                      <label className="text-sm font-semibold text-gray-600">Total Sessions</label>
-                      <p className="text-lg font-medium text-gray-900">{selectedSkill.totalSessions}</p>
+                      <label className="text-sm font-semibold text-muted-foreground">Total Sessions</label>
+                      <p className="text-lg font-medium text-foreground">{selectedSkill.totalSessions}</p>
                     </div>
                   </div>
 
                   {/* MCQ Info */}
                   {selectedSkill.mcqScore !== null && (
-                    <div className="bg-blue-50 rounded-lg p-4">
-                      <h4 className="font-semibold text-gray-900 mb-3">MCQ Verification</h4>
+                    <div className="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-4">
+                      <h4 className="font-semibold text-foreground mb-3">MCQ Verification</h4>
                       <div className="grid grid-cols-3 gap-4">
                         <div>
-                          <label className="text-sm font-semibold text-gray-600">Score</label>
+                          <label className="text-sm font-semibold text-muted-foreground">Score</label>
                           <p className={`text-2xl font-bold ${selectedSkill.mcqScore >= (selectedSkill.mcqPassingScore || 70)
                             ? 'text-green-600'
                             : 'text-red-600'
@@ -661,12 +661,12 @@ export default function AdminSkillVerificationPage() {
                           </p>
                         </div>
                         <div>
-                          <label className="text-sm font-semibold text-gray-600">Passing Score</label>
-                          <p className="text-lg text-gray-900">{selectedSkill.mcqPassingScore}%</p>
+                          <label className="text-sm font-semibold text-muted-foreground">Passing Score</label>
+                          <p className="text-lg text-foreground">{selectedSkill.mcqPassingScore}%</p>
                         </div>
                         <div>
-                          <label className="text-sm font-semibold text-gray-600">Total Questions</label>
-                          <p className="text-lg text-gray-900">{selectedSkill.mcqTotalQuestions}</p>
+                          <label className="text-sm font-semibold text-muted-foreground">Total Questions</label>
+                          <p className="text-lg text-foreground">{selectedSkill.mcqTotalQuestions}</p>
                         </div>
                       </div>
                     </div>
@@ -696,12 +696,12 @@ export default function AdminSkillVerificationPage() {
                   {/* Tags */}
                   {selectedSkill.tags && selectedSkill.tags.length > 0 && (
                     <div>
-                      <label className="text-sm font-semibold text-gray-600 mb-2 block">Tags</label>
+                      <label className="text-sm font-semibold text-muted-foreground mb-2 block">Tags</label>
                       <div className="flex flex-wrap gap-2">
                         {selectedSkill.tags.map((tag, index) => (
                           <span
                             key={index}
-                            className="inline-block bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
+                            className="inline-block bg-muted text-muted-foreground text-sm px-3 py-1 rounded-full"
                           >
                             {tag}
                           </span>
@@ -711,7 +711,7 @@ export default function AdminSkillVerificationPage() {
                   )}
 
                   {/* Timestamps */}
-                  <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                  <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
                     <div>
                       <label className="font-semibold">Created At</label>
                       <p>{new Date(selectedSkill.createdAt).toLocaleString()}</p>
@@ -725,13 +725,13 @@ export default function AdminSkillVerificationPage() {
               </div>
 
               {/* Footer - Sticky */}
-              <div className="sticky bottom-0 bg-white border-t border-gray-200 px-6 py-4 rounded-b-xl flex justify-end">
+              <div className="sticky bottom-0 bg-card border-t border-border px-6 py-4 rounded-b-xl flex justify-end">
                 <button
                   onClick={() => {
                     setViewModalOpen(false);
                     setSelectedSkill(null);
                   }}
-                  className="px-6 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition font-medium"
+                  className="px-6 py-2.5 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition font-medium"
                 >
                   Close
                 </button>
@@ -744,16 +744,16 @@ export default function AdminSkillVerificationPage() {
       {/* Block Modal */}
       {blockModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Block Skill</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-card rounded-lg max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-foreground mb-4">Block Skill</h3>
+            <p className="text-muted-foreground mb-4">
               Please provide a reason for blocking this skill. This will prevent users from booking sessions.
             </p>
             <textarea
               value={blockReason}
               onChange={(e) => setBlockReason(e.target.value)}
               placeholder="Enter block reason..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none"
+              className="w-full px-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 resize-none bg-background text-foreground"
               rows={4}
             />
             <div className="flex items-center gap-3 mt-6">
@@ -764,7 +764,7 @@ export default function AdminSkillVerificationPage() {
                   setBlockReason('');
                 }}
                 disabled={actionLoading}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -793,9 +793,9 @@ export default function AdminSkillVerificationPage() {
       {/* Approve Confirmation Modal */}
       {confirmApproveOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Approve Skill</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-card rounded-lg max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-foreground mb-4">Approve Skill</h3>
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to approve this skill? It will be visible to users for booking.
             </p>
             <div className="flex items-center gap-3">
@@ -805,7 +805,7 @@ export default function AdminSkillVerificationPage() {
                   setSelectedSkillId(null);
                 }}
                 disabled={actionLoading}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -825,9 +825,9 @@ export default function AdminSkillVerificationPage() {
       {/* Unblock Confirmation Modal */}
       {confirmUnblockOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Unblock Skill</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-card rounded-lg max-w-md w-full p-6">
+            <h3 className="text-xl font-bold text-foreground mb-4">Unblock Skill</h3>
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to unblock this skill? Users will be able to book sessions again.
             </p>
             <div className="flex items-center gap-3">
@@ -837,7 +837,7 @@ export default function AdminSkillVerificationPage() {
                   setSelectedSkillId(null);
                 }}
                 disabled={actionLoading}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50"
+                className="flex-1 px-4 py-2 border border-border rounded-lg text-foreground hover:bg-muted transition disabled:opacity-50"
               >
                 Cancel
               </button>

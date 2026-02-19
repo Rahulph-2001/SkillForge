@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, ChevronDown, LogOut, User, CreditCard, Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -80,7 +81,7 @@ export default function Navbar() {
 
     // Authenticated Mobile Menu
     const AuthenticatedMobileMenu = () => (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden">
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
             <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
                 <div className="p-4 flex items-center justify-between border-b border-border">
@@ -142,7 +143,7 @@ export default function Navbar() {
 
     // Unauthenticated Mobile Menu
     const UnauthenticatedMobileMenu = () => (
-        <div className="fixed inset-0 z-50 md:hidden">
+        <div className="fixed inset-0 z-[100] md:hidden">
             <div className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" onClick={() => setShowMobileMenu(false)} />
             <div className="fixed inset-y-0 right-0 w-[300px] bg-background border-l border-border shadow-2xl transform transition-transform duration-300 ease-in-out h-full overflow-y-auto">
                 <div className="p-4 flex items-center justify-between border-b border-border">
@@ -208,7 +209,7 @@ export default function Navbar() {
                         </button>
                     </div>
                 </div>
-                {showMobileMenu && <UnauthenticatedMobileMenu />}
+                {showMobileMenu && createPortal(<UnauthenticatedMobileMenu />, document.body)}
             </header>
         );
     }
@@ -350,7 +351,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Menu Overlay */}
-            {showMobileMenu && <AuthenticatedMobileMenu />}
+            {showMobileMenu && createPortal(<AuthenticatedMobileMenu />, document.body)}
         </header>
     );
 }

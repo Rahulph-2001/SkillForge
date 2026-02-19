@@ -8,7 +8,7 @@ interface PaymentFailureModalProps {
 }
 
 export default function PaymentFailureModal({
-    isOpen,
+    isOpen: _isOpen,
     onClose,
     error,
     onRetry
