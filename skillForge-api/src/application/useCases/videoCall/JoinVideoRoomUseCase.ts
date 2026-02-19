@@ -17,10 +17,10 @@ import { env } from '../../../config/env';
 
 @injectable()
 export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
-  // Allow joining 15 minutes before session start
-  private static readonly JOIN_WINDOW_MINUTES_BEFORE = 15;
-  // Allow joining 15 minutes after session end (grace period)
-  private static readonly GRACE_PERIOD_MINUTES_AFTER = 15;
+  // Allow joining anytime once booking is confirmed (no early-join restriction)
+  private static readonly JOIN_WINDOW_ENABLED = false;
+  // Allow joining 30 minutes after session end (grace period for overruns)
+  private static readonly GRACE_PERIOD_MINUTES_AFTER = 30;
 
   constructor(
     @inject(TYPES.IVideoCallRoomRepository) private roomRepository: IVideoCallRoomRepository,
@@ -115,26 +115,20 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
 
     const now = new Date();
 
-    // Calculate join window
-    const joinWindowStart = new Date(
-      sessionStartAt.getTime() - JoinVideoRoomUseCase.JOIN_WINDOW_MINUTES_BEFORE * 60 * 1000
+    // Grace period after session end
+    const sessionEndWithGrace = new Date(
+      sessionEndAt.getTime() + JoinVideoRoomUseCase.GRACE_PERIOD_MINUTES_AFTER * 60 * 1000
     );
 
-    // Check if session has expired
-    if (now > sessionEndAt) {
+    // Check if session has expired (past end time + grace period)
+    if (now > sessionEndWithGrace) {
       return {
         canJoin: false,
         message: ERROR_MESSAGES.SESSION.SESSION_EXPIRED,
       };
     }
 
-    // Check if it's too early to join
-    if (now < joinWindowStart) {
-      return {
-        canJoin: false,
-        message: ERROR_MESSAGES.SESSION.JOIN_WINDOW_NOT_OPEN,
-      };
-    }
+    // No early-join restriction — users can join anytime once booking is confirmed
 
     return {
       canJoin: true,
@@ -149,9 +143,9 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
 
     const now = new Date();
 
-    // Join window: 15 mins before
+    // No early-join restriction for interviews either
     const joinWindowStart = new Date(
-      sessionStartAt.getTime() - JoinVideoRoomUseCase.JOIN_WINDOW_MINUTES_BEFORE * 60 * 1000
+      sessionStartAt.getTime() - 30 * 60 * 1000  // Allow 30 mins before interview
     );
 
     // End window: 15 mins after end (Grace period)

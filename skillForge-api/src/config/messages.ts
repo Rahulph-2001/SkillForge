@@ -216,7 +216,7 @@ export const ERROR_MESSAGES = {
     NOT_STARTED_YET: 'Session has not started yet. Please wait until the scheduled time.',
     SESSION_EXPIRED: 'This session has already ended.',
     NOT_CONFIRMED: 'Session must be confirmed before joining.',
-    JOIN_WINDOW_NOT_OPEN: 'You can only join the session within 15 minutes before the start time.',
+    JOIN_WINDOW_NOT_OPEN: 'Session is not yet available to join. Please wait until the session is confirmed.',
     SESSION_TIME_VALIDATION_FAILED: 'Failed to validate session time.',
   },
   PAYMENT: {

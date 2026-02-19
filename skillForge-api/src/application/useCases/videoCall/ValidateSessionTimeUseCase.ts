@@ -9,10 +9,9 @@ import { BookingStatus } from '../../../domain/entities/Booking';
 
 @injectable()
 export class ValidateSessionTimeUseCase implements IValidateSessionTimeUseCase {
-  // Allow joining 15 minutes before session start
-  private static readonly JOIN_WINDOW_MINUTES_BEFORE = 15;
-  // Allow joining up to the session end time
-  private static readonly GRACE_PERIOD_MINUTES_AFTER = 0;
+  // No early-join restriction — users can join anytime once confirmed
+  // Allow joining up to 30 minutes after the session end time (grace period)
+  private static readonly GRACE_PERIOD_MINUTES_AFTER = 30;
 
   constructor(
     @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository
@@ -42,15 +41,12 @@ export class ValidateSessionTimeUseCase implements IValidateSessionTimeUseCase {
 
     const now = new Date();
 
-    // Calculate join window
-    const joinWindowStart = new Date(
-      sessionStartAt.getTime() - ValidateSessionTimeUseCase.JOIN_WINDOW_MINUTES_BEFORE * 60 * 1000
-    );
+    // Grace period: allow joining up to 30 mins after session end
     const joinWindowEnd = new Date(
       sessionEndAt.getTime() + ValidateSessionTimeUseCase.GRACE_PERIOD_MINUTES_AFTER * 60 * 1000
     );
 
-    // Check if session has expired
+    // Check if session has expired (past end time + grace period)
     if (now > joinWindowEnd) {
       return {
         canJoin: false,
@@ -62,18 +58,7 @@ export class ValidateSessionTimeUseCase implements IValidateSessionTimeUseCase {
       };
     }
 
-    // Check if it's too early to join
-    if (now < joinWindowStart) {
-      const remainingSeconds = Math.floor((joinWindowStart.getTime() - now.getTime()) / 1000);
-      return {
-        canJoin: false,
-        message: ERROR_MESSAGES.SESSION.JOIN_WINDOW_NOT_OPEN,
-        sessionStartAt,
-        sessionEndAt,
-        remainingSeconds,
-        sessionDurationMinutes,
-      };
-    }
+    // No early-join restriction — users can join anytime once booking is confirmed
 
     // Calculate remaining session time
     let remainingSeconds = 0;
