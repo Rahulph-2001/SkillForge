@@ -7,6 +7,7 @@ import { ISystemSettingsRepository } from '../../../../domain/repositories/ISyst
 import { IUserWalletTransactionRepository } from '../../../../domain/repositories/IUserWalletTransactionRepository';
 import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../../../../domain/entities/UserWalletTransaction';
 import { NotFoundError, ValidationError } from '../../../../domain/errors/AppError';
+import { UserRole } from '../../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../../config/messages';
 import { Database } from '../../../../infrastructure/database/Database';
 import { IGetWalletInfoUseCase } from './interfaces/IGetWalletInfoUseCase';
@@ -134,7 +135,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             });
 
             // 6. Debit Admin Wallet
-            const adminUser = await tx.user.findFirst({ where: { role: 'ADMIN' } });
+            const adminUser = await tx.user.findFirst({ where: { role: UserRole.ADMIN as any } });
             if (!adminUser) {
                 throw new Error('No admin user found in the system');
             }
