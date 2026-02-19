@@ -121,19 +121,10 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
         const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
         console.log('[VideoCall] Connecting Socket.IO to:', SOCKET_URL);
 
-        // Extract auth token from cookie for explicit authentication
-        // This is critical for cross-origin connections (Vercel frontend → EC2 backend)
-        const token = document.cookie
-            .split('; ')
-            .find(row => row.startsWith('accessToken='))
-            ?.split('=')[1];
-
-        console.log('[VideoCall] Auth token found:', !!token);
-
+        // Auth: cookies are sent automatically via withCredentials (the accessToken is httpOnly)
         const socket = io(SOCKET_URL, {
             withCredentials: true,
             transports: ['websocket', 'polling'],
-            auth: { token },
         });
         socketRef.current = socket;
 
