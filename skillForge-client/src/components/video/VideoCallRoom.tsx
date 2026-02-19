@@ -182,19 +182,21 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             // Handle ICE candidates
             pc.onicecandidate = (event) => {
                 if (event.candidate) {
-                    console.log('[VideoCall] Sending ICE candidate to:', peerId);
-                    socket.emit('video:ice-candidate', {
+                    console.log('[VideoCall] Sending ICE candidate to:', peerId, 'Type:', event.candidate.type, event.candidate.candidate);
+                    socketRef.current?.emit('video:ice-candidate', {
                         roomId: room.id,
-                        candidate: event.candidate.toJSON(),
-                        toUserId: peerId,
+                        candidate: event.candidate,
+                        toUserId: peerId
                     });
                 }
             };
 
+            // ICE connection state changes
             pc.oniceconnectionstatechange = () => {
                 console.log('[VideoCall] ICE connection state:', pc.iceConnectionState);
             };
 
+            // Connection state changes
             pc.onconnectionstatechange = () => {
                 console.log('[VideoCall] Connection state:', pc.connectionState);
                 if (pc.connectionState === 'connected') {
