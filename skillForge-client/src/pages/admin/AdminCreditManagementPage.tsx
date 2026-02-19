@@ -112,32 +112,32 @@ export default function AdminCreditManagementPage() {
             value: formatCurrency(creditStats?.totalRevenue || 0),
             subtext: "From credit sales",
             icon: TrendingUp,
-            color: "text-green-600",
-            bgColor: "bg-green-50"
+            color: "text-green-500",
+            bgColor: "bg-green-500/10"
         },
         {
             label: "Credits Sold",
             value: creditStats ? creditStats.creditsSold.toLocaleString() : "0",
             subtext: "Total credits purchased",
             icon: Ticket,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50"
+            color: "text-blue-500",
+            bgColor: "bg-blue-500/10"
         },
         {
             label: "Avg Order Value",
             value: formatCurrency(creditStats?.avgOrderValue || 0),
             subtext: "Per transaction",
             icon: CreditCard,
-            color: "text-purple-600",
-            bgColor: "bg-purple-50"
+            color: "text-purple-500",
+            bgColor: "bg-purple-500/10"
         },
         {
             label: "Transactions",
             value: creditStats ? creditStats.totalTransactions.toLocaleString() : "0",
             subtext: "Total purchases",
             icon: Users,
-            color: "text-blue-600",
-            bgColor: "bg-blue-50"
+            color: "text-blue-500",
+            bgColor: "bg-blue-500/10"
         }
     ];
 
@@ -175,18 +175,18 @@ export default function AdminCreditManagementPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/40">
             <main className="max-w-7xl mx-auto px-6 py-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">Credit Management</h1>
-                        <p className="text-gray-600">Manage credit packages, transactions, and user adjustments</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">Credit Management</h1>
+                        <p className="text-muted-foreground">Manage credit packages, transactions, and user adjustments</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => setIsCreateModalOpen(true)}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2 transition-colors"
+                            className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium flex items-center gap-2 transition-colors"
                         >
                             <Plus className="w-5 h-5" />
                             New Package
@@ -197,54 +197,54 @@ export default function AdminCreditManagementPage() {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     {stats.map((stat, idx) => (
-                        <div key={idx} className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                        <div key={idx} className="bg-card rounded-xl p-6 border border-border shadow-sm">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className={`p-2 rounded-lg ${stat.bgColor}`}>
                                     <stat.icon className={`w-5 h-5 ${stat.color}`} />
                                 </div>
-                                <span className="text-sm font-medium text-gray-600">{stat.label}</span>
+                                <span className="text-sm font-medium text-muted-foreground">{stat.label}</span>
                             </div>
-                            <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
-                            <p className="text-sm text-gray-500">{stat.subtext}</p>
+                            <p className="text-3xl font-bold text-foreground mb-1">{stat.value}</p>
+                            <p className="text-sm text-muted-foreground">{stat.subtext}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Quick Actions / Settings */}
-                <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 mb-8">
-                    <h2 className="text-lg font-bold text-gray-900 mb-4">Redemption Settings</h2>
+                <div className="bg-card rounded-xl border border-border shadow-sm p-6 mb-8">
+                    <h2 className="text-lg font-bold text-foreground mb-4">Redemption Settings</h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Conversion Rate (₹ per Credit)
                             </label>
                             <input
                                 type="number"
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                className="w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
                                 placeholder="e.g. 50"
                                 value={conversionRate}
                                 onChange={(e) => setConversionRate(e.target.value === '' ? '' : Number(e.target.value))}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Min Redemption Credits
                             </label>
                             <input
                                 type="number"
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                className="w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
                                 placeholder="e.g. 10"
                                 value={minCredits}
                                 onChange={(e) => setMinCredits(e.target.value === '' ? '' : Number(e.target.value))}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-foreground mb-1">
                                 Max Redemption Credits
                             </label>
                             <input
                                 type="number"
-                                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2"
+                                className="w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary sm:text-sm border p-2"
                                 placeholder="e.g. 1000"
                                 value={maxCredits}
                                 onChange={(e) => setMaxCredits(e.target.value === '' ? '' : Number(e.target.value))}
@@ -269,11 +269,11 @@ export default function AdminCreditManagementPage() {
                                         toast.error('Please enter a valid conversion rate');
                                     }
                                 }}
-                                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium transition-colors"
+                                className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 text-sm font-medium transition-colors"
                             >
                                 Update Settings
                             </button>
-                            <p className="text-xs text-gray-500 mt-2">
+                            <p className="text-xs text-muted-foreground mt-2">
                                 Users will receive ₹{conversionRate || '...'} per credit. Range: {minCredits || 10} - {maxCredits || 1000} credits.
                             </p>
                         </div>
@@ -281,12 +281,12 @@ export default function AdminCreditManagementPage() {
                 </div>
 
                 {/* Tabs */}
-                <div className="flex items-center gap-1 mb-6 bg-gray-100 p-1 rounded-lg w-fit">
+                <div className="flex items-center gap-1 mb-6 bg-muted p-1 rounded-lg w-fit">
                     <button
                         onClick={() => setActiveTab('transactions')}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'transactions'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         Transactions
@@ -294,8 +294,8 @@ export default function AdminCreditManagementPage() {
                     <button
                         onClick={() => setActiveTab('packages')}
                         className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'packages'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-background text-foreground shadow-sm'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         Credit Packages
@@ -306,16 +306,16 @@ export default function AdminCreditManagementPage() {
                 {activeTab === 'packages' ? (
                     loading ? (
                         <div className="flex justify-center items-center py-12">
-                            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
                         </div>
                     ) : packages.length === 0 ? (
-                        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center text-gray-500">
-                            <Ticket className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No Packages Found</h3>
+                        <div className="bg-card rounded-xl border border-border shadow-sm p-12 text-center text-muted-foreground">
+                            <Ticket className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                            <h3 className="text-lg font-medium text-foreground mb-2">No Packages Found</h3>
                             <p className="mb-6">Create your first credit package to get started.</p>
                             <button
                                 onClick={() => setIsCreateModalOpen(true)}
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium inline-flex items-center gap-2"
+                                className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium inline-flex items-center gap-2"
                             >
                                 <Plus className="w-4 h-4" />
                                 Create Package
@@ -325,11 +325,11 @@ export default function AdminCreditManagementPage() {
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                                 {packages.map((pkg) => (
-                                    <div key={pkg.id} className={`bg-white rounded-xl border border-gray-200 shadow-sm p-6 relative group hover:shadow-md transition-shadow ${!pkg.isActive ? 'opacity-75' : ''}`}>
+                                    <div key={pkg.id} className={`bg-card rounded-xl border border-border shadow-sm p-6 relative group hover:shadow-md transition-shadow ${!pkg.isActive ? 'opacity-75' : ''}`}>
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h3 className="text-lg font-bold text-gray-900">{pkg.credits} Credits</h3>
-                                                <p className="text-xl text-gray-600">₹{pkg.price}</p>
+                                                <h3 className="text-lg font-bold text-foreground">{pkg.credits} Credits</h3>
+                                                <p className="text-xl text-muted-foreground">₹{pkg.price}</p>
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
@@ -337,14 +337,14 @@ export default function AdminCreditManagementPage() {
                                                         setEditingPackage(pkg);
                                                         setIsEditModalOpen(true);
                                                     }}
-                                                    className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                                                    className="p-1.5 text-muted-foreground hover:text-primary transition-colors"
                                                     title="Edit"
                                                 >
                                                     <Edit2 className="w-4 h-4" />
                                                 </button>
                                                 <button
                                                     onClick={() => handleToggleActive(pkg)}
-                                                    className={`p-1.5 transition-colors ${pkg.isActive ? 'text-gray-400 hover:text-red-600' : 'text-green-500 hover:text-green-700'}`}
+                                                    className={`p-1.5 transition-colors ${pkg.isActive ? 'text-muted-foreground hover:text-destructive' : 'text-green-500 hover:text-green-600'}`}
                                                     title={pkg.isActive ? "Block / Deactivate" : "Unblock / Activate"}
                                                 >
                                                     {pkg.isActive ? <Ban className="w-4 h-4" /> : <CheckCircle className="w-4 h-4" />}
@@ -355,13 +355,13 @@ export default function AdminCreditManagementPage() {
                                         <div className="space-y-3 mb-6">
                                             {pkg.discount > 0 && (
                                                 <div className="flex justify-between items-center text-sm">
-                                                    <span className="text-gray-500">Discount</span>
-                                                    <span className="font-medium bg-gray-100 px-2 py-1 rounded text-xs">{pkg.discount}% off</span>
+                                                    <span className="text-muted-foreground">Discount</span>
+                                                    <span className="font-medium bg-secondary text-secondary-foreground px-2 py-1 rounded text-xs">{pkg.discount}% off</span>
                                                 </div>
                                             )}
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-gray-500">Status</span>
-                                                <span className={`px-2 py-1 rounded text-xs font-medium cursor-pointer ${pkg.isActive ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                                <span className="text-muted-foreground">Status</span>
+                                                <span className={`px-2 py-1 rounded text-xs font-medium cursor-pointer ${pkg.isActive ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
                                                     }`}
                                                     onClick={() => handleToggleActive(pkg)}
                                                 >
@@ -370,15 +370,15 @@ export default function AdminCreditManagementPage() {
                                             </div>
                                             {pkg.isPopular && (
                                                 <div className="flex justify-between items-center text-sm">
-                                                    <span className="text-gray-500">Badge</span>
-                                                    <span className="bg-teal-100 text-teal-700 px-2 py-1 rounded text-xs font-medium">Popular</span>
+                                                    <span className="text-muted-foreground">Badge</span>
+                                                    <span className="bg-teal-500/10 text-teal-600 px-2 py-1 rounded text-xs font-medium">Popular</span>
                                                 </div>
                                             )}
                                         </div>
 
-                                        <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
-                                            <span className="text-sm text-gray-500">Purchases</span>
-                                            <span className="font-bold text-gray-900">{pkg.purchases || 0}</span>
+                                        <div className="pt-4 border-t border-border flex justify-between items-center">
+                                            <span className="text-sm text-muted-foreground">Purchases</span>
+                                            <span className="font-bold text-foreground">{pkg.purchases || 0}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -404,17 +404,17 @@ export default function AdminCreditManagementPage() {
                         </>
                     )
                 ) : (
-                    <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-                        <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-                            <h3 className="font-semibold text-gray-700">Transaction History</h3>
+                    <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                        <div className="p-4 border-b border-border flex justify-between items-center bg-muted/40">
+                            <h3 className="font-semibold text-foreground">Transaction History</h3>
                             <div className="flex gap-2">
                                 {/* Add filters here if needed */}
                             </div>
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="w-full text-left text-sm text-gray-600">
-                                <thead className="bg-gray-50 text-xs uppercase text-gray-500 font-medium">
+                            <table className="w-full text-left text-sm text-muted-foreground">
+                                <thead className="bg-muted/40 text-xs uppercase text-muted-foreground font-medium">
                                     <tr>
                                         <th className="px-6 py-3">User</th>
                                         <th className="px-6 py-3">Amount</th>
@@ -425,53 +425,53 @@ export default function AdminCreditManagementPage() {
                                         <th className="px-6 py-3">Reference</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200">
+                                <tbody className="divide-y divide-border">
                                     {transactions.length > 0 ? (
                                         transactions.map((tx) => (
-                                            <tr key={tx.id} className="hover:bg-gray-50 transition-colors">
+                                            <tr key={tx.id} className="hover:bg-muted/20 transition-colors">
                                                 <td className="px-6 py-4">
                                                     {tx.user ? (
                                                         <div className="flex items-center gap-3">
                                                             <img src={tx.user.avatar || 'https://via.placeholder.com/32'} alt={tx.user.name} className="w-8 h-8 rounded-full object-cover" />
                                                             <div>
-                                                                <div className="font-medium text-gray-900">{tx.user.name}</div>
-                                                                <div className="text-xs text-gray-500">{tx.user.email}</div>
+                                                                <div className="font-medium text-foreground">{tx.user.name}</div>
+                                                                <div className="text-xs text-muted-foreground">{tx.user.email}</div>
                                                             </div>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-gray-400 italic">Unknown User</span>
+                                                        <span className="text-muted-foreground italic">Unknown User</span>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 font-medium text-gray-900">
+                                                <td className="px-6 py-4 font-medium text-foreground">
                                                     {formatCurrency(Math.abs(tx.amount))}
                                                 </td>
                                                 <td className="px-6 py-4 text-primary font-medium">
                                                     {tx.metadata?.creditsAdded || '-'}
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">
+                                                    <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
                                                         {tx.type.replace(/_/g, ' ')}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${tx.status === 'COMPLETED' ? 'bg-green-100 text-green-700' :
-                                                        tx.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' :
-                                                            'bg-red-100 text-red-700'
+                                                    <span className={`px-2 py-1 rounded text-xs font-medium ${tx.status === 'COMPLETED' ? 'bg-green-500/10 text-green-500' :
+                                                        tx.status === 'PENDING' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                            'bg-destructive/10 text-destructive'
                                                         }`}>
                                                         {tx.status}
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-500">
+                                                <td className="px-6 py-4 text-muted-foreground">
                                                     {new Date(tx.createdAt).toLocaleDateString()}
                                                 </td>
-                                                <td className="px-6 py-4 text-xs text-gray-400 font-mono">
+                                                <td className="px-6 py-4 text-xs text-muted-foreground font-mono">
                                                     {tx.referenceId || '-'}
                                                 </td>
                                             </tr>
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                            <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                                                 No transactions found.
                                             </td>
                                         </tr>

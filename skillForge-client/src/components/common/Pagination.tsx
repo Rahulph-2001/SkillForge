@@ -106,17 +106,17 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <div className={`flex flex-col sm:flex-row items-center justify-between gap-4 ${className}`}>
       {showInfo && (
-        <div className="text-sm text-gray-700">
-          Showing <span className="font-medium">{startIndex}</span> to{' '}
-          <span className="font-medium">{endIndex}</span> of{' '}
-          <span className="font-medium">{totalItems}</span> results
+        <div className="text-sm text-muted-foreground">
+          Showing <span className="font-medium text-foreground">{startIndex}</span> to{' '}
+          <span className="font-medium text-foreground">{endIndex}</span> of{' '}
+          <span className="font-medium text-foreground">{totalItems}</span> results
         </div>
       )}
 
       <div className="flex items-center gap-2">
         {showLimitSelector && onLimitChange && (
           <div className="flex items-center gap-2">
-            <label htmlFor="limit-select" className="text-sm text-gray-700">
+            <label htmlFor="limit-select" className="text-sm text-muted-foreground">
               Show:
             </label>
             <select
@@ -124,7 +124,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               value={limit}
               onChange={handleLimitChange}
               disabled={disabled}
-              className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-1.5 border border-input bg-background rounded-lg text-sm text-foreground focus:ring-2 focus:ring-primary focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {limitOptions.map((option) => (
                 <option key={option} value={option}>
@@ -139,7 +139,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => handlePageChange(1)}
             disabled={disabled || currentPage === 1}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="First page"
           >
             <Icons.ChevronsLeft />
@@ -148,7 +148,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={disabled || currentPage === 1}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Previous page"
           >
             <Icons.ChevronLeft />
@@ -160,7 +160,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                 return (
                   <span
                     key={`ellipsis-${index}`}
-                    className="px-3 py-2 text-gray-500"
+                    className="px-3 py-2 text-muted-foreground"
                   >
                     ...
                   </span>
@@ -175,11 +175,10 @@ export const Pagination: React.FC<PaginationProps> = ({
                   key={pageNum}
                   onClick={() => handlePageChange(pageNum)}
                   disabled={disabled}
-                  className={`px-4 py-2 rounded-lg border transition-colors ${
-                    isActive
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed'
-                  }`}
+                  className={`px-4 py-2 rounded-lg border transition-colors ${isActive
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'border-input text-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed'
+                    }`}
                   aria-label={`Page ${pageNum}`}
                   aria-current={isActive ? 'page' : undefined}
                 >
@@ -192,7 +191,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={disabled || currentPage === totalPages}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Next page"
           >
             <Icons.ChevronRight />
@@ -201,7 +200,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <button
             onClick={() => handlePageChange(totalPages)}
             disabled={disabled || currentPage === totalPages}
-            className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 rounded-lg border border-input text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Last page"
           >
             <Icons.ChevronsRight />

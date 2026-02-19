@@ -60,29 +60,29 @@ const CreditManagementPage: React.FC = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen bg-gray-50">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="flex justify-center items-center min-h-screen bg-background">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors">
+                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
                             <ArrowLeft className="w-4 h-4" />
                             Back to Dashboard
                         </Link>
                         <div className="flex items-center gap-3">
-                            <div className="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
-                                <CreditCard className="w-6 h-6 text-indigo-600" />
+                            <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                                <CreditCard className="w-6 h-6 text-primary" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-bold text-indigo-900">Credit Management</h1>
-                                <p className="text-gray-600">Track and manage your platform credits</p>
+                                <h1 className="text-2xl font-bold text-foreground">Credit Management</h1>
+                                <p className="text-muted-foreground">Track and manage your platform credits</p>
                             </div>
                         </div>
                     </div>
@@ -90,7 +90,7 @@ const CreditManagementPage: React.FC = () => {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => setIsBuyModalOpen(true)}
-                        className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-indigo-700 hover:shadow-xl transition-all"
+                        className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-primary/90 hover:shadow-xl transition-all"
                     >
                         <FaPlus className="text-sm" />
                         Buy Credits
@@ -103,7 +103,7 @@ const CreditManagementPage: React.FC = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-xl p-6 text-white shadow-lg relative overflow-hidden"
+                        className="bg-gradient-to-br from-primary to-primary/80 rounded-xl p-6 text-primary-foreground shadow-lg relative overflow-hidden"
                     >
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                             <FaWallet className="w-24 h-24" />
@@ -123,18 +123,18 @@ const CreditManagementPage: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="bg-white rounded-xl p-6 shadow border border-gray-200"
+                        className="bg-card rounded-xl p-6 shadow border border-border text-card-foreground"
                     >
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-green-100 rounded-lg">
-                                <FaArrowUp className="w-5 h-5 text-green-600" />
+                            <div className="p-2 bg-green-500/10 rounded-lg">
+                                <FaArrowUp className="w-5 h-5 text-green-500" />
                             </div>
-                            <span className="text-sm font-medium text-gray-600">Total Earned</span>
+                            <span className="text-sm font-medium text-muted-foreground">Total Earned</span>
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mt-2">
-                            {stats.earned} <span className="text-sm font-normal text-gray-500">Credits</span>
+                        <div className="text-2xl font-bold text-foreground mt-2">
+                            {stats.earned} <span className="text-sm font-normal text-muted-foreground">Credits</span>
                         </div>
-                        <div className="mt-2 text-xs text-green-600 font-medium">
+                        <div className="mt-2 text-xs text-green-500 font-medium">
                             + Lifetime Earnings
                         </div>
                     </motion.div>
@@ -144,44 +144,44 @@ const CreditManagementPage: React.FC = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-white rounded-xl p-6 shadow border border-gray-200"
+                        className="bg-card rounded-xl p-6 shadow border border-border text-card-foreground"
                     >
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-red-100 rounded-lg">
-                                <FaArrowDown className="w-5 h-5 text-red-600" />
+                            <div className="p-2 bg-destructive/10 rounded-lg">
+                                <FaArrowDown className="w-5 h-5 text-destructive" />
                             </div>
-                            <span className="text-sm font-medium text-gray-600">Total Spent</span>
+                            <span className="text-sm font-medium text-muted-foreground">Total Spent</span>
                         </div>
-                        <div className="text-2xl font-bold text-gray-900 mt-2">
-                            {stats.spent} <span className="text-sm font-normal text-gray-500">Credits</span>
+                        <div className="text-2xl font-bold text-foreground mt-2">
+                            {stats.spent} <span className="text-sm font-normal text-muted-foreground">Credits</span>
                         </div>
-                        <div className="mt-2 text-xs text-red-600 font-medium">
+                        <div className="mt-2 text-xs text-destructive font-medium">
                             - Lifetime Spending
                         </div>
                     </motion.div>
                 </div>
 
                 {/* Transaction History Section */}
-                <div className="bg-white rounded-xl shadow border border-gray-200 overflow-hidden">
-                    <div className="p-6 border-b border-gray-200">
+                <div className="bg-card rounded-xl shadow border border-border overflow-hidden">
+                    <div className="p-6 border-b border-border">
                         <div className="flex items-center gap-2 mb-1">
-                            <div className="p-1.5 bg-gray-100 rounded-md">
-                                <FaWallet className="w-4 h-4 text-gray-600" />
+                            <div className="p-1.5 bg-secondary rounded-md">
+                                <FaWallet className="w-4 h-4 text-muted-foreground" />
                             </div>
-                            <h3 className="font-semibold text-gray-900">Transaction History</h3>
+                            <h3 className="font-semibold text-foreground">Transaction History</h3>
                         </div>
-                        <p className="text-sm text-gray-600">View detailed history of your credit transactions</p>
+                        <p className="text-sm text-muted-foreground">View detailed history of your credit transactions</p>
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex border-b border-gray-200 bg-gray-50/50">
+                    <div className="flex border-b border-border bg-muted/50">
                         {(['all', 'purchases', 'earned', 'spent'] as const).map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`flex-1 py-3 text-sm font-medium capitalize transition-colors border-b-2 ${activeTab === tab
-                                    ? 'text-indigo-600 border-indigo-600 bg-indigo-50/50'
-                                    : 'text-gray-600 border-transparent hover:text-gray-900 hover:bg-gray-50'
+                                    ? 'text-primary border-primary bg-primary/5'
+                                    : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-secondary'
                                     }`}
                             >
                                 {tab}

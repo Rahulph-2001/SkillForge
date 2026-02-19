@@ -100,12 +100,12 @@ export default function SessionVideoCallPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-[#1a2332] flex items-center justify-center">
+            <div className="min-h-screen bg-background flex items-center justify-center">
                 <div className="text-center">
-                    <p className="text-red-500 mb-4">{error}</p>
+                    <p className="text-destructive mb-4">{error}</p>
                     <button
                         onClick={() => navigate('/sessions')}
-                        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                     >
                         Go Back
                     </button>

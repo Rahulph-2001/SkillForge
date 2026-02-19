@@ -74,13 +74,13 @@ export default function AdminReportsPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Reports & Disputes</h1>
-                    <p className="text-gray-600 mt-1">Manage user reports and project disputes</p>
+                    <h1 className="text-2xl font-bold text-foreground">Reports & Disputes</h1>
+                    <p className="text-muted-foreground mt-1">Manage user reports and project disputes</p>
                 </div>
 
                 <div className="flex items-center gap-3">
                     <select
-                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="px-4 py-2 bg-background border border-border rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary outline-none text-foreground"
                         onChange={(e) => handleFilterChange({ status: e.target.value || undefined })}
                     >
                         <option value="">All Statuses</option>
@@ -91,7 +91,7 @@ export default function AdminReportsPage() {
                     </select>
 
                     <select
-                        className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium focus:ring-2 focus:ring-blue-500 outline-none"
+                        className="px-4 py-2 bg-background border border-border rounded-lg text-sm font-medium focus:ring-2 focus:ring-primary outline-none text-foreground"
                         onChange={(e) => handleFilterChange({ type: e.target.value || undefined })}
                     >
                         <option value="">All Types</option>
@@ -103,47 +103,47 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Reports List */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                 {isLoading ? (
                     <div className="flex justify-center items-center py-12">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                 ) : reports.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-12 text-gray-500">
-                        <CheckCircle className="w-12 h-12 text-green-100 mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900">All caught up!</h3>
+                    <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                        <CheckCircle className="w-12 h-12 text-muted-foreground/50 mb-4" />
+                        <h3 className="text-lg font-medium text-foreground">All caught up!</h3>
                         <p>No active reports found.</p>
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gray-50 border-b border-gray-100">
+                            <thead className="bg-muted/40 border-b border-border">
                                 <tr>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Reporter</th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Type / Category</th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Details</th>
-                                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
-                                    <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase">Reporter</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase">Type / Category</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase">Details</th>
+                                    <th className="px-6 py-4 text-left text-xs font-semibold text-muted-foreground uppercase">Status</th>
+                                    <th className="px-6 py-4 text-right text-xs font-semibold text-muted-foreground uppercase">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-100">
+                            <tbody className="divide-y divide-border">
                                 {reports.map((report) => (
-                                    <tr key={report.id} className="hover:bg-gray-50 transition-colors">
+                                    <tr key={report.id} className="hover:bg-muted/20 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 {report.reporter ? (
                                                     <>
-                                                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+                                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold text-muted-foreground">
                                                             {report.reporter.name?.charAt(0) || '?'}
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-medium text-gray-900">{report.reporter.name || 'Unknown User'}</p>
-                                                            <p className="text-xs text-gray-500">{report.reporter.email || 'No email'}</p>
+                                                            <p className="text-sm font-medium text-foreground">{report.reporter.name || 'Unknown User'}</p>
+                                                            <p className="text-xs text-muted-foreground">{report.reporter.email || 'No email'}</p>
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <div className="flex items-center gap-2 text-gray-500">
-                                                        <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs">
+                                                    <div className="flex items-center gap-2 text-muted-foreground">
+                                                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs">
                                                             ?
                                                         </div>
                                                         <span className="text-sm italic">Unknown Reporter</span>
@@ -153,19 +153,19 @@ export default function AdminReportsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
-                                                <span className="text-sm font-medium text-gray-900">
+                                                <span className="text-sm font-medium text-foreground">
                                                     {report.type ? report.type.replace('_', ' ') : 'Unknown Type'}
                                                 </span>
-                                                <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full w-fit">
+                                                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full w-fit">
                                                     {report.category || 'Uncategorized'}
                                                 </span>
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="max-w-xs">
-                                                <p className="text-sm text-gray-600 line-clamp-2">{report.description}</p>
+                                                <p className="text-sm text-muted-foreground line-clamp-2">{report.description}</p>
                                                 {report.projectId && (
-                                                    <div className="mt-1 flex items-center gap-1 text-xs text-blue-600">
+                                                    <div className="mt-1 flex items-center gap-1 text-xs text-primary">
                                                         <Layout className="w-3 h-3" />
                                                         Project ID: {report.projectId.slice(0, 8)}...
                                                     </div>
@@ -174,14 +174,14 @@ export default function AdminReportsPage() {
                                         </td>
                                         <td className="px-6 py-4">
                                             <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium
-                                                ${report.status === 'PENDING' ? 'bg-amber-100 text-amber-800' :
-                                                    report.status === 'REVIEWING' ? 'bg-blue-100 text-blue-800' :
-                                                        report.status === 'RESOLVED' ? 'bg-green-100 text-green-800' :
-                                                            'bg-gray-100 text-gray-800'}`}>
+                                                ${report.status === 'PENDING' ? 'bg-amber-500/10 text-amber-500' :
+                                                    report.status === 'REVIEWING' ? 'bg-blue-500/10 text-blue-500' :
+                                                        report.status === 'RESOLVED' ? 'bg-green-500/10 text-green-500' :
+                                                            'bg-muted text-muted-foreground'}`}>
                                                 {report.status}
                                             </span>
                                             {report.createdAt && (
-                                                <p className="text-xs text-gray-400 mt-1">
+                                                <p className="text-xs text-muted-foreground mt-1">
                                                     {format(new Date(report.createdAt), 'MMM d, yyyy')}
                                                 </p>
                                             )}
@@ -191,14 +191,14 @@ export default function AdminReportsPage() {
                                                 <div className="flex items-center justify-end gap-2">
                                                     <button
                                                         onClick={() => handleAction(report, 'DISMISS')}
-                                                        className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded"
+                                                        className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded"
                                                         title="Dismiss"
                                                     >
                                                         <XCircle className="w-5 h-5" />
                                                     </button>
                                                     <button
                                                         onClick={() => handleAction(report, 'RESOLVE')}
-                                                        className="p-1 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded"
+                                                        className="p-1 text-primary hover:text-primary/90 hover:bg-primary/10 rounded"
                                                         title="Resolve"
                                                     >
                                                         <CheckCircle className="w-5 h-5" />
@@ -215,7 +215,7 @@ export default function AdminReportsPage() {
 
                 {/* Pagination */}
                 {totalPages > 0 && !isLoading && reports.length > 0 && (
-                    <div className="px-6 py-4 border-t border-gray-200">
+                    <div className="px-6 py-4 border-t border-border">
                         <Pagination
                             currentPage={page}
                             totalPages={totalPages}
@@ -236,30 +236,30 @@ export default function AdminReportsPage() {
             {/* Resolution Modal */}
             {isResolveModalOpen && selectedReport && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+                    <div className="bg-card rounded-xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 border border-border">
                         <div className="p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2">
+                            <h3 className="text-lg font-bold text-foreground mb-2">
                                 {actionType === 'RESOLVE' ? 'Resolve Report' : 'Dismiss Report'}
                             </h3>
-                            <div className="bg-gray-50 p-4 rounded-lg mb-4">
-                                <p className="text-xs text-gray-500 mb-1">Report Description:</p>
-                                <p className="text-sm text-gray-700 italic">"{selectedReport.description}"</p>
+                            <div className="bg-muted/40 p-4 rounded-lg mb-4">
+                                <p className="text-xs text-muted-foreground mb-1">Report Description:</p>
+                                <p className="text-sm text-foreground italic">"{selectedReport.description}"</p>
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                <label className="block text-sm font-medium text-foreground mb-1">
                                     {actionType === 'RESOLVE' ? 'Resolution Details (Required)' : 'Dismissal Reason (Optional)'}
                                 </label>
                                 <textarea
                                     value={resolutionNote}
                                     onChange={(e) => setResolutionNote(e.target.value)}
                                     placeholder={actionType === 'RESOLVE' ? "Explain the resolution and any actions taken..." : "Why is this report being dismissed?"}
-                                    className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-sm"
+                                    className="w-full h-32 px-4 py-3 border border-input bg-background rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none text-sm text-foreground"
                                 />
                             </div>
 
                             {actionType === 'RESOLVE' && selectedReport.type === 'PROJECT_DISPUTE' && (
-                                <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-lg text-amber-800 text-xs mb-4">
+                                <div className="flex items-start gap-2 p-3 bg-amber-500/10 rounded-lg text-amber-500 text-xs mb-4">
                                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
                                     <p>
                                         Resolving a project dispute does not automatically process payments.
@@ -269,18 +269,18 @@ export default function AdminReportsPage() {
                             )}
                         </div>
 
-                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-gray-50 border-t border-gray-100">
+                        <div className="flex items-center justify-end gap-3 px-6 py-4 bg-muted/40 border-t border-border">
                             <button
                                 onClick={() => setIsResolveModalOpen(false)}
-                                className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
+                                className="px-4 py-2 text-muted-foreground font-medium hover:bg-muted rounded-lg transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={confirmAction}
                                 disabled={actionType === 'RESOLVE' && !resolutionNote.trim()}
-                                className={`px-4 py-2 text-white font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                                    ${actionType === 'RESOLVE' ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-600 hover:bg-gray-700'}`}
+                                className={`px-4 py-2 text-primary-foreground font-bold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                                    ${actionType === 'RESOLVE' ? 'bg-green-600 hover:bg-green-700' : 'bg-muted-foreground hover:bg-muted-foreground/90'}`}
                             >
                                 Confirm {actionType === 'RESOLVE' ? 'Resolution' : 'Dismissal'}
                             </button>

@@ -81,11 +81,11 @@ const AdminWithdrawalManagementPage = () => {
 
     const StatusBadge = ({ status }: { status: string }) => {
         const styles = {
-            PENDING: 'bg-yellow-100 text-yellow-800',
-            APPROVED: 'bg-green-100 text-green-800',
-            PROCESSED: 'bg-green-100 text-green-800',
-            REJECTED: 'bg-red-100 text-red-800',
-            FAILED: 'bg-red-100 text-red-800',
+            PENDING: 'bg-yellow-500/10 text-yellow-500',
+            APPROVED: 'bg-green-500/10 text-green-500',
+            PROCESSED: 'bg-green-500/10 text-green-500',
+            REJECTED: 'bg-destructive/10 text-destructive',
+            FAILED: 'bg-destructive/10 text-destructive',
         };
         const icons = {
             PENDING: Clock,
@@ -95,7 +95,7 @@ const AdminWithdrawalManagementPage = () => {
             FAILED: AlertCircle,
         };
 
-        const style = styles[status as keyof typeof styles] || 'bg-gray-100 text-gray-800';
+        const style = styles[status as keyof typeof styles] || 'bg-muted text-muted-foreground';
         const Icon = icons[status as keyof typeof icons] || Clock;
 
         return (
@@ -107,20 +107,20 @@ const AdminWithdrawalManagementPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-muted/40 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-8">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Withdrawal Requests</h1>
-                        <p className="text-gray-600">Manage and process user withdrawal requests</p>
+                        <h1 className="text-2xl font-bold text-foreground">Withdrawal Requests</h1>
+                        <p className="text-muted-foreground">Manage and process user withdrawal requests</p>
                     </div>
                     {/* Add Conversion Rate Settings Button/Modal here later */}
                 </div>
 
                 {/* Filters */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                <div className="bg-card rounded-lg shadow-sm border border-border p-4 mb-6">
                     <div className="flex items-center gap-4">
-                        <Filter className="w-5 h-5 text-gray-400" />
+                        <Filter className="w-5 h-5 text-muted-foreground" />
                         <div className="flex gap-2">
                             {['ALL', 'PENDING', 'APPROVED', 'REJECTED'].map((status) => (
                                 <button
@@ -130,8 +130,8 @@ const AdminWithdrawalManagementPage = () => {
                                         setPage(1);
                                     }}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${statusFilter === status
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                                         }`}
                                 >
                                     {status}
@@ -142,63 +142,63 @@ const AdminWithdrawalManagementPage = () => {
                 </div>
 
                 {/* Table */}
-                <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden">
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+                        <table className="min-w-full divide-y divide-border">
+                            <thead className="bg-muted/40">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bank Details</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Bank Details</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="bg-card divide-y divide-border">
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
-                                            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-blue-500" />
+                                        <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
+                                            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2 text-primary" />
                                             Loading requests...
                                         </td>
                                     </tr>
                                 ) : requests.length === 0 ? (
                                     <tr>
-                                        <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                        <td colSpan={6} className="px-6 py-12 text-center text-muted-foreground">
                                             No withdrawal requests found.
                                         </td>
                                     </tr>
                                 ) : (
                                     requests.map((request) => (
-                                        <tr key={request.id} className="hover:bg-gray-50">
+                                        <tr key={request.id} className="hover:bg-muted/20">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
                                                     <div className="h-10 w-10 flex-shrink-0">
-                                                        <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                                                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
                                                             {request.user?.name?.charAt(0) || 'U'}
                                                         </div>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <div className="text-sm font-medium text-gray-900">{request.user?.name || 'Unknown User'}</div>
-                                                        <div className="text-sm text-gray-500">{request.user?.email}</div>
+                                                        <div className="text-sm font-medium text-foreground">{request.user?.name || 'Unknown User'}</div>
+                                                        <div className="text-sm text-muted-foreground">{request.user?.email}</div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-bold text-gray-900">₹{request.amount.toLocaleString('en-IN')}</div>
+                                                <div className="text-sm font-bold text-foreground">₹{request.amount.toLocaleString('en-IN')}</div>
                                             </td>
                                             <td className="px-6 py-4">
-                                                <div className="text-sm text-gray-900">
-                                                    <p><span className="text-gray-500">Acct:</span> {request.bankDetails?.accountNumber}</p>
-                                                    <p><span className="text-gray-500">IFSC:</span> {request.bankDetails?.ifscCode}</p>
-                                                    <p><span className="text-gray-500">Bank:</span> {request.bankDetails?.bankName}</p>
+                                                <div className="text-sm text-foreground">
+                                                    <p><span className="text-muted-foreground">Acct:</span> {request.bankDetails?.accountNumber}</p>
+                                                    <p><span className="text-muted-foreground">IFSC:</span> {request.bankDetails?.ifscCode}</p>
+                                                    <p><span className="text-muted-foreground">Bank:</span> {request.bankDetails?.bankName}</p>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <StatusBadge status={request.status} />
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                                                 {new Date(request.createdAt).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -209,7 +209,7 @@ const AdminWithdrawalManagementPage = () => {
                                                                 setSelectedRequest(request);
                                                                 setActionType('APPROVE');
                                                             }}
-                                                            className="text-green-600 hover:text-green-900 bg-green-50 px-3 py-1 rounded-md"
+                                                            className="text-green-500 hover:text-green-600 bg-green-500/10 px-3 py-1 rounded-md"
                                                         >
                                                             Approve
                                                         </button>
@@ -218,14 +218,14 @@ const AdminWithdrawalManagementPage = () => {
                                                                 setSelectedRequest(request);
                                                                 setActionType('REJECT');
                                                             }}
-                                                            className="text-red-600 hover:text-red-900 bg-red-50 px-3 py-1 rounded-md"
+                                                            className="text-destructive hover:text-destructive/90 bg-destructive/10 px-3 py-1 rounded-md"
                                                         >
                                                             Reject
                                                         </button>
                                                     </div>
                                                 )}
                                                 {request.status !== 'PENDING' && (
-                                                    <span className="text-gray-400">Processed</span>
+                                                    <span className="text-muted-foreground">Processed</span>
                                                 )}
                                             </td>
                                         </tr>
@@ -236,7 +236,7 @@ const AdminWithdrawalManagementPage = () => {
                     </div>
                     {/* Pagination */}
                     {totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-200">
+                        <div className="px-6 py-4 border-t border-border">
                             <Pagination
                                 currentPage={page}
                                 totalPages={totalPages}
@@ -260,30 +260,30 @@ const AdminWithdrawalManagementPage = () => {
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 transition-opacity" aria-hidden="true" onClick={() => setSelectedRequest(null)}>
-                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+                            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
                         </div>
 
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                        <div className="inline-block align-bottom bg-card rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-border">
+                            <div className="bg-card px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <h3 className="text-lg leading-6 font-medium text-foreground mb-4">
                                     {actionType === 'APPROVE' ? 'Approve Withdrawal' : 'Reject Withdrawal'}
                                 </h3>
 
                                 <div className="space-y-4">
-                                    <div className="bg-gray-50 p-3 rounded-md">
-                                        <p className="text-sm text-gray-600"><span className="font-semibold">User:</span> {selectedRequest.user?.name}</p>
-                                        <p className="text-sm text-gray-600"><span className="font-semibold">Amount:</span> ₹{selectedRequest.amount}</p>
-                                        <p className="text-sm text-gray-600"><span className="font-semibold">Bank:</span> {selectedRequest.bankDetails?.bankName} ({selectedRequest.bankDetails?.accountNumber})</p>
+                                    <div className="bg-muted/40 p-3 rounded-md">
+                                        <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">User:</span> {selectedRequest.user?.name}</p>
+                                        <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Amount:</span> ₹{selectedRequest.amount}</p>
+                                        <p className="text-sm text-muted-foreground"><span className="font-semibold text-foreground">Bank:</span> {selectedRequest.bankDetails?.bankName} ({selectedRequest.bankDetails?.accountNumber})</p>
                                     </div>
 
                                     {actionType === 'APPROVE' && (
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Transaction ID (from Bank)</label>
+                                            <label className="block text-sm font-medium text-foreground mb-1">Transaction ID (from Bank)</label>
                                             <input
                                                 type="text"
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
                                                 placeholder="e.g. TXN12345678"
                                                 value={transactionId}
                                                 onChange={(e) => setTransactionId(e.target.value)}
@@ -292,11 +292,11 @@ const AdminWithdrawalManagementPage = () => {
                                     )}
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-foreground mb-1">
                                             {actionType === 'APPROVE' ? 'Admin Notes (Optional)' : 'Rejection Reason'}
                                         </label>
                                         <textarea
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-input bg-background rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-foreground"
                                             rows={3}
                                             placeholder={actionType === 'APPROVE' ? 'Any notes for record...' : 'Explain why this request is rejected...'}
                                             value={adminNote}
@@ -305,7 +305,7 @@ const AdminWithdrawalManagementPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <div className="bg-muted/40 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-border">
                                 <button
                                     type="button"
                                     disabled={processingId === selectedRequest.id}
@@ -317,7 +317,7 @@ const AdminWithdrawalManagementPage = () => {
                                 </button>
                                 <button
                                     type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-input shadow-sm px-4 py-2 bg-background text-base font-medium text-foreground hover:bg-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => {
                                         setSelectedRequest(null);
                                         setActionType(null);

@@ -141,8 +141,8 @@ export default function Navbar() {
                     <Link
                         to="/plans"
                         className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border ${(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free'
-                                ? 'bg-secondary border-border hover:bg-secondary/80'
-                                : 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800'
+                            ? 'bg-secondary border-border hover:bg-secondary/80'
+                            : 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800'
                             }`}
                     >
                         <svg

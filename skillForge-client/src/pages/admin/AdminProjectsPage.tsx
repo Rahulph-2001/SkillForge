@@ -212,15 +212,15 @@ const AdminProjectsPage: React.FC = () => {
 
     const getStatusBadge = (status: string) => {
         const badges: Record<string, { bg: string; text: string; label: string }> = {
-            'Open': { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Open' },
-            'In_Progress': { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'In Progress' },
-            'Pending_Completion': { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Pending Completion' },
-            'Payment_Pending': { bg: 'bg-orange-100', text: 'text-orange-800', label: 'Payment Pending' },
-            'Refund_Pending': { bg: 'bg-red-100', text: 'text-red-800', label: 'Refund Pending' },
-            'Completed': { bg: 'bg-green-100', text: 'text-green-800', label: 'Completed' },
-            'Cancelled': { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Cancelled' }
+            'Open': { bg: 'bg-blue-500/10', text: 'text-blue-500', label: 'Open' },
+            'In_Progress': { bg: 'bg-yellow-500/10', text: 'text-yellow-500', label: 'In Progress' },
+            'Pending_Completion': { bg: 'bg-purple-500/10', text: 'text-purple-500', label: 'Pending Completion' },
+            'Payment_Pending': { bg: 'bg-orange-500/10', text: 'text-orange-500', label: 'Payment Pending' },
+            'Refund_Pending': { bg: 'bg-red-500/10', text: 'text-red-500', label: 'Refund Pending' },
+            'Completed': { bg: 'bg-green-500/10', text: 'text-green-500', label: 'Completed' },
+            'Cancelled': { bg: 'bg-muted', text: 'text-muted-foreground', label: 'Cancelled' }
         };
-        const badge = badges[status] || { bg: 'bg-gray-100', text: 'text-gray-600', label: status };
+        const badge = badges[status] || { bg: 'bg-muted', text: 'text-muted-foreground', label: status };
         return (
             <span className={`px-2 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}`}>
                 {badge.label}
@@ -269,102 +269,102 @@ const AdminProjectsPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/40">
             <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Project Management</h1>
-                    <p className="text-gray-600 mt-1">Monitor and manage all projects and payment requests</p>
+                    <h1 className="text-3xl font-bold text-foreground">Project Management</h1>
+                    <p className="text-muted-foreground mt-1">Monitor and manage all projects and payment requests</p>
                 </div>
 
                 {/* Search */}
                 <div className="mb-6">
                     <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                         <input
                             type="text"
                             placeholder="Search by project title..."
                             value={searchQuery}
                             onChange={handleSearch}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full pl-10 pr-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-foreground placeholder-muted-foreground"
                         />
                     </div>
                 </div>
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Total Projects</p>
+                            <p className="text-sm font-medium text-muted-foreground">Total Projects</p>
                             <FolderOpen className="w-5 h-5 text-blue-500" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">{stats.totalProjects}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">{stats.totalProjects}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">In Progress</p>
+                            <p className="text-sm font-medium text-muted-foreground">In Progress</p>
                             <Play className="w-5 h-5 text-yellow-500" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">{stats.inProgressProjects}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">{stats.inProgressProjects}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Completed</p>
+                            <p className="text-sm font-medium text-muted-foreground">Completed</p>
                             <CheckCircle className="w-5 h-5 text-green-500" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">{stats.completedProjects}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">{stats.completedProjects}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Pending Approvals</p>
+                            <p className="text-sm font-medium text-muted-foreground">Pending Approvals</p>
                             <Clock className="w-5 h-5 text-orange-500" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">{stats.pendingApprovalProjects}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">{stats.pendingApprovalProjects}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                            <XCircle className="w-5 h-5 text-red-500" />
+                            <p className="text-sm font-medium text-muted-foreground">Cancelled</p>
+                            <XCircle className="w-5 h-5 text-destructive" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">{stats.cancelledProjects}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">{stats.cancelledProjects}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-4 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Total Budget</p>
+                            <p className="text-sm font-medium text-muted-foreground">Total Budget</p>
                             <DollarSign className="w-5 h-5 text-green-600" />
                         </div>
-                        <h3 className="text-2xl font-bold text-gray-900">₹{stats.totalBudget.toLocaleString()}</h3>
+                        <h3 className="text-2xl font-bold text-foreground">₹{stats.totalBudget.toLocaleString()}</h3>
                     </div>
                 </div>
 
                 {/* Pending Payment Requests Section */}
                 {pendingRequests.length > 0 && (
-                    <div className="bg-white rounded-lg border border-orange-200 shadow-sm mb-8">
-                        <div className="p-4 border-b border-orange-200 bg-orange-50 rounded-t-lg">
-                            <h2 className="text-lg font-semibold text-orange-800 flex items-center gap-2">
+                    <div className="bg-card rounded-lg border border-orange-500/20 shadow-sm mb-8">
+                        <div className="p-4 border-b border-orange-500/20 bg-orange-500/10 rounded-t-lg">
+                            <h2 className="text-lg font-semibold text-orange-600 flex items-center gap-2">
                                 <RefreshCw className="w-5 h-5" />
                                 Pending Payment Requests ({pendingRequests.length})
                             </h2>
                         </div>
-                        <div className="divide-y divide-gray-100">
+                        <div className="divide-y divide-border">
                             {pendingRequests.map((request) => (
-                                <div key={request.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                                <div key={request.id} className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors">
                                     <div className="flex-1">
-                                        <h3 className="font-medium text-gray-900">{request.projectTitle}</h3>
-                                        <p className="text-sm text-gray-600">
+                                        <h3 className="font-medium text-foreground">{request.projectTitle}</h3>
+                                        <p className="text-sm text-muted-foreground">
                                             {request.type === 'RELEASE' ? 'Payment Release' : 'Refund'} - Requested by {request.requestedBy.name}
                                         </p>
-                                        <p className="text-sm text-gray-500 mt-1">
-                                            Amount: <span className="font-semibold text-gray-900">₹{request.amount.toLocaleString()}</span>
+                                        <p className="text-sm text-muted-foreground mt-1">
+                                            Amount: <span className="font-semibold text-foreground">₹{request.amount.toLocaleString()}</span>
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${request.type === 'RELEASE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${request.type === 'RELEASE' ? 'bg-green-500/10 text-green-600' : 'bg-destructive/10 text-destructive'
                                             }`}>
                                             {request.type === 'RELEASE' ? 'Release Payment' : 'Refund'}
                                         </span>
@@ -376,7 +376,7 @@ const AdminProjectsPage: React.FC = () => {
                                         </button>
                                         <button
                                             onClick={() => handleRejectClick(request)}
-                                            className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+                                            className="px-4 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium hover:bg-destructive/90 transition-colors"
                                         >
                                             Reject
                                         </button>
@@ -399,15 +399,15 @@ const AdminProjectsPage: React.FC = () => {
                 )}
 
                 {/* Tabs */}
-                <div className="border-b border-gray-200 mb-6">
+                <div className="border-b border-border mb-6">
                     <div className="flex space-x-8 overflow-x-auto">
                         {tabs.map((tab) => (
                             <button
                                 key={tab.label}
                                 onClick={() => handleTabChange(tab.label)}
                                 className={`pb-3 px-1 text-sm font-medium whitespace-nowrap transition-colors ${activeTab === tab.label
-                                    ? 'border-b-2 border-blue-600 text-blue-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                    ? 'border-b-2 border-primary text-primary'
+                                    : 'text-muted-foreground hover:text-foreground'
                                     }`}
                             >
                                 {tab.label} ({tab.count})
@@ -417,38 +417,38 @@ const AdminProjectsPage: React.FC = () => {
                 </div>
 
                 {/* Projects Table */}
-                <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <div className="bg-card rounded-lg border border-border shadow-sm overflow-hidden">
                     {loading ? (
                         <div className="p-8 text-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="mt-2 text-gray-500">Loading projects...</p>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                            <p className="mt-2 text-muted-foreground">Loading projects...</p>
                         </div>
                     ) : projects.length === 0 ? (
                         <div className="p-8 text-center">
-                            <FolderOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <p className="text-gray-500">No projects found</p>
+                            <FolderOpen className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                            <p className="text-muted-foreground">No projects found</p>
                         </div>
                     ) : (
                         <>
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-border">
+                                <thead className="bg-muted/40">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Project</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creator</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contributor</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Budget</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applications</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Project</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Creator</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Contributor</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Budget</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Applications</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-card divide-y divide-border">
                                     {projects.map((project) => (
-                                        <tr key={project.id} className="hover:bg-gray-50">
+                                        <tr key={project.id} className="hover:bg-muted/50 transition-colors">
                                             <td className="px-6 py-4">
                                                 <div className="max-w-xs">
-                                                    <p className="font-medium text-gray-900 truncate">{project.title}</p>
-                                                    <p className="text-sm text-gray-500">{project.category}</p>
+                                                    <p className="font-medium text-foreground truncate">{project.title}</p>
+                                                    <p className="text-sm text-muted-foreground">{project.category}</p>
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4">
@@ -460,13 +460,13 @@ const AdminProjectsPage: React.FC = () => {
                                                             className="w-8 h-8 rounded-full mr-3"
                                                         />
                                                     ) : (
-                                                        <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mr-3 text-sm font-medium">
+                                                        <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center mr-3 text-sm font-medium">
                                                             {project.creator.name.charAt(0).toUpperCase()}
                                                         </div>
                                                     )}
                                                     <div>
-                                                        <p className="text-sm font-medium text-gray-900">{project.creator.name}</p>
-                                                        <p className="text-xs text-gray-500">{project.creator.email}</p>
+                                                        <p className="text-sm font-medium text-foreground">{project.creator.name}</p>
+                                                        <p className="text-xs text-muted-foreground">{project.creator.email}</p>
                                                     </div>
                                                 </div>
                                             </td>
@@ -480,30 +480,30 @@ const AdminProjectsPage: React.FC = () => {
                                                                 className="w-8 h-8 rounded-full mr-3"
                                                             />
                                                         ) : (
-                                                            <div className="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 text-sm font-medium">
+                                                            <div className="w-8 h-8 rounded-full bg-green-500/20 text-green-600 flex items-center justify-center mr-3 text-sm font-medium">
                                                                 {project.contributor.name.charAt(0).toUpperCase()}
                                                             </div>
                                                         )}
-                                                        <p className="text-sm text-gray-900">{project.contributor.name}</p>
+                                                        <p className="text-sm text-foreground">{project.contributor.name}</p>
                                                     </div>
                                                 ) : (
-                                                    <span className="text-sm text-gray-400">No contributor</span>
+                                                    <span className="text-sm text-muted-foreground">No contributor</span>
                                                 )}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <p className="font-medium text-gray-900">₹{project.budget.toLocaleString()}</p>
+                                                <p className="font-medium text-foreground">₹{project.budget.toLocaleString()}</p>
                                             </td>
                                             <td className="px-6 py-4">
                                                 {getStatusBadge(project.status)}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <span className="text-sm text-gray-600">{project.applicationsCount}</span>
+                                                <span className="text-sm text-muted-foreground">{project.applicationsCount}</span>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         onClick={() => handleViewDetails(project.id)}
-                                                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                                                        className="p-2 text-primary hover:bg-primary/10 rounded-md transition-colors"
                                                         title="View Details"
                                                     >
                                                         <Eye className="w-4 h-4" />
@@ -511,14 +511,14 @@ const AdminProjectsPage: React.FC = () => {
                                                     {!project.isSuspended && (
                                                         <button
                                                             onClick={() => handleSuspendClick(project.id)}
-                                                            className="p-2 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                                                            className="p-2 text-destructive hover:bg-destructive/10 rounded-md transition-colors"
                                                             title="Suspend Project"
                                                         >
                                                             <Ban className="w-4 h-4" />
                                                         </button>
                                                     )}
                                                     {project.isSuspended && (
-                                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 flex items-center gap-1">
+                                                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-destructive/10 text-destructive flex items-center gap-1">
                                                             <AlertTriangle className="w-3 h-3" />
                                                             Suspended
                                                         </span>
@@ -573,11 +573,11 @@ const AdminProjectsPage: React.FC = () => {
                 onCancel={() => setShowRejectConfirm(false)}
             >
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Reason for rejection</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Reason for rejection</label>
                     <textarea
                         value={rejectNotes}
                         onChange={(e) => setRejectNotes(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-background border border-input rounded-md focus:ring-primary focus:border-primary text-foreground"
                         rows={3}
                         placeholder="Enter reason..."
                     />
@@ -637,11 +637,11 @@ const AdminProjectsPage: React.FC = () => {
             >
                 <div className="mt-4 space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Reason for suspension *</label>
+                        <label className="block text-sm font-medium text-foreground mb-1">Reason for suspension *</label>
                         <textarea
                             value={suspendReason}
                             onChange={(e) => setSuspendReason(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                            className="w-full px-3 py-2 bg-background border border-input rounded-md focus:ring-destructive focus:border-destructive text-foreground"
                             rows={3}
                             placeholder="Enter reason for suspending this project..."
                             required
@@ -653,9 +653,9 @@ const AdminProjectsPage: React.FC = () => {
                             id="withRefund"
                             checked={suspendWithRefund}
                             onChange={(e) => setSuspendWithRefund(e.target.checked)}
-                            className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                            className="h-4 w-4 text-destructive focus:ring-destructive border-input rounded bg-background"
                         />
-                        <label htmlFor="withRefund" className="text-sm text-gray-700">
+                        <label htmlFor="withRefund" className="text-sm text-foreground">
                             Process refund to project creator
                         </label>
                     </div>

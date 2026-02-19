@@ -115,10 +115,10 @@ export default function SkillDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <div className="flex flex-col justify-center items-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading skill details...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading skill details...</p>
         </div>
       </div>
     );
@@ -129,13 +129,13 @@ export default function SkillDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Back Button Header */}
-      <div className="bg-white px-6 py-4 border-b border-gray-200">
+      <div className="bg-card px-6 py-4 border-b border-border">
         <div className="max-w-7xl mx-auto">
           <button
             onClick={() => navigate('/explore')}
-            className="flex items-center gap-2 text-gray-800 hover:text-gray-600 transition"
+            className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition"
           >
             <ArrowLeft size={20} />
             <span className="font-medium">Back to Skills</span>
@@ -148,7 +148,7 @@ export default function SkillDetailPage() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Skill Banner Image */}
-            <div className="relative rounded-xl overflow-hidden h-64 md:h-80 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
+            <div className="relative rounded-xl overflow-hidden h-64 md:h-80 bg-gradient-to-br from-primary/10 via-secondary to-muted">
               {skill.imageUrl ? (
                 <img
                   src={skill.imageUrl}
@@ -157,7 +157,7 @@ export default function SkillDetailPage() {
                 />
               ) : (
                 <div className="flex items-center justify-center h-full">
-                  <span className="text-9xl font-bold text-white drop-shadow-lg">
+                  <span className="text-9xl font-bold text-primary drop-shadow-lg">
                     {skill.title.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -168,7 +168,7 @@ export default function SkillDetailPage() {
             <div className="space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                     {skill.title}
                   </h1>
                   <div className="flex items-center gap-4 flex-wrap">
@@ -177,17 +177,17 @@ export default function SkillDetailPage() {
                         size={20}
                         className="fill-yellow-400 text-yellow-400"
                       />
-                      <span className="font-semibold text-gray-900">
+                      <span className="font-semibold text-foreground">
                         {Number(skill.rating).toFixed(1)}
                       </span>
-                      <span className="text-gray-600">
+                      <span className="text-muted-foreground">
                         ({skill.totalSessions} sessions)
                       </span>
                     </div>
-                    <span className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-muted text-foreground rounded-full text-sm font-medium">
                       {skill.level}
                     </span>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">
                       {skill.category}
                     </span>
                   </div>
@@ -195,22 +195,22 @@ export default function SkillDetailPage() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => setIsLiked(!isLiked)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition"
+                    className="p-2 hover:bg-muted rounded-full transition"
                   >
                     <Heart
                       size={24}
                       className={
                         isLiked
                           ? 'fill-red-500 text-red-500'
-                          : 'text-gray-400'
+                          : 'text-muted-foreground'
                       }
                     />
                   </button>
                   <button
                     onClick={handleShare}
-                    className="p-2 hover:bg-gray-100 rounded-full transition"
+                    className="p-2 hover:bg-muted rounded-full transition"
                   >
-                    <Share2 size={24} className="text-gray-400" />
+                    <Share2 size={24} className="text-muted-foreground" />
                   </button>
                 </div>
               </div>
@@ -218,19 +218,19 @@ export default function SkillDetailPage() {
 
             {/* About This Skill */}
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl font-bold text-foreground">
                 About This Skill
               </h2>
-              <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">
+              <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
                 {skill.description}
               </p>
             </div>
 
             {/* Duration */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-gray-900">Session Details</h2>
-              <div className="flex items-center gap-3 text-gray-600">
-                <Clock size={20} className="text-blue-600" />
+              <h2 className="text-xl font-bold text-foreground">Session Details</h2>
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <Clock size={20} className="text-primary" />
                 <span>
                   Session duration: {skill.durationHours} hour{skill.durationHours !== 1 ? 's' : ''}
                 </span>
@@ -240,14 +240,14 @@ export default function SkillDetailPage() {
             {/* Tags */}
             {skill.tags.length > 0 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-bold text-gray-900">
+                <h2 className="text-xl font-bold text-foreground">
                   Related Topics
                 </h2>
                 <div className="flex gap-2 flex-wrap">
                   {skill.tags.map((tag, index) => (
                     <span
                       key={index}
-                      className="px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium border border-blue-100 hover:bg-blue-100 transition cursor-pointer"
+                      className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium border border-primary/20 hover:bg-primary/20 transition cursor-pointer"
                     >
                       #{tag}
                     </span>
@@ -259,19 +259,19 @@ export default function SkillDetailPage() {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg p-6 space-y-6 sticky top-8 shadow-lg border border-gray-200">
+            <div className="bg-card rounded-lg p-6 space-y-6 sticky top-8 shadow-lg border border-border">
               {/* Price */}
               <div className="flex items-baseline gap-2">
                 <DollarSign size={24} className="text-green-600" />
-                <span className="text-4xl font-bold text-gray-900">
+                <span className="text-4xl font-bold text-foreground">
                   {skill.creditsPerHour}
                 </span>
-                <span className="text-gray-600">credits/hr</span>
+                <span className="text-muted-foreground">credits/hr</span>
               </div>
 
               {/* Session Duration */}
-              <div className="flex items-center gap-3 text-gray-600 pb-4 border-b border-gray-200">
-                <Clock size={20} className="text-blue-600" />
+              <div className="flex items-center gap-3 text-muted-foreground pb-4 border-b border-border">
+                <Clock size={20} className="text-primary" />
                 <span>
                   {skill.durationHours} hour{skill.durationHours !== 1 ? 's' : ''} per session
                 </span>
@@ -281,7 +281,7 @@ export default function SkillDetailPage() {
               {skill.availability ? (
                 <button
                   onClick={handleBookSession}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                 >
                   <svg
                     className="w-5 h-5"
@@ -299,7 +299,7 @@ export default function SkillDetailPage() {
                   Book a Session
                 </button>
               ) : (
-                <div className="w-full bg-gray-100 border-2 border-gray-300 text-gray-600 font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
+                <div className="w-full bg-muted border-2 border-input text-muted-foreground font-semibold py-3 px-4 rounded-lg flex items-center justify-center gap-2 cursor-not-allowed">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -318,16 +318,16 @@ export default function SkillDetailPage() {
               )}
 
               {/* Cancellation Info */}
-              <p className="text-sm text-gray-600 text-center pt-2 border-t border-gray-200">
+              <p className="text-sm text-muted-foreground text-center pt-2 border-t border-border">
                 Free cancellation up to 24 hours before session
               </p>
 
               {/* Divider */}
-              <div className="border-t border-gray-200" />
+              <div className="border-t border-border" />
 
               {/* About the Provider */}
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-lg font-bold text-foreground">
                   About the Provider
                 </h3>
 
@@ -337,7 +337,7 @@ export default function SkillDetailPage() {
                     <img
                       src={skill.provider.avatarUrl}
                       alt={skill.provider.name}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-gray-200 shadow-md"
+                      className="w-14 h-14 rounded-full object-cover border-2 border-border shadow-md"
                       onError={(e) => {
                         const target = e.currentTarget as HTMLImageElement;
                         target.style.display = 'none';
@@ -347,17 +347,17 @@ export default function SkillDetailPage() {
                     />
                   ) : null}
                   <div
-                    className={`w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shadow-md ${skill.provider.avatarUrl ? 'hidden' : ''}`}
+                    className={`w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center shadow-md ${skill.provider.avatarUrl ? 'hidden' : ''}`}
                   >
-                    <span className="text-white font-bold text-xl">
+                    <span className="text-primary font-bold text-xl">
                       {skill.provider.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-gray-900">
+                    <h4 className="font-bold text-foreground">
                       {skill.provider.name}
                     </h4>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       {skill.provider.email}
                     </p>
                     <div className="flex items-center gap-1 mt-1">
@@ -365,10 +365,10 @@ export default function SkillDetailPage() {
                         size={16}
                         className="fill-yellow-400 text-yellow-400"
                       />
-                      <span className="text-sm font-semibold text-gray-900">
+                      <span className="text-sm font-semibold text-foreground">
                         {Number(skill.provider.rating).toFixed(1)}
                       </span>
-                      <span className="text-sm text-gray-600">
+                      <span className="text-sm text-muted-foreground">
                         ({skill.provider.reviewCount} reviews)
                       </span>
                     </div>
@@ -378,7 +378,7 @@ export default function SkillDetailPage() {
                 {/* View Profile Button */}
                 <button
                   onClick={handleViewProviderProfile}
-                  className="w-full py-2 px-4 border border-gray-300 text-gray-900 font-semibold rounded-lg hover:bg-gray-50 transition"
+                  className="w-full py-2 px-4 border border-input text-foreground font-semibold rounded-lg hover:bg-muted transition"
                 >
                   View Profile
                 </button>
@@ -387,8 +387,8 @@ export default function SkillDetailPage() {
               {/* Availability Status */}
               {!skill.availability && (
                 <>
-                  <div className="border-t border-gray-200" />
-                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="border-t border-border" />
+                  <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                     <div className="flex items-start gap-3">
                       <svg
                         className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0"
@@ -404,10 +404,10 @@ export default function SkillDetailPage() {
                         />
                       </svg>
                       <div>
-                        <h4 className="font-semibold text-yellow-900 mb-1">
+                        <h4 className="font-semibold text-yellow-900 dark:text-yellow-500 mb-1">
                           Provider Availability Not Set
                         </h4>
-                        <p className="text-sm text-yellow-800">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-400">
                           This provider has not set their availability schedule yet. Please contact them directly or check back later.
                         </p>
                       </div>
@@ -419,14 +419,14 @@ export default function SkillDetailPage() {
               {/* Availability Schedule */}
               {skill.availability && skill.availability.weeklySchedule && (
                 <>
-                  <div className="border-t border-gray-200" />
+                  <div className="border-t border-border" />
                   <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                      <Clock className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-primary" />
                       Weekly Availability
                     </h3>
 
-                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="bg-muted/40 rounded-lg p-4 border border-border">
                       <div className="space-y-3">
                         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
                           const schedule = skill.availability!.weeklySchedule[day];
@@ -434,7 +434,7 @@ export default function SkillDetailPage() {
 
                           return (
                             <div key={day} className="flex items-start justify-between text-sm group">
-                              <span className={`font-medium w-24 ${isAvailable ? 'text-gray-900' : 'text-gray-400'}`}>
+                              <span className={`font-medium w-24 ${isAvailable ? 'text-foreground' : 'text-muted-foreground'}`}>
                                 {day}
                               </span>
                               <div className="flex-1 text-right">
@@ -449,14 +449,14 @@ export default function SkillDetailPage() {
                                         return `${hour12}:${m} ${ampm}`;
                                       };
                                       return (
-                                        <div key={idx} className="inline-block bg-white px-2 py-1 rounded border border-gray-200 text-blue-700 font-medium text-xs shadow-sm ml-2">
+                                        <div key={idx} className="inline-block bg-card px-2 py-1 rounded border border-border text-primary font-medium text-xs shadow-sm ml-2">
                                           {formatTime(slot.start)} - {formatTime(slot.end)}
                                         </div>
                                       );
                                     })}
                                   </div>
                                 ) : (
-                                  <span className="text-gray-400 text-xs italic">Unavailable</span>
+                                  <span className="text-muted-foreground text-xs italic">Unavailable</span>
                                 )}
                               </div>
                             </div>
@@ -466,7 +466,7 @@ export default function SkillDetailPage() {
                     </div>
 
                     {skill.availability.timezone && (
-                      <div className="flex items-center gap-2 text-xs text-gray-500 bg-blue-50 px-3 py-2 rounded-lg">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 px-3 py-2 rounded-lg">
                         <span className="font-medium">Timezone:</span>
                         <span>{skill.availability.timezone}</span>
                       </div>
@@ -475,16 +475,16 @@ export default function SkillDetailPage() {
 
                   {/* Booked Slots Indicator */}
                   {skill.availability.bookedSlots && skill.availability.bookedSlots.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <h4 className="text-sm font-bold text-gray-900 mb-2">Provider Schedule (Busy)</h4>
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <h4 className="text-sm font-bold text-foreground mb-2">Provider Schedule (Busy)</h4>
                       <div className="flex flex-wrap gap-2">
                         {skill.availability.bookedSlots.slice(0, 5).map((slot, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-red-50 text-red-600 text-xs font-medium rounded border border-red-100" title={`Busy with: ${slot.title}`}>
+                          <span key={idx} className="px-2 py-1 bg-destructive/10 text-destructive text-xs font-medium rounded border border-destructive/20" title={`Busy with: ${slot.title}`}>
                             {new Date(slot.date).toLocaleDateString()} {slot.startTime} ({slot.title})
                           </span>
                         ))}
                         {skill.availability.bookedSlots.length > 5 && (
-                          <span className="px-2 py-1 text-gray-500 text-xs font-medium">+{skill.availability.bookedSlots.length - 5} more</span>
+                          <span className="px-2 py-1 text-muted-foreground text-xs font-medium">+{skill.availability.bookedSlots.length - 5} more</span>
                         )}
                       </div>
                     </div>

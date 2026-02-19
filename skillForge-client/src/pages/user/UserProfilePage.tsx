@@ -88,11 +88,10 @@ export default function UserProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-
+      <div className="min-h-screen bg-background">
         <div className="flex flex-col justify-center items-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading profile...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>
     );
@@ -100,10 +99,9 @@ export default function UserProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gray-50">
-
+      <div className="min-h-screen bg-background">
         <div className="flex flex-col justify-center items-center py-20">
-          <p className="text-gray-600">Profile not found</p>
+          <p className="text-muted-foreground">Profile not found</p>
         </div>
       </div>
     );
@@ -113,7 +111,7 @@ export default function UserProfilePage() {
   const isPro = subscriptionPlan.toLowerCase() !== 'free';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
 
 
       <div className="max-w-6xl mx-auto px-6 py-8">
@@ -125,54 +123,54 @@ export default function UserProfilePage() {
               <img
                 src={user.avatar}
                 alt={profile.name}
-                className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-sm"
+                className="w-16 h-16 rounded-full object-cover border-2 border-background shadow-sm"
               />
             ) : (
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center border-2 border-white shadow-sm">
-                <span className="text-white font-bold text-xl">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center border-2 border-background shadow-sm">
+                <span className="text-primary font-bold text-xl">
                   {profile.name.charAt(0).toUpperCase()}
                 </span>
               </div>
             )}
-            <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+            <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-background"></div>
           </div>
 
           {/* Profile Info */}
           <div className="flex-1">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 mb-1">{profile.name}</h1>
-                <p className="text-sm text-gray-600 mb-1">{profile.location || 'San Francisco, CA'}</p>
-                <p className="text-xs text-gray-500 mb-3">Member since {formatDate(profile.memberSince)}</p>
+                <h1 className="text-2xl font-bold text-foreground mb-1">{profile.name}</h1>
+                <p className="text-sm text-muted-foreground mb-1">{profile.location || 'San Francisco, CA'}</p>
+                <p className="text-xs text-muted-foreground mb-3">Member since {formatDate(profile.memberSince)}</p>
               </div>
               {/* Edit Profile Button */}
               <button
                 onClick={handleEditProfile}
-                className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 hover:border-gray-400 transition-all"
+                className="px-4 py-2 text-sm font-medium text-foreground border border-input rounded-md hover:bg-muted transition-all"
               >
                 Edit Profile
               </button>
             </div>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-foreground">
               {profile.bio || 'Passionate about learning and sharing knowledge'}
             </p>
           </div>
         </div>
 
         {/* Professional Plan */}
-        <div className="border border-blue-200 rounded-xl p-5 mb-6 bg-blue-50/30">
+        <div className="border border-primary/20 rounded-xl p-5 mb-6 bg-primary/5">
           <div className="flex justify-between items-start mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <CheckCircle size={18} className="text-blue-600" />
-                <h2 className="text-base font-semibold text-gray-900">
+                <CheckCircle size={18} className="text-primary" />
+                <h2 className="text-base font-semibold text-foreground">
                   {isPro ? 'Professional Plan' : 'Free Plan'}
                 </h2>
-                <span className="inline-block bg-blue-600 text-white text-xs font-medium px-2 py-0.5 rounded">
+                <span className="inline-block bg-primary text-primary-foreground text-xs font-medium px-2 py-0.5 rounded">
                   active
                 </span>
               </div>
-              <p className="text-xs text-gray-600 ml-6">
+              <p className="text-xs text-muted-foreground ml-6">
                 {profile.subscriptionValidUntil
                   ? `Valid until ${formatDate(profile.subscriptionValidUntil)}`
                   : 'No expiration'}
@@ -180,36 +178,36 @@ export default function UserProfilePage() {
             </div>
             <button
               onClick={() => navigate('/plans')}
-              className="bg-blue-600 text-white px-3 py-1.5 rounded-md border border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md transition-all text-xs font-medium flex items-center gap-1"
+              className="bg-primary text-primary-foreground px-3 py-1.5 rounded-md border border-primary hover:bg-primary/90 transition-all text-xs font-medium flex items-center gap-1"
             >
               <span>⬆</span> Upgrade Plan
             </button>
           </div>
 
           {/* Plan Details Grid */}
-          <div className="grid grid-cols-3 gap-6 pt-4 border-t border-blue-200">
+          <div className="grid grid-cols-3 gap-6 pt-4 border-t border-primary/20">
             <div>
-              <p className="text-xs text-gray-500 mb-1">Price</p>
-              <p className="text-lg font-semibold text-blue-600">
+              <p className="text-xs text-muted-foreground mb-1">Price</p>
+              <p className="text-lg font-semibold text-primary">
                 {isPro ? '₹599/month' : '₹0/month'}
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Project Posts</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xs text-muted-foreground mb-1">Project Posts</p>
+              <p className="text-lg font-semibold text-foreground">
                 {(profile.projectPostLimit === null || profile.projectPostLimit === -1)
                   ? 'Unlimited'
                   : Math.max(0, profile.projectPostLimit - profile.projectPostUsage)}
-                <span className="text-xs text-gray-500 font-normal"> remaining</span>
+                <span className="text-xs text-muted-foreground font-normal"> remaining</span>
               </p>
             </div>
             <div>
-              <p className="text-xs text-gray-500 mb-1">Communities</p>
-              <p className="text-lg font-semibold text-gray-900">
+              <p className="text-xs text-muted-foreground mb-1">Communities</p>
+              <p className="text-lg font-semibold text-foreground">
                 {(profile.communityCreateLimit === null || profile.communityCreateLimit === -1)
                   ? 'Unlimited'
                   : Math.max(0, profile.communityCreateLimit - profile.communityCreateUsage)}
-                <span className="text-xs text-gray-500 font-normal"> remaining</span>
+                <span className="text-xs text-muted-foreground font-normal"> remaining</span>
               </p>
             </div>
           </div>
@@ -220,62 +218,62 @@ export default function UserProfilePage() {
           {/* Wallet Balance */}
           <div
             onClick={() => navigate('/wallet')}
-            className="flex-1 bg-teal-50 border border-teal-100 rounded-lg p-4 cursor-pointer hover:shadow-md transition-all"
+            className="flex-1 bg-card border border-border rounded-lg p-4 cursor-pointer hover:shadow-md transition-all"
           >
             <div className="flex items-center gap-2 mb-3">
               <Wallet className="text-teal-600" size={16} />
-              <p className="text-xs text-gray-600 font-medium">Wallet Balance</p>
+              <p className="text-xs text-muted-foreground font-medium">Wallet Balance</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">₹ {profile?.walletBalance || 0}</p>
-            <p className="text-xs text-gray-500">available for withdrawal</p>
+            <p className="text-2xl font-bold text-foreground mb-1">₹ {profile?.walletBalance || 0}</p>
+            <p className="text-xs text-muted-foreground">available for withdrawal</p>
           </div>
 
           {/* Credits */}
-          <div className="flex-1 bg-white border border-gray-200 rounded-lg p-4">
+          <div className="flex-1 bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Zap className="text-gray-600" size={16} />
-              <p className="text-xs text-gray-600 font-medium">Credits</p>
+              <Zap className="text-muted-foreground" size={16} />
+              <p className="text-xs text-muted-foreground font-medium">Credits</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{profile?.credits || 0}</p>
-            <p className="text-xs text-gray-500 mb-2">worth ₹{(profile?.credits || 0) * 50}</p>
+            <p className="text-2xl font-bold text-foreground mb-1">{profile?.credits || 0}</p>
+            <p className="text-xs text-muted-foreground mb-2">worth ₹{(profile?.credits || 0) * 50}</p>
             <button
               onClick={handleRedeemCredits}
-              className="text-blue-600 text-xs font-semibold hover:text-blue-700 hover:underline transition-all"
+              className="text-primary text-xs font-semibold hover:text-primary/80 hover:underline transition-all"
             >
               Redeem
             </button>
           </div>
 
           {/* Skills Offered */}
-          <div className="flex-1 bg-teal-50 border border-teal-100 rounded-lg p-4">
+          <div className="flex-1 bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="text-teal-600" size={16} />
-              <p className="text-xs text-gray-600 font-medium">Skills Offered</p>
+              <p className="text-xs text-muted-foreground font-medium">Skills Offered</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{profile?.skillsOffered || 0}</p>
-            <p className="text-xs text-gray-500">active skills</p>
+            <p className="text-2xl font-bold text-foreground mb-1">{profile?.skillsOffered || 0}</p>
+            <p className="text-xs text-muted-foreground">active skills</p>
           </div>
 
           {/* Rating */}
-          <div className="flex-1 bg-yellow-50 border border-yellow-100 rounded-lg p-4">
+          <div className="flex-1 bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 mb-3">
               <Star className="text-yellow-500" size={16} />
-              <p className="text-xs text-gray-600 font-medium">Rating</p>
+              <p className="text-xs text-muted-foreground font-medium">Rating</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">
+            <p className="text-2xl font-bold text-foreground mb-1">
               {profile?.rating ? Number(profile.rating).toFixed(1) : '0.0'}
             </p>
-            <p className="text-xs text-gray-500">{profile?.reviewCount || 0} reviews</p>
+            <p className="text-xs text-muted-foreground">{profile?.reviewCount || 0} reviews</p>
           </div>
 
           {/* Upcoming */}
-          <div className="flex-1 bg-teal-50 border border-teal-100 rounded-lg p-4">
+          <div className="flex-1 bg-card border border-border rounded-lg p-4">
             <div className="flex items-center gap-2 mb-3">
               <Calendar className="text-teal-600" size={16} />
-              <p className="text-xs text-gray-600 font-medium">Upcoming</p>
+              <p className="text-xs text-muted-foreground font-medium">Upcoming</p>
             </div>
-            <p className="text-2xl font-bold text-gray-900 mb-1">{sessions.length}</p>
-            <p className="text-xs text-gray-500">sessions booked</p>
+            <p className="text-2xl font-bold text-foreground mb-1">{sessions.length}</p>
+            <p className="text-xs text-muted-foreground">sessions booked</p>
           </div>
         </div>
 
@@ -283,19 +281,19 @@ export default function UserProfilePage() {
         <div className="mt-8">
           <div className="flex justify-between items-center mb-4">
             <div>
-              <h2 className="text-xl font-bold text-gray-900 mb-0.5">Upcoming Sessions</h2>
-              <p className="text-xs text-gray-500">Your scheduled learning sessions</p>
+              <h2 className="text-xl font-bold text-foreground mb-0.5">Upcoming Sessions</h2>
+              <p className="text-xs text-muted-foreground">Your scheduled learning sessions</p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={handleManageAllSessions}
-                className="text-gray-700 text-sm font-medium hover:text-gray-900 hover:underline transition-all"
+                className="text-foreground text-sm font-medium hover:text-primary hover:underline transition-all"
               >
                 Manage All Sessions
               </button>
               <button
                 onClick={() => navigate('/explore')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md border border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md transition-all text-sm font-medium flex items-center gap-1.5"
+                className="bg-primary text-primary-foreground px-4 py-2 rounded-md border border-primary hover:bg-primary/90 transition-all text-sm font-medium flex items-center gap-1.5"
               >
                 <span className="text-base">+</span> Book New Session
               </button>
@@ -303,16 +301,16 @@ export default function UserProfilePage() {
           </div>
 
           {sessions.length === 0 ? (
-            <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+            <div className="bg-card border border-border rounded-lg p-12 text-center">
               <div className="flex flex-col items-center justify-center">
-                <Calendar className="w-12 h-12 text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No Upcoming Sessions</h3>
-                <p className="text-sm text-gray-500 mb-4 max-w-md">
+                <Calendar className="w-12 h-12 text-muted-foreground mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">No Upcoming Sessions</h3>
+                <p className="text-sm text-muted-foreground mb-4 max-w-md">
                   You don't have any scheduled sessions yet. Browse skills and book a session to start learning!
                 </p>
                 <button
                   onClick={() => navigate('/explore')}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md border border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md transition-all text-sm font-medium"
+                  className="bg-primary text-primary-foreground px-4 py-2 rounded-md border border-primary hover:bg-primary/90 transition-all text-sm font-medium"
                 >
                   Browse Skills
                 </button>
@@ -323,7 +321,7 @@ export default function UserProfilePage() {
               {sessions.map((session) => (
                 <div
                   key={session.id}
-                  className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow"
+                  className="bg-card border border-border rounded-lg p-4 hover:shadow-sm transition-shadow"
                 >
                   <div className="flex items-start gap-4">
                     {/* Session Image */}
@@ -340,23 +338,23 @@ export default function UserProfilePage() {
 
                     {/* Session Details */}
                     <div className="flex-grow">
-                      <h3 className="text-base font-semibold text-gray-900 mb-1">{session.title}</h3>
-                      <div className="flex items-center gap-1.5 mb-2 text-xs text-gray-600">
+                      <h3 className="text-base font-semibold text-foreground mb-1">{session.title}</h3>
+                      <div className="flex items-center gap-1.5 mb-2 text-xs text-muted-foreground">
                         <UserIcon size={14} />
                         <span>with {session.instructor}</span>
                       </div>
 
                       {/* Session Meta */}
                       <div className="flex flex-wrap gap-4 mb-2 text-xs">
-                        <div className="flex items-center gap-1.5 text-gray-600">
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
                           <Calendar size={14} />
                           <span>{session.date}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-gray-600">
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
                           <Clock size={14} />
                           <span>{session.time}</span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-gray-600">
+                        <div className="flex items-center gap-1.5 text-muted-foreground">
                           <Monitor size={14} />
                           <span>{session.type}</span>
                         </div>
@@ -365,8 +363,8 @@ export default function UserProfilePage() {
                       {/* Credits and Status */}
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1.5">
-                          <CreditCard size={14} className="text-gray-500" />
-                          <span className="text-xs text-gray-600">{session.credits} credits</span>
+                          <CreditCard size={14} className="text-muted-foreground" />
+                          <span className="text-xs text-muted-foreground">{session.credits} credits</span>
                         </div>
                         {session.confirmed && (
                           <div className="flex items-center gap-1">
@@ -379,10 +377,10 @@ export default function UserProfilePage() {
 
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-2 flex-shrink-0">
-                      <button className="bg-blue-600 text-white px-3 py-1.5 rounded-md border border-blue-600 hover:bg-blue-700 hover:border-blue-700 hover:shadow-md transition-all text-xs font-medium flex items-center gap-1 whitespace-nowrap">
+                      <button className="bg-primary text-primary-foreground px-3 py-1.5 rounded-md border border-primary hover:bg-primary/90 transition-all text-xs font-medium flex items-center gap-1 whitespace-nowrap">
                         💬 Join Session
                       </button>
-                      <button className="text-blue-600 text-xs font-medium hover:text-blue-700 hover:underline transition-all">
+                      <button className="text-primary text-xs font-medium hover:text-primary/80 hover:underline transition-all">
                         Reschedule
                       </button>
                     </div>

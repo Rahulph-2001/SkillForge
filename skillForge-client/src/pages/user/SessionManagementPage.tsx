@@ -214,13 +214,13 @@ export default function SessionManagementPage() {
   const getStatusBadge = (status: string) => {
     const statusLower = status.toLowerCase();
     const styles = {
-      pending: 'bg-amber-100 text-amber-700 border-amber-200',
-      confirmed: 'bg-green-100 text-green-700 border-green-200',
-      completed: 'bg-blue-100 text-blue-700 border-blue-200',
-      cancelled: 'bg-gray-100 text-gray-700 border-gray-200',
-      rejected: 'bg-red-100 text-red-700 border-red-200',
-      'reschedule requested': 'bg-orange-100 text-orange-700 border-orange-200',
-      in_session: 'bg-purple-100 text-purple-700 border-purple-200 animate-pulse',
+      pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+      confirmed: 'bg-green-500/10 text-green-600 border-green-500/20',
+      completed: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+      cancelled: 'bg-muted text-muted-foreground border-border',
+      rejected: 'bg-destructive/10 text-destructive border-destructive/20',
+      'reschedule requested': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+      in_session: 'bg-purple-500/10 text-purple-600 border-purple-500/20 animate-pulse',
     };
 
     const displayText = statusLower === 'in_session' ? 'In Progress' : status.charAt(0).toUpperCase() + status.slice(1);
@@ -258,17 +258,17 @@ export default function SessionManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
 
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
 
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -276,81 +276,81 @@ export default function SessionManagementPage() {
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+            className="flex items-center text-muted-foreground hover:text-foreground mb-4 transition-colors"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">My Sessions</h1>
-          <p className="text-gray-600 mt-2">Manage and track all your learning sessions</p>
+          <h1 className="text-3xl font-bold text-foreground">My Sessions</h1>
+          <p className="text-muted-foreground mt-2">Manage and track all your learning sessions</p>
         </div>
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl p-6 border border-amber-200 shadow-sm">
+          <div className="bg-amber-500/10 rounded-xl p-6 border border-amber-500/20 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-amber-600 text-sm font-medium">Pending</p>
-                <p className="text-3xl font-bold text-amber-900 mt-2">{stats.pending}</p>
+                <p className="text-3xl font-bold text-amber-700 mt-2">{stats.pending}</p>
               </div>
-              <div className="bg-amber-200 p-3 rounded-lg">
-                <Clock className="w-6 h-6 text-amber-700" />
+              <div className="bg-amber-500/20 p-3 rounded-lg">
+                <Clock className="w-6 h-6 text-amber-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl p-6 border border-green-200 shadow-sm">
+          <div className="bg-green-500/10 rounded-xl p-6 border border-green-500/20 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-green-600 text-sm font-medium">Confirmed</p>
-                <p className="text-3xl font-bold text-green-900 mt-2">{stats.confirmed}</p>
+                <p className="text-3xl font-bold text-green-700 mt-2">{stats.confirmed}</p>
               </div>
-              <div className="bg-green-200 p-3 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-700" />
+              <div className="bg-green-500/20 p-3 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-6 border border-orange-200 shadow-sm">
+          <div className="bg-orange-500/10 rounded-xl p-6 border border-orange-500/20 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-orange-600 text-sm font-medium">Reschedule</p>
-                <p className="text-3xl font-bold text-orange-900 mt-2">{stats.rescheduleRequested}</p>
+                <p className="text-3xl font-bold text-orange-700 mt-2">{stats.rescheduleRequested}</p>
               </div>
-              <div className="bg-orange-200 p-3 rounded-lg">
-                <CalendarClock className="w-6 h-6 text-orange-700" />
+              <div className="bg-orange-500/20 p-3 rounded-lg">
+                <CalendarClock className="w-6 h-6 text-orange-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200 shadow-sm">
+          <div className="bg-blue-500/10 rounded-xl p-6 border border-blue-500/20 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-blue-600 text-sm font-medium">Completed</p>
-                <p className="text-3xl font-bold text-blue-900 mt-2">{stats.completed}</p>
+                <p className="text-3xl font-bold text-blue-700 mt-2">{stats.completed}</p>
               </div>
-              <div className="bg-blue-200 p-3 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-blue-700" />
+              <div className="bg-blue-500/20 p-3 rounded-lg">
+                <CheckCircle className="w-6 h-6 text-blue-600" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Filter Tabs */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-2 mb-6">
+        <div className="bg-card rounded-xl shadow-sm border border-border p-2 mb-6">
           <div className="flex flex-wrap gap-2">
             {(['all', 'pending', 'confirmed', 'completed', 'cancelled'] as FilterType[]).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
                 className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${activeFilter === filter
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
                   }`}
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
                 {filter === 'pending' && stats.pending > 0 && (
-                  <span className="ml-2 bg-white text-blue-600 px-2 py-0.5 rounded-full text-xs font-bold">
+                  <span className="ml-2 bg-background text-primary px-2 py-0.5 rounded-full text-xs font-bold">
                     {stats.pending}
                   </span>
                 )}
@@ -362,10 +362,10 @@ export default function SessionManagementPage() {
         {/* Sessions List */}
         <div className="space-y-4">
           {filteredSessions.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-              <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No sessions found</h3>
-              <p className="text-gray-600">
+            <div className="bg-card rounded-xl shadow-sm border border-border p-12 text-center">
+              <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">No sessions found</h3>
+              <p className="text-muted-foreground">
                 {activeFilter === 'all'
                   ? "You haven't booked any sessions yet"
                   : `No ${activeFilter} sessions found`}
@@ -375,7 +375,7 @@ export default function SessionManagementPage() {
             filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                className="bg-card rounded-xl shadow-sm border border-border p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                   {/* Provider Info */}
@@ -384,22 +384,22 @@ export default function SessionManagementPage() {
                       <img
                         src={session.providerAvatar}
                         alt={session.providerName}
-                        className="w-14 h-14 rounded-full object-cover border-2 border-gray-200"
+                        className="w-14 h-14 rounded-full object-cover border-2 border-border"
                       />
                     ) : (
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg border-2 border-gray-200">
+                      <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-lg border-2 border-border">
                         {getInitials(session.providerName)}
                       </div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-1">
                         {session.skillTitle}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
                         <User className="w-4 h-4" />
                         <span>Provider: {session.providerName || 'Unknown'}</span>
                       </div>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Calendar className="w-4 h-4" />
                           <span>{formatDate(session.preferredDate)}</span>
@@ -414,27 +414,27 @@ export default function SessionManagementPage() {
                         </div>
                       </div>
                       {session.notes && (
-                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                          <p className="text-sm text-gray-700">
-                            <span className="font-medium">Notes:</span> {session.notes}
+                        <div className="mt-3 p-3 bg-muted/40 rounded-lg border border-border">
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium text-foreground">Notes:</span> {session.notes}
                           </p>
                         </div>
                       )}
                       {session.rescheduleInfo && (
-                        <div className="mt-3 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                          <p className="text-sm text-orange-700">
+                        <div className="mt-3 p-3 bg-orange-500/10 rounded-lg border border-orange-500/20">
+                          <p className="text-sm text-orange-600">
                             <span className="font-medium">Reschedule Requested:</span>{' '}
                             {session.rescheduleInfo.reason}
                           </p>
                         </div>
                       )}
                       {session.rejectionReason && (
-                        <div className="mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200">
+                        <div className="mt-4 p-4 bg-destructive/5 rounded-lg border-2 border-destructive/10">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
+                            <span className="bg-destructive/10 text-destructive text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
                           </div>
-                          <p className="text-sm text-gray-700">
-                            <span className="font-medium text-red-700">Reason:</span> "{session.rejectionReason}"
+                          <p className="text-sm text-muted-foreground">
+                            <span className="font-medium text-destructive">Reason:</span> "{session.rejectionReason}"
                           </p>
                         </div>
                       )}
@@ -445,7 +445,7 @@ export default function SessionManagementPage() {
                   <div className="flex flex-col items-end gap-4 lg:min-w-[200px]">
                     <div className="flex items-center gap-3">
                       {getStatusBadge(session.status)}
-                      <span className="text-lg font-bold text-gray-900">
+                      <span className="text-lg font-bold text-foreground">
                         {session.sessionCost} credits
                       </span>
                     </div>

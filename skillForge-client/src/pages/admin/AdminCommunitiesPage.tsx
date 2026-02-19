@@ -156,60 +156,60 @@ const AdminCommunitiesPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/40">
             <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
                 {/* Page Header */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Communities Management</h1>
-                    <p className="text-gray-600 mt-1">Manage all platform communities</p>
+                    <h1 className="text-3xl font-bold text-foreground">Communities Management</h1>
+                    <p className="text-muted-foreground mt-1">Manage all platform communities</p>
                 </div>
 
                 {/* Search Bar */}
                 <div className="mb-6">
                     <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                         <input
                             type="text"
                             placeholder="Search communities..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full pl-10 pr-4 py-2.5 border border-border bg-background rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-foreground placeholder-muted-foreground"
                         />
                     </div>
                 </div>
 
                 {/* Statistics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Total Communities</p>
+                            <p className="text-sm font-medium text-muted-foreground">Total Communities</p>
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.totalCommunities}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.totalCommunities}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Total Members</p>
+                            <p className="text-sm font-medium text-muted-foreground">Total Members</p>
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.totalMembers.toLocaleString()}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.totalMembers.toLocaleString()}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Avg. Membership Cost</p>
+                            <p className="text-sm font-medium text-muted-foreground">Avg. Membership Cost</p>
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.avgMembershipCost}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.avgMembershipCost}</h3>
                     </div>
                 </div>
 
                 {/* Communities Grid */}
                 {loading ? (
                     <div className="flex items-center justify-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     </div>
                 ) : communities.length === 0 ? (
-                    <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-                        <p className="text-gray-500">No communities found</p>
+                    <div className="bg-card rounded-lg border border-border p-12 text-center">
+                        <p className="text-muted-foreground">No communities found</p>
                     </div>
                 ) : (
                     <>
@@ -217,7 +217,7 @@ const AdminCommunitiesPage: React.FC = () => {
                             {communities.map((community) => (
                                 <div
                                     key={community.id}
-                                    className={`bg-white rounded-xl shadow-sm border ${community.isActive ? 'border-gray-100' : 'border-red-200 bg-red-50/30'
+                                    className={`bg-card rounded-xl shadow-sm border ${community.isActive ? 'border-border' : 'border-destructive/30 bg-destructive/5'
                                         } hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col`}
                                 >
                                     {/* Image Section */}
@@ -260,29 +260,29 @@ const AdminCommunitiesPage: React.FC = () => {
 
                                     {/* Content Section */}
                                     <div className="p-5 flex flex-col flex-1">
-                                        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-1">
+                                        <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-1">
                                             {community.name}
                                         </h3>
 
-                                        <p className="text-gray-500 text-sm mb-4 line-clamp-2 flex-grow">
+                                        <p className="text-muted-foreground text-sm mb-4 line-clamp-2 flex-grow">
                                             {community.description}
                                         </p>
 
                                         {/* Stats */}
-                                        <div className="space-y-2 mb-4 text-sm border-b border-gray-100 pb-4">
+                                        <div className="space-y-2 mb-4 text-sm border-b border-border pb-4">
                                             <div className="flex items-center justify-between">
-                                                <span className="text-gray-600 flex items-center gap-1.5">
-                                                    <Users className="w-4 h-4 text-gray-400" />
+                                                <span className="text-muted-foreground flex items-center gap-1.5">
+                                                    <Users className="w-4 h-4 text-muted-foreground" />
                                                     {community.membersCount.toLocaleString()} members
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-gray-600">
+                                                <span className="text-muted-foreground">
                                                     {community.creditsCost} credits / {community.creditsPeriod}
                                                 </span>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <span className="text-gray-600 text-xs">
+                                                <span className="text-muted-foreground text-xs">
                                                     Admin: {community.adminId.substring(0, 8)}...
                                                 </span>
                                             </div>
@@ -292,7 +292,7 @@ const AdminCommunitiesPage: React.FC = () => {
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => handleViewDetails(community)}
-                                                className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                                                className="flex-1 bg-primary/10 hover:bg-primary/20 text-primary py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                                                 title="View Details"
                                             >
                                                 <Eye className="w-4 h-4" />
@@ -300,7 +300,7 @@ const AdminCommunitiesPage: React.FC = () => {
                                             </button>
                                             <button
                                                 onClick={() => handleEditClick(community)}
-                                                className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
+                                                className="flex-1 bg-muted hover:bg-muted/80 text-muted-foreground py-2 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                                                 title="Edit"
                                             >
                                                 <Edit2 className="w-4 h-4" />

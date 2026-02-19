@@ -134,7 +134,7 @@ export default function MyProjectsDashboardPage() {
                 <AnimatePresence mode="wait">
                     {isLoading ? (
                         <div className="flex justify-center py-12">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                         </div>
                     ) : (
                         <motion.div
@@ -934,7 +934,7 @@ function ApplicantsTab({
                             <div>
                                 <div className="flex items-center gap-2">
                                     <h3 className="text-base font-bold text-foreground">{app.applicant?.name || 'Unknown User'}</h3>
-                                    <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="w-4 h-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>

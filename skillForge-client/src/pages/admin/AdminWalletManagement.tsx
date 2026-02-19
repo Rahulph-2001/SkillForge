@@ -139,13 +139,13 @@ export default function AdminWalletManagement() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 p-6">
+            <div className="min-h-screen bg-muted/40 p-6">
                 <div className="max-w-7xl mx-auto">
                     <div className="animate-pulse">
-                        <div className="h-8 bg-gray-200 rounded w-1/4 mb-6"></div>
+                        <div className="h-8 bg-muted rounded w-1/4 mb-6"></div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                             {[1, 2, 3, 4, 5, 6].map((i) => (
-                                <div key={i} className="bg-white rounded-lg p-6 h-32"></div>
+                                <div key={i} className="bg-card rounded-lg p-6 h-32"></div>
                             ))}
                         </div>
                     </div>
@@ -155,12 +155,12 @@ export default function AdminWalletManagement() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <div className="min-h-screen bg-muted/40 p-6">
             <div className="max-w-7xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Wallet Management</h1>
-                    <p className="text-gray-600">Manage user wallets, redemptions, and withdrawal requests</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Wallet Management</h1>
+                    <p className="text-muted-foreground">Manage user wallets, redemptions, and withdrawal requests</p>
                 </div>
 
                 {/* Stats Cards */}
@@ -247,18 +247,17 @@ export default function AdminWalletManagement() {
                 )}
 
                 {/* Tabs */}
-                <div className="bg-white rounded-lg shadow-sm mb-6">
-                    <div className="border-b border-gray-200">
+                <div className="bg-card rounded-lg shadow-sm mb-6">
+                    <div className="border-b border-border">
                         <nav className="flex -mb-px">
                             {['transactions', 'withdrawals', 'escrow', 'approvals', 'user-wallets'].map((tab) => (
                                 <button
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
-                                    className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-                                        activeTab === tab
-                                            ? 'border-blue-500 text-blue-600'
-                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    }`}
+                                    className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
+                                            ? 'border-primary text-primary'
+                                            : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                                        }`}
                                 >
                                     {tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                                 </button>
@@ -269,14 +268,14 @@ export default function AdminWalletManagement() {
 
                 {/* Transactions Table */}
                 {activeTab === 'transactions' && (
-                    <div className="bg-white rounded-lg shadow-sm">
-                        <div className="p-6 border-b border-gray-200">
+                    <div className="bg-card rounded-lg shadow-sm border border-border">
+                        <div className="p-6 border-b border-border">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <h2 className="text-xl font-semibold text-gray-900">All Wallet Transactions</h2>
-                                    <p className="text-sm text-gray-600 mt-1">View all wallet-related transactions</p>
+                                    <h2 className="text-xl font-semibold text-foreground">All Wallet Transactions</h2>
+                                    <p className="text-sm text-muted-foreground mt-1">View all wallet-related transactions</p>
                                 </div>
-                                <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors">
                                     <Icons.Download />
                                     <span>Export</span>
                                 </button>
@@ -297,7 +296,7 @@ export default function AdminWalletManagement() {
                                                 setSearch(e.target.value);
                                                 setPage(1);
                                             }}
-                                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            className="w-full pl-10 pr-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder-muted-foreground"
                                         />
                                     </div>
                                 </div>
@@ -307,7 +306,7 @@ export default function AdminWalletManagement() {
                                         setTypeFilter(e.target.value as any);
                                         setPage(1);
                                     }}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                                 >
                                     <option value="">All Types</option>
                                     <option value="CREDIT">Credit</option>
@@ -319,7 +318,7 @@ export default function AdminWalletManagement() {
                                         setStatusFilter(e.target.value as any);
                                         setPage(1);
                                     }}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
                                 >
                                     <option value="">All Status</option>
                                     <option value="COMPLETED">Completed</option>
@@ -332,46 +331,45 @@ export default function AdminWalletManagement() {
                         {/* Table */}
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-muted/40">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction ID</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Transaction ID</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">User</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Type</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Amount</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Description</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Date</th>
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
+                                <tbody className="bg-card divide-y divide-border">
                                     {transactionsLoading ? (
                                         <tr>
-                                            <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                            <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                                                 Loading transactions...
                                             </td>
                                         </tr>
                                     ) : transactions.length === 0 ? (
                                         <tr>
-                                            <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
+                                            <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
                                                 No transactions found
                                             </td>
                                         </tr>
                                     ) : (
                                         transactions.map((transaction) => (
-                                            <tr key={transaction.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            <tr key={transaction.id} className="hover:bg-muted/50 transition-colors">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-foreground">
                                                     {transaction.transactionId}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900">{transaction.userName}</div>
-                                                    <div className="text-sm text-gray-500">{transaction.userEmail}</div>
+                                                    <div className="text-sm font-medium text-foreground">{transaction.userName}</div>
+                                                    <div className="text-sm text-muted-foreground">{transaction.userEmail}</div>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        transaction.type === 'CREDIT'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-orange-100 text-orange-800'
-                                                    }`}>
+                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${transaction.type === 'CREDIT'
+                                                            ? 'bg-green-500/10 text-green-600'
+                                                            : 'bg-orange-500/10 text-orange-600'
+                                                        }`}>
                                                         {transaction.type === 'CREDIT' ? (
                                                             <Icons.TrendingDown />
                                                         ) : (
@@ -380,26 +378,24 @@ export default function AdminWalletManagement() {
                                                         {transaction.type}
                                                     </span>
                                                 </td>
-                                                <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${
-                                                    transaction.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
-                                                }`}>
+                                                <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${transaction.type === 'CREDIT' ? 'text-green-600' : 'text-red-600'
+                                                    }`}>
                                                     {transaction.type === 'CREDIT' ? '+' : '-'}
                                                     {formatCurrency(transaction.amount)}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-500">
+                                                <td className="px-6 py-4 text-sm text-muted-foreground">
                                                     {transaction.description}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted-foreground">
                                                     {formatDate(transaction.date)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                        transaction.status === 'COMPLETED'
-                                                            ? 'bg-green-100 text-green-800'
+                                                    <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${transaction.status === 'COMPLETED'
+                                                            ? 'bg-green-500/10 text-green-600'
                                                             : transaction.status === 'PENDING'
-                                                            ? 'bg-yellow-100 text-yellow-800'
-                                                            : 'bg-red-100 text-red-800'
-                                                    }`}>
+                                                                ? 'bg-yellow-500/10 text-yellow-600'
+                                                                : 'bg-destructive/10 text-destructive'
+                                                        }`}>
                                                         {transaction.status === 'COMPLETED' && <Icons.CheckCircle />}
                                                         {transaction.status === 'PENDING' && <Icons.Clock />}
                                                         {transaction.status}
@@ -414,7 +410,7 @@ export default function AdminWalletManagement() {
 
                         {/* Pagination */}
                         {totalPages > 0 && (
-                            <div className="px-6 py-4 border-t border-gray-200">
+                            <div className="px-6 py-4 border-t border-border">
                                 <Pagination
                                     currentPage={page}
                                     totalPages={totalPages}
@@ -435,8 +431,8 @@ export default function AdminWalletManagement() {
 
                 {/* Other tabs placeholder */}
                 {activeTab !== 'transactions' && (
-                    <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-                        <p className="text-gray-500">This section is coming soon</p>
+                    <div className="bg-card rounded-lg shadow-sm border border-border p-12 text-center">
+                        <p className="text-muted-foreground">This section is coming soon</p>
                     </div>
                 )}
             </div>

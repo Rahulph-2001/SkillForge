@@ -111,20 +111,20 @@ export default function SessionManagementPage() {
   const getStatusStyles = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'bg-amber-50 text-amber-700 border border-amber-200';
+        return 'bg-amber-500/10 text-amber-600 border border-amber-500/20';
       case 'confirmed':
-        return 'bg-green-50 text-green-700 border border-green-200';
+        return 'bg-green-500/10 text-green-600 border border-green-500/20';
       case 'in_session':
-        return 'bg-purple-50 text-purple-700 border border-purple-200 animate-pulse';
+        return 'bg-purple-500/10 text-purple-600 border border-purple-500/20 animate-pulse';
       case 'completed':
-        return 'bg-blue-50 text-blue-700 border border-blue-200';
+        return 'bg-blue-500/10 text-blue-600 border border-blue-500/20';
       case 'cancelled':
       case 'rejected':
-        return 'bg-red-50 text-red-700 border border-red-200';
+        return 'bg-destructive/10 text-destructive border border-destructive/20';
       case 'reschedule_requested':
-        return 'bg-orange-50 text-orange-700 border border-orange-200';
+        return 'bg-orange-500/10 text-orange-600 border border-orange-500/20';
       default:
-        return 'bg-gray-50 text-gray-700 border border-gray-200';
+        return 'bg-muted text-muted-foreground border border-border';
     }
   };
 
@@ -487,30 +487,30 @@ export default function SessionManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
 
         <div className="flex flex-col justify-center items-center py-20">
-          <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-          <p className="text-gray-600">Loading sessions...</p>
+          <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+          <p className="text-muted-foreground">Loading sessions...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
 
 
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-blue-600" />
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Session Management</h1>
-              <p className="text-gray-600 text-sm mt-1">Manage all your bookings and session requests</p>
+              <h1 className="text-3xl font-bold text-foreground">Session Management</h1>
+              <p className="text-muted-foreground text-sm mt-1">Manage all your bookings and session requests</p>
             </div>
           </div>
 
@@ -519,8 +519,8 @@ export default function SessionManagementPage() {
             <button
               onClick={() => setViewMode('learner')}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${viewMode === 'learner'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary text-primary-foreground shadow-md'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
             >
               <BookOpen className="w-5 h-5" />
@@ -530,8 +530,8 @@ export default function SessionManagementPage() {
             <button
               onClick={() => setViewMode('provider')}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${viewMode === 'provider'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-primary text-primary-foreground shadow-md'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
                 }`}
             >
               <Users className="w-5 h-5" />
@@ -544,48 +544,48 @@ export default function SessionManagementPage() {
 
       {/* Stats Section */}
       {stats && (
-        <div className="bg-white border-b border-gray-200">
+        <div className="bg-card border-b border-border">
           <div className="max-w-7xl mx-auto px-6 py-8">
             <div className="grid grid-cols-4 gap-6">
               {/* Pending */}
-              <div className="bg-amber-50 rounded-lg p-6 border border-amber-100">
+              <div className="bg-amber-500/10 rounded-lg p-6 border border-amber-500/20">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-amber-600 text-sm font-medium">Pending</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stats.pending}</p>
+                    <p className="text-3xl font-bold text-foreground mt-2">{stats.pending}</p>
                   </div>
                   <AlertCircle className="w-8 h-8 text-amber-500" />
                 </div>
               </div>
 
               {/* Confirmed */}
-              <div className="bg-green-50 rounded-lg p-6 border border-green-100">
+              <div className="bg-green-500/10 rounded-lg p-6 border border-green-500/20">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-green-600 text-sm font-medium">Confirmed</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stats.confirmed}</p>
+                    <p className="text-3xl font-bold text-foreground mt-2">{stats.confirmed}</p>
                   </div>
                   <Check className="w-8 h-8 text-green-500" />
                 </div>
               </div>
 
               {/* Reschedule */}
-              <div className="bg-orange-50 rounded-lg p-6 border border-orange-100">
+              <div className="bg-orange-500/10 rounded-lg p-6 border border-orange-500/20">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-orange-600 text-sm font-medium">Reschedule</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stats.reschedule}</p>
+                    <p className="text-3xl font-bold text-foreground mt-2">{stats.reschedule}</p>
                   </div>
                   <ArrowRight className="w-8 h-8 text-orange-500" />
                 </div>
               </div>
 
               {/* Completed */}
-              <div className="bg-blue-50 rounded-lg p-6 border border-blue-100">
+              <div className="bg-blue-500/10 rounded-lg p-6 border border-blue-500/20">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="text-blue-600 text-sm font-medium">Completed</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-2">{stats.completed}</p>
+                    <p className="text-3xl font-bold text-foreground mt-2">{stats.completed}</p>
                   </div>
                   <Check className="w-8 h-8 text-blue-500" />
                 </div>
@@ -596,14 +596,14 @@ export default function SessionManagementPage() {
       )}
 
       {/* Filters */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-card border-b border-border">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex gap-4">
             {(['All', 'Pending', 'Confirmed', 'Completed', 'Cancelled'] as FilterType[]).map((filter) => (
               <button
                 key={filter}
                 onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeFilter === filter ? 'bg-gray-900 text-white' : 'text-gray-700 hover:bg-gray-100'
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${activeFilter === filter ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted'
                   } relative`}
               >
                 {filter}
@@ -621,12 +621,12 @@ export default function SessionManagementPage() {
       {/* Sessions List */}
       <div className="max-w-7xl mx-auto px-6 py-8">
         {filteredSessions.length === 0 ? (
-          <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-            <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          <div className="bg-card border border-border rounded-lg p-12 text-center">
+            <Calendar className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">
               {viewMode === 'provider' ? 'No Booking Requests' : 'No Bookings Yet'}
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-muted-foreground mb-4">
               {viewMode === 'provider' ? (
                 activeFilter === 'All'
                   ? "You haven't received any booking requests yet. Add skills to start receiving requests!"
@@ -652,7 +652,7 @@ export default function SessionManagementPage() {
             {viewMode === 'provider' && activeFilter === 'All' && (
               <button
                 onClick={() => window.location.href = '/my-skills'}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition"
               >
                 <BookmarkIcon className="w-5 h-5" />
                 Add Your Skills
@@ -661,7 +661,7 @@ export default function SessionManagementPage() {
             {viewMode === 'learner' && activeFilter === 'All' && (
               <button
                 onClick={() => window.location.href = '/explore'}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition"
+                className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-3 rounded-lg font-medium transition"
               >
                 <BookOpen className="w-5 h-5" />
                 Browse Skills
@@ -673,12 +673,12 @@ export default function SessionManagementPage() {
             {filteredSessions.map((session) => (
               <div
                 key={session.id}
-                className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition"
+                className="bg-card rounded-lg border border-border p-6 hover:shadow-md transition"
               >
                 <div className="flex gap-6">
                   {/* Avatar */}
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 rounded-lg bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center overflow-hidden">
+                    <div className="w-20 h-20 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
                       {viewMode === 'learner' ? (
                         session.providerAvatar ? (
                           <img
@@ -687,7 +687,7 @@ export default function SessionManagementPage() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-2xl font-bold text-white">{getInitials(session.providerName)}</span>
+                          <span className="text-2xl font-bold text-primary">{getInitials(session.providerName)}</span>
                         )
                       ) : (
                         session.learnerAvatar ? (
@@ -697,7 +697,7 @@ export default function SessionManagementPage() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-2xl font-bold text-white">{getInitials(session.learnerName)}</span>
+                          <span className="text-2xl font-bold text-primary">{getInitials(session.learnerName)}</span>
                         )
                       )}
                     </div>
@@ -707,8 +707,8 @@ export default function SessionManagementPage() {
                   <div className="flex-1">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{session.skillTitle}</h3>
-                        <div className="flex items-center gap-1 mt-1 text-gray-600">
+                        <h3 className="text-lg font-semibold text-foreground">{session.skillTitle}</h3>
+                        <div className="flex items-center gap-1 mt-1 text-muted-foreground">
                           <User className="w-4 h-4" />
                           <span className="text-sm">
                             {viewMode === 'learner'
@@ -725,7 +725,7 @@ export default function SessionManagementPage() {
                     </div>
 
                     {/* Details */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-3">
                       <div className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
                         <span>{formatDate(session.preferredDate)}</span>
@@ -737,20 +737,20 @@ export default function SessionManagementPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <span className="text-xs bg-gray-100 px-2 py-1 rounded">{session.sessionType || 'Virtual'}</span>
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded">{session.sessionType || 'Virtual'}</span>
                       </div>
                     </div>
 
                     {/* Notes */}
                     {session.notes && (
-                      <p className="text-sm text-gray-600 mb-3">
-                        <span className="font-medium">Notes:</span> {session.notes}
+                      <p className="text-sm text-muted-foreground mb-3">
+                        <span className="font-medium text-foreground">Notes:</span> {session.notes}
                       </p>
                     )}
 
                     {/* Reschedule Info */}
                     {session.rescheduleInfo && (
-                      <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-3">
+                      <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 mb-3">
                         <div className="flex items-start gap-2">
                           <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0 mt-0.5" />
                           <div className="text-sm">
@@ -768,20 +768,20 @@ export default function SessionManagementPage() {
 
                     {/* Rejection Reason Display */}
                     {session.rejectionReason && (
-                      <div className="mt-4 p-4 bg-red-50 rounded-lg border-2 border-red-200 mb-3">
+                      <div className="mt-4 p-4 bg-destructive/5 rounded-lg border-2 border-destructive/10 mb-3">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="bg-red-200 text-red-800 text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
+                          <span className="bg-destructive/10 text-destructive text-xs px-2 py-0.5 rounded uppercase tracking-wide font-semibold">Reschedule Rejected</span>
                         </div>
-                        <p className="text-sm text-gray-700">
-                          <span className="font-medium text-red-700">Reason:</span> "{session.rejectionReason}"
+                        <p className="text-sm text-muted-foreground">
+                          <span className="font-medium text-destructive">Reason:</span> "{session.rejectionReason}"
                         </p>
                       </div>
                     )}
 
                     {/* Credits */}
                     <div className="flex items-center gap-1 text-sm">
-                      <BookmarkIcon className="w-4 h-4 text-gray-400" />
-                      <span className="text-gray-600">{session.sessionCost} credits</span>
+                      <BookmarkIcon className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{session.sessionCost} credits</span>
                     </div>
                   </div>
 

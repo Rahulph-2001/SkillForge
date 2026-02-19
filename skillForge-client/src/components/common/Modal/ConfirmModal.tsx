@@ -45,38 +45,38 @@ export default function ConfirmModal({
     switch (type) {
       case 'danger':
         return {
-          iconBg: 'bg-red-100',
-          iconColor: 'text-red-600',
-          confirmBg: 'bg-red-600 hover:bg-red-700',
-          confirmText: 'text-white'
+          iconBg: 'bg-destructive/10',
+          iconColor: 'text-destructive',
+          confirmBg: 'bg-destructive hover:bg-destructive/90',
+          confirmText: 'text-destructive-foreground'
         }
       case 'warning':
         return {
-          iconBg: 'bg-yellow-100',
-          iconColor: 'text-yellow-600',
-          confirmBg: 'bg-yellow-600 hover:bg-yellow-700',
+          iconBg: 'bg-yellow-500/10',
+          iconColor: 'text-yellow-500',
+          confirmBg: 'bg-yellow-500 hover:bg-yellow-600',
           confirmText: 'text-white'
         }
       case 'info':
         return {
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600',
-          confirmBg: 'bg-blue-600 hover:bg-blue-700',
-          confirmText: 'text-white'
+          iconBg: 'bg-primary/10',
+          iconColor: 'text-primary',
+          confirmBg: 'bg-primary hover:bg-primary/90',
+          confirmText: 'text-primary-foreground'
         }
       case 'primary':
         return {
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600',
-          confirmBg: 'bg-blue-600 hover:bg-blue-700',
-          confirmText: 'text-white'
+          iconBg: 'bg-primary/10',
+          iconColor: 'text-primary',
+          confirmBg: 'bg-primary hover:bg-primary/90',
+          confirmText: 'text-primary-foreground'
         }
       default:
         return {
-          iconBg: 'bg-blue-100',
-          iconColor: 'text-blue-600',
-          confirmBg: 'bg-blue-600 hover:bg-blue-700',
-          confirmText: 'text-white'
+          iconBg: 'bg-primary/10',
+          iconColor: 'text-primary',
+          confirmBg: 'bg-primary hover:bg-primary/90',
+          confirmText: 'text-primary-foreground'
         }
     }
   }
@@ -85,7 +85,7 @@ export default function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
       onClick={handleBackdropClick}
       onKeyDown={handleKeyDown}
       role="dialog"
@@ -93,12 +93,12 @@ export default function ConfirmModal({
       aria-labelledby="confirm-modal-title"
       aria-describedby="confirm-modal-description"
     >
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in border border-border">
         {/* Close Button */}
         <div className="flex justify-end mb-2">
           <button
             onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors"
             aria-label="Close"
           >
             <X className="w-5 h-5" />
@@ -115,7 +115,7 @@ export default function ConfirmModal({
         {/* Title */}
         <h2
           id="confirm-modal-title"
-          className="text-xl font-bold text-gray-900 text-center mb-3"
+          className="text-xl font-bold text-foreground text-center mb-3"
         >
           {title}
         </h2>
@@ -123,7 +123,7 @@ export default function ConfirmModal({
         {/* Message */}
         <p
           id="confirm-modal-description"
-          className="text-gray-600 text-center mb-6"
+          className="text-muted-foreground text-center mb-6"
         >
           {message}
         </p>
@@ -135,7 +135,7 @@ export default function ConfirmModal({
         <div className="flex gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex-1 px-4 py-2.5 border border-input bg-background text-foreground font-medium rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors"
           >
             {cancelText}
           </button>

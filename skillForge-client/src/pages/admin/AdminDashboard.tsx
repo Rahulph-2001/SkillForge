@@ -119,8 +119,8 @@ export default function AdminDashboard() {
 
     if (loading || !stats) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="min-h-screen bg-muted/40 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
             value: stats.totalUsers.toLocaleString(),
             icon: Icons.Users,
             color: "text-blue-500",
-            bgColor: "bg-blue-50",
+            bgColor: "bg-blue-500/10",
             change: `${stats.userGrowthPercentage >= 0 ? '+' : ''}${stats.userGrowthPercentage}%`,
             active: `${stats.activeUsers.toLocaleString()} active`,
         },
@@ -140,7 +140,7 @@ export default function AdminDashboard() {
             value: stats.totalSkills.toLocaleString(),
             icon: Icons.Skills,
             color: "text-purple-500",
-            bgColor: "bg-purple-50",
+            bgColor: "bg-purple-500/10",
             change: `${stats.skillGrowthPercentage >= 0 ? '+' : ''}${stats.skillGrowthPercentage}%`,
             active: `${stats.pendingSkillsCount} pending approval`,
         },
@@ -149,7 +149,7 @@ export default function AdminDashboard() {
             value: stats.totalSessions.toLocaleString(),
             icon: Icons.Sessions,
             color: "text-green-500",
-            bgColor: "bg-green-50",
+            bgColor: "bg-green-500/10",
             change: `${stats.sessionGrowthPercentage >= 0 ? '+' : ''}${stats.sessionGrowthPercentage}%`,
             active: `${stats.sessionsThisWeek} this week`,
         },
@@ -158,7 +158,7 @@ export default function AdminDashboard() {
             value: `₹${stats.totalRevenue.toLocaleString()}`,
             icon: Icons.Revenue,
             color: "text-yellow-500",
-            bgColor: "bg-yellow-50",
+            bgColor: "bg-yellow-500/10",
             change: `${stats.revenueGrowthPercentage >= 0 ? '+' : ''}${stats.revenueGrowthPercentage}%`,
             active: `₹${stats.revenueThisWeek.toLocaleString()} this week`,
         },
@@ -215,7 +215,7 @@ export default function AdminDashboard() {
     }));
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/40">
             {/* Reusable Admin Navbar */}
 
 
@@ -223,8 +223,8 @@ export default function AdminDashboard() {
             <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
                 {/* Page Header */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-                    <p className="text-gray-600 mt-1">Platform overview and management</p>
+                    <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
+                    <p className="text-muted-foreground mt-1">Platform overview and management</p>
                 </div>
 
                 {/* Stat Cards */}
@@ -232,60 +232,60 @@ export default function AdminDashboard() {
                     {statCards.map((card, idx) => (
                         <div
                             key={idx}
-                            className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                            className="bg-card rounded-lg p-6 border border-border shadow-sm hover:shadow-md transition-shadow"
                         >
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`${card.bgColor} p-3 rounded-lg ${card.color}`}>
                                     <card.icon />
                                 </div>
-                                <span className="text-green-600 font-semibold text-sm">{card.change}</span>
+                                <span className="text-green-500 font-semibold text-sm">{card.change}</span>
                             </div>
-                            <h3 className="text-3xl font-bold text-gray-900 mb-1">{card.value}</h3>
-                            <p className="text-gray-600 text-sm font-medium">{card.label}</p>
-                            <p className="text-gray-500 text-xs mt-2">{card.active}</p>
+                            <h3 className="text-3xl font-bold text-foreground mb-1">{card.value}</h3>
+                            <p className="text-muted-foreground text-sm font-medium">{card.label}</p>
+                            <p className="text-muted-foreground text-xs mt-2">{card.active}</p>
                         </div>
                     ))}
                 </div>
 
                 {/* Revenue Flow & Financial Overview */}
-                <div className="bg-white rounded-lg border border-blue-200 p-6 mb-8 shadow-sm">
+                <div className="bg-card rounded-lg border border-border p-6 mb-8 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <div className="text-blue-600">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="text-primary">
                                     <Icons.TrendingUp />
                                 </div>
                                 Revenue Flow & Financial Overview
                             </h2>
-                            <p className="text-gray-600 text-sm">Platform revenue from credit sales and financial health</p>
+                            <p className="text-muted-foreground text-sm">Platform revenue from credit sales and financial health</p>
                         </div>
-                        <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">Manage Credits</button>
+                        <button className="text-primary hover:text-primary/90 font-semibold text-sm">Manage Credits</button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                         {revenueCards.map((card, idx) => (
-                            <div key={idx} className={`${card.color} bg-gray-50 p-4 rounded-lg`}>
+                            <div key={idx} className={`${card.color} bg-muted/40 p-4 rounded-lg`}>
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="text-gray-600">
+                                    <div className="text-muted-foreground">
                                         <card.icon />
                                     </div>
-                                    <p className="text-gray-600 text-sm font-medium">{card.title}</p>
+                                    <p className="text-muted-foreground text-sm font-medium">{card.title}</p>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mb-1">{card.amount}</h3>
-                                <p className="text-gray-500 text-xs">{card.desc}</p>
+                                <h3 className="text-2xl font-bold text-foreground mb-1">{card.amount}</h3>
+                                <p className="text-muted-foreground text-xs">{card.desc}</p>
                             </div>
                         ))}
                     </div>
 
                     {/* Revenue Model Info */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
                         <div className="flex gap-2 mb-2">
-                            <div className="text-blue-600 flex-shrink-0">
+                            <div className="text-primary flex-shrink-0">
                                 <Icons.CheckCircle />
                             </div>
-                            <p className="font-semibold text-gray-900 text-sm">Revenue Model</p>
+                            <p className="font-semibold text-foreground text-sm">Revenue Model</p>
                         </div>
-                        <ul className="text-sm text-gray-700 space-y-1 ml-7">
+                        <ul className="text-sm text-muted-foreground space-y-1 ml-7">
                             <li>• Users can buy credits at ₹60-75/credit (discounts)</li>
                             <li>• Users redeem credits to wallet at ₹50/credit</li>
                             <li>• Platform profit: ₹10-25 per credit when redeemed</li>
@@ -295,31 +295,31 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Platform Wallet Overview */}
-                <div className="bg-white rounded-lg border border-cyan-200 p-6 mb-8 shadow-sm">
+                <div className="bg-card rounded-lg border border-border p-6 mb-8 shadow-sm">
                     <div className="flex justify-between items-center mb-6">
                         <div>
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <div className="text-cyan-600">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="text-cyan-500">
                                     <Icons.Wallet />
                                 </div>
                                 Platform Wallet Overview
                             </h2>
-                            <p className="text-gray-600 text-sm">Total user wallet balances and transactions</p>
+                            <p className="text-muted-foreground text-sm">Total user wallet balances and transactions</p>
                         </div>
-                        <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">View Details</button>
+                        <button className="text-primary hover:text-primary/90 font-semibold text-sm">View Details</button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {walletStats.map((stat, idx) => (
-                            <div key={idx} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <div key={idx} className="bg-muted/40 p-4 rounded-lg border border-border">
                                 <div className="flex items-center gap-2 mb-2">
-                                    <div className="text-gray-600 w-5 h-5">
+                                    <div className="text-muted-foreground w-5 h-5">
                                         <stat.icon />
                                     </div>
-                                    <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
+                                    <p className="text-muted-foreground text-sm font-medium">{stat.title}</p>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 mt-2 mb-1">{stat.amount}</h3>
-                                <p className="text-gray-500 text-xs">{stat.desc}</p>
+                                <h3 className="text-2xl font-bold text-foreground mt-2 mb-1">{stat.amount}</h3>
+                                <p className="text-muted-foreground text-xs">{stat.desc}</p>
                             </div>
                         ))}
                     </div>
@@ -330,38 +330,38 @@ export default function AdminDashboard() {
                     {/* Pending Reports */}
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                                <div className="text-red-600">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="text-destructive">
                                     <Icons.Warning />
                                 </div>
                                 Pending Reports
                             </h2>
-                            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">View All</button>
+                            <button className="text-primary hover:text-primary/90 font-semibold text-sm">View All</button>
                         </div>
 
                         <div className="space-y-4">
                             {stats.pendingReports.length > 0 ? (
                                 stats.pendingReports.map((report, idx) => (
-                                    <div key={idx} className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-                                        <div className="border-b border-gray-200 pb-4 mb-4">
+                                    <div key={idx} className="bg-card rounded-lg border border-border p-6 shadow-sm">
+                                        <div className="border-b border-border pb-4 mb-4">
                                             <div className="flex justify-between items-start mb-3">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-6 h-6 text-blue-600">
+                                                    <div className="w-6 h-6 text-primary">
                                                         <Icons.Users />
                                                     </div>
                                                     <div>
-                                                        <p className="font-semibold text-gray-900">{report.type}</p>
-                                                        <p className="text-sm text-gray-600">{report.description}</p>
+                                                        <p className="font-semibold text-foreground">{report.type}</p>
+                                                        <p className="text-sm text-muted-foreground">{report.description}</p>
                                                     </div>
                                                 </div>
-                                                <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">Review</button>
+                                                <button className="text-primary hover:text-primary/90 font-semibold text-sm">Review</button>
                                             </div>
-                                            <p className="text-xs text-gray-500 ml-10">Reported by {report.reportedBy}</p>
+                                            <p className="text-xs text-muted-foreground ml-10">Reported by {report.reportedBy}</p>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm text-center text-gray-500">
+                                <div className="bg-card rounded-lg border border-border p-6 shadow-sm text-center text-muted-foreground">
                                     No pending reports
                                 </div>
                             )}
@@ -371,7 +371,7 @@ export default function AdminDashboard() {
                     {/* Platform Activity */}
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                                 <div className="text-yellow-500">
                                     <Icons.Zap />
                                 </div>
@@ -406,19 +406,19 @@ export default function AdminDashboard() {
                                     trendColor: stats.sessionsCompletedGrowth >= 0 ? "text-green-600" : "text-red-600"
                                 },
                             ].map((activity, idx) => (
-                                <div key={idx} className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm">
+                                <div key={idx} className="bg-card rounded-lg border border-border p-4 shadow-sm">
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-6 h-6 text-gray-600">
+                                            <div className="w-6 h-6 text-muted-foreground">
                                                 <activity.icon />
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-900">{activity.title}</p>
-                                                <p className="text-xs text-gray-500">{activity.time}</p>
+                                                <p className="font-semibold text-foreground">{activity.title}</p>
+                                                <p className="text-xs text-muted-foreground">{activity.time}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-bold text-gray-900">{activity.count}</p>
+                                            <p className="font-bold text-foreground">{activity.count}</p>
                                             <p className={`text-xs ${activity.trendColor}`}>{activity.trend}</p>
                                         </div>
                                     </div>
@@ -433,27 +433,27 @@ export default function AdminDashboard() {
                     {/* Recent Users */}
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900">Recent Users</h2>
-                            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">View All</button>
+                            <h2 className="text-lg font-bold text-foreground">Recent Users</h2>
+                            <button className="text-primary hover:text-primary/90 font-semibold text-sm">View All</button>
                         </div>
 
                         <div className="space-y-4">
                             {recentUsers.map((user, idx) => (
                                 <div
                                     key={idx}
-                                    className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                                    className="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-shadow"
                                 >
                                     <div className="flex justify-between items-start">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                                            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-sm">
                                                 {user.name.charAt(0)}
                                             </div>
                                             <div>
-                                                <p className="font-semibold text-gray-900">{user.name}</p>
-                                                <p className="text-sm text-gray-600">{user.location}</p>
+                                                <p className="font-semibold text-foreground">{user.name}</p>
+                                                <p className="text-sm text-muted-foreground">{user.location}</p>
                                             </div>
                                         </div>
-                                        <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-xs font-semibold">
+                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded text-xs font-semibold">
                                             {user.credits}
                                         </span>
                                     </div>
@@ -465,29 +465,29 @@ export default function AdminDashboard() {
                     {/* Recent Sessions */}
                     <div>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-bold text-gray-900">Recent Sessions</h2>
-                            <button className="text-blue-600 hover:text-blue-700 font-semibold text-sm">View All</button>
+                            <h2 className="text-lg font-bold text-foreground">Recent Sessions</h2>
+                            <button className="text-primary hover:text-primary/90 font-semibold text-sm">View All</button>
                         </div>
 
                         <div className="space-y-4">
                             {recentSessions.map((session, idx) => (
                                 <div
                                     key={idx}
-                                    className="bg-white rounded-lg border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow"
+                                    className="bg-card rounded-lg border border-border p-4 shadow-sm hover:shadow-md transition-shadow"
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <p className="font-semibold text-gray-900">{session.title}</p>
-                                            <p className="text-sm text-gray-600">{session.instructor}</p>
+                                            <p className="font-semibold text-foreground">{session.title}</p>
+                                            <p className="text-sm text-muted-foreground">{session.instructor}</p>
                                         </div>
                                         <span
                                             className={`px-3 py-1 rounded text-xs font-semibold whitespace-nowrap ml-2 ${session.status === "Confirmed"
-                                                ? "bg-blue-100 text-blue-700"
+                                                ? "bg-blue-500/10 text-blue-600"
                                                 : session.status === "completed"
-                                                    ? "bg-green-100 text-green-700"
+                                                    ? "bg-green-500/10 text-green-600"
                                                     : session.status === "pending"
-                                                        ? "bg-yellow-100 text-yellow-700"
-                                                        : "bg-red-100 text-red-700"
+                                                        ? "bg-yellow-500/10 text-yellow-600"
+                                                        : "bg-destructive/10 text-destructive"
                                                 }`}
                                         >
                                             {session.status}

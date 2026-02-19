@@ -86,23 +86,23 @@ export default function BrowseSkillsPage() {
     const hasActiveFilters = searchQuery || selectedCategory !== 'All' || selectedLevel !== 'All Levels';
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-50">
+        <div className="min-h-screen bg-background">
 
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Page Header */}
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center gap-3">
-                        <Award className="w-10 h-10 text-blue-600" />
+                    <h1 className="text-4xl font-bold text-foreground mb-2 flex items-center gap-3">
+                        <Award className="w-10 h-10 text-primary" />
                         Browse Skills
                     </h1>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-muted-foreground text-lg">
                         Discover and book sessions with expert skill providers from around the world
                     </p>
                 </div>
 
                 {/* Search and Filter Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+                <div className="bg-card rounded-xl shadow-sm border border-border p-6 mb-8">
                     {/* Search Bar */}
                     <div className="mb-6">
                         <div className="relative">
@@ -115,7 +115,7 @@ export default function BrowseSkillsPage() {
                                     setSearchQuery(e.target.value);
                                     setCurrentPage(1);
                                 }}
-                                className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 placeholder-gray-400"
+                                className="w-full pl-12 pr-4 py-3.5 border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder-muted-foreground"
                             />
                         </div>
                     </div>
@@ -124,7 +124,7 @@ export default function BrowseSkillsPage() {
                     <div className="flex items-center justify-between mb-4 lg:hidden">
                         <button
                             onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
                         >
                             <Filter className="w-4 h-4" />
                             Filters
@@ -143,7 +143,7 @@ export default function BrowseSkillsPage() {
                     {/* Filters */}
                     <div className={`${showFilters ? 'block' : 'hidden'} lg:block`}>
                         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
-                            <span className="text-sm text-gray-600 font-semibold">Filters:</span>
+                            <span className="text-sm text-muted-foreground font-semibold">Filters:</span>
 
                             {/* Level Filter */}
                             <select
@@ -152,7 +152,7 @@ export default function BrowseSkillsPage() {
                                     setSelectedLevel(e.target.value);
                                     setCurrentPage(1);
                                 }}
-                                className="px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-gray-400 transition-colors"
+                                className="px-4 py-2.5 border border-input rounded-lg text-sm font-medium text-foreground bg-background cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary hover:border-accent transition-colors"
                             >
                                 {levels.map((level) => (
                                     <option key={level} value={level}>
@@ -184,8 +184,8 @@ export default function BrowseSkillsPage() {
                                             setCurrentPage(1);
                                         }}
                                         className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === category
-                                            ? 'bg-blue-600 text-white shadow-md scale-105'
-                                            : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400'
+                                            ? 'bg-primary text-primary-foreground shadow-md scale-105'
+                                            : 'bg-card border border-input text-foreground hover:bg-accent hover:border-accent'
                                             }`}
                                     >
                                         {category}
@@ -198,12 +198,12 @@ export default function BrowseSkillsPage() {
 
                 {/* Results Count */}
                 <div className="mb-6 flex items-center justify-between">
-                    <p className="text-sm text-gray-600">
-                        Showing <span className="font-semibold text-gray-900">{skills.length}</span> of{' '}
-                        <span className="font-semibold text-gray-900">{total}</span> skills
+                    <p className="text-sm text-muted-foreground">
+                        Showing <span className="font-semibold text-foreground">{skills.length}</span> of{' '}
+                        <span className="font-semibold text-foreground">{total}</span> skills
                     </p>
                     {loading && (
-                        <div className="flex items-center gap-2 text-blue-600">
+                        <div className="flex items-center gap-2 text-primary">
                             <Loader2 className="w-4 h-4 animate-spin" />
                             <span className="text-sm">Loading...</span>
                         </div>
@@ -213,8 +213,8 @@ export default function BrowseSkillsPage() {
                 {/* Loading State */}
                 {loading && skills.length === 0 ? (
                     <div className="flex flex-col justify-center items-center py-20">
-                        <Loader2 className="w-12 h-12 animate-spin text-blue-600 mb-4" />
-                        <p className="text-gray-600">Loading amazing skills...</p>
+                        <Loader2 className="w-12 h-12 animate-spin text-primary mb-4" />
+                        <p className="text-muted-foreground">Loading amazing skills...</p>
                     </div>
                 ) : (
                     <>
@@ -224,10 +224,10 @@ export default function BrowseSkillsPage() {
                                 {skills.map((skill) => (
                                     <div
                                         key={skill.id}
-                                        className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl hover:border-blue-300 transition-all duration-300 group"
+                                        className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl hover:border-primary/50 transition-all duration-300 group"
                                     >
                                         {/* Skill Image */}
-                                        <div className="relative h-48 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 overflow-hidden">
+                                        <div className="relative h-48 bg-gradient-to-br from-primary/10 via-secondary to-muted overflow-hidden">
                                             {skill.imageUrl ? (
                                                 <img
                                                     src={skill.imageUrl}
@@ -236,14 +236,14 @@ export default function BrowseSkillsPage() {
                                                 />
                                             ) : (
                                                 <div className="flex items-center justify-center h-full">
-                                                    <span className="text-7xl font-bold text-white drop-shadow-lg">
+                                                    <span className="text-7xl font-bold text-muted-foreground/20 drop-shadow-sm">
                                                         {skill.title.charAt(0).toUpperCase()}
                                                     </span>
                                                 </div>
                                             )}
                                             {/* Category Badge */}
                                             <div className="absolute top-3 left-3">
-                                                <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-blue-700 text-xs font-bold rounded-full shadow-md">
+                                                <span className="px-3 py-1 bg-background/90 backdrop-blur-sm text-primary text-xs font-bold rounded-full shadow-md">
                                                     {skill.category}
                                                 </span>
                                             </div>
@@ -262,13 +262,13 @@ export default function BrowseSkillsPage() {
                                         <div className="p-5">
                                             {/* Title and Rating */}
                                             <div className="flex items-start justify-between mb-3">
-                                                <h3 className="text-lg font-bold text-gray-900 flex-1 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                                                <h3 className="text-lg font-bold text-foreground flex-1 line-clamp-1 group-hover:text-primary transition-colors">
                                                     {skill.title}
                                                 </h3>
                                                 {skill.rating > 0 && (
-                                                    <div className="flex items-center gap-1 ml-2 bg-yellow-50 px-2 py-1 rounded-lg">
-                                                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                                        <span className="text-sm font-bold text-gray-900">
+                                                    <div className="flex items-center gap-1 ml-2 bg-yellow-500/10 px-2 py-1 rounded-lg">
+                                                        <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
+                                                        <span className="text-sm font-bold text-foreground">
                                                             {Number(skill.rating).toFixed(1)}
                                                         </span>
                                                     </div>
@@ -276,7 +276,7 @@ export default function BrowseSkillsPage() {
                                             </div>
 
                                             {/* Description */}
-                                            <p className="text-sm text-gray-600 mb-4 line-clamp-2 leading-relaxed">
+                                            <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
                                                 {skill.description}
                                             </p>
                                             {skill.totalSessions > 0 && (
@@ -290,7 +290,7 @@ export default function BrowseSkillsPage() {
                                             <div className="mt-1 px-5 pb-4">
                                                 <div className="flex items-center gap-1.5 mb-2">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                                                    <span className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Available</span>
+                                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Available</span>
                                                 </div>
                                                 <div className="flex flex-wrap gap-1.5">
                                                     {skill.availableDays.slice(0, 4).map((dayStr, idx) => {
@@ -299,7 +299,7 @@ export default function BrowseSkillsPage() {
                                                         return (
                                                             <span
                                                                 key={idx}
-                                                                className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-semibold text-gray-600 uppercase tracking-wider hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors"
+                                                                className="px-2 py-1 bg-muted border border-border rounded text-[10px] font-semibold text-muted-foreground uppercase tracking-wider hover:bg-green-500/10 hover:text-green-600 hover:border-green-500/20 transition-colors"
                                                                 title={dayStr}
                                                             >
                                                                 {dayName}
@@ -307,7 +307,7 @@ export default function BrowseSkillsPage() {
                                                         );
                                                     })}
                                                     {skill.availableDays.length > 4 && (
-                                                        <span className="px-2 py-1 bg-gray-50 border border-gray-200 rounded text-[10px] font-medium text-gray-500">
+                                                        <span className="px-2 py-1 bg-secondary border border-border rounded text-[10px] font-medium text-muted-foreground">
                                                             +{skill.availableDays.length - 4}
                                                         </span>
                                                     )}
@@ -321,13 +321,13 @@ export default function BrowseSkillsPage() {
                                                 {skill.tags.slice(0, 3).map((tag, index) => (
                                                     <span
                                                         key={index}
-                                                        className="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-medium rounded-full border border-blue-100"
+                                                        className="px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full border border-primary/20"
                                                     >
                                                         #{tag}
                                                     </span>
                                                 ))}
                                                 {skill.tags.length > 3 && (
-                                                    <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                                                    <span className="px-3 py-1 bg-muted text-muted-foreground text-xs font-medium rounded-full">
                                                         +{skill.tags.length - 3} more
                                                     </span>
                                                 )}
@@ -335,19 +335,19 @@ export default function BrowseSkillsPage() {
                                         )}
 
                                         {/* Price and Button */}
-                                        <div className="flex items-center justify-between pt-4 border-t border-gray-100 px-5 pb-5">
+                                        <div className="flex items-center justify-between pt-4 border-t border-border px-5 pb-5">
                                             <div className="flex flex-col">
-                                                <span className="text-xs text-gray-500 mb-1">Price</span>
+                                                <span className="text-xs text-muted-foreground mb-1">Price</span>
                                                 <div className="flex items-baseline gap-1">
-                                                    <span className="text-2xl font-bold text-green-600">
+                                                    <span className="text-2xl font-bold text-primary">
                                                         {skill.creditsPerHour}
                                                     </span>
-                                                    <span className="text-gray-500 text-xs">credits/hr</span>
+                                                    <span className="text-muted-foreground text-xs">credits/hr</span>
                                                 </div>
                                             </div>
                                             <button
                                                 onClick={() => handleViewDetails(skill.id)}
-                                                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold hover:from-blue-700 hover:to-blue-800 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                                                className="bg-primary text-primary-foreground px-6 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
                                             >
                                                 View Details
                                             </button>
@@ -357,14 +357,14 @@ export default function BrowseSkillsPage() {
                             </div>
                         ) : (
                             /* Empty State */
-                            <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
+                            <div className="text-center py-20 bg-card rounded-xl border border-border">
                                 <div className="flex justify-center mb-4">
-                                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <Search className="w-10 h-10 text-gray-400" />
+                                    <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center">
+                                        <Search className="w-10 h-10 text-muted-foreground" />
                                     </div>
                                 </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No skills found</h3>
-                                <p className="text-gray-500 mb-6">
+                                <h3 className="text-xl font-semibold text-foreground mb-2">No skills found</h3>
+                                <p className="text-muted-foreground mb-6">
                                     {hasActiveFilters
                                         ? 'Try adjusting your search or filters to find what you\'re looking for'
                                         : 'No skills are currently available'}
@@ -372,7 +372,7 @@ export default function BrowseSkillsPage() {
                                 {hasActiveFilters && (
                                     <button
                                         onClick={handleClearFilters}
-                                        className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                                        className="px-6 py-2.5 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-colors"
                                     >
                                         Clear All Filters
                                     </button>

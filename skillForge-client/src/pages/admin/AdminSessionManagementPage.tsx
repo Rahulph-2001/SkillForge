@@ -189,60 +189,60 @@ const AdminSessionManagementPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-muted/40">
             <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
                 {/* Header */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-900">Session Management</h1>
-                    <p className="text-gray-600 mt-1">Monitor and manage all learning sessions</p>
+                    <h1 className="text-3xl font-bold text-foreground">Session Management</h1>
+                    <p className="text-muted-foreground mt-1">Monitor and manage all learning sessions</p>
                 </div>
 
                 {/* Search */}
                 <div className="mb-6">
                     <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                         <input
                             type="text"
                             placeholder="Search by skill or provider..."
                             value={searchQuery}
                             onChange={handleSearch}
-                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+                            className="w-full pl-10 pr-4 py-2.5 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none text-foreground placeholder-muted-foreground"
                         />
                     </div>
                 </div>
 
                 {/* Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Total Sessions</p>
-                            <Calendar className="w-5 h-5 text-blue-500" />
+                            <p className="text-sm font-medium text-muted-foreground">Total Sessions</p>
+                            <Calendar className="w-5 h-5 text-primary" />
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.totalSessions}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.totalSessions}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Completed</p>
-                            <CheckCircle className="w-5 h-5 text-green-500" />
+                            <p className="text-sm font-medium text-muted-foreground">Completed</p>
+                            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.completed}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.completed}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Upcoming</p>
-                            <Clock className="w-5 h-5 text-yellow-500" />
+                            <p className="text-sm font-medium text-muted-foreground">Upcoming</p>
+                            <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.upcoming}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.upcoming}</h3>
                     </div>
 
-                    <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                    <div className="bg-card rounded-lg p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-medium text-gray-600">Cancelled</p>
-                            <Users className="w-5 h-5 text-red-500" />
+                            <p className="text-sm font-medium text-muted-foreground">Cancelled</p>
+                            <Users className="w-5 h-5 text-destructive" />
                         </div>
-                        <h3 className="text-3xl font-bold text-gray-900">{stats.cancelled}</h3>
+                        <h3 className="text-3xl font-bold text-foreground">{stats.cancelled}</h3>
                     </div>
                 </div>
 
@@ -279,11 +279,11 @@ const AdminSessionManagementPage: React.FC = () => {
                 onCancel={() => setShowCancelConfirm(false)}
             >
                 <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Reason for cancellation</label>
+                    <label className="block text-sm font-medium text-foreground mb-1">Reason for cancellation</label>
                     <textarea
                         value={cancelReason}
                         onChange={(e) => setCancelReason(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-background border border-input rounded-md focus:ring-primary focus:border-primary text-foreground"
                         rows={3}
                         placeholder="Enter reason..."
                     />
