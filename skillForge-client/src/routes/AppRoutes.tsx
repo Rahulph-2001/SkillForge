@@ -34,8 +34,6 @@ import SkillTemplateCreatePage from '../pages/admin/SkillTemplateCreatePage';
 import AdminSkillVerificationPage from '../pages/admin/AdminSkillVerificationPage';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import GuestRoute from '../components/auth/GuestRoute';
-import { useAppSelector } from '../store/hooks';
-import { isAdmin } from '../config/userRole';
 import MainLayout from '@/layouts/MainLayout';
 import AdminLayout from '@/layouts/AdminLayout';
 import AdminWalletManagement from '../pages/admin/AdminWalletManagement';
@@ -56,22 +54,12 @@ import NotificationsPage from '@/pages/user/NotificationsPage';
 import AdminNotificationsPage from '../pages/admin/AdminNotificationsPage';
 
 const AppRoutes = () => {
-    const { user } = useAppSelector((state) => state.auth);
-    const isAuthenticated = !!user;
-    const userIsAdmin = user ? isAdmin(user.role) : false;
 
     return (
         <Routes>
             {/* Public & User Routes wrapped in MainLayout */}
             <Route element={<MainLayout />}>
-                <Route
-                    path="/"
-                    element={
-                        isAuthenticated
-                            ? <Navigate to={userIsAdmin ? "/admin/dashboard" : "/home"} />
-                            : <LandingPage />
-                    }
-                />
+                <Route path="/" element={<LandingPage />} />
                 <Route
                     path="/home"
                     element={
