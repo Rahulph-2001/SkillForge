@@ -84,9 +84,12 @@ api.interceptors.response.use(
                 // Clear user data from Redux store
                 store.dispatch(resetAuth());
 
-                // Redirect to login if not already there
-                if (window.location.pathname !== '/login' &&
-                    window.location.pathname !== '/admin/login' &&
+                // Don't redirect to /login if user is on a public page (landing, plans, etc.)
+                const publicPaths = ['/', '/plans', '/login', '/admin/login'];
+                const isPublicPage = publicPaths.includes(window.location.pathname);
+
+                // Redirect to login if not already there and not on a public page
+                if (!isPublicPage &&
                     !window.location.pathname.startsWith('/auth')) {
 
                     const isAdminRoute = window.location.pathname.startsWith('/admin');
