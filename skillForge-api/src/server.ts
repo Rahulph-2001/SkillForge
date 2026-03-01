@@ -1,12 +1,13 @@
-/// <reference path="../types/express.d.ts" />
+// Express type augmentation is provided by src/types/express.d.ts (ambient declaration)
 import { container } from './infrastructure/di/container';
 import { TYPES } from './infrastructure/di/types';
-import { App } from './presentation/server';
+import { type App } from './presentation/server';
 import { Database } from './infrastructure/database/Database';
 import { RedisService } from './infrastructure/services/RedisService';
 import { env } from './config/env';
 import { Server } from 'socket.io';
-import { IWebSocketService } from './domain/services/IWebSocketService';
+import { type IWebSocketService } from './domain/services/IWebSocketService';
+import { logger } from './config/logger';
 
 const port = env.PORT;
 const appInstance = container.get<App>(TYPES.App).getInstance();
@@ -15,29 +16,29 @@ async function startServer() {
   try {
     const db = Database.getInstance();
     await db.healthCheck();
-    console.log('PostgreSQL connected');
+    logger.info('PostgreSQL connected');
     const redis = RedisService.getInstance();
     await redis.ping();
-    console.log('Redis healthy');
+    logger.info('Redis healthy');
 
     // Start Job Queue Worker
-    const jobQueueService = container.get<any>(TYPES.IJobQueueService);
+    const jobQueueService = container.get<{ startProcessing(): void; startWorker(): Promise<void> }>(TYPES.IJobQueueService);
     await jobQueueService.startWorker();
-    console.log('Job Queue Worker started');
+    logger.info('Job Queue Worker started');
 
     // Start Interview Scheduler
-    const interviewScheduler = container.get<any>(TYPES.InterviewScheduler);
+    const interviewScheduler = container.get<{ start(): void }>(TYPES.InterviewScheduler);
     interviewScheduler.start();
-    console.log('Interview Scheduler started');
+    logger.info('Interview Scheduler started');
 
     // Start Cron Scheduler (Subscription Management)
-    const cronScheduler = container.get<any>(TYPES.CronScheduler);
+    const cronScheduler = container.get<{ start(): void }>(TYPES.CronScheduler);
     cronScheduler.start();
-    console.log('Cron Scheduler started');
+    logger.info('Cron Scheduler started');
 
 
     const server = appInstance.listen(port, () => {
-      console.log(`Server running on port ${port} in ${env.NODE_ENV} mode`);
+      logger.info(`Server running on port ${port} in ${env.NODE_ENV} mode`);
     });
 
     // Initialize Socket.IO
@@ -59,37 +60,37 @@ async function startServer() {
     webSocketService.initialize(io);
 
     // Initialize Video Call Signaling — CRITICAL: Without this, WebRTC offer/answer/ICE exchange never happens
-    const signalingService = container.get<any>(TYPES.IVideoCallSignalingService);
+    const signalingService = container.get<{ initialize(io: unknown): void }>(TYPES.IVideoCallSignalingService);
     signalingService.initialize(io);
-    console.log('Video Call Signaling Service initialized');
+    logger.info('Video Call Signaling Service initialized');
 
     // Handle port already in use error
     server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {
-        console.error(` Port ${port} is already in use!`);
-        console.error(' Solutions:');
-        console.error('   1. Run: npm run dev:clean (kills port automatically)');
-        console.error('   2. Or manually: netstat -ano | findstr :3000');
-        console.error('   3. Then: taskkill /PID <PID> /F');
+        logger.error(`Port ${port} is already in use!`);
+        logger.error('Solutions:');
+        logger.error('  1. Run: npm run dev:clean (kills port automatically)');
+        logger.error('  2. Or manually: netstat -ano | findstr :3000');
+        logger.error('  3. Then: taskkill /PID <PID> /F');
         process.exit(1);
       } else {
-        console.error('Server error:', error);
+        logger.error(error, 'Server error');
         process.exit(1);
       }
     });
 
     // Graceful shutdown
     const gracefulShutdown = (signal: string) => {
-      console.log(`\n${signal} received. Shutting down gracefully...`);
+      logger.info(`\n${signal} received. Shutting down gracefully...`);
 
       server.close(() => {
-        console.log('✅ HTTP server closed');
+        logger.info('✅ HTTP server closed');
         process.exit(0);
       });
 
       // Force shutdown after 10 seconds
       setTimeout(() => {
-        console.error('⚠️  Forced shutdown after timeout');
+        logger.error('⚠️  Forced shutdown after timeout');
         process.exit(1);
       }, 10000);
     };
@@ -98,14 +99,14 @@ async function startServer() {
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
     process.on('unhandledRejection', (err: Error) => {
-      console.error('UNHANDLED REJECTION!');
-      console.error(err.name, err.message, err.stack);
+      logger.error('UNHANDLED REJECTION!');
+      logger.error(err, 'Unhandled Exception Trace');
       process.exit(1);
     });
   } catch (error) {
-    console.error('Failed to connect to database or start server:', error);
+    logger.error(error, 'Failed to connect to database or start server');
     process.exit(1);
   }
 }
 
-startServer();
+void startServer();
