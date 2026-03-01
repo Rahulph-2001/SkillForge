@@ -6,19 +6,19 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
   totalUsers: z.number(),
   activeUsers: z.number(),
   userGrowthPercentage: z.number(),
-  
+
   totalSkills: z.number(),
   pendingSkillsCount: z.number(),
   skillGrowthPercentage: z.number(),
-  
+
   totalSessions: z.number(),
   sessionsThisWeek: z.number(),
   sessionGrowthPercentage: z.number(),
-  
+
   totalRevenue: z.number(),
   revenueThisWeek: z.number(),
   revenueGrowthPercentage: z.number(),
-  
+
   // Revenue Breakdown
   creditSalesRevenue: z.number(),
   creditsSoldCount: z.number(),
@@ -26,7 +26,7 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
   creditsRedeemedCount: z.number(),
   netRevenue: z.number(),
   profitMargin: z.number(),
-  
+
   // Wallet Stats
   totalWalletBalance: z.number(),
   totalUsersWithBalance: z.number(),
@@ -36,7 +36,7 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
   completedWithdrawals: z.number(),
   completedWithdrawalsCount: z.number(),
   completedWithdrawalsThisMonth: z.number(),
-  
+
   // Platform Activity (Last 24 hours)
   newRegistrations24h: z.number(),
   newRegistrationsGrowth: z.number(),
@@ -44,7 +44,7 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
   newSkillsGrowth: z.number(),
   sessionsCompleted24h: z.number(),
   sessionsCompletedGrowth: z.number(),
-  
+
   // Recent Data
   recentUsers: z.array(z.object({
     id: z.string(),
@@ -54,7 +54,7 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
     credits: z.number(),
     createdAt: z.coerce.date(),
   })),
-  
+
   recentSessions: z.array(z.object({
     id: z.string(),
     skillTitle: z.string(),
@@ -63,7 +63,7 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
     status: z.string(),
     scheduledAt: z.coerce.date(),
   })),
-  
+
   // Pending Items
   pendingReports: z.array(z.object({
     id: z.string(),
@@ -71,6 +71,20 @@ export const AdminDashboardStatsResponseDTOSchema = z.object({
     description: z.string(),
     reportedBy: z.string(),
     createdAt: z.coerce.date(),
+  })),
+
+  // Graph Time-Series Data
+  revenueTrend: z.array(z.object({
+    name: z.string(),
+    revenue: z.number(),
+  })),
+  userGrowthTrend: z.array(z.object({
+    name: z.string(),
+    users: z.number(),
+  })),
+  sessionTrend: z.array(z.object({
+    name: z.string(),
+    sessions: z.number(),
   })),
 });
 

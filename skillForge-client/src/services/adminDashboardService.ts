@@ -71,6 +71,11 @@ export interface AdminDashboardStats {
         reportedBy: string;
         createdAt: Date;
     }>;
+
+    // Graph Data
+    revenueTrend: Array<{ name: string; revenue: number }>;
+    userGrowthTrend: Array<{ name: string; users: number }>;
+    sessionTrend: Array<{ name: string; sessions: number }>;
 }
 
 export const adminDashboardService = {

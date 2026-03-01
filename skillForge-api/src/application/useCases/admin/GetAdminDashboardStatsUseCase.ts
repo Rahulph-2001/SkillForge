@@ -162,6 +162,29 @@ export class GetAdminDashboardStatsUseCase implements IGetAdminDashboardStatsUse
       createdAt: report.props.createdAt,
     }));
 
+    // Generate 6-Month Graphical Statistics (Iterating Backwards Securely)
+    const revenueTrend: Array<{ name: string; revenue: number }> = [];
+    const userGrowthTrend: Array<{ name: string; users: number }> = [];
+    const sessionTrend: Array<{ name: string; sessions: number }> = [];
+
+    for (let i = 5; i >= 0; i--) {
+      const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const end = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59);
+      const monthName = start.toLocaleString('default', { month: 'short' });
+
+      // Build Revenue Array
+      const rev = await this.paymentRepository.getRevenueByDateRange(start, end);
+      revenueTrend.push({ name: monthName, revenue: rev });
+
+      // Build Users Array
+      const users = await this.userRepository.countByDateRange(start, end);
+      userGrowthTrend.push({ name: monthName, users });
+
+      // Build Sessions Array
+      const sessions = await this.bookingRepository.countByDateRange(start, end);
+      sessionTrend.push({ name: monthName, sessions });
+    }
+
     return {
       totalUsers,
       activeUsers,
@@ -198,6 +221,9 @@ export class GetAdminDashboardStatsUseCase implements IGetAdminDashboardStatsUse
       recentUsers,
       recentSessions,
       pendingReports,
+      revenueTrend,
+      userGrowthTrend,
+      sessionTrend,
     };
   }
 }

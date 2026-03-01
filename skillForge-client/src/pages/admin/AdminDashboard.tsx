@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { adminDashboardService, type AdminDashboardStats } from '../../services/adminDashboardService';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Icons = {
     Users: () => (
@@ -245,6 +246,57 @@ export default function AdminDashboard() {
                             <p className="text-muted-foreground text-xs mt-2">{card.active}</p>
                         </div>
                     ))}
+                </div>
+
+                {/* Platform Growth Trends (`recharts`) */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    {/* Revenue Trend */}
+                    <div className="bg-card rounded-lg border border-border p-6 shadow-sm">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="text-primary"><Icons.TrendingUp /></div>
+                                Revenue Growth (6 Months)
+                            </h2>
+                        </div>
+                        <div className="h-72 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={stats.revenueTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#888', fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#888', fontSize: 12 }} tickFormatter={(val: number) => `₹${val}`} />
+                                    <Tooltip contentStyle={{ backgroundColor: '#1e1e2d', border: 'none', borderRadius: '8px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                                    <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
+
+                    {/* Sessions Trend */}
+                    <div className="bg-card rounded-lg border border-border p-6 shadow-sm">
+                        <div className="mb-4">
+                            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+                                <div className="text-blue-500"><Icons.Sessions /></div>
+                                Session Activity (6 Months)
+                            </h2>
+                        </div>
+                        <div className="h-72 w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={stats.sessionTrend} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#333" />
+                                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#888', fontSize: 12 }} dy={10} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#888', fontSize: 12 }} />
+                                    <Tooltip cursor={{ fill: '#333', opacity: 0.2 }} contentStyle={{ backgroundColor: '#1e1e2d', border: 'none', borderRadius: '8px', color: '#fff' }} />
+                                    <Bar dataKey="sessions" name="Completed Sessions" fill="#3b82f6" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Revenue Flow & Financial Overview */}
