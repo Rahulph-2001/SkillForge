@@ -42,7 +42,7 @@ export class AdminManageReportUseCase implements IAdminManageReportUseCase {
 
         // Let's add methods to Report entity implicitly by modifying the instance via update props logic or just create a new instance with updated props?
         // Simulating Entity Update:
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (report.props as any).status = newStatus;
         if (action === 'RESOLVE' || action === 'DISMISS') {
             (report.props as unknown as Record<string, unknown>).resolvedBy = adminId;

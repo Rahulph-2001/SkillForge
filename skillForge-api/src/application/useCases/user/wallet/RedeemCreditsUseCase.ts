@@ -42,25 +42,25 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             }
 
             // 3. Fetch Conversion Rate & Limits
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const rateSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'CREDIT_CONVERSION_RATE' } });
             if (!rateSettings) {
                 throw new Error('Credit conversion rate not set by admin');
             }
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+             
             const conversionRate = Number(rateSettings.value);
             if (conversionRate <= 0) {
                 throw new Error('Credit conversion rate is invalid');
             }
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const minSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'REDEMPTION_MIN_CREDITS' } });
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+             
             const minCredits = minSettings ? Number(minSettings.value) : 10;
 
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const maxSettings = await (tx as any).systemSettings.findUnique({ where: { key: 'REDEMPTION_MAX_CREDITS' } });
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+             
             const maxCredits = maxSettings ? Number(maxSettings.value) : 1000;
 
             if (creditsToRedeem < minCredits) {
@@ -120,7 +120,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             await tx.userWalletTransaction.create({
                 data: {
                     userId: userId,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     type: UserWalletTransactionType.CREDIT_REDEMPTION_SUCCESS as any,
                     amount: redemptionValue,
                     currency: 'INR',
@@ -144,7 +144,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
             });
 
             // 6. Debit Admin Wallet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const adminUser = await tx.user.findFirst({ where: { role: UserRole.ADMIN as any } });
             if (!adminUser) {
                 throw new Error('No admin user found in the system');
@@ -174,7 +174,7 @@ export class RedeemCreditsUseCase implements IRedeemCreditsUseCase {
                     description: `Credit redemption payout: ${creditsToRedeem} credits to user`,
                     previousBalance: adminWalletBalance,
                     newBalance: adminWalletBalance - redemptionValue,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-explicit-any
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     status: 'COMPLETED' as any,
                     metadata: {
                         userId,

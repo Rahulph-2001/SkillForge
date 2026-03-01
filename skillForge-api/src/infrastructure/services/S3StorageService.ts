@@ -110,7 +110,7 @@ export class S3StorageService implements IStorageService {
           stream.on('data', (chunk) => chunks.push(chunk as Buffer));
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           stream.on('error', (err: any) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+             
             console.error('[S3StorageService] Stream error:', { key, error: err && err.message ? err.message : String(err) });
             reject(err instanceof Error ? err : new Error(String(err)));
           });

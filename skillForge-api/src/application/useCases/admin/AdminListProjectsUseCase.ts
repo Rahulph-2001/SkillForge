@@ -68,7 +68,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
             }
 
             projectDTOs.push({
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 id: project.id!,
                 title: project.title,
                 description: project.description,
@@ -88,7 +88,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
                     avatarUrl: creator.avatarUrl || null
                 },
                 contributor,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 hasPendingPaymentRequest: pendingProjectIds.has(project.id!),
                 // Suspension fields - defaults for pre-migration compatibility
                 isSuspended: project.isSuspended ?? false,

@@ -190,7 +190,7 @@ export class Feature {
         if (!this.hasLimit()) {
             throw new Error('Feature does not have a numeric limit');
         }
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         return this._limitValue!;
     }
 

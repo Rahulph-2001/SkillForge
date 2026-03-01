@@ -69,7 +69,7 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
 
     // 7. Map to response DTO
     return {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       id: savedProject.id!,
       clientId: savedProject.clientId,
       title: savedProject.title,

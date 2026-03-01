@@ -92,7 +92,7 @@ export class JobQueueService implements IJobQueueService {
         async (job: Job) => {
           console.log(`[Worker] Processing job ${job.id} from ${JobQueueName.MCQ_IMPORT}`);
           try {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+             
             await this.mcqImportJobProcessor.execute(job.data.jobId);
             console.log(`[Worker] Job ${job.id} completed`);
           } catch (error) {

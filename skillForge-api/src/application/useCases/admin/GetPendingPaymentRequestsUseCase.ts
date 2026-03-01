@@ -28,7 +28,7 @@ export class GetPendingPaymentRequestsUseCase implements IGetPendingPaymentReque
 
                 if (project && requester && !project.isSuspended) {
                     dtos.push({
-                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                         
                         id: req.id!,
                         projectId: req.projectId,
                         projectTitle: project.title,

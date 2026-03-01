@@ -103,7 +103,7 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                     let tags: string[] = [];
                     if (metadata.tags) {
                         try {
-                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                             
                             tags = JSON.parse(metadata.tags);
                         } catch {
                             tags = [];

@@ -47,7 +47,7 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
             // Create RELEASE payment request pending admin approval
             const paymentRequest = ProjectPaymentRequest.create({
                 id: uuidv4(),
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 projectId: project.id!,
                 type: ProjectPaymentRequestType.RELEASE,
                 amount: project.budget,
@@ -68,7 +68,7 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
                 title: 'Project Completion Approved!',
                 message: `"${project.title}" has been approved! Payment is pending admin review.`,
                 data: {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     
                     projectId: project.id!,
                     status: 'PAYMENT_PENDING'
                 },
@@ -81,7 +81,7 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
             // Create REFUND payment request pending admin approval - THIS IS NOW A DISPUTE
             const paymentRequest = ProjectPaymentRequest.create({
                 id: uuidv4(),
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                 
                 projectId: project.id!,
                 type: ProjectPaymentRequestType.REFUND,
                 amount: project.budget,
@@ -103,7 +103,7 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
                 title: 'Project Completion Rejected',
                 message: `"${project.title}" completion was rejected. Reason: ${reason}`,
                 data: {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     
                     projectId: project.id!,
                     reason,
                     status: 'REFUND_PENDING'
@@ -120,7 +120,7 @@ export class ReviewProjectCompletionUseCase implements IReviewProjectCompletionU
                 title: 'Changes Requested',
                 message: `Changes have been requested for "${project.title}". ${reason || 'Please review and resubmit.'}`,
                 data: {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                     
                     projectId: project.id!,
                     reason,
                     status: 'IN_PROGRESS'

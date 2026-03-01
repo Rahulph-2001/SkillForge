@@ -23,7 +23,7 @@ export class UserDTOMapper implements IUserDTOMapper {
         const plan = await this.planRepository.findById(subscription.planId);
         if (plan) {
           // Map plan badge to subscription plan type (badge is the tier: Free, Starter, Professional, Enterprise)
-          // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+           
           subscriptionPlan = plan.badge.toLowerCase() as import('../../domain/entities/User').SubscriptionPlan;
         }
       }

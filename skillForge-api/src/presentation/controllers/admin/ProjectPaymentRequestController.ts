@@ -29,7 +29,7 @@ export class ProjectPaymentRequestController {
             const { id } = req.params;
             const { approved, notes } = req.body;
             // Assuming admin ID is available in req.user from auth middleware
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const adminId = req.user!.id;
 
             await this.processUseCase.execute(id, adminId, approved, notes);

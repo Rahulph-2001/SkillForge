@@ -45,7 +45,7 @@ export class CreateSkillUseCase implements ICreateSkillUseCase {
       durationHours: Number(data.durationHours),
       creditsPerHour: Number(data.creditsHour),
       // Handle potential stringified array from FormData
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       tags: typeof data.tags === 'string' ? JSON.parse(data.tags) : data.tags,
       imageUrl: imageUrl,
       templateId: data.templateId || null

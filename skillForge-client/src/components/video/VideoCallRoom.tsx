@@ -289,6 +289,25 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             }
         });
 
+
+        // 🛑 Handle Room Termination by Host
+        socket.on('video:room-ended', () => {
+            console.log('[VideoCall] 🛑 Room ended by host. Severing session.');
+            // Cleanup local state instantly
+            const tracks = localStreamRef.current?.getTracks() || [];
+            tracks.forEach((track) => track.stop());
+
+            if (peerConnectionRef.current) {
+                peerConnectionRef.current.close();
+                peerConnectionRef.current = null;
+            }
+
+            socket.disconnect();
+
+            // Trigger parent layout teardown
+            if (onLeave) onLeave();
+        });
+
         socket.on('video:answer', async ({ answer, fromUserId }: { answer: RTCSessionDescriptionInit, fromUserId: string }) => {
             console.log('[VideoCall] 📨 Received answer from:', fromUserId);
             try {
@@ -330,6 +349,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                 peerConnectionRef.current = null;
             }
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [room, user, localStream]); // localStream is needed to trigger setup when media becomes ready
 
     // Control handlers

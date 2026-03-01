@@ -368,6 +368,7 @@ export const TYPES = {
   IVideoCallPresenceService: Symbol.for('IVideoCallPresenceService'),
   IVideoCallSignalingService: Symbol.for('IVideoCallSignalingService'),
   IVideoCallRoomMapper: Symbol.for('IVideoCallRoomMapper'),
+  ISocketNotificationService: Symbol.for('ISocketNotificationService'),
   ICreateVideoRoomUseCase: Symbol.for('ICreateVideoRoomUseCase'),
   IJoinVideoRoomUseCase: Symbol.for('IJoinVideoRoomUseCase'),
   ILeaveVideoRoomUseCase: Symbol.for('ILeaveVideoRoomUseCase'),

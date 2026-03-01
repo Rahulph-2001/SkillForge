@@ -10,7 +10,7 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
   constructor(
     @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
     @inject(TYPES.IStorageService) private readonly storageService: IStorageService
-  ) {}
+  ) { }
 
   async execute(dto: UpdateUserProfileDTO): Promise<UpdatedProfileResponse> {
     const { userId, name, bio, location, avatarFile } = dto;
@@ -31,7 +31,7 @@ export class UpdateUserProfileUseCase implements IUpdateUserProfileUseCase {
           key,
           avatarFile.mimetype
         );
-      } catch (_error) {
+      } catch {
         throw new InternalServerError('Failed to upload avatar image');
       }
     }

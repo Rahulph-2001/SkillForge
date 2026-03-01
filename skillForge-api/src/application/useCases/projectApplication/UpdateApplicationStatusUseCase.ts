@@ -75,7 +75,7 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Accepted!',
         message: `Congratulations! Your application to "${project.title}" has been accepted!`,
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           projectId: project.id!,
           applicationId: application.id,
           status: 'ACCEPTED'
@@ -88,7 +88,7 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Update',
         message: `Your application to "${project.title}" was not accepted`,
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           projectId: project.id!,
           applicationId: application.id,
           status: 'REJECTED'
@@ -101,7 +101,7 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Shortlisted',
         message: `Your application to "${project.title}" has been shortlisted!`,
         data: {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           projectId: project.id!,
           applicationId: application.id,
           status: 'SHORTLISTED'

@@ -47,7 +47,7 @@ export class ListProjectsUseCase implements IListProjectsUseCase {
         console.error(`Client not found for project ${project.id}`);
         // Return project with minimal client info
         return {
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+           
           id: project.id!,
           clientId: project.clientId,
           title: project.title,
@@ -72,7 +72,7 @@ export class ListProjectsUseCase implements IListProjectsUseCase {
       }
 
       return {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         id: project.id!,
         clientId: project.clientId,
         title: project.title,

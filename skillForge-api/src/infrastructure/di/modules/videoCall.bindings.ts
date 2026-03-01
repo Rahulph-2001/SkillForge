@@ -27,10 +27,14 @@ import { type IGetInterviewSessionInfoUseCase } from '../../../application/useCa
 import { GetInterviewSessionInfoUseCase } from '../../../application/useCases/videoCall/GetInterviewSessionInfoUseCase';
 import { VideoCallRoutes } from '../../../presentation/routes/videoCall/VideoCallRoutes';
 
+import { type ISocketNotificationService } from '../../../domain/services/ISocketNotificationService';
+import { SocketNotificationService } from '../../services/SocketNotificationService';
+
 export function registerVideoCallBindings(container: Container): void {
   container.bind<IVideoCallRoomRepository>(TYPES.IVideoCallRoomRepository).to(VideoCallRoomRepository).inSingletonScope();
   container.bind<IVideoCallPresenceService>(TYPES.IVideoCallPresenceService).to(VideoCallPresenceService).inSingletonScope();
   container.bind<IVideoCallSignalingService>(TYPES.IVideoCallSignalingService).to(VideoCallSignalingService).inSingletonScope();
+  container.bind<ISocketNotificationService>(TYPES.ISocketNotificationService).to(SocketNotificationService).inSingletonScope();
   container.bind<IVideoCallRoomMapper>(TYPES.IVideoCallRoomMapper).to(VideoCallRoomMapper).inSingletonScope();
   container.bind<ICreateVideoRoomUseCase>(TYPES.ICreateVideoRoomUseCase).to(CreateVideoRoomUseCase).inSingletonScope();
   container.bind<IJoinVideoRoomUseCase>(TYPES.IJoinVideoRoomUseCase).to(JoinVideoRoomUseCase).inSingletonScope();

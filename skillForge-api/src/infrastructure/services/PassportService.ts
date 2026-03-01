@@ -52,7 +52,7 @@ export class PassportService implements IPassportService {
   }
 
   public authenticateGoogle(): RequestHandler {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+     
     return passport.authenticate('google', {
       scope: ['profile', 'email'],
       session: false
@@ -60,7 +60,7 @@ export class PassportService implements IPassportService {
   }
 
   public authenticateGoogleCallback(options: { failureRedirect: string }): RequestHandler {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+     
     return passport.authenticate('google', {
       failureRedirect: options.failureRedirect,
       session: false

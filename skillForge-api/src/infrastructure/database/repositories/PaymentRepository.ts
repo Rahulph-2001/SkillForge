@@ -28,7 +28,7 @@ export class PrismaPaymentRepository extends BaseRepository<Payment> implements 
                 currency: payment.currency,
                 purpose: payment.purpose,
                 status: payment.status,
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-imports
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 metadata: payment.metadata as any as import('@prisma/client').Prisma.InputJsonValue as any as unknown as Prisma.InputJsonValue | undefined,
                 failure_reason: payment.failureReason,
                 refunded_amount: payment.refundedAmount,

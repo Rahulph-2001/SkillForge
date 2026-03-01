@@ -102,7 +102,7 @@ export class RedisService {
     try {
       const result = await this.redis.ping();
       return result === 'PONG';
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

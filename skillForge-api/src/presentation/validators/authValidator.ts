@@ -26,7 +26,7 @@ export const validate = (schema: ZodSchema) => {
           field: issue.path.join('.'),
           message: issue.message,
         }));
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (req as any).zodDetails = errors; // For errorHandler
         res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,

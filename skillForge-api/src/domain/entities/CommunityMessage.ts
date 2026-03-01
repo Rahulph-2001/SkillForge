@@ -174,7 +174,7 @@ export class CommunityMessage {
           });
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         const group = grouped.get(emoji)!;
         group.users.push({
           id: reaction.userId,

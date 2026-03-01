@@ -71,11 +71,11 @@ export class DebitAdminWalletUseCase implements IDebitAdminWalletUseCase {
 
     private generateDescription(dto: DebitAdminWalletRequestDTO): string {
         if (dto.source === 'PROJECT_RELEASE') {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+             
             const projectTitle = dto.metadata?.projectTitle || 'Project';
             return `Project payment release: ${projectTitle}`;
         } else if (dto.source === 'PROJECT_REFUND') {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+             
             const projectTitle = dto.metadata?.projectTitle || 'Project';
             return `Project refund: ${projectTitle}`;
         }

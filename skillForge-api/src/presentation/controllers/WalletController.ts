@@ -19,7 +19,7 @@ export class WalletController {
 
     public getWalletData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const userId = req.user!.id;
             const walletData = await this.getUserWalletDataUseCase.execute(userId);
 
@@ -36,7 +36,7 @@ export class WalletController {
 
     public getTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const userId = req.user!.id;
             const filters = GetUserWalletTransactionsRequestSchema.parse(req.query);
             const result = await this.getUserWalletTransactionsUseCase.execute(userId, filters);

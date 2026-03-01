@@ -16,12 +16,12 @@ const upload = multer({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   fileFilter: (_req: any, file: any, cb: any) => {
     // Accept only image files
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+     
     if (file.mimetype.startsWith('image/')) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       cb(null, true);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+       
       cb(new Error('Only image files are allowed'));
     }
   },

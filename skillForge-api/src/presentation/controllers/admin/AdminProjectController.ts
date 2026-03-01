@@ -26,7 +26,7 @@ export class AdminProjectController {
         try {
             const { requestId } = req.params;
             const { approved, notes, overrideAction } = req.body;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const adminId = req.user!.id; // From auth middleware
 
             await this.processPaymentRequestUseCase.execute(requestId, adminId, approved, notes, overrideAction);
@@ -106,7 +106,7 @@ export class AdminProjectController {
     public suspendProject = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const { projectId } = req.params;
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const adminId = req.user!.id;
 
             const validated = AdminSuspendProjectRequestDTOSchema.parse(req.body);

@@ -56,13 +56,13 @@ export class GetUserWalletDataUseCase implements IGetUserWalletDataUseCase {
             verification: {
                 email_verified: verification.email_verified || false,
                 bank_details: {
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                     
                     account_number: bankDetails.account_number || null,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                     
                     ifsc_code: bankDetails.ifsc_code || null,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                     
                     bank_name: bankDetails.bank_name || null,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+                     
                     verified: bankDetails.verified || false,
                 },
             },

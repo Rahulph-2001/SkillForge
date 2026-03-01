@@ -21,7 +21,7 @@ export class WebSocketService implements IWebSocketService {
 
     // Middleware for Authentication
     this.io.use((socket, next) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+       
       const token = socket.handshake.auth.token || socket.handshake.headers.cookie?.split('; ').find(row => row.startsWith('accessToken='))?.split('=')[1];
 
       if (!token) {
@@ -29,9 +29,9 @@ export class WebSocketService implements IWebSocketService {
       }
 
       try {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+         
         const decoded = jwt.verify(token, env.JWT_SECRET) as SocketUser;
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+         
         socket.data.user = decoded;
         next();
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -41,7 +41,7 @@ export class WebSocketService implements IWebSocketService {
     });
 
     this.io.on('connection', (socket: Socket) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+       
       const user = socket.data.user as SocketUser;
       console.log(`WebSocket connected: ${socket.id} (User: ${user.userId})`);
 

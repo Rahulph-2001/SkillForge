@@ -62,7 +62,7 @@ export class ProjectController {
   public getMyProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // Assuming Request is extended with user, usually req.user.id
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       const userId = req.user!.id;
       const projects = await this.getMyProjectsUseCase.execute(userId);
 
@@ -75,7 +75,7 @@ export class ProjectController {
 
   public getContributingProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       const userId = req.user!.id;
       const projects = await this.getContributingProjectsUseCase.execute(userId);
 
@@ -89,7 +89,7 @@ export class ProjectController {
   public requestCompletion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       const userId = req.user!.id;
       await this.requestProjectCompletionUseCase.execute(id, userId);
 
@@ -104,7 +104,7 @@ export class ProjectController {
     try {
       const { id } = req.params;
       const { decision, reason } = req.body;
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       const userId = req.user!.id;
 
       await this.reviewProjectCompletionUseCase.execute(id, userId, decision, reason);

@@ -205,7 +205,7 @@ export class MCQImportJobProcessor {
             const stream = Readable.from(buffer);
             stream
                 .pipe(csv())
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                 
                 .on('data', (data) => results.push(data))
                 .on('end', () => resolve(results))
                 .on('error', (err) => reject(err));

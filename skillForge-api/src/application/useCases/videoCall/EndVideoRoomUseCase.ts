@@ -5,13 +5,15 @@ import { IVideoCallPresenceService } from '../../../domain/services/IVideoCallPr
 import { IEndVideoRoomUseCase } from './interfaces/IEndVideoRoomUseCase';
 import { IInterviewRepository } from '../../../domain/repositories/IInterviewRepository';
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
+import { ISocketNotificationService } from '../../../domain/services/ISocketNotificationService';
 
 @injectable()
 export class EndVideoRoomUseCase implements IEndVideoRoomUseCase {
   constructor(
     @inject(TYPES.IVideoCallRoomRepository) private roomRepository: IVideoCallRoomRepository,
     @inject(TYPES.IVideoCallPresenceService) private presenceService: IVideoCallPresenceService,
-    @inject(TYPES.IInterviewRepository) private interviewRepository: IInterviewRepository
+    @inject(TYPES.IInterviewRepository) private interviewRepository: IInterviewRepository,
+    @inject(TYPES.ISocketNotificationService) private notificationService: ISocketNotificationService
   ) { }
 
   async execute(userId: string, roomId: string): Promise<void> {
@@ -49,5 +51,8 @@ export class EndVideoRoomUseCase implements IEndVideoRoomUseCase {
     } else {
       console.log(`[EndVideoRoomUseCase] No interview linked to this room.`);
     }
+
+    // CRITICAL: Notify active WebSockets users that the room was closed by the host
+    this.notificationService.notifyRoomEnded(roomId);
   }
 }

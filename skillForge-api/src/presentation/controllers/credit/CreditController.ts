@@ -35,7 +35,7 @@ export class CreditController {
 
     public purchasePackage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const userId = req.user!.id;
             const result = await this.purchaseCreditPackageUseCase.execute({
                 userId,
@@ -55,7 +55,7 @@ export class CreditController {
 
     public getTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             const userId = req.user!.id;
             const filters = GetCreditTransactionsRequestSchema.parse({
                 userId,

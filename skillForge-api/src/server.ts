@@ -64,6 +64,10 @@ async function startServer() {
     signalingService.initialize(io);
     logger.info('Video Call Signaling Service initialized');
 
+    // Initialize Socket Notification Service for broadcasting events from HTTP controllers
+    const socketNotificationService = container.get<{ initialize(io: unknown): void }>(TYPES.ISocketNotificationService);
+    socketNotificationService.initialize(io);
+
     // Handle port already in use error
     server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {
@@ -84,13 +88,13 @@ async function startServer() {
       logger.info(`\n${signal} received. Shutting down gracefully...`);
 
       server.close(() => {
-        logger.info('✅ HTTP server closed');
+        logger.info(' HTTP server closed');
         process.exit(0);
       });
 
       // Force shutdown after 10 seconds
       setTimeout(() => {
-        logger.error('⚠️  Forced shutdown after timeout');
+        logger.error('  Forced shutdown after timeout');
         process.exit(1);
       }, 10000);
     };

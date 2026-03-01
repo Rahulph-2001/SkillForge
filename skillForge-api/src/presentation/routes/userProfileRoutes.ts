@@ -18,13 +18,13 @@ const getUserProfileController = () => {
 
 router.get(ENDPOINTS.USER_PROFILE.PROVIDER_PROFILE, (req, res, next) => {
   const userProfileController = getUserProfileController();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   void userProfileController.getProviderProfile(req as any, res as any, next);
 });
 
 router.get(ENDPOINTS.USER_PROFILE.PROVIDER_REVIEWS, (req, res, next) => {
   const userProfileController = getUserProfileController();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   void userProfileController.getProviderReviews(req as any, res as any, next);
 });
 

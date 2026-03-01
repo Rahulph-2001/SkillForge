@@ -146,7 +146,7 @@ export class ProjectRepository extends BaseRepository<Project> implements IProje
   async findByClientIdAndStatus(clientId: string, status: ProjectStatus): Promise<Project[]> {
     const prismaStatus = this.mapToPrismaStatus(status);
     const projects = await this.prisma.project.findMany({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/consistent-type-imports
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { clientId, status: prismaStatus as any as import('@prisma/client').any, isDeleted: false },
       orderBy: { createdAt: 'desc' },
     });

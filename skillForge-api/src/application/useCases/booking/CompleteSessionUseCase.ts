@@ -109,7 +109,7 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
 
         // Fetch the updated booking for response
         const updatedBooking = await this.bookingRepository.findById(bookingId);
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         return this.bookingMapper.toDTO(updatedBooking!);
     }
 }

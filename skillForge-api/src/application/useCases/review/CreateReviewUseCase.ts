@@ -60,10 +60,10 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
 
 
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const createdReview = await (this.reviewRepository as any).createWithStats(reviewEntity);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+         
         return this.reviewMapper.toResponseDTO(createdReview);
     }
 }

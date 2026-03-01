@@ -25,7 +25,7 @@ export class VideoCallPresenceService implements IVideoCallPresenceService {
 
   async getParticipants(roomId: string): Promise<Participant[]> {
     const data = await this.redis.getClient().hgetall(this.roomKey(roomId));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-argument
+     
     return Object.values(data).map(p => { const x = JSON.parse(p); return { userId: x.userId, socketId: x.socketId, joinedAt: new Date(x.joinedAt) }; });
   }
 
@@ -46,7 +46,7 @@ export class VideoCallPresenceService implements IVideoCallPresenceService {
 
   async getUserSession(userId: string): Promise<UserSession | null> {
     const data = await this.redis.getClient().get(this.userKey(userId));
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+     
     return data ? JSON.parse(data) : null;
   }
 

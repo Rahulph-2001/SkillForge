@@ -84,7 +84,7 @@ export class ApplyToProjectUseCase implements IApplyToProjectUseCase {
     };
 
     const projectDetails: ProjectDetails = {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       id: project.id!,
       title: project.title,
       description: project.description,
@@ -126,7 +126,7 @@ export class ApplyToProjectUseCase implements IApplyToProjectUseCase {
       title: 'New Project Application',
       message: `${applicant.name} applied to your project "${project.title}"`,
       data: {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+         
         projectId: project.id!,
         applicationId: savedApplication.id,
         applicantId: applicantId,

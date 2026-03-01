@@ -61,8 +61,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
             //     await this.handleCreditPurchase(payment);
             // }
 
-        } catch (error) {
-            console.error('Error handling payment success:', error);
+        } catch {
+            console.error('Error handling payment success');
             // Log error but don't throw - webhook should still return 200
         }
     }
@@ -99,8 +99,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 }
             });
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
+        } catch {
             // Error handling subscription payment
             // TODO: Add proper logging service and retry mechanism
         }

@@ -30,7 +30,7 @@ export class StripePaymentGateway implements IPaymentGateway {
         });
 
         return {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+             
             clientSecret: paymentIntent.client_secret!,
             paymentIntentId: paymentIntent.id,
         };
