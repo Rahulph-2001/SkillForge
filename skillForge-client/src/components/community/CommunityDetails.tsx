@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { io, Socket } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import {
     ArrowLeft,
     Users,
@@ -34,15 +34,16 @@ import {
     deleteMessage,
     addReaction,
     removeReaction,
-    Community,
-    CommunityMessage,
-    CommunityMember
+    type Community,
+    type CommunityMessage,
+    type CommunityMember
 } from '../../services/communityService';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
 import ConfirmModal from '../common/Modal/ConfirmModal';
 import EditCommunityModal from './EditCommunityModal';
-import { RootState } from '../../store/store';
+import { type RootState } from '../../store/store';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface CommunityDetailsProps {
     communityId?: string;
@@ -113,8 +114,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
 
     useEffect(() => {
         if (!id) return;
-        loadCommunityData();
-        loadMembers();
+        void loadCommunityData();
+        void loadMembers();
 
         // Initialize WebSocket
         const SOCKET_URL = import.meta.env.VITE_API_URL?.replace('/api/v1', '') || 'http://localhost:3000';
@@ -150,14 +151,14 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setMessages(prev => prev.filter(m => m.id !== data.messageId));
         });
 
-        socket.on('reaction_added', (data: { messageId: string; reactions: any[] }) => {
+        socket.on('reaction_added', (data: { messageId: string; reactions: { emoji: string; users: { id: string; name: string }[] }[] }) => {
             console.log('=== WEBSOCKET: reaction_added ===', data);
-            setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, reactions: data.reactions } : m));
+            setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, reactions: data.reactions as unknown as CommunityMessage['reactions'] } : m));
         });
 
-        socket.on('reaction_removed', (data: { messageId: string; reactions: any[] }) => {
+        socket.on('reaction_removed', (data: { messageId: string; reactions: { emoji: string; users: { id: string; name: string }[] }[] }) => {
             console.log('=== WEBSOCKET: reaction_removed ===', data);
-            setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, reactions: data.reactions } : m));
+            setMessages(prev => prev.map(m => m.id === data.messageId ? { ...m, reactions: data.reactions as unknown as CommunityMessage['reactions'] } : m));
         });
 
         socket.on('member_removed', (data: { userId: string; userName: string; removedBy: string; timestamp: string }) => {
@@ -183,6 +184,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             }
             socket.disconnect();
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
@@ -204,8 +206,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setMessages(messagesData);
             setHasMore(messagesData.length >= MESSAGES_PER_PAGE);
             scrollToBottom();
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to load community');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to load community');
         } finally {
             setLoading(false);
         }
@@ -249,13 +251,14 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
         try {
             const data = await getCommunityMembers(id);
             setMembers(data.members);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Failed to load members', err);
         }
     };
 
     useEffect(() => {
-        if (activeTab === 'members') loadMembers();
+        if (activeTab === 'members') void loadMembers();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     const scrollToBottom = () => {
@@ -280,8 +283,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setReplyingTo(null);
             setSelectedFile(null);
             setFilePreview(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to send message');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to send message');
         } finally {
             setSending(false);
         }
@@ -333,8 +336,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                 await pinMessage(message.id);
             }
             setContextMenu(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update pin status');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to update pin status');
         }
     };
 
@@ -349,8 +352,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setMessages(prev => prev.filter(m => m.id !== messageId));
             setDeleteConfirm(null);
             setContextMenu(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to delete message');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to delete message');
         }
     };
 
@@ -361,15 +364,17 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
 
             // Find if user already has ANY reaction on this message
             const existingUserReaction = message.reactions?.find(r =>
-                r.users?.some((u: any) => u.id === user.id)
+                r.users?.some((u: { id: string }) => u.id === user.id)
             );
 
             if (existingUserReaction) {
                 if (existingUserReaction.emoji === emoji) {
                     // Same emoji tapped -> Remove it (toggle off)
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     await removeReaction(id!, messageId, emoji);
                 } else {
                     // Different emoji tapped -> Switch (remove old, add new)
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     await removeReaction(id!, messageId, existingUserReaction.emoji);
                     await addReaction(messageId, emoji);
                 }
@@ -379,8 +384,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             }
 
             setEmojiPickerMessageId(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update reaction');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to update reaction');
         }
     };
 
@@ -410,8 +415,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setSuccessMessage(`${kickMemberConfirm.userName} has been removed from the community`);
             setShowSuccess(true);
             setKickMemberConfirm(null);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to remove member');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to remove member');
             setKickMemberConfirm(null);
         } finally {
             setKickingMember(false);
@@ -429,9 +434,9 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setTimeout(() => {
                 navigate('/communities');
             }, 2000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             setShowLeaveConfirm(false);
-            setError(err.response?.data?.message || 'Failed to leave community');
+            setError(getErrorMessage(err) || 'Failed to leave community');
         }
     };
 
@@ -516,7 +521,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                     {['chat', 'members', 'files'].map((tab) => (
                         <button
                             key={tab}
-                            onClick={() => setActiveTab(tab as any)}
+                            onClick={() => setActiveTab(tab as "chat" | "members" | "files")}
                             className={`pb-2 text-sm font-semibold capitalize transition-all border-b-2 ${activeTab === tab
                                 ? 'text-primary border-primary'
                                 : 'text-muted-foreground border-transparent hover:text-foreground'
@@ -632,6 +637,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                     {/* Reply Preview */}
                                                     {message.replyTo && (
                                                         <div
+                                                            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                                                             onClick={() => scrollToMessage(message.replyTo!.id)}
                                                             className={`mb-2 p-2 rounded border-l-2 cursor-pointer ${isMe
                                                                 ? 'bg-blue-700/30 border-blue-300'
@@ -688,8 +694,8 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                     {message.reactions && message.reactions.length > 0 && (
                                                         <div className="flex flex-wrap gap-1.5 mt-2">
                                                             {message.reactions.map((reaction, idx) => {
-                                                                const hasUserReacted = reaction.users?.some((u: any) => u.id === user?.id);
-                                                                const userNames = reaction.users?.map((u: any) => u.name).join(', ') || '';
+                                                                const hasUserReacted = reaction.users?.some((u: { id: string }) => u.id === user?.id);
+                                                                const userNames = reaction.users?.map((u: { name: string }) => u.name).join(', ') || '';
                                                                 return (
                                                                     <button
                                                                         key={idx}
@@ -725,7 +731,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         console.log('Emoji button clicked:', emoji);
-                                                                        handleReaction(message.id, emoji);
+                                                                        void handleReaction(message.id, emoji);
                                                                     }}
                                                                     className="text-2xl hover:scale-125 transition-transform p-1 hover:bg-gray-100 rounded"
                                                                 >
@@ -851,7 +857,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' && !e.shiftKey) {
                                                 e.preventDefault();
-                                                handleSendMessage(e as any);
+                                                void handleSendMessage(e as unknown as React.FormEvent);
                                             }
                                         }}
                                         placeholder="Type a message"
@@ -867,7 +873,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                 </form>
 
                                 <button
-                                    onClick={(e) => handleSendMessage(e as any)}
+                                    onClick={(e) => handleSendMessage(e as unknown as React.FormEvent)}
                                     disabled={(!messageInput.trim() && !selectedFile) || sending}
                                     className={`p-3 rounded-full mb-1 transition-all shadow-sm ${(messageInput.trim() || selectedFile)
                                         ? 'bg-blue-600 text-white hover:bg-blue-700 rotate-0 scale-100'
@@ -1090,7 +1096,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                     community={community}
                     onSuccess={() => {
                         setShowEditModal(false);
-                        loadCommunityData();
+                        void loadCommunityData();
                         setSuccessMessage('Community updated successfully!');
                         setShowSuccess(true);
                     }}

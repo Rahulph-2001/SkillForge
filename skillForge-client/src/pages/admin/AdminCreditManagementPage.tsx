@@ -1,11 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit2, Ticket, TrendingUp, CreditCard, Users, Loader2, Ban, CheckCircle } from 'lucide-react';
-import { CreatePackageData } from '../../components/admin/credits/CreatePackageModal';
+import { type CreatePackageData } from '../../components/admin/credits/CreatePackageModal';
 import CreatePackageModal from '../../components/admin/credits/CreatePackageModal';
-import EditPackageModal, { EditPackageData } from '../../components/admin/credits/EditPackageModal';
-import { adminCreditService, CreditPackage, AdminCreditStats } from '../../services/adminCreditService';
+import EditPackageModal, { type EditPackageData } from '../../components/admin/credits/EditPackageModal';
+import { adminCreditService, type CreditPackage, type AdminCreditStats } from '../../services/adminCreditService';
 import { toast } from 'react-hot-toast';
 import Pagination from '../../components/common/Pagination';
+import { getErrorMessage } from '../../utils/errorUtils';
+
+interface TransactionViewModel {
+    id: string;
+    user?: { avatar?: string; name: string; email: string };
+    amount: number;
+    metadata?: { creditsAdded?: number };
+    type: string;
+    status: string;
+    createdAt: string;
+    referenceId?: string;
+}
 
 const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -34,7 +46,7 @@ export default function AdminCreditManagementPage() {
     const [packageTotalItems, setPackageTotalItems] = useState(0);
 
     // State for transactions
-    const [transactions, setTransactions] = useState<any[]>([]);
+    const [transactions, setTransactions] = useState<TransactionViewModel[]>([]);
     const [transactionPage, setTransactionPage] = useState(1);
     const [transactionLimit, setTransactionLimit] = useState(10);
     const [transactionTotalPages, setTransactionTotalPages] = useState(1);
@@ -64,7 +76,7 @@ export default function AdminCreditManagementPage() {
         setLoading(true);
         try {
             const response = await adminCreditService.getTransactions(page, transactionLimit);
-            setTransactions(response.transactions || []);
+            setTransactions((response.transactions as unknown as TransactionViewModel[]) || []);
             setTransactionPage(response.page);
             setTransactionTotalPages(response.totalPages);
             setTransactionTotalItems(response.total);
@@ -98,12 +110,13 @@ export default function AdminCreditManagementPage() {
 
     useEffect(() => {
         if (activeTab === 'packages') {
-            loadPackages();
+            void loadPackages();
         } else {
-            loadTransactions(transactionPage);
+            void loadTransactions(transactionPage);
         }
-        loadStats();
-        loadRedemptionSettings();
+        void loadStats();
+        void loadRedemptionSettings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab, refreshTrigger, packagePage, packageLimit, transactionPage, transactionLimit]);
 
     const stats = [
@@ -146,9 +159,9 @@ export default function AdminCreditManagementPage() {
             await adminCreditService.createPackage(data);
             toast.success('Credit package created successfully');
             setRefreshTrigger(prev => prev + 1); // Refresh list
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to create package:', error);
-            throw new Error(error.response?.data?.message || 'Failed to create package');
+            throw new Error(getErrorMessage(error) || 'Failed to create package');
         }
     };
 
@@ -157,9 +170,9 @@ export default function AdminCreditManagementPage() {
             await adminCreditService.updatePackage(id, data);
             toast.success('Credit package updated successfully');
             setRefreshTrigger(prev => prev + 1);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to update package:', error);
-            throw new Error(error.response?.data?.message || 'Failed to update package');
+            throw new Error(getErrorMessage(error) || 'Failed to update package');
         }
     };
 
@@ -262,7 +275,7 @@ export default function AdminCreditManagementPage() {
                                         })
                                             .then(() => {
                                                 toast.success('Redemption settings updated');
-                                                loadRedemptionSettings();
+                                                void loadRedemptionSettings();
                                             })
                                             .catch(() => toast.error('Failed to update settings'));
                                     } else {
@@ -491,7 +504,7 @@ export default function AdminCreditManagementPage() {
                                     onPageChange={loadTransactions}
                                     onLimitChange={(newLimit: number) => {
                                         setTransactionLimit(newLimit);
-                                        loadTransactions(1);
+                                        void loadTransactions(1);
                                     }}
                                     showLimitSelector={true}
                                     showInfo={true}
