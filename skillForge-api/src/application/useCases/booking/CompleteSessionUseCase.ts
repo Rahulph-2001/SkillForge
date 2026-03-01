@@ -111,13 +111,9 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
             data: { bookingId: booking.id, creditsEarned: booking.sessionCost },
         });
 
-        // CRITICAL: End the video call for ALL participants
-        // Look up the video room linked to this booking and broadcast termination
-        const videoRoom = await this.videoCallRoomRepository.findByBookingId(bookingId);
-        if (videoRoom && videoRoom.status !== 'ended') {
-            await this.videoCallRoomRepository.updateStatus(videoRoom.id, 'ended', new Date());
-            this.socketNotificationService.notifyRoomEnded(videoRoom.id);
-        }
+        // Note: Video room termination (video:room-ended broadcast) is handled
+        // by the frontend calling endRoom() AFTER review submission to ensure
+        // the learner completes their review before the provider's call drops.
 
         // Fetch the updated booking for response
         const updatedBooking = await this.bookingRepository.findById(bookingId);

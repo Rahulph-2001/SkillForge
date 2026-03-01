@@ -12,6 +12,8 @@ import { Review, CreateReviewProps } from '../../../domain/entities/Review';
 import { Database } from '../../../infrastructure/database/Database';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient } from '@prisma/client';
+import { ISocketNotificationService } from '../../../domain/services/ISocketNotificationService';
+import { IVideoCallRoomRepository } from '../../../domain/repositories/IVideoCallRoomRepository';
 
 @injectable()
 export class CreateReviewUseCase implements ICreateReviewUseCase {
@@ -19,7 +21,9 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
         @inject(TYPES.IReviewRepository) private reviewRepository: IReviewRepository,
         @inject(TYPES.IBookingRepository) private bookingRepository: IBookingRepository,
         @inject(TYPES.IReviewMapper) private reviewMapper: IReviewMapper,
-        @inject(TYPES.Database) private db: Database
+        @inject(TYPES.Database) private db: Database,
+        @inject(TYPES.ISocketNotificationService) private socketNotificationService: ISocketNotificationService,
+        @inject(TYPES.IVideoCallRoomRepository) private videoCallRoomRepository: IVideoCallRoomRepository
     ) { }
 
     async execute(userId: string, request: CreateReviewDTO): Promise<ReviewResponseDTO> {
@@ -63,7 +67,14 @@ export class CreateReviewUseCase implements ICreateReviewUseCase {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const createdReview = await (this.reviewRepository as any).createWithStats(reviewEntity);
 
-         
+        // CRITICAL: After review is submitted, end the video call for ALL participants
+        // This broadcasts video:room-ended to the provider so their call drops
+        const videoRoom = await this.videoCallRoomRepository.findByBookingId(bookingId);
+        if (videoRoom && videoRoom.status !== 'ended') {
+            await this.videoCallRoomRepository.updateStatus(videoRoom.id, 'ended', new Date());
+            this.socketNotificationService.notifyRoomEnded(videoRoom.id);
+        }
+
         return this.reviewMapper.toResponseDTO(createdReview);
     }
 }

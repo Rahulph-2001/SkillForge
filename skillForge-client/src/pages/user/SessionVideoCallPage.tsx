@@ -62,31 +62,37 @@ export default function SessionVideoCallPage() {
 
         const isLearner = user.id !== sessionInfo.providerId;
 
+        try {
+            // Mark session as complete in backend (releases escrow, updates booking status)
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            await videoCallService.completeSession(room.bookingId!);
+        } catch (err) {
+            console.error('Error completing session:', err);
+        }
+
         if (isLearner) {
-            // Learner: Show review modal FIRST — session completes only after review submission
+            // Learner: Show review modal — video:room-ended broadcasts AFTER review submission
             setShowReviewModal(true);
         } else {
-            // Provider: Complete session immediately (broadcasts video:room-ended to learner)
+            // Provider: End the room immediately (broadcasts video:room-ended to learner)
             try {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                await videoCallService.completeSession(room.bookingId!);
-                toast.success('Session completed');
+                await videoCallService.endRoom(room.id);
             } catch (err) {
-                console.error('Error ending session:', err);
+                console.error('Error ending room:', err);
             }
+            toast.success('Session completed');
             navigate(ROUTES.SESSIONS);
         }
     };
 
     const handleReviewSubmitted = async () => {
-        // After learner submits review, NOW complete the session
-        // This triggers video:room-ended broadcast → provider's call drops
+        // After learner submits review, NOW end the video room
+        // This broadcasts video:room-ended → provider's call drops
         if (room) {
             try {
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                await videoCallService.completeSession(room.bookingId!);
+                await videoCallService.endRoom(room.id);
             } catch (err) {
-                console.error('Error completing session after review:', err);
+                console.error('Error ending room after review:', err);
             }
         }
         navigate(ROUTES.SESSIONS);
