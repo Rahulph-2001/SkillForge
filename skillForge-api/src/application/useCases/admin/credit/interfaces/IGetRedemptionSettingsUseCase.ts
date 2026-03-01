@@ -1,4 +1,4 @@
-import { RedemptionSettingsResponseDTO } from '../../../../dto/credit/CreditRedemptionDTO';
+import { type RedemptionSettingsResponseDTO } from '../../../../dto/credit/CreditRedemptionDTO';
 
 export interface IGetRedemptionSettingsUseCase {
     execute(): Promise<RedemptionSettingsResponseDTO>;

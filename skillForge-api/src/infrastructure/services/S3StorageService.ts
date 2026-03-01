@@ -43,13 +43,14 @@ export class S3StorageService implements IStorageService {
       const url = `https://${this.bucketName}.s3.${env.AWS_REGION}.amazonaws.com/${encodedKey}`;
       console.log('[S3StorageService] File uploaded successfully:', { url });
       return url;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
       console.error('[S3StorageService] Upload failed:', {
-        message: error.message,
-        code: error.code,
+        message: err['message'],
+        code: err['code'],
         key
       });
-      throw error;
+      throw error instanceof Error ? error : new Error(String(error));
     }
   }
 
@@ -66,13 +67,14 @@ export class S3StorageService implements IStorageService {
     try {
       await this.s3Client.send(command);
       console.log('[S3StorageService] File deleted successfully:', { key });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
       console.error('[S3StorageService] Delete failed:', {
-        message: error.message,
-        code: error.code,
+        message: err['message'],
+        code: err['code'],
         key
       });
-      throw error;
+      throw error instanceof Error ? error : new Error(String(error));
     }
   }
 
@@ -106,9 +108,11 @@ export class S3StorageService implements IStorageService {
         const buffer = await new Promise<Buffer>((resolve, reject) => {
           const chunks: Buffer[] = [];
           stream.on('data', (chunk) => chunks.push(chunk as Buffer));
-          stream.on('error', (err) => {
-            console.error('[S3StorageService] Stream error:', { key, error: err.message });
-            reject(err);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          stream.on('error', (err: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+            console.error('[S3StorageService] Stream error:', { key, error: err && err.message ? err.message : String(err) });
+            reject(err instanceof Error ? err : new Error(String(err)));
           });
           stream.on('end', () => {
             resolve(Buffer.concat(chunks));
@@ -118,29 +122,30 @@ export class S3StorageService implements IStorageService {
         console.log('[S3StorageService] File downloaded successfully:', { key, size: buffer.length, attempt });
         return buffer;
 
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const err = error as Record<string, unknown>;
         const isLastAttempt = attempt === maxRetries;
-        
-        if (error.name === 'NoSuchKey' && !isLastAttempt) {
+
+        if (err['name'] === 'NoSuchKey' && !isLastAttempt) {
           const delay = baseDelay * Math.pow(2, attempt - 1); // Exponential backoff
           console.warn(`[S3StorageService] File not found (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms:`, { key });
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
 
-        if (error.name === 'NoSuchKey') {
+        if (err['name'] === 'NoSuchKey') {
           console.error('[S3StorageService] File not found after all retries:', { key, fileUrl, attempts: maxRetries });
           throw new NotFoundError('File not found in storage');
         }
 
         console.error('[S3StorageService] Download failed:', {
-          message: error.message,
-          name: error.name,
-          code: error.code,
+          message: err['message'],
+          name: err['name'],
+          code: err['code'],
           key,
           attempt
         });
-        throw error;
+        throw error instanceof Error ? error : new Error(String(error));
       }
     }
 
@@ -169,11 +174,12 @@ export class S3StorageService implements IStorageService {
 
       return response.Body as NodeJS.ReadableStream;
 
-    } catch (error: any) {
-      if (error.name === 'NoSuchKey') {
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
+      if (err['name'] === 'NoSuchKey') {
         throw new NotFoundError('File not found in storage');
       }
-      throw error;
+      throw error instanceof Error ? error : new Error(String(error));
     }
   }
 

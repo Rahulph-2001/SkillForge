@@ -2,6 +2,7 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IPaymentRepository } from '../../../domain/repositories/IPaymentRepository';
 import { WebhookEventDTO } from '../../dto/payment/WebhookEventDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PaymentStatus, PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { IHandleWebhookUseCase } from './interfaces/IHandleWebhookUseCase';
 import { IActivateSubscriptionUseCase } from '../subscription/interfaces/IActivateSubscriptionUseCase';
@@ -32,8 +33,8 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 await this.handleRefund(data.object as StripeCharge);
                 break;
             default:
-                // Unhandled webhook event type - log for monitoring
-                // TODO: Add proper logging service
+            // Unhandled webhook event type - log for monitoring
+            // TODO: Add proper logging service
         }
     }
 
@@ -68,7 +69,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
 
     private async handleSubscriptionPayment(payment: Payment): Promise<void> {
         try {
-            const metadata = payment.metadata || {};
+            const metadata = (payment.metadata as Record<string, string>) || {};
             const { planId, planName } = metadata;
 
             if (!planId) {
@@ -82,7 +83,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 userId: payment.userId,
                 planId: planId,
                 paymentId: payment.id,
-                billingInterval: metadata.billingInterval || BillingInterval.MONTHLY // Read from metadata
+                billingInterval: (metadata.billingInterval as BillingInterval) || BillingInterval.MONTHLY // Read from metadata
             });
 
             // Credit admin wallet
@@ -98,6 +99,7 @@ export class HandleWebhookUseCase implements IHandleWebhookUseCase {
                 }
             });
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             // Error handling subscription payment
             // TODO: Add proper logging service and retry mechanism

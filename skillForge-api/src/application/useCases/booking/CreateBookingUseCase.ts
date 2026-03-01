@@ -9,9 +9,13 @@ import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { Booking } from '../../../domain/entities/Booking';
 import { CreateBookingRequestDTO } from '../../dto/booking/CreateBookingRequestDTO';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
-import { BookingValidator } from '../../../shared/validators/BookingValidator';
+import { BookingValidator, DaySchedule } from '../../../shared/validators/BookingValidator';
 import { DateTimeUtils } from '../../../shared/utils/DateTimeUtils';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { BlockedDate } from '../../../domain/entities/ProviderAvailability';
+import { BookingStatus } from '../../../domain/entities/Booking';
 import { ICreateBookingUseCase } from './interfaces/ICreateBookingUseCase';
 import { INotificationService } from '../../../domain/services/INotificationService';
 import { NotificationType } from '../../../domain/entities/Notification';
@@ -112,7 +116,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
                 throw new ValidationError(advanceValidation.error || 'Booking outside allowed time window');
             }
 
-            const blockedDates = availability.blockedDates as any[];
+            const blockedDates = availability.blockedDates;
             const blockedValidation = BookingValidator.validateAgainstBlockedDates(
                 request.preferredDate,
                 blockedDates
@@ -132,8 +136,8 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
             }
 
             const dayOfWeek = new Date(request.preferredDate).toLocaleDateString('en-US', { weekday: 'long' });
-            const weeklySchedule = availability.weeklySchedule as any;
-            const daySchedule = weeklySchedule[dayOfWeek];
+            const weeklySchedule = availability.weeklySchedule as Record<string, unknown>;
+            const daySchedule = weeklySchedule[dayOfWeek] as DaySchedule;
 
             if (daySchedule) {
                 const workingHoursValidation = BookingValidator.validateWithinWorkingHours(
@@ -192,7 +196,7 @@ export class CreateBookingUseCase implements ICreateBookingUseCase {
             preferredTime: request.preferredTime,
             message: request.message || null,
             sessionCost,
-            status: 'pending' as any,
+            status: BookingStatus.PENDING,
             startAt,
             endAt,
             createdAt: new Date(),

@@ -45,21 +45,22 @@ export class MessageReaction {
         };
     }
 
-    public static fromDatabaseRow(row: Record<string, any>): MessageReaction {
+    public static fromDatabaseRow(row: Record<string, unknown>): MessageReaction {
         const reaction = new MessageReaction({
-            id: row.id as string,
-            messageId: (row.message_id || row.messageId) as string,
-            userId: (row.user_id || row.userId) as string,
-            emoji: row.emoji as string,
+            id: row['id'] as string,
+            messageId: (row['message_id'] || row['messageId']) as string,
+            userId: (row['user_id'] || row['userId']) as string,
+            emoji: row['emoji'] as string,
         });
 
         const reactionAny = reaction as unknown as Record<string, unknown>;
-        reactionAny._createdAt = (row.created_at || row.createdAt) as Date || new Date();
+        reactionAny._createdAt = (row['created_at'] || row['createdAt']) as Date || new Date();
 
         // Map user details if available
-        if (row.user) {
-            reactionAny._userName = row.user.name || null;
-            reactionAny._userAvatar = row.user.avatarUrl || null;
+        if (row['user']) {
+            const user = row['user'] as Record<string, unknown>;
+            reactionAny._userName = user['name'] || null;
+            reactionAny._userAvatar = user['avatarUrl'] || null;
         }
 
         return reaction;

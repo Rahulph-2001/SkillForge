@@ -2,6 +2,7 @@ import cron from 'node-cron';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../di/types';
 import { IInterviewRepository } from '../../domain/repositories/IInterviewRepository';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { InterviewStatus } from '../../domain/entities/Interview';
 
 @injectable()

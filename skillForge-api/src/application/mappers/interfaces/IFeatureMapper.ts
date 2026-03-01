@@ -1,5 +1,5 @@
-import { Feature } from '../../../domain/entities/Feature';
-import { FeatureResponseDTO } from '../../dto/feature/FeatureResponseDTO';
+import { type Feature } from '../../../domain/entities/Feature';
+import { type FeatureResponseDTO } from '../../dto/feature/FeatureResponseDTO';
 
 export interface IFeatureMapper {
   toDTO(feature: Feature): FeatureResponseDTO;

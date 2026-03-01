@@ -89,7 +89,7 @@ const projectService = {
     return response.data.data;
   },
 
-  applyToProject: async (id: string, data: any): Promise<void> => {
+  applyToProject: async (id: string, data: Record<string, unknown>): Promise<void> => {
     await api.post(`/projects/${id}/apply`, data);
   },
 

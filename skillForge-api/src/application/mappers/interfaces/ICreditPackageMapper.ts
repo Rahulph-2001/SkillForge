@@ -1,5 +1,5 @@
-import { CreditPackage } from '../../../domain/entities/CreditPackage';
-import { CreditPackageResponseDTO } from '../../dto/credit/CreditPackageDTO';
+import { type CreditPackage } from '../../../domain/entities/CreditPackage';
+import { type CreditPackageResponseDTO } from '../../dto/credit/CreditPackageDTO';
 
 export interface ICreditPackageMapper {
   toResponseDTO(entity: CreditPackage): CreditPackageResponseDTO;

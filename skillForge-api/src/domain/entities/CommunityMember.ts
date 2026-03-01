@@ -52,12 +52,12 @@ export class CommunityMember {
     this._isActive = false;
     this._leftAt = new Date();
   }
-  
+
   public expireMembership(): void {
     this._isActive = false;
     this._leftAt = new Date();
   }
-  
+
   public updateSubscription(endsAt: Date): void {
     this._subscriptionEndsAt = endsAt;
   }
@@ -76,16 +76,16 @@ export class CommunityMember {
       userAvatar: this._userAvatar,
     };
   }
- public renewSubscription(days: number): void {
-  const newEndsAt = new Date();
-  newEndsAt.setDate(newEndsAt.getDate() + days);
-  this._subscriptionEndsAt = newEndsAt;
-}
-public hasAutoRenewEnabled(): boolean {
-  return this._isAutoRenew;
-}
+  public renewSubscription(days: number): void {
+    const newEndsAt = new Date();
+    newEndsAt.setDate(newEndsAt.getDate() + days);
+    this._subscriptionEndsAt = newEndsAt;
+  }
+  public hasAutoRenewEnabled(): boolean {
+    return this._isAutoRenew;
+  }
 
-  public static fromDatabaseRow(row: Record<string, any>): CommunityMember {
+  public static fromDatabaseRow(row: Record<string, unknown>): CommunityMember {
     const member = new CommunityMember({
       id: row.id as string,
       communityId: (row.community_id || row.communityId) as string,
@@ -100,9 +100,10 @@ public hasAutoRenewEnabled(): boolean {
     memberAny._isActive = (row.is_active !== undefined ? row.is_active : row.isActive) as boolean;
 
     // Map user details if available
-    if (row.user) {
-      memberAny._userName = row.user.name || null;
-      memberAny._userAvatar = row.user.avatarUrl || null;
+    if (row['user']) {
+      const user = row['user'] as Record<string, unknown>;
+      memberAny._userName = user['name'] || null;
+      memberAny._userAvatar = user['avatarUrl'] || null;
     }
 
     return member;

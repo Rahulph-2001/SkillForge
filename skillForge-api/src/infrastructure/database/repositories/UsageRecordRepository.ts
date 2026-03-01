@@ -64,7 +64,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
             orderBy: { createdAt: 'desc' },
         });
 
-        return data.map((item: any) => UsageRecord.fromJSON(item));
+        return data.map((item) => UsageRecord.fromJSON(item));
     }
 
     async findCurrentPeriodBySubscriptionId(subscriptionId: string): Promise<UsageRecord[]> {
@@ -77,7 +77,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
             },
         });
 
-        return data.map((item: any) => UsageRecord.fromJSON(item));
+        return data.map((item) => UsageRecord.fromJSON(item));
     }
 
     async update(usageRecord: UsageRecord): Promise<UsageRecord> {
@@ -108,7 +108,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
         const currentRecords = await this.findCurrentPeriodBySubscriptionId(subscriptionId);
 
         // Create new records for the new period with reset counts
-        const newRecords = currentRecords.map((record: any) => ({
+        const newRecords = currentRecords.map((record) => ({
             subscriptionId,
             featureKey: record.featureKey,
             usageCount: 0,
@@ -119,7 +119,7 @@ export class UsageRecordRepository extends BaseRepository<UsageRecord> implement
 
         // Create all new records in a transaction
         await (this.prisma as PrismaClient).$transaction(
-            newRecords.map((record: any) =>
+            newRecords.map((record) =>
                 this.prisma.usageRecord.create({
                     data: record,
                 })

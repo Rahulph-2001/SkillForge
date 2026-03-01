@@ -1,4 +1,5 @@
 import { injectable, inject } from 'inversify';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { IMessageReactionRepository } from '../../../domain/repositories/IMessageReactionRepository';

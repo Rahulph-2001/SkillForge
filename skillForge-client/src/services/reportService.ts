@@ -9,9 +9,10 @@ export interface CreateReportDTO {
 }
 
 export const createReport = async (data: CreateReportDTO): Promise<void> => {
+    // eslint-disable-next-line no-useless-catch
     try {
         await api.post('/reports', data);
-    } catch (error: any) {
+    } catch (error: unknown) {
         throw error;
     }
 };

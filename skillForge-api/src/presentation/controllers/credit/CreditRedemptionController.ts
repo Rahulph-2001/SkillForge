@@ -7,8 +7,10 @@ import { IRequestWithdrawalUseCase } from '../../../application/useCases/user/wa
 import { IUpdateRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/interfaces/IUpdateRedemptionSettingsUseCase';
 import { IGetRedemptionSettingsUseCase } from '../../../application/useCases/admin/credit/interfaces/IGetRedemptionSettingsUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SetRedemptionSettingsDTO, RedeemCreditsDTO, RequestWithdrawalDTO, ProcessWithdrawalDTO } from '../../../application/dto/credit/CreditRedemptionDTO';
 import { AuthenticatedRequest } from '../../../domain/interfaces/AuthenticatedRequest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { WithdrawalStatus } from '../../../domain/entities/WithdrawalRequest';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 
@@ -32,8 +34,8 @@ export class CreditRedemptionController {
             const result = await this.getWalletInfoUseCase.execute(userId);
             const response = this.responseBuilder.success(result, 'Wallet info retrieved successfully');
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
-            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', error.message || 'Failed to retrieve wallet info', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        } catch (error: unknown) {
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', (error as Error).message || 'Failed to retrieve wallet info', HttpStatusCode.INTERNAL_SERVER_ERROR);
             res.status(response.statusCode).json(response.body);
         }
     }
@@ -46,8 +48,8 @@ export class CreditRedemptionController {
             const result = await this.redeemCreditsUseCase.execute(userId, dto);
             const response = this.responseBuilder.success(result, 'Credits redeemed successfully');
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
-            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', error.message || 'Failed to redeem credits', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        } catch (error: unknown) {
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', (error as Error).message || 'Failed to redeem credits', HttpStatusCode.INTERNAL_SERVER_ERROR);
             res.status(response.statusCode).json(response.body);
         }
     }
@@ -60,8 +62,8 @@ export class CreditRedemptionController {
             const result = await this.requestWithdrawalUseCase.execute(userId, dto);
             const response = this.responseBuilder.success(result, 'Withdrawal requested successfully');
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
-            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', error.message || 'Failed to request withdrawal', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        } catch (error: unknown) {
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', (error as Error).message || 'Failed to request withdrawal', HttpStatusCode.INTERNAL_SERVER_ERROR);
             res.status(response.statusCode).json(response.body);
         }
     }
@@ -74,8 +76,8 @@ export class CreditRedemptionController {
             const result = await this.updateRedemptionSettingsUseCase.execute(userId, dto);
             const response = this.responseBuilder.success(result, 'Redemption settings updated successfully');
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
-            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', error.message || 'Failed to update redemption settings', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        } catch (error: unknown) {
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', (error as Error).message || 'Failed to update redemption settings', HttpStatusCode.INTERNAL_SERVER_ERROR);
             res.status(response.statusCode).json(response.body);
         }
     }
@@ -86,8 +88,8 @@ export class CreditRedemptionController {
             const result = await this.getRedemptionSettingsUseCase.execute();
             const response = this.responseBuilder.success(result, 'Redemption settings retrieved successfully');
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
-            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', error.message || 'Failed to get redemption settings', HttpStatusCode.INTERNAL_SERVER_ERROR);
+        } catch (error: unknown) {
+            const response = this.responseBuilder.error('INTERNAL_SERVER_ERROR', (error as Error).message || 'Failed to get redemption settings', HttpStatusCode.INTERNAL_SERVER_ERROR);
             res.status(response.statusCode).json(response.body);
         }
     }

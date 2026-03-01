@@ -65,7 +65,7 @@ export class RedisService {
     if (ttlSeconds) {
       await this.redis.setex(key, ttlSeconds, value);
     } else {
-      this.redis.set(key, value);
+      await this.redis.set(key, value);
     }
   }
 
@@ -74,7 +74,7 @@ export class RedisService {
   }
 
   async delete(key: string): Promise<void> {
-    this.redis.del(key);
+    await this.redis.del(key);
   }
 
   async exists(key: string): Promise<boolean> {
@@ -83,7 +83,7 @@ export class RedisService {
   }
 
   async expire(key: string, seconds: number): Promise<void> {
-    this.redis.expire(key, seconds);
+    await this.redis.expire(key, seconds);
   }
 
   async getTTL(key: string): Promise<number> {
@@ -95,19 +95,19 @@ export class RedisService {
   }
 
   async close(): Promise<void> {
-    this.redis.quit();
+    await this.redis.quit();
   }
 
   async ping(): Promise<boolean> {
     try {
       const result = await this.redis.ping();
       return result === 'PONG';
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   }
 
-  public getRedisOptions(): any {
+  public getRedisOptions(): { connection: { url?: string; host?: string; port?: number; password?: string | undefined } } {
     const redisUrl = env.REDIS_URL;
     const redisPassword = env.REDIS_PASSWORD;
 

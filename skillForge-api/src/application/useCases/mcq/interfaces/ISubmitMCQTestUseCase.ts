@@ -1,5 +1,5 @@
-import { SubmitMCQRequestDTO } from '../../../dto/mcq/SubmitMCQRequestDTO';
-import { SubmitMCQResponseDTO } from '../../../dto/mcq/SubmitMCQResponseDTO';
+import { type SubmitMCQRequestDTO } from '../../../dto/mcq/SubmitMCQRequestDTO';
+import { type SubmitMCQResponseDTO } from '../../../dto/mcq/SubmitMCQResponseDTO';
 
 export interface ISubmitMCQTestUseCase {
   execute(request: SubmitMCQRequestDTO): Promise<SubmitMCQResponseDTO>;

@@ -68,6 +68,7 @@ export class SkillTemplate {
   }
 
   get id(): string {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.props.id!;
   }
 
@@ -112,14 +113,17 @@ export class SkillTemplate {
   }
 
   get isActive(): boolean {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.props.isActive!;
   }
 
   get createdAt(): Date {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.props.createdAt!;
   }
 
   get updatedAt(): Date {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.props.updatedAt!;
   }
 

@@ -27,8 +27,8 @@ export class DebitAdminWalletUseCase implements IDebitAdminWalletUseCase {
 
         try {
             adminUser.debitWallet(dto.amount);
-        } catch (error: any) {
-            throw new InternalServerError(`Insufficient funds in admin wallet: ${error.message}`);
+        } catch (error: unknown) {
+            throw new InternalServerError(`Insufficient funds in admin wallet: ${(error as Error).message}`);
         }
 
         await this.userRepository.update(adminUser);
@@ -71,9 +71,11 @@ export class DebitAdminWalletUseCase implements IDebitAdminWalletUseCase {
 
     private generateDescription(dto: DebitAdminWalletRequestDTO): string {
         if (dto.source === 'PROJECT_RELEASE') {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const projectTitle = dto.metadata?.projectTitle || 'Project';
             return `Project payment release: ${projectTitle}`;
         } else if (dto.source === 'PROJECT_REFUND') {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const projectTitle = dto.metadata?.projectTitle || 'Project';
             return `Project refund: ${projectTitle}`;
         }

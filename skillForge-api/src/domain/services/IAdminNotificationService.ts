@@ -1,4 +1,4 @@
-import { NotificationType } from '../entities/Notification';
+import { type NotificationType } from '../entities/Notification';
 
 export interface SendAdminNotificationParams {
     type: NotificationType;

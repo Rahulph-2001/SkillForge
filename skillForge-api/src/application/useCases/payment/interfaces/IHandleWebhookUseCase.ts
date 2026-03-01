@@ -1,4 +1,4 @@
-import { WebhookEventDTO } from '../../../dto/payment/WebhookEventDTO';
+import { type WebhookEventDTO } from '../../../dto/payment/WebhookEventDTO';
 
 export interface IHandleWebhookUseCase {
     execute(event: WebhookEventDTO): Promise<void>;

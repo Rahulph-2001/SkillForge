@@ -1,12 +1,12 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
-import { IInterviewRepository } from '../../../domain/repositories/IInterviewRepository';
+import { type IInterviewRepository } from '../../../domain/repositories/IInterviewRepository';
 import { InterviewRepository } from '../../database/repositories/InterviewRepository';
-import { IInterviewMapper } from '../../../application/mappers/interfaces/IInterviewMapper';
+import { type IInterviewMapper } from '../../../application/mappers/interfaces/IInterviewMapper';
 import { InterviewMapper } from '../../../application/mappers/InterviewMapper';
-import { IScheduleInterviewUseCase } from '../../../application/useCases/interview/interfaces/IScheduleInterviewUseCase';
+import { type IScheduleInterviewUseCase } from '../../../application/useCases/interview/interfaces/IScheduleInterviewUseCase';
 import { ScheduleInterviewUseCase } from '../../../application/useCases/interview/ScheduleInterviewUseCase';
-import { IGetInterviewUseCase } from '../../../application/useCases/interview/interfaces/IGetInterviewUseCase';
+import { type IGetInterviewUseCase } from '../../../application/useCases/interview/interfaces/IGetInterviewUseCase';
 import { GetInterviewUseCase } from '../../../application/useCases/interview/GetInterviewUseCase';
 import { InterviewController } from '../../../presentation/controllers/interview/InterviewController';
 import { InterviewRoutes } from '../../../presentation/routes/interview/InterviewRoutes';

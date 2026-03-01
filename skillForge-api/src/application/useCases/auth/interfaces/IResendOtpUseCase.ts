@@ -1,4 +1,4 @@
-import { ResendOtpDTO } from '../../../dto/auth/ResendOtpDTO';
+import { type ResendOtpDTO } from '../../../dto/auth/ResendOtpDTO';
 
 export interface ResendOtpResponseDTO {
   success: boolean;

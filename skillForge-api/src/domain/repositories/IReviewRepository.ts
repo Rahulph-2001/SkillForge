@@ -1,4 +1,4 @@
-import { Review } from '../entities/Review';
+import { type Review } from '../entities/Review';
 
 export interface IReviewRepository {
     create(review: Review): Promise<Review>;

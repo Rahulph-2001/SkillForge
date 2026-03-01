@@ -72,7 +72,7 @@ export class MCQImportJobRepository extends BaseRepository<MCQImportJob> impleme
       where: { templateId },
       orderBy: { createdAt: 'desc' },
     });
-    return jobs.map(this.toDomain);
+    return jobs.map(j => this.toDomain(j));
   }
 
   async update(job: MCQImportJob): Promise<MCQImportJob> {
@@ -82,6 +82,7 @@ export class MCQImportJobRepository extends BaseRepository<MCQImportJob> impleme
         data: this.toPersistence(job),
       });
       return this.toDomain(updated);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new NotFoundError('MCQ Import Job not found for update');
     }
@@ -97,7 +98,7 @@ export class MCQImportJobRepository extends BaseRepository<MCQImportJob> impleme
     startedAt?: Date,
     completedAt?: Date,
   ): Promise<MCQImportJob> {
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       status,
       processedRows,
       successfulRows,
@@ -114,6 +115,7 @@ export class MCQImportJobRepository extends BaseRepository<MCQImportJob> impleme
         data: updateData,
       });
       return this.toDomain(updated);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new NotFoundError('MCQ Import Job not found for progress update');
     }

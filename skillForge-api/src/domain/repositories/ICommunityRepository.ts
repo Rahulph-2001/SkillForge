@@ -1,6 +1,6 @@
 // skillForge-api/src/domain/repositories/ICommunityRepository.ts
-import { Community } from '../entities/Community';
-import { CommunityMember } from '../entities/CommunityMember';
+import { type Community } from '../entities/Community';
+import { type CommunityMember } from '../entities/CommunityMember';
 
 export interface ICommunityRepository {
   create(community: Community): Promise<Community>;

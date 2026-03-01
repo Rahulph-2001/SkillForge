@@ -94,7 +94,7 @@ export class RescheduleBookingUseCase implements IRescheduleBookingUseCase {
     };
 
     // 9. Update booking with reschedule request
-    await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo);
+    await this.bookingRepository.updateWithReschedule(request.bookingId, rescheduleInfo as unknown as Record<string, unknown>);
 
     // 10. Send notification to the other party
     const requester = await this.userRepository.findById(request.userId);

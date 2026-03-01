@@ -24,7 +24,7 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
       }
     });
 
-    return plans.map((plan: any) => this.toDomain(plan));
+    return plans.map((plan) => this.toDomain(plan));
   }
 
   async findWithPagination(filters: {
@@ -42,7 +42,7 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
     const limit = filters.limit || 20;
     const skip = (page - 1) * limit;
 
-    const where: any = {};
+    const where: Record<string, unknown> = {};
     if (filters.isActive !== undefined) {
       where.isActive = filters.isActive;
     } else {
@@ -60,7 +60,7 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
     });
 
     return {
-      plans: plans.map((plan: any) => this.toDomain(plan)),
+      plans: plans.map((plan) => this.toDomain(plan)),
       total,
       page,
       limit,
@@ -108,10 +108,12 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
         name: planData.name as string,
         price: planData.price as number,
         currency: (planData.currency as string) || 'INR',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         billingInterval: (planData.billingInterval as any) || 'MONTHLY',
         trialDays: (planData.trialDays as number) || 0,
         projectPosts: planData.projectPosts as number | null,
         createCommunity: planData.createCommunity as number | null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         badge: planData.badge as any,
         color: planData.color as string,
         isPopular: (planData.isPopular as boolean) || false,
@@ -137,10 +139,12 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
           name: planData.name as string,
           price: planData.price as number,
           currency: planData.currency as string | undefined,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           billingInterval: planData.billingInterval as any,
           trialDays: planData.trialDays as number | undefined,
           projectPosts: planData.projectPosts as number | null,
           createCommunity: planData.createCommunity as number | null,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           badge: planData.badge as any,
           color: planData.color as string,
           isPopular: planData.isPopular as boolean | undefined,
@@ -155,6 +159,7 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
       });
 
       return this.toDomain(updatedPlan);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new NotFoundError('Subscription plan not found');
     }
@@ -170,6 +175,7 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
           updatedAt: new Date(),
         },
       });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       throw new NotFoundError('Subscription plan not found');
     }
@@ -210,14 +216,15 @@ export class PrismaSubscriptionPlanRepository extends BaseRepository<Subscriptio
     return plan !== null;
   }
 
-  private toDomain(prismaModel: any): SubscriptionPlan {
+  private toDomain(prismaModel: Record<string, unknown>): SubscriptionPlan {
     return SubscriptionPlan.fromJSON({
       id: prismaModel.id,
       name: prismaModel.name,
       price: Number(prismaModel.price),
       projectPosts: prismaModel.projectPosts,
       createCommunity: prismaModel.createCommunity,
-      features: prismaModel.features ? prismaModel.features.map((f: any) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      features: prismaModel.features ? (prismaModel.features as any[]).map((f: any) => ({
         id: f.id,
         name: f.name,
         description: f.description,

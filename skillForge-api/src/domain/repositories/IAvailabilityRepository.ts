@@ -1,4 +1,4 @@
-import { ProviderAvailability } from '../entities/ProviderAvailability';
+import { type ProviderAvailability } from '../entities/ProviderAvailability';
 
 export interface IAvailabilityRepository {
     findByProviderId(providerId: string): Promise<ProviderAvailability | null>;

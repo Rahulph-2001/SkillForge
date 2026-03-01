@@ -1,4 +1,4 @@
-import { SkillTemplate } from '../../../../domain/entities/SkillTemplate';
+import { type SkillTemplate } from '../../../../domain/entities/SkillTemplate';
 
 export interface SkillTemplateListResult {
   templates: SkillTemplate[];

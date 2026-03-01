@@ -1,5 +1,5 @@
 
-import { ProjectMessage } from '../entities/ProjectMessage';
+import { type ProjectMessage } from '../entities/ProjectMessage';
 
 export interface IProjectMessageRepository {
     create(message: ProjectMessage): Promise<ProjectMessage>;

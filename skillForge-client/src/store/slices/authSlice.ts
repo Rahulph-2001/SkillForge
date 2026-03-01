@@ -1,13 +1,13 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, type PayloadAction } from '@reduxjs/toolkit';
 import {
   authService,
-  SignupRequest,
-  SignupResponse,
-  LoginRequest,
-  LoginResponse,
-  VerifyOtpResponse,
-  ApiError
+  type SignupRequest,
+  type SignupResponse,
+  type LoginRequest,
+  type LoginResponse,
+  type VerifyOtpResponse,
 } from '../../services/authService';
+import { type ApiErrorPayload, getErrorMessage, extractRejectedMessage } from '../../utils/errorUtils';
 
 export interface AuthState {
   user: {
@@ -42,23 +42,25 @@ const initialState: AuthState = {
 export const signup = createAsyncThunk<
   SignupResponse,
   SignupRequest,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/signup',
   async (signupData, { rejectWithValue }) => {
     try {
       const response = await authService.signup(signupData);
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Signup error:', error);
-      // Handle network errors
-      if (error.code === 'ERR_NETWORK') {
+      const axiosLike = error as { code?: string; response?: { data?: ApiErrorPayload } };
+      if (axiosLike.code === 'ERR_NETWORK') {
         return rejectWithValue({
           success: false,
-          error: 'Cannot connect to server. Please check if the backend is running.'
+          error: 'Cannot connect to server. Please check if the backend is running.',
         });
       }
-      return rejectWithValue(error as ApiError);
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -67,30 +69,31 @@ export const signup = createAsyncThunk<
 export const login = createAsyncThunk<
   LoginResponse,
   LoginRequest,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/login',
   async (loginData, { rejectWithValue }) => {
     try {
       const response = await authService.login(loginData);
       return response;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
-      // Handle network errors
-      if (error.code === 'ERR_NETWORK') {
+      const axiosLike = error as { code?: string; response?: { data?: ApiErrorPayload } };
+      if (axiosLike.code === 'ERR_NETWORK') {
         return rejectWithValue({
           success: false,
-          error: 'Cannot connect to server. Please check if the backend is running.'
+          error: 'Cannot connect to server. Please check if the backend is running.',
         });
       }
-      // Handle timeout errors
-      if (error.code === 'ECONNABORTED') {
+      if (axiosLike.code === 'ECONNABORTED') {
         return rejectWithValue({
           success: false,
-          error: 'Request timeout. Please try again.'
+          error: 'Request timeout. Please try again.',
         });
       }
-      return rejectWithValue(error as ApiError);
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -99,15 +102,18 @@ export const login = createAsyncThunk<
 export const adminLogin = createAsyncThunk<
   LoginResponse,
   LoginRequest,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/adminLogin',
   async (loginData, { rejectWithValue }) => {
     try {
       const response = await authService.adminLogin(loginData);
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error as ApiError);
+    } catch (error: unknown) {
+      const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -116,15 +122,18 @@ export const adminLogin = createAsyncThunk<
 export const verifyOtp = createAsyncThunk<
   VerifyOtpResponse,
   { email: string; code: string },
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/verifyOtp',
   async ({ email, code }, { rejectWithValue }) => {
     try {
       const response = await authService.verifyOtp(email, code);
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error as ApiError);
+    } catch (error: unknown) {
+      const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -133,15 +142,18 @@ export const verifyOtp = createAsyncThunk<
 export const resendOtp = createAsyncThunk<
   { success: boolean; message: string },
   string,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/resendOtp',
   async (email, { rejectWithValue }) => {
     try {
       const response = await authService.resendOtp(email);
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error as ApiError);
+    } catch (error: unknown) {
+      const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -150,15 +162,18 @@ export const resendOtp = createAsyncThunk<
 export const googleAuth = createAsyncThunk<
   LoginResponse,
   void,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/googleAuth',
   async (_, { rejectWithValue }) => {
     try {
       const response = await authService.googleAuthCallback();
       return response;
-    } catch (error: any) {
-      return rejectWithValue(error as ApiError);
+    } catch (error: unknown) {
+      const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -167,14 +182,17 @@ export const googleAuth = createAsyncThunk<
 export const logout = createAsyncThunk<
   void,
   void,
-  { rejectValue: ApiError }
+  { rejectValue: ApiErrorPayload }
 >(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
       await authService.logout();
-    } catch (error: any) {
-      return rejectWithValue(error as ApiError);
+    } catch (error: unknown) {
+      const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+      return rejectWithValue(
+        axiosLike.response?.data ?? { success: false, error: getErrorMessage(error) }
+      );
     }
   }
 );
@@ -239,29 +257,13 @@ const authSlice = createSlice({
       })
       .addCase(signup.fulfilled, (state, action: PayloadAction<SignupResponse>) => {
         state.loading = false
-        // Don't set user yet - wait for OTP verification
         state.successMessage = action.payload.data.message
         state.pendingVerificationEmail = action.payload.data.email
         state.error = null
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;
-
-        // Extract error message - authService already extracts error.response?.data
-        const error: any = action.payload || action.error;
-
-        // Direct error property from API response - ensure it's a string
-        if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'Registration failed';
-        } else if (error?.details && Array.isArray(error.details) && error.details.length > 0) {
-          // Format validation errors
-          state.error = error.details.map((detail: { field: string; message: string }) => detail.message).join(', ');
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'Registration failed';
-        }
-
+        state.error = extractRejectedMessage(action.payload, 'Registration failed');
         state.successMessage = null;
       })
       // Login
@@ -277,17 +279,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        const error: any = action.payload || action.error;
-
-        if (error?.details && Array.isArray(error.details) && error.details.length > 0) {
-          state.error = error.details.map((detail: { field: string; message: string }) => detail.message).join(', ');
-        } else if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'Login failed';
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'Login failed';
-        }
+        state.error = extractRejectedMessage(action.payload, 'Login failed');
         state.successMessage = null;
       })
       // Admin Login
@@ -303,17 +295,7 @@ const authSlice = createSlice({
       })
       .addCase(adminLogin.rejected, (state, action) => {
         state.loading = false;
-        const error: any = action.payload || action.error;
-
-        if (error?.details && Array.isArray(error.details) && error.details.length > 0) {
-          state.error = error.details.map((detail: { field: string; message: string }) => detail.message).join(', ');
-        } else if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'Admin login failed';
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'Admin login failed';
-        }
+        state.error = extractRejectedMessage(action.payload, 'Admin login failed');
         state.successMessage = null;
       })
       // Verify OTP
@@ -330,17 +312,7 @@ const authSlice = createSlice({
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;
-        const error: any = action.payload || action.error;
-
-        if (error?.details && Array.isArray(error.details) && error.details.length > 0) {
-          state.error = error.details.map((detail: { field: string; message: string }) => detail.message).join(', ');
-        } else if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'OTP verification failed';
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'OTP verification failed';
-        }
+        state.error = extractRejectedMessage(action.payload, 'OTP verification failed');
       })
       // Resend OTP
       .addCase(resendOtp.pending, (state) => {
@@ -353,15 +325,7 @@ const authSlice = createSlice({
       })
       .addCase(resendOtp.rejected, (state, action) => {
         state.otpResending = false;
-        const error: any = action.payload || action.error;
-
-        if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'Failed to resend OTP';
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'Failed to resend OTP';
-        }
+        state.error = extractRejectedMessage(action.payload, 'Failed to resend OTP');
       })
       // Google Auth
       .addCase(googleAuth.pending, (state) => {
@@ -376,15 +340,7 @@ const authSlice = createSlice({
       })
       .addCase(googleAuth.rejected, (state, action) => {
         state.loading = false;
-        const error: any = action.payload || action.error;
-
-        if (error?.error) {
-          state.error = typeof error.error === 'string' ? error.error : error.error?.message || 'Google authentication failed';
-        } else if (error?.message) {
-          state.error = error.message;
-        } else {
-          state.error = 'Google authentication failed';
-        }
+        state.error = extractRejectedMessage(action.payload, 'Google authentication failed');
       })
       // Logout
       .addCase(logout.pending, (state) => {

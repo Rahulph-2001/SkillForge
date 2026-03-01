@@ -24,7 +24,7 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
     if (!skill) throw new NotFoundError('Skill not found');
 
     // Check if skill is active
-    if (skill.status !== 'approved' || skill.isBlocked) {
+    if ((skill.status as string) !== 'approved' || skill.isBlocked) {
       throw new NotFoundError('This skill is currently not available');
     }
 
@@ -33,7 +33,7 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
 
     // 1. Get Provider Statistics (Rating)
     const providerSkills = await this.skillRepository.findByProviderId(skill.providerId);
-    const validSkills = providerSkills.filter(s => s.status === 'approved' && !s.isBlocked);
+    const validSkills = providerSkills.filter(s => (s.status as string) === 'approved' && !s.isBlocked);
 
     const totalRating = validSkills.reduce((sum, s) => sum + (s.rating || 0), 0);
     const avgRating = validSkills.length ? totalRating / validSkills.length : 0;
@@ -58,12 +58,19 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
 
       // Map to simple objects for Frontend to gray out
       // User Request: Only show bookings related to THIS skill and only CONFIRMED/PENDING statuses
+      interface BookedSlot {
+        id: string | undefined;
+        title: string;
+        date: string;
+        startTime: string;
+        endTime: string;
+      }
       const bookedSlots = activeBookings
-        .filter((b: any) => 
-          b.skillId === skillId && 
-          (b.status === 'confirmed' || b.status === 'pending' || b.status === 'reschedule_requested')
+        .filter((b) =>
+          b.skillId === skillId &&
+          ((b.status as string) === 'confirmed' || (b.status as string) === 'pending' || (b.status as string) === 'reschedule_requested')
         )
-        .map((b: any) => ({
+        .map((b) => ({
           id: b.id,
           title: b.skillTitle || 'Session',
           date: b.preferredDate,
@@ -74,7 +81,7 @@ export class GetSkillDetailsUseCase implements IGetSkillDetailsUseCase {
       enrichedAvailability = {
         ...availability,
         bookedSlots // <-- Crucial for "Industrial" feel
-      } as ProviderAvailability & { bookedSlots: any[] };
+      } as ProviderAvailability & { bookedSlots: BookedSlot[] };
     }
 
     return this.skillDetailsMapper.toDTO(

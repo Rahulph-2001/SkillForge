@@ -1,4 +1,4 @@
-import { CommunityMessage } from '../entities/CommunityMessage';
+import { type CommunityMessage } from '../entities/CommunityMessage';
 
 
 export interface ICommunityMessageRepository {

@@ -159,21 +159,21 @@ export class ProjectPaymentRequest {
         return this.toObject();
     }
 
-    static fromDatabaseRow(data: any): ProjectPaymentRequest {
+    static fromDatabaseRow(data: Record<string, unknown>): ProjectPaymentRequest {
         return new ProjectPaymentRequest({
-            id: data.id,
-            projectId: data.projectId || data.project_id,
-            type: data.type as ProjectPaymentRequestType,
-            amount: Number(data.amount),
-            requestedBy: data.requestedBy || data.requested_by,
-            recipientId: data.recipientId || data.recipient_id,
-            status: data.status as ProjectPaymentRequestStatus,
-            requesterNotes: data.requesterNotes || data.requester_notes || null,
-            adminNotes: data.adminNotes || data.admin_notes || null,
-            processedAt: data.processedAt || data.processed_at ? new Date(data.processedAt || data.processed_at) : null,
-            processedBy: data.processedBy || data.processed_by || null,
-            createdAt: new Date(data.createdAt || data.created_at),
-            updatedAt: new Date(data.updatedAt || data.updated_at),
+            id: data['id'] as string | undefined,
+            projectId: (data['projectId'] || data['project_id']) as string,
+            type: data['type'] as ProjectPaymentRequestType,
+            amount: Number(data['amount']),
+            requestedBy: (data['requestedBy'] || data['requested_by']) as string,
+            recipientId: (data['recipientId'] || data['recipient_id']) as string,
+            status: data['status'] as ProjectPaymentRequestStatus,
+            requesterNotes: (data['requesterNotes'] || data['requester_notes'] || null) as string | null,
+            adminNotes: (data['adminNotes'] || data['admin_notes'] || null) as string | null,
+            processedAt: (data['processedAt'] || data['processed_at']) ? new Date((data['processedAt'] || data['processed_at']) as string | Date) : null,
+            processedBy: (data['processedBy'] || data['processed_by'] || null) as string | null,
+            createdAt: new Date((data['createdAt'] || data['created_at']) as string | Date),
+            updatedAt: new Date((data['updatedAt'] || data['updated_at']) as string | Date),
         });
     }
 }

@@ -5,6 +5,7 @@ import { SetRedemptionSettingsDTO, SetRedemptionSettingsSchema } from '../../../
 import { SystemSettingsResponseDTO } from '../../../dto/settings/SystemSettingsResponseDTO';
 import { ISystemSettingsRepository } from '../../../../domain/repositories/ISystemSettingsRepository';
 import { ISystemSettingsMapper } from '../../../mappers/interfaces/ISystemSettingsMapper';
+import { SystemSettings } from '../../../../domain/entities/SystemSettings';
 
 @injectable()
 export class UpdateRedemptionSettingsUseCase implements IUpdateRedemptionSettingsUseCase {
@@ -15,7 +16,7 @@ export class UpdateRedemptionSettingsUseCase implements IUpdateRedemptionSetting
 
     async execute(userId: string, data: SetRedemptionSettingsDTO): Promise<SystemSettingsResponseDTO[]> {
         const validatedData = SetRedemptionSettingsSchema.parse(data);
-        const results: any[] = [];
+        const results: SystemSettings[] = [];
 
         // Update Conversion Rate
         const rateSettings = await this.settingsRepository.set(

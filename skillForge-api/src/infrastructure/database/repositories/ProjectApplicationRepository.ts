@@ -4,7 +4,7 @@ import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
 import { ProjectApplication, ProjectApplicationStatus, MatchAnalysis } from '../../../domain/entities/ProjectApplication';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 @injectable()
 export class ProjectApplicationRepository
@@ -26,7 +26,7 @@ export class ProjectApplicationRepository
         proposedDuration: application.proposedDuration,
         status: application.status,
         matchScore: application.matchScore,
-        matchAnalysis: application.matchAnalysis as any,
+        matchAnalysis: application.matchAnalysis as unknown as Prisma.InputJsonValue | undefined,
         createdAt: application.createdAt,
         updatedAt: application.updatedAt,
         reviewedAt: application.reviewedAt,
@@ -49,7 +49,7 @@ export class ProjectApplicationRepository
       where: { projectId },
       orderBy: { matchScore: 'desc' },
     });
-    return data.map((d: any) => this.toDomain(d));
+    return data.map((d) => this.toDomain(d));
   }
 
   async findByApplicantId(applicantId: string): Promise<ProjectApplication[]> {
@@ -62,7 +62,7 @@ export class ProjectApplicationRepository
       },
       orderBy: { createdAt: 'desc' },
     });
-    return data.map((d: any) => this.toDomain(d));
+    return data.map((d) => this.toDomain(d));
   }
 
   async findByProjectAndApplicant(projectId: string, applicantId: string): Promise<ProjectApplication | null> {
@@ -101,7 +101,7 @@ export class ProjectApplicationRepository
       },
       orderBy: { createdAt: 'desc' },
     });
-    return data.map((d: any) => this.toDomain(d));
+    return data.map((d) => this.toDomain(d));
   }
 
   async update(application: ProjectApplication): Promise<ProjectApplication> {
@@ -111,7 +111,7 @@ export class ProjectApplicationRepository
       data: {
         status: application.status,
         matchScore: application.matchScore,
-        matchAnalysis: application.matchAnalysis as any,
+        matchAnalysis: application.matchAnalysis as unknown as Prisma.InputJsonValue | undefined,
         updatedAt: application.updatedAt,
         reviewedAt: application.reviewedAt,
       },
@@ -133,6 +133,7 @@ export class ProjectApplicationRepository
     await prisma.projectApplication.delete({ where: { id } });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private toDomain(data: any): ProjectApplication {
     return new ProjectApplication({
       id: data.id,

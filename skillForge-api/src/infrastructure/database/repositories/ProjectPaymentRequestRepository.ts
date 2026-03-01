@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, ProjectPaymentRequestType as PrismaProjectPaymentRequestType, ProjectPaymentRequestStatus as PrismaProjectPaymentRequestStatus } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { IProjectPaymentRequestRepository } from '../../../domain/repositories/IProjectPaymentRequestRepository';
 import { ProjectPaymentRequest } from '../../../domain/entities/ProjectPaymentRequest';
@@ -23,11 +23,11 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             data: {
                 id: data.id,
                 projectId: data.projectId,
-                type: data.type as any, // Cast to any to avoid type error before regeneration
+                type: data.type as unknown as PrismaProjectPaymentRequestType,
                 amount: data.amount,
                 requestedBy: data.requestedBy,
                 recipientId: data.recipientId,
-                status: data.status as any,
+                status: data.status as unknown as PrismaProjectPaymentRequestStatus,
                 adminNotes: data.adminNotes,
                 processedAt: data.processedAt,
                 processedBy: data.processedBy,
@@ -54,12 +54,12 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             orderBy: { createdAt: 'desc' },
         });
 
-        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async findPending(): Promise<ProjectPaymentRequest[]> {
         const results = await this.prisma.projectPaymentRequest.findMany({
-            where: { status: 'PENDING' as any },
+            where: { status: 'PENDING' as unknown as PrismaProjectPaymentRequestStatus },
             orderBy: { createdAt: 'asc' },
             include: {
                 project: {
@@ -71,19 +71,19 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
             }
         });
 
-        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async findPendingByType(type: ProjectPaymentRequestType): Promise<ProjectPaymentRequest[]> {
         const results = await this.prisma.projectPaymentRequest.findMany({
             where: {
-                status: 'PENDING' as any,
-                type: type as any
+                status: 'PENDING' as unknown as PrismaProjectPaymentRequestStatus,
+                type: type as unknown as PrismaProjectPaymentRequestType
             },
             orderBy: { createdAt: 'asc' },
         });
 
-        return results.map((row: any) => ProjectPaymentRequest.fromDatabaseRow(row));
+        return results.map((row) => ProjectPaymentRequest.fromDatabaseRow(row));
     }
 
     async update(request: ProjectPaymentRequest): Promise<ProjectPaymentRequest> {
@@ -92,7 +92,7 @@ export class ProjectPaymentRequestRepository implements IProjectPaymentRequestRe
         const updated = await this.prisma.projectPaymentRequest.update({
             where: { id: data.id },
             data: {
-                status: data.status as any,
+                status: data.status as unknown as PrismaProjectPaymentRequestStatus,
                 adminNotes: data.adminNotes,
                 processedAt: data.processedAt,
                 processedBy: data.processedBy,

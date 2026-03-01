@@ -30,7 +30,7 @@ export interface UserWalletTransactionProps {
     source: string;
     referenceId?: string | null;
     description?: string | null;
-    metadata?: Record<string, any> | null;
+    metadata?: Record<string, unknown> | null;
     previousBalance: number;
     newBalance: number;
     status: UserWalletTransactionStatus;
@@ -93,7 +93,7 @@ export class UserWalletTransaction {
         return this.props.description;
     }
 
-    get metadata(): Record<string, any> | null | undefined {
+    get metadata(): Record<string, unknown> | null | undefined {
         return this.props.metadata;
     }
 
@@ -121,22 +121,22 @@ export class UserWalletTransaction {
         return { ...this.props };
     }
 
-    static fromDatabaseRow(data: any): UserWalletTransaction {
+    static fromDatabaseRow(data: Record<string, unknown>): UserWalletTransaction {
         return new UserWalletTransaction({
-            id: data.id,
-            userId: data.userId || data.user_id,
-            type: data.type as UserWalletTransactionType,
-            amount: Number(data.amount),
-            currency: data.currency,
-            source: data.source,
-            referenceId: data.referenceId || data.reference_id || null,
-            description: data.description || null,
-            metadata: data.metadata || null,
-            previousBalance: Number(data.previousBalance || data.previous_balance),
-            newBalance: Number(data.newBalance || data.new_balance),
-            status: data.status as UserWalletTransactionStatus,
-            createdAt: new Date(data.createdAt || data.created_at),
-            updatedAt: new Date(data.updatedAt || data.updated_at),
+            id: data['id'] as string,
+            userId: (data['userId'] || data['user_id']) as string,
+            type: data['type'] as UserWalletTransactionType,
+            amount: Number(data['amount']),
+            currency: data['currency'] as string,
+            source: data['source'] as string,
+            referenceId: (data['referenceId'] || data['reference_id'] || null) as string | null,
+            description: (data['description'] || null) as string | null,
+            metadata: (data['metadata'] || null) as Record<string, unknown> | null,
+            previousBalance: Number(data['previousBalance'] || data['previous_balance']),
+            newBalance: Number(data['newBalance'] || data['new_balance']),
+            status: data['status'] as UserWalletTransactionStatus,
+            createdAt: new Date((data['createdAt'] || data['created_at']) as string | Date),
+            updatedAt: new Date((data['updatedAt'] || data['updated_at']) as string | Date),
         });
     }
 }

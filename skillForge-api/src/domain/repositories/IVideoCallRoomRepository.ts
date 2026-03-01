@@ -1,4 +1,4 @@
-import { VideoCallRoom, RoomStatus } from '../entities/VideoCallRoom';
+import { type VideoCallRoom, type RoomStatus } from '../entities/VideoCallRoom';
 
 export interface IVideoCallRoomRepository {
   create(room: VideoCallRoom): Promise<VideoCallRoom>;

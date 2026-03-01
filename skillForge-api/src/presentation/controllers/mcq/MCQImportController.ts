@@ -25,7 +25,7 @@ export class MCQImportController {
     try {
       console.log('[MCQImportController] Starting MCQ import process');
       
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
       const { templateId } = req.params;
       const file = req.file;
 
@@ -65,11 +65,11 @@ export class MCQImportController {
       );
 
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[MCQImportController] Error during import:', {
-        message: error.message,
-        stack: error.stack,
-        name: error.name
+        message: (error as Error).message,
+        stack: (error as Error).stack,
+        name: (error as Error).name
       });
       next(error);
     }
@@ -81,7 +81,7 @@ export class MCQImportController {
    */
   public listJobs = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
       const { templateId } = req.params;
 
       const result = await this.listJobsUseCase.execute(templateId, adminId);
@@ -104,7 +104,7 @@ export class MCQImportController {
    */
   public downloadErrors = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
       const { jobId } = req.params;
 
       const { fileStream, fileName, mimeType } = await this.downloadErrorsUseCase.execute(jobId, adminId);

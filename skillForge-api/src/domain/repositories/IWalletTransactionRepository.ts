@@ -1,4 +1,4 @@
-import { WalletTransaction } from '../entities/WalletTransaction';
+import { type WalletTransaction } from '../entities/WalletTransaction';
 
 export interface IWalletTransactionRepository {
   create(transaction: WalletTransaction): Promise<WalletTransaction>;

@@ -34,7 +34,7 @@ export interface WalletTransaction {
     source: string;
     referenceId?: string | null;
     description?: string | null;
-    metadata?: Record<string, any> | null;
+    metadata?: Record<string, unknown> | null;
     previousBalance: number;
     newBalance: number;
     status: 'COMPLETED' | 'PENDING' | 'FAILED';
@@ -85,7 +85,7 @@ const walletService = {
     /**
      * Redeem credits for cash
      */
-    async redeemCredits(creditAmount: number): Promise<any> {
+    async redeemCredits(creditAmount: number): Promise<Record<string, unknown>> {
         const response = await api.post('/credit-redemption/redeem', { creditsToRedeem: creditAmount });
         return response.data;
     },
@@ -93,7 +93,7 @@ const walletService = {
     /**
      * Request withdrawal
      */
-    async requestWithdrawal(amount: number, bankDetails: any): Promise<any> {
+    async requestWithdrawal(amount: number, bankDetails: Record<string, unknown>): Promise<Record<string, unknown>> {
         const response = await api.post('/credit-redemption/withdraw', { amount, bankDetails });
         return response.data;
     },

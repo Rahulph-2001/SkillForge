@@ -20,7 +20,7 @@ export interface ProviderSession {
   duration?: number;
   sessionType?: string;
   notes?: string;
-  status: 'pending' | 'confirmed' | 'rejected' | 'completed' | 'cancelled' | 'reschedule_requested';
+  status: 'pending' | 'confirmed' | 'in_session' | 'rejected' | 'completed' | 'cancelled' | 'reschedule_requested';
   sessionCost: number;
   rescheduleInfo?: RescheduleInfo | null;
   rejectionReason?: string;
@@ -94,14 +94,15 @@ export const sessionManagementService = {
   async getUserSessions(status?: string): Promise<GetSessionsResponse> {
     const params = status ? { status } : {};
     const response = await api.get('/bookings/my-bookings', { params });
+    const sessions: ProviderSession[] = response.data.data || [];
     // Transform the response to match the expected format
     return {
-      sessions: response.data.data || [],
+      sessions,
       stats: {
-        pending: response.data.data?.filter((s: any) => s.status === 'pending').length || 0,
-        confirmed: response.data.data?.filter((s: any) => s.status === 'confirmed').length || 0,
-        rescheduleRequested: response.data.data?.filter((s: any) => s.status === 'reschedule requested').length || 0,
-        completed: response.data.data?.filter((s: any) => s.status === 'completed').length || 0,
+        pending: sessions.filter((s) => s.status === 'pending').length || 0,
+        confirmed: sessions.filter((s) => s.status === 'confirmed').length || 0,
+        rescheduleRequested: sessions.filter((s) => s.status === 'reschedule_requested').length || 0,
+        completed: sessions.filter((s) => s.status === 'completed').length || 0,
       }
     };
   },

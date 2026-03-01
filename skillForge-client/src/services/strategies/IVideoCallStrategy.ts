@@ -1,4 +1,4 @@
-import { SessionInfo, SessionTimeValidation, VideoCallRoom } from '../videoCallService';
+import { type SessionInfo, type SessionTimeValidation, type VideoCallRoom } from '../videoCallService';
 
 export interface IVideoCallStrategy {
     getSessionInfo(id: string): Promise<SessionInfo>;

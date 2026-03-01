@@ -5,6 +5,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { ITransactionService } from '../../../domain/services/ITransactionService';
 import { IProcessAutoRenewMembershipsUseCase } from './interfaces/IProcessAutoRenewMembershipsUseCase';
+import { CommunityMember } from '../../../domain/entities/CommunityMember';
 @injectable()
 export class ProcessAutoRenewMembershipsUseCase implements IProcessAutoRenewMembershipsUseCase {
   constructor(
@@ -25,11 +26,11 @@ export class ProcessAutoRenewMembershipsUseCase implements IProcessAutoRenewMemb
     for (const membership of expiredAutoRenewMembers) {
       try {
         const memberAny = membership as unknown as Record<string, unknown>;
-        const userCredits = memberAny._userCredits as number;
-        const communityCost = memberAny._communityCost as number;
-        const communityAdminId = memberAny._communityAdminId as string;
-        const communityName = memberAny._communityName as string;
-        console.log(`[ProcessAutoRenew] Processing: User ${membership.userId} in Community ${membership.communityId}`);
+        const userCredits = memberAny['_userCredits'] as number;
+        const communityCost = memberAny['_communityCost'] as number;
+        const communityAdminId = memberAny['_communityAdminId'] as string;
+        const communityName = memberAny['_communityName'] as string;
+        console.log(`[ProcessAutoRenew] Processing: User ${String(membership.userId)} in Community ${String(membership.communityId)}`);
         console.log(`[ProcessAutoRenew] User credits: ${userCredits}, Cost: ${communityCost}`);
         if (userCredits >= communityCost) {
           await this.processSuccessfulRenewal(membership, communityCost, communityAdminId, communityName, now);
@@ -43,7 +44,7 @@ export class ProcessAutoRenewMembershipsUseCase implements IProcessAutoRenewMemb
     console.log(`[ProcessAutoRenew] Completed. Processed ${expiredAutoRenewMembers.length} memberships`);
   }
   private async processSuccessfulRenewal(
-    membership: any,
+    membership: CommunityMember,
     cost: number,
     adminId: string,
     communityName: string,
@@ -65,7 +66,7 @@ export class ProcessAutoRenewMembershipsUseCase implements IProcessAutoRenewMemb
       }
       membership.renewSubscription(30);
       await repos.communityRepository.updateMember(membership);
-      console.log(`[ProcessAutoRenew] Renewed subscription for user ${membership.userId}`);
+      console.log(`[ProcessAutoRenew] Renewed subscription for user ${String(membership.userId)}`);
     });
     setImmediate(() => {
       this.webSocketService.sendToUser(membership.userId, {
@@ -89,9 +90,9 @@ export class ProcessAutoRenewMembershipsUseCase implements IProcessAutoRenewMemb
       console.log(`[ProcessAutoRenew] Sent renewal success notification to user ${membership.userId}`);
     });
   }
-  private async processFailedRenewal(membership: any, now: Date): Promise<void> {
-    const communityName = (membership as any)._communityName;
-    
+  private async processFailedRenewal(membership: CommunityMember, now: Date): Promise<void> {
+    const communityName = (membership as unknown as Record<string, unknown>)['_communityName'] as string;
+
     await this.transactionService.execute(async (repos) => {
       membership.expireMembership();
       await repos.communityRepository.updateMember(membership);

@@ -1,6 +1,6 @@
-import { IUserRepository } from "../repositories/IUserRepository";
-import { ICommunityRepository } from "../repositories/ICommunityRepository";
-import { IUsageRecordRepository } from "../repositories/IUsageRecordRepository";
+import { type IUserRepository } from "../repositories/IUserRepository";
+import { type ICommunityRepository } from "../repositories/ICommunityRepository";
+import { type IUsageRecordRepository } from "../repositories/IUsageRecordRepository";
 
 export interface TransactionRepositories {
 

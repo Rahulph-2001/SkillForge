@@ -1,4 +1,4 @@
-import { Interview } from '../entities/Interview';
+import { type Interview } from '../entities/Interview';
 
 export interface IInterviewRepository {
     create(interview: Interview): Promise<Interview>;

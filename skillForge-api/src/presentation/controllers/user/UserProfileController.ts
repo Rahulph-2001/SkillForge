@@ -70,7 +70,7 @@ export class UserProfileController {
       }
 
       const { name, bio, location } = req.body;
-      const avatarFile = req.file as Express.Multer.File | undefined;
+      const avatarFile = req.file;
 
       const result = await this.updateUserProfileUseCase.execute({
         userId,

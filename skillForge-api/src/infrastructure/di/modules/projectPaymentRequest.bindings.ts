@@ -1,13 +1,13 @@
-import { ContainerModule, interfaces } from 'inversify';
+import { ContainerModule, type interfaces } from 'inversify';
 import { TYPES } from '../types';
 import { ProjectPaymentRequestRepository } from '../../database/repositories/ProjectPaymentRequestRepository';
-import { IProjectPaymentRequestRepository } from '../../../domain/repositories/IProjectPaymentRequestRepository';
+import { type IProjectPaymentRequestRepository } from '../../../domain/repositories/IProjectPaymentRequestRepository';
 import { DebitAdminWalletUseCase } from '../../../application/useCases/admin/DebitAdminWalletUseCase';
-import { IDebitAdminWalletUseCase } from '../../../application/useCases/admin/interfaces/IDebitAdminWalletUseCase';
+import { type IDebitAdminWalletUseCase } from '../../../application/useCases/admin/interfaces/IDebitAdminWalletUseCase';
 import { ProcessProjectPaymentRequestUseCase } from '../../../application/useCases/admin/ProcessProjectPaymentRequestUseCase';
-import { IProcessProjectPaymentRequestUseCase } from '../../../application/useCases/admin/interfaces/IProcessProjectPaymentRequestUseCase';
+import { type IProcessProjectPaymentRequestUseCase } from '../../../application/useCases/admin/interfaces/IProcessProjectPaymentRequestUseCase';
 import { GetPendingPaymentRequestsUseCase } from '../../../application/useCases/admin/GetPendingPaymentRequestsUseCase';
-import { IGetPendingPaymentRequestsUseCase } from '../../../application/useCases/admin/interfaces/IGetPendingPaymentRequestsUseCase';
+import { type IGetPendingPaymentRequestsUseCase } from '../../../application/useCases/admin/interfaces/IGetPendingPaymentRequestsUseCase';
 import { ProjectPaymentRequestController } from '../../../presentation/controllers/admin/ProjectPaymentRequestController';
 
 export const projectPaymentRequestBindings = new ContainerModule((bind: interfaces.Bind) => {

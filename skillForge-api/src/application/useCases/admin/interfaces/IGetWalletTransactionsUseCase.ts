@@ -1,4 +1,4 @@
-import { GetWalletTransactionsResponseDTO } from "../../../dto/admin/GetWalletTransactionsDTO";
+import { type GetWalletTransactionsResponseDTO } from "../../../dto/admin/GetWalletTransactionsDTO";
 
 export interface IGetWalletTransactionsUseCase {
     execute(

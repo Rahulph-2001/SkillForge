@@ -1,5 +1,5 @@
-import { videoCallService, SessionInfo, SessionTimeValidation, VideoCallRoom } from '../videoCallService';
-import { IVideoCallStrategy } from './IVideoCallStrategy';
+import { videoCallService, type SessionInfo, type SessionTimeValidation, type VideoCallRoom } from '../videoCallService';
+import { type IVideoCallStrategy } from './IVideoCallStrategy';
 
 export class BookingStrategy implements IVideoCallStrategy {
     async getSessionInfo(id: string): Promise<SessionInfo> {

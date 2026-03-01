@@ -48,12 +48,12 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
       case ProjectApplicationStatus.ACCEPTED:
         application.accept();
         // Automatically start the project if it's open
-        if (project.status === 'Open') {
+        if ((project.status as string) === 'Open') {
           try {
             project.markAsInProgress();
             await this.projectRepository.update(project);
           } catch (error) {
-            console.warn(`[UpdateApplicationStatus] Could not mark project as in-progress: ${error}`);
+            console.warn(`[UpdateApplicationStatus] Could not mark project as in-progress: ${String(error)}`);
           }
         }
         break;
@@ -75,8 +75,9 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Accepted!',
         message: `Congratulations! Your application to "${project.title}" has been accepted!`,
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           projectId: project.id!,
-          applicationId: application.id!,
+          applicationId: application.id,
           status: 'ACCEPTED'
         },
       });
@@ -87,8 +88,9 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Update',
         message: `Your application to "${project.title}" was not accepted`,
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           projectId: project.id!,
-          applicationId: application.id!,
+          applicationId: application.id,
           status: 'REJECTED'
         },
       });
@@ -99,8 +101,9 @@ export class UpdateApplicationStatusUseCase implements IUpdateApplicationStatusU
         title: 'Application Shortlisted',
         message: `Your application to "${project.title}" has been shortlisted!`,
         data: {
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           projectId: project.id!,
-          applicationId: application.id!,
+          applicationId: application.id,
           status: 'SHORTLISTED'
         },
       });

@@ -21,7 +21,7 @@ export interface UserWalletTransactionDTO {
     source: string;
     referenceId?: string | null;
     description?: string | null;
-    metadata?: Record<string, any> | null;
+    metadata?: Record<string, unknown> | null;
     previousBalance: number;
     newBalance: number;
     status: UserWalletTransactionStatus;

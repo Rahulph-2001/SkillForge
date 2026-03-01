@@ -8,6 +8,7 @@ import { BookingStatus } from '../../../domain/entities/Booking';
 import { NotFoundError, ValidationError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ICompleteSessionUseCase, CompleteSessionRequestDTO } from './interfaces/ICompleteSessionUseCase';
 import { Database } from '../../../infrastructure/database/Database';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient, Prisma } from '@prisma/client';
 import { INotificationService } from '../../../domain/services/INotificationService';
 import { NotificationType } from '../../../domain/entities/Notification';
@@ -43,7 +44,7 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
         }
 
         // Use transaction to ensure all updates are atomic
-        const prisma = this.database.getClient() as PrismaClient;
+        const prisma = this.database.getClient();
 
         await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
             // 1. Release escrow credits to provider
@@ -108,6 +109,7 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
 
         // Fetch the updated booking for response
         const updatedBooking = await this.bookingRepository.findById(bookingId);
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.bookingMapper.toDTO(updatedBooking!);
     }
 }

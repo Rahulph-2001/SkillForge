@@ -10,7 +10,9 @@ import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUpdateSubscriptionPlanUseCase } from './interfaces/IUpdateSubscriptionPlanUseCase';
 import { SubscriptionPlanDTO } from '../../dto/subscription/SubscriptionPlanDTO';
 import { ISubscriptionPlanMapper } from '../../mappers/interfaces/ISubscriptionPlanMapper';
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { PlanBadge } from '../../../domain/entities/SubscriptionPlan';
+import { FeatureType } from '../../../domain/enums/SubscriptionEnums';
 @injectable()
 export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUseCase {
   constructor(
@@ -78,7 +80,7 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
         dto.price ?? plan.price,
         projectPosts !== undefined ? projectPosts : plan.projectPosts,
         createCommunity !== undefined ? createCommunity : plan.createCommunity,
-        (dto.badge ?? plan.badge) as any,
+        (dto.badge ?? plan.badge),
         dto.color ?? plan.color
       );
     }
@@ -115,7 +117,7 @@ export class UpdateSubscriptionPlanUseCase implements IUpdateSubscriptionPlanUse
             planId: planId,
             name: featureDto.name,
             description: featureDto.description,
-            featureType: featureDto.featureType as any,
+            featureType: featureDto.featureType as FeatureType,
             limitValue: featureDto.limitValue,
             isEnabled: featureDto.isEnabled,
             displayOrder: featureDto.displayOrder,

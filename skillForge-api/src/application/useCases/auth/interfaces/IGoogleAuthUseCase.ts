@@ -1,5 +1,5 @@
-import { Profile } from 'passport-google-oauth20';
-import { UserResponseDTO } from '../../../dto/auth/UserResponseDTO';
+import { type Profile } from 'passport-google-oauth20';
+import { type UserResponseDTO } from '../../../dto/auth/UserResponseDTO';
 
 export interface GoogleAuthResponseDTO {
   user: UserResponseDTO;

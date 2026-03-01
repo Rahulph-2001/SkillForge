@@ -17,6 +17,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             data: {
                 userId: subscription.userId,
                 planId: subscription.planId,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 status: subscription.status as any,
                 currentPeriodStart: subscription.currentPeriodStart,
                 currentPeriodEnd: subscription.currentPeriodEnd,
@@ -53,15 +54,16 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             where: { planId },
         });
 
-        return data.map((item: any) => UserSubscription.fromJSON(item));
+        return data.map((item) => UserSubscription.fromJSON(item));
     }
 
     async findByStatus(status: SubscriptionStatus): Promise<UserSubscription[]> {
         const data = await this.prisma.userSubscription.findMany({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             where: { status: status as any },
         });
 
-        return data.map((item: any) => UserSubscription.fromJSON(item));
+        return data.map((item) => UserSubscription.fromJSON(item));
     }
 
     async findExpiring(days: number): Promise<UserSubscription[]> {
@@ -76,7 +78,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
                     lte: expiryDate,
                 },
                 status: {
-                    in: ['ACTIVE', 'TRIALING'] as any[],
+                    in: ['ACTIVE', 'TRIALING'],
                 },
             },
         });
@@ -89,6 +91,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             where: { id: subscription.id },
             data: {
                 planId: subscription.planId,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 status: subscription.status as any,
                 currentPeriodStart: subscription.currentPeriodStart,
                 currentPeriodEnd: subscription.currentPeriodEnd,
@@ -116,7 +119,7 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
             where: {
                 planId,
                 status: {
-                    in: ['ACTIVE', 'TRIALING'] as any[],
+                    in: ['ACTIVE', 'TRIALING'],
                 },
             },
         });
@@ -142,11 +145,11 @@ export class PrismaUserSubscriptionRepository extends BaseRepository<UserSubscri
                     lt: date,
                 },
                 status: {
-                    in: ['ACTIVE', 'TRIALING'] as any[],
+                    in: ['ACTIVE', 'TRIALING'],
                 },
             },
         });
 
-        return data.map((item: any) => UserSubscription.fromJSON(item));
+        return data.map((item) => UserSubscription.fromJSON(item));
     }
 }

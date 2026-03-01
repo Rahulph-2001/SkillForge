@@ -1,4 +1,4 @@
-import { PrismaClient, Prisma } from '@prisma/client';
+import { PrismaClient, type Prisma } from '@prisma/client';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -10,7 +10,7 @@ export class Database {
     this.prisma = new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
     });
-    this.prisma.$on('error' as never, (e: any) => {
+    this.prisma.$on('error' as never, (e: unknown) => {
       console.error('Prisma Client error:', e);
     });
   }
@@ -40,6 +40,7 @@ export class Database {
     try {
       await this.prisma.$queryRaw`SELECT 1`;
       return true;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return false;
     }

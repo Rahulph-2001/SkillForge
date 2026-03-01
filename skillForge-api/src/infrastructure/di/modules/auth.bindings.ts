@@ -1,26 +1,26 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
 import { RegisterUseCase } from '../../../application/useCases/auth/RegisterUseCase';
-import { IRegisterUseCase } from '../../../application/useCases/auth/interfaces/IRegisterUseCase';
+import { type IRegisterUseCase } from '../../../application/useCases/auth/interfaces/IRegisterUseCase';
 import { LoginUseCase } from '../../../application/useCases/auth/LoginUseCase';
-import { ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
+import { type ILoginUseCase } from '../../../application/useCases/auth/interfaces/ILoginUseCase';
 import { VerifyOtpUseCase } from '../../../application/useCases/auth/VerifyOtpUseCase';
-import { IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
+import { type IVerifyOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyOtpUseCase';
 import { ResendOtpUseCase } from '../../../application/useCases/auth/ResendOtpUseCase';
-import { IResendOtpUseCase } from '../../../application/useCases/auth/interfaces/IResendOtpUseCase';
+import { type IResendOtpUseCase } from '../../../application/useCases/auth/interfaces/IResendOtpUseCase';
 import { AdminLoginUseCase } from '../../../application/useCases/auth/AdminLoginUseCase';
-import { IAdminLoginUseCase } from '../../../application/useCases/auth/interfaces/IAdminLoginUseCase';
+import { type IAdminLoginUseCase } from '../../../application/useCases/auth/interfaces/IAdminLoginUseCase';
 import { GoogleAuthUseCase } from '../../../application/useCases/auth/GoogleAuthUseCase';
-import { IGoogleAuthUseCase } from '../../../application/useCases/auth/interfaces/IGoogleAuthUseCase';
+import { type IGoogleAuthUseCase } from '../../../application/useCases/auth/interfaces/IGoogleAuthUseCase';
 import { ForgotPasswordUseCase } from '../../../application/useCases/auth/ForgotPasswordUseCase';
-import { IForgotPasswordUseCase } from '../../../application/useCases/auth/interfaces/IForgotPasswordUseCase';
+import { type IForgotPasswordUseCase } from '../../../application/useCases/auth/interfaces/IForgotPasswordUseCase';
 import { VerifyForgotPasswordOtpUseCase } from '../../../application/useCases/auth/VerifyForgotPasswordOtpUseCase';
-import { IVerifyForgotPasswordOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyForgotPasswordOtpUseCase';
+import { type IVerifyForgotPasswordOtpUseCase } from '../../../application/useCases/auth/interfaces/IVerifyForgotPasswordOtpUseCase';
 import { ResetPasswordUseCase } from '../../../application/useCases/auth/ResetPasswordUseCase';
-import { IResetPasswordUseCase } from '../../../application/useCases/auth/interfaces/IResetPasswordUseCase';
+import { type IResetPasswordUseCase } from '../../../application/useCases/auth/interfaces/IResetPasswordUseCase';
 import { AuthController } from '../../../presentation/controllers/auth/AuthController';
 import { AuthRoutes } from '../../../presentation/routes/auth/authRoutes';
-import { IPassportService } from '../../../domain/services/IPassportService';
+import { type IPassportService } from '../../../domain/services/IPassportService';
 import { PassportService } from '../../services/PassportService';
 
 

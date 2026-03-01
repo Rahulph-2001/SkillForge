@@ -3,8 +3,10 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
-import { SubscriptionPlan } from '../../../domain/entities/SubscriptionPlan';
+import { SubscriptionPlan, PlanBadge } from '../../../domain/entities/SubscriptionPlan';
+import { FeatureType } from '../../../domain/enums/SubscriptionEnums';
 import { CreateSubscriptionPlanDTO } from '../../dto/subscription/CreateSubscriptionPlanDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ForbiddenError, ConflictError, NotFoundError, InternalServerError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { ERROR_MESSAGES } from '../../../config/messages';
@@ -64,7 +66,7 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
       projectPosts ?? null,
       createCommunity ?? null,
       [], // Empty features array, features created separately
-      dto.badge as any,
+      dto.badge as PlanBadge,
       dto.color,
       true, // isActive
       new Date(),
@@ -88,7 +90,7 @@ export class CreateSubscriptionPlanUseCase implements ICreateSubscriptionPlanUse
           planId: createdPlan.id, // Link to the new plan
           name: featureDto.name,
           description: featureDto.description,
-          featureType: featureDto.featureType as any,
+          featureType: featureDto.featureType as FeatureType,
           limitValue: featureDto.limitValue,
           isEnabled: featureDto.isEnabled,
           displayOrder: featureDto.displayOrder,

@@ -1,4 +1,4 @@
-import { OTPToken } from '../entities/OTPToken';
+import { type OTPToken } from '../entities/OTPToken';
 
 export interface IOTPRepository {
   save(otp: OTPToken): Promise<OTPToken>;

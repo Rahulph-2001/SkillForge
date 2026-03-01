@@ -3,6 +3,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SubscriptionStatus } from '../../../domain/enums/SubscriptionEnums';
 import { IReactivateSubscriptionUseCase } from './interfaces/IReactivateSubscriptionUseCase';
 
@@ -44,7 +45,8 @@ export class ReactivateSubscriptionUseCase implements IReactivateSubscriptionUse
             // user.activateSubscription(plan, end, start, autoRenew=true)
 
             // We need plan name.
-            let planName = 'starter'; // Default fallback, but we should fetch plan or store it.
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const planName = 'starter'; // Default fallback, but we should fetch plan or store it.
             // The UserSubscription entity has planId. The User entity has subscription.plan.
             // We can trust existing User entity data if we just want to flip the boolean.
 

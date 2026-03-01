@@ -1,5 +1,5 @@
-import { UserSubscription } from '../entities/UserSubscription';
-import { SubscriptionStatus } from '../enums/SubscriptionEnums';
+import { type UserSubscription } from '../entities/UserSubscription';
+import { type SubscriptionStatus } from '../enums/SubscriptionEnums';
 
 export interface IUserSubscriptionRepository {
     /**

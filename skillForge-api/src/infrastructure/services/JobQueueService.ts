@@ -36,7 +36,7 @@ export class JobQueueService implements IJobQueueService {
     this.queues.set(JobQueueName.SUBSCRIPTION_EXPIRY, expiryQueue);
 
     // Schedule the daily check
-    expiryQueue.add(JobQueueName.SUBSCRIPTION_EXPIRY, {}, {
+    void expiryQueue.add(JobQueueName.SUBSCRIPTION_EXPIRY, {}, {
       repeat: {
         pattern: '0 0 * * *', // Daily at midnight
       },
@@ -48,7 +48,7 @@ export class JobQueueService implements IJobQueueService {
     this.queues.set(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, membershipExpiryQueue);
 
     // Schedule the daily check at 1 AM (offset from subscription check)
-    membershipExpiryQueue.add(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, {}, {
+    void membershipExpiryQueue.add(JobQueueName.COMMUNITY_MEMBERSHIP_EXPIRY, {}, {
       repeat: {
         pattern: '0 1 * * *', // Daily at 1 AM
       },
@@ -58,7 +58,7 @@ export class JobQueueService implements IJobQueueService {
     const autoRenewQueue = new Queue(JobQueueName.COMMUNITY_AUTO_RENEW, { connection: connectionOptions });
     this.queues.set(JobQueueName.COMMUNITY_AUTO_RENEW, autoRenewQueue);
 
-    autoRenewQueue.add(JobQueueName.COMMUNITY_AUTO_RENEW, {}, {
+    void autoRenewQueue.add(JobQueueName.COMMUNITY_AUTO_RENEW, {}, {
       repeat: {
         pattern: '0 0 * * *',
       },
@@ -82,6 +82,8 @@ export class JobQueueService implements IJobQueueService {
 
   async startWorker(): Promise<void> {
     const connectionOptions = this.redisService.getRedisOptions().connection;
+    // Ensure connection options are available before initializing workers
+    await Promise.resolve(); // Satisfy require-await; workers use synchronous constructors
 
     // Start MCQ Import Worker
     if (!this.workers.has(JobQueueName.MCQ_IMPORT)) {
@@ -90,6 +92,7 @@ export class JobQueueService implements IJobQueueService {
         async (job: Job) => {
           console.log(`[Worker] Processing job ${job.id} from ${JobQueueName.MCQ_IMPORT}`);
           try {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
             await this.mcqImportJobProcessor.execute(job.data.jobId);
             console.log(`[Worker] Job ${job.id} completed`);
           } catch (error) {

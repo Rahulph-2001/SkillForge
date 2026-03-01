@@ -12,7 +12,8 @@ import { VideoCallRoomResponseDTO } from '../../dto/videoCall/VideoCallRoomRespo
 import { IJoinVideoRoomUseCase } from './interfaces/IJoinVideoRoomUseCase';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';
-import { BookingStatus } from '../../../domain/entities/Booking';
+import { BookingStatus, Booking } from '../../../domain/entities/Booking';
+import { Interview } from '../../../domain/entities/Interview';
 import { env } from '../../../config/env';
 
 @injectable()
@@ -108,7 +109,7 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
     return this.roomMapper.toResponseDTO(room, participants.map(p => ({ userId: p.userId, joinedAt: p.joinedAt })), this.getIceServers());
   }
 
-  private validateSessionTime(booking: any): { canJoin: boolean; message: string } {
+  private validateSessionTime(booking: Booking): { canJoin: boolean; message: string } {
     const sessionStartAt = this.parseDateTime(booking.preferredDate, booking.preferredTime);
     const sessionDurationMinutes = booking.duration || 60;
     const sessionEndAt = new Date(sessionStartAt.getTime() + sessionDurationMinutes * 60 * 1000);
@@ -136,7 +137,7 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
     };
   }
 
-  private validateInterviewTime(interview: any): { canJoin: boolean; message: string } {
+  private validateInterviewTime(interview: Interview): { canJoin: boolean; message: string } {
     const sessionStartAt = new Date(interview.scheduledAt);
     const sessionDurationMinutes = interview.durationMinutes || 30;
     const sessionEndAt = new Date(sessionStartAt.getTime() + sessionDurationMinutes * 60 * 1000);
@@ -181,7 +182,7 @@ export class JoinVideoRoomUseCase implements IJoinVideoRoomUseCase {
   }
 
   private getIceServers() {
-    const servers: any[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
+    const servers: { urls: string | string[]; username?: string; credential?: string }[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
     if (env.TURN_SERVER) {
       servers.push({
         urls: [

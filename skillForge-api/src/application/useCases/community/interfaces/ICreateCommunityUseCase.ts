@@ -1,5 +1,5 @@
-import { CreateCommunityDTO } from '../../../dto/community/CreateCommunityDTO';
-import { CommunityResponseDTO } from '../../../dto/community/CommunityResponseDTO';
+import { type CreateCommunityDTO } from '../../../dto/community/CreateCommunityDTO';
+import { type CommunityResponseDTO } from '../../../dto/community/CommunityResponseDTO';
 
 export interface ICreateCommunityUseCase {
   execute(

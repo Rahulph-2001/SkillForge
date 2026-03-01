@@ -22,7 +22,7 @@ export class SkillController {
 
   public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const file = req.file;
       const skillDTO: CreateSkillDTO = req.body;
 
@@ -49,7 +49,7 @@ export class SkillController {
 
   public listMySkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 20;
       const status = req.query.status as string | undefined;
@@ -69,7 +69,7 @@ export class SkillController {
 
   public update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
       const updates = req.body;
       const file = req.file;
@@ -82,6 +82,7 @@ export class SkillController {
       if (updates.tags && typeof updates.tags === 'string') {
         try {
           updates.tags = JSON.parse(updates.tags);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (e) {
           // Invalid JSON - tags will remain as string, which will be validated by use case
         }
@@ -123,7 +124,7 @@ export class SkillController {
 
   public toggleBlock = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
 
       const skill = await this.toggleSkillBlockUseCase.execute(id, userId);

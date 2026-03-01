@@ -5,7 +5,9 @@ import { IGetUserSubscriptionUseCase } from '../../../application/useCases/subsc
 import { ICancelSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/ICancelSubscriptionUseCase';
 import { IReactivateSubscriptionUseCase } from '../../../application/useCases/subscription/interfaces/IReactivateSubscriptionUseCase';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
 import { NotFoundError } from '../../../domain/errors/AppError';
 
@@ -24,7 +26,7 @@ export class UserSubscriptionController {
      */
     async getCurrentSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = req.user!.userId;
+            const userId = req.user?.userId as string;
 
             try {
                 const subscription = await this.getUserSubscriptionUseCase.execute(userId);
@@ -56,7 +58,7 @@ export class UserSubscriptionController {
      */
     async cancelSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = req.user!.userId;
+            const userId = req.user?.userId as string;
             const { immediately = false } = req.body;
 
             await this.cancelSubscriptionUseCase.execute(userId, immediately);
@@ -77,7 +79,7 @@ export class UserSubscriptionController {
      */
     async reactivateSubscription(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = req.user!.userId;
+            const userId = req.user?.userId as string;
 
             await this.reactivateSubscriptionUseCase.execute(userId);
 

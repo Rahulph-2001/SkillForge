@@ -1,4 +1,4 @@
-import { MCQImportJob, ImportStatus } from '../entities/MCQImportJob';
+import { type MCQImportJob, type ImportStatus } from '../entities/MCQImportJob';
 
 export interface IMCQImportJobRepository {
   create(job: MCQImportJob): Promise<MCQImportJob>;

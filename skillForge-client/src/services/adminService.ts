@@ -181,6 +181,7 @@ class AdminService {
     }
 
     async cancelSession(sessionId: string, reason?: string): Promise<void> {
+        // eslint-disable-next-line no-useless-catch
         try {
             await api.patch(`${this.baseUrl}/sessions/${sessionId}/cancel`, { reason });
         } catch (error: any) {
@@ -189,6 +190,7 @@ class AdminService {
     }
 
     async completeSession(sessionId: string): Promise<void> {
+        // eslint-disable-next-line no-useless-catch
         try {
             await api.patch(`${this.baseUrl}/sessions/${sessionId}/complete`);
         } catch (error: any) {
@@ -502,7 +504,12 @@ export interface WithdrawalRequest {
     amount: number;
     currency: string;
     status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'PROCESSED' | 'FAILED';
-    bankDetails: any;
+    bankDetails?: {
+        accountNumber?: string;
+        ifscCode?: string;
+        bankName?: string;
+        [key: string]: unknown;
+    };
     adminNote?: string;
     processedBy?: string;
     processedAt?: string;

@@ -6,6 +6,7 @@ import { IGetUserWalletTransactionsUseCase } from '../../application/useCases/wa
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { GetUserWalletTransactionsRequestSchema } from '../../application/dto/wallet/UserWalletTransactionDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SUCCESS_MESSAGES } from '../../config/messages';
 
 @injectable()
@@ -18,7 +19,8 @@ export class WalletController {
 
     public getWalletData = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = (req as any).user.id;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const userId = req.user!.id;
             const walletData = await this.getUserWalletDataUseCase.execute(userId);
 
             const response = this.responseBuilder.success(
@@ -34,7 +36,8 @@ export class WalletController {
 
     public getTransactions = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = (req as any).user.id;
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const userId = req.user!.id;
             const filters = GetUserWalletTransactionsRequestSchema.parse(req.query);
             const result = await this.getUserWalletTransactionsUseCase.execute(userId, filters);
 

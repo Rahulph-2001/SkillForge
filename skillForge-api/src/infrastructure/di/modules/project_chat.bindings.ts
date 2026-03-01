@@ -1,13 +1,13 @@
 
-import { ContainerModule, interfaces } from 'inversify';
+import { ContainerModule, type interfaces } from 'inversify';
 import { TYPES } from '../types';
-import { IProjectMessageRepository } from '../../../domain/repositories/IProjectMessageRepository';
+import { type IProjectMessageRepository } from '../../../domain/repositories/IProjectMessageRepository';
 import { ProjectMessageRepository } from '../../database/repositories/ProjectMessageRepository';
-import { IProjectMessageMapper } from '../../../application/mappers/interfaces/IProjectMessageMapper';
+import { type IProjectMessageMapper } from '../../../application/mappers/interfaces/IProjectMessageMapper';
 import { ProjectMessageMapper } from '../../../application/mappers/ProjectMessageMapper';
-import { ISendProjectMessageUseCase } from '../../../application/useCases/project/interfaces/ISendProjectMessageUseCase';
+import { type ISendProjectMessageUseCase } from '../../../application/useCases/project/interfaces/ISendProjectMessageUseCase';
 import { SendProjectMessageUseCase } from '../../../application/useCases/project/SendProjectMessageUseCase';
-import { IGetProjectMessagesUseCase } from '../../../application/useCases/project/interfaces/IGetProjectMessagesUseCase';
+import { type IGetProjectMessagesUseCase } from '../../../application/useCases/project/interfaces/IGetProjectMessagesUseCase';
 import { GetProjectMessagesUseCase } from '../../../application/useCases/project/GetProjectMessagesUseCase';
 import { ProjectMessageController } from '../../../presentation/controllers/project/ProjectMessageController';
 import { ProjectMessageRoutes } from '../../../presentation/routes/project/ProjectMessageRoutes';

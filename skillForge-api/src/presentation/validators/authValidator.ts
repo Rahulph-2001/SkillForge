@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError, ZodSchema, ZodIssue } from 'zod';
+import { type Request, type Response, type NextFunction } from 'express';
+import { ZodError, type ZodSchema, type ZodIssue } from 'zod';
 import { RegisterSchema } from '../../application/dto/auth/RegisterDTO';
 import { LoginSchema } from '../../application/dto/auth/LoginDTO';
 import { VerifyOtpSchema } from '../../application/dto/auth/VerifyOtpDTO';
@@ -26,6 +26,7 @@ export const validate = (schema: ZodSchema) => {
           field: issue.path.join('.'),
           message: issue.message,
         }));
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
         (req as any).zodDetails = errors; // For errorHandler
         res.status(HttpStatusCode.BAD_REQUEST).json({
           success: false,

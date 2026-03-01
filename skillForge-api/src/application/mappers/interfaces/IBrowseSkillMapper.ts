@@ -1,8 +1,8 @@
-import { Skill } from '../../../domain/entities/Skill';
-import { User } from '../../../domain/entities/User';
-import { BrowseSkillDTO } from '../../dto/skill/BrowseSkillsResponseDTO';
+import { type Skill } from '../../../domain/entities/Skill';
+import { type User } from '../../../domain/entities/User';
+import { type BrowseSkillDTO } from '../../dto/skill/BrowseSkillsResponseDTO';
 
-import { ProviderAvailability } from '../../../domain/entities/ProviderAvailability';
+import { type ProviderAvailability } from '../../../domain/entities/ProviderAvailability';
 
 export interface IBrowseSkillMapper {
   toDTO(skill: Skill, provider: User, availability?: ProviderAvailability): BrowseSkillDTO;

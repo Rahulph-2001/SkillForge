@@ -1,5 +1,6 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IUserWalletTransactionRepository, UserWalletTransactionFilters } from '../../../domain/repositories/IUserWalletTransactionRepository';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { UserWalletTransactionType } from '../../../domain/entities/UserWalletTransaction';
@@ -12,7 +13,7 @@ export class GetAdminCreditTransactionsUseCase implements IGetAdminCreditTransac
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository
     ) { }
 
-    async execute(page: number, limit: number, search?: string): Promise<any> {
+    async execute(page: number, limit: number, search?: string): Promise<Record<string, unknown>> {
         // Fetch all CREDIT_PURCHASE transactions
         const result = await this.userWalletTransactionRepository.findAll({
             page,
@@ -25,7 +26,7 @@ export class GetAdminCreditTransactionsUseCase implements IGetAdminCreditTransac
         // Optimization: Collect unique user IDs and fetch them in one go
         const userIds = [...new Set(result.transactions.map(t => t.userId))];
         const users = await Promise.all(userIds.map(id => this.userRepository.findById(id)));
-        const userMap = new Map(users.filter(u => u !== null).map(u => [u!.id, u!]));
+        const userMap = new Map(users.filter(u => u !== null).map(u => [u.id, u]));
 
         // Map to DTO
         const transactionsWithUser = result.transactions.map(t => {

@@ -52,15 +52,16 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
             try {
                 paymentRequest.reject(adminId, `[OVERRIDE RELEASE] ${notes || 'Admin overrode refund request to release payment.'}`);
                 await this.paymentRequestRepository.update(paymentRequest);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`[ProcessPaymentRequest] Failed to reject refund request ${requestId}:`, error);
-                throw new InternalServerError(`Failed to process refund rejection during override: ${error.message}`);
+                const msg = error instanceof Error ? error.message : String(error);
+                throw new InternalServerError(`Failed to process refund rejection during override: ${msg}`);
             }
 
             // 2. Create a new RELEASE request and Approve it immediately
             try {
                 // Get the accepted application to find the contributor
-                const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id!);
+                const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id as string);
                 if (!acceptedApplication) {
                     throw new NotFoundError('No accepted application found for this project to release payment to.');
                 }
@@ -72,7 +73,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                     amount: paymentRequest.amount,
                     currency: 'INR',
                     source: 'PROJECT_RELEASE',
-                    referenceId: project.id!,
+                    referenceId: project.id as string,
                     metadata: {
                         projectId: project.id,
                         projectTitle: project.title,
@@ -122,7 +123,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                 // Create audit record for the Overridden Release
                 const releaseRequest = ProjectPaymentRequest.create({
                     id: uuidv4(),
-                    projectId: project.id!,
+                    projectId: project.id as string,
                     type: ProjectPaymentRequestType.RELEASE,
                     amount: paymentRequest.amount,
                     requestedBy: adminId,
@@ -145,15 +146,16 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                     title: 'Payment Received',
                     message: `You received ₹${paymentRequest.amount} for "${project.title}". Dispute resolved in your favor.`,
                     data: {
-                        projectId: project.id!,
+                        projectId: project.id as string,
                         amount: paymentRequest.amount,
                         isDisputeResolution: true
                     },
                 });
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`[ProcessPaymentRequest] Failed to execute Override Release for ${requestId}:`, error);
-                throw new InternalServerError(`Failed to execute Override Release: ${error.message}`);
+                const msg = error instanceof Error ? error.message : String(error);
+                throw new InternalServerError(`Failed to execute Override Release: ${msg}`);
             }
 
         } else if (approved) {
@@ -164,7 +166,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                     amount: paymentRequest.amount,
                     currency: 'INR',
                     source: paymentRequest.type === ProjectPaymentRequestType.RELEASE ? 'PROJECT_RELEASE' : 'PROJECT_REFUND',
-                    referenceId: paymentRequest.id!,
+                    referenceId: paymentRequest.id as string,
                     metadata: {
                         projectId: project.id,
                         projectTitle: project.title,
@@ -224,7 +226,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                         title: 'Payment Received',
                         message: `You received ₹${paymentRequest.amount} for completing "${project.title}"`,
                         data: {
-                            projectId: project.id!,
+                            projectId: project.id as string,
                             amount: paymentRequest.amount
                         },
                     });
@@ -236,7 +238,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                         title: 'Project Completed',
                         message: `"${project.title}" has been marked as completed. Payment released to contributor.`,
                         data: {
-                            projectId: project.id!,
+                            projectId: project.id as string,
                             status: 'COMPLETED'
                         },
                     });
@@ -250,13 +252,13 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                         title: 'Refund Received',
                         message: `You received a refund of ₹${paymentRequest.amount} for "${project.title}"`,
                         data: {
-                            projectId: project.id!,
+                            projectId: project.id as string,
                             amount: paymentRequest.amount
                         },
                     });
 
                     // Notify contributor about project cancellation
-                    const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id!);
+                    const acceptedApplication = await this.applicationRepository.findAcceptedByProject(project.id as string);
                     if (acceptedApplication) {
                         await this.notificationService.send({
                             userId: acceptedApplication.applicantId,
@@ -264,7 +266,7 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                             title: 'Project Cancelled',
                             message: `"${project.title}" has been cancelled and refunded to the project owner.`,
                             data: {
-                                projectId: project.id!,
+                                projectId: project.id as string,
                                 status: 'CANCELLED'
                             },
                         });
@@ -274,9 +276,10 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                 // Update Request Status
                 paymentRequest.approve(adminId, notes);
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`[ProcessPaymentRequest] Failed to process approval for ${requestId}:`, error);
-                throw new InternalServerError(`Failed to process payment approval: ${error.message}`);
+                const msg = error instanceof Error ? error.message : String(error);
+                throw new InternalServerError(`Failed to process payment approval: ${msg}`);
             }
         } else {
             // 4. Process Rejection
@@ -292,14 +295,15 @@ export class ProcessProjectPaymentRequestUseCase implements IProcessProjectPayme
                     title: 'Payment Request Rejected',
                     message: `Payment request for "${project.title}" was rejected by admin. ${notes || 'Please review and resubmit.'}`,
                     data: {
-                        projectId: project.id!,
+                        projectId: project.id as string,
                         reason: notes
                     },
                 });
 
-            } catch (error: any) {
+            } catch (error: unknown) {
                 console.error(`[ProcessPaymentRequest] Failed to process rejection for ${requestId}:`, error);
-                throw new InternalServerError(`Failed to process payment rejection: ${error.message}`);
+                const msg = error instanceof Error ? error.message : String(error);
+                throw new InternalServerError(`Failed to process payment rejection: ${msg}`);
             }
         }
 

@@ -1,6 +1,6 @@
 
 import { DateTimeUtils } from '../utils/DateTimeUtils';
-import { BlockedDate } from '../../domain/entities/ProviderAvailability';
+import { type BlockedDate } from '../../domain/entities/ProviderAvailability';
 
 export interface ValidationResult {
     valid: boolean;

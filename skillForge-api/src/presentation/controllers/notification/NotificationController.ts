@@ -24,7 +24,8 @@ export class NotificationController {
 
   public getNotifications = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const query = ListNotificationsQuerySchema.parse(req.query);
       const result = await this.getNotificationsUseCase.execute(userId, query);
 
@@ -41,7 +42,8 @@ export class NotificationController {
 
   public getUnreadCount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const result = await this.getUnreadCountUseCase.execute(userId);
 
       const response = this.responseBuilder.success(
@@ -57,7 +59,8 @@ export class NotificationController {
 
   public markAsRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const { id } = req.params;
       const result = await this.markAsReadUseCase.execute(userId, id);
 
@@ -74,7 +77,8 @@ export class NotificationController {
 
   public markAllAsRead = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       await this.markAllAsReadUseCase.execute(userId);
 
       const response = this.responseBuilder.success(
@@ -90,7 +94,8 @@ export class NotificationController {
 
   public deleteNotification = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const { id } = req.params;
       await this.deleteNotificationUseCase.execute(userId, id);
 

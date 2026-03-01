@@ -1,6 +1,6 @@
-import { Payment } from '../entities/Payment';
-import { PaymentStatus, PaymentPurpose } from '../enums/PaymentEnums';
-import { IPaginationParams, IPaginationResult } from '../types/IPaginationParams';
+import { type Payment } from '../entities/Payment';
+import { type PaymentStatus, type PaymentPurpose } from '../enums/PaymentEnums';
+import { type IPaginationParams, type IPaginationResult } from '../types/IPaginationParams';
 
 export interface IPaymentRepository {
     create(payment: Payment): Promise<Payment>;

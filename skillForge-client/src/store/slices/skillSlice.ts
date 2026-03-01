@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { skillService, CreateSkillPayload, SkillResponse } from '../../services/skillService';
+import { skillService, type CreateSkillPayload, type SkillResponse } from '../../services/skillService';
+import { type ApiErrorPayload, getErrorMessage } from '../../utils/errorUtils';
 
 
 interface SkillState {
@@ -14,50 +15,75 @@ const initialState: SkillState = {
     error: null,
 }
 
-export const fetchMySkills = createAsyncThunk(
+export const fetchMySkills = createAsyncThunk<
+    SkillResponse[],
+    { page?: number; limit?: number; status?: string },
+    { rejectValue: string }
+>(
     'skills/fetchMySkills',
-    async (params: { page?: number; limit?: number; status?: string } = {}, { rejectWithValue }) => {
+    async (params = {}, { rejectWithValue }) => {
         try {
             const response = await skillService.getMySkills(params);
             return response.data.skills; // Extract skills array from paginated response
-        } catch (error: any) {
-            return rejectWithValue(error.message || 'Failed to fetch skills')
+        } catch (error: unknown) {
+            return rejectWithValue(getErrorMessage(error, 'Failed to fetch skills'));
         }
     }
 )
 
-export const createSkill = createAsyncThunk(
+export const createSkill = createAsyncThunk<
+    SkillResponse,
+    { data: CreateSkillPayload; file?: Blob },
+    { rejectValue: string }
+>(
     'skills/createSkill',
-    async ({ data, file }: { data: CreateSkillPayload; file?: Blob }, { rejectWithValue }) => {
+    async ({ data, file }, { rejectWithValue }) => {
         try {
             const response = await skillService.createSkill(data, file);
             return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to create skill');
+        } catch (error: unknown) {
+            const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+            return rejectWithValue(
+                axiosLike.response?.data?.message ?? getErrorMessage(error, 'Failed to create skill')
+            );
         }
     }
 );
 
-export const updateSkill = createAsyncThunk(
+export const updateSkill = createAsyncThunk<
+    SkillResponse,
+    { id: string; data: Partial<CreateSkillPayload>; imageFile?: File },
+    { rejectValue: string }
+>(
     'skills/updateSkill',
-    async ({ id, data, imageFile }: { id: string; data: Partial<CreateSkillPayload>; imageFile?: File }, { rejectWithValue }) => {
+    async ({ id, data, imageFile }, { rejectWithValue }) => {
         try {
             const response = await skillService.updateSkill(id, data, imageFile);
             return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to update skill');
+        } catch (error: unknown) {
+            const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+            return rejectWithValue(
+                axiosLike.response?.data?.message ?? getErrorMessage(error, 'Failed to update skill')
+            );
         }
     }
 );
 
-export const toggleSkillBlock = createAsyncThunk(
+export const toggleSkillBlock = createAsyncThunk<
+    SkillResponse,
+    string,
+    { rejectValue: string }
+>(
     'skills/toggleSkillBlock',
-    async (id: string, { rejectWithValue }) => {
+    async (id, { rejectWithValue }) => {
         try {
             const response = await skillService.toggleBlock(id);
             return response.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || error.message || 'Failed to toggle skill block status');
+        } catch (error: unknown) {
+            const axiosLike = error as { response?: { data?: ApiErrorPayload } };
+            return rejectWithValue(
+                axiosLike.response?.data?.message ?? getErrorMessage(error, 'Failed to toggle skill block status')
+            );
         }
     }
 );
@@ -83,7 +109,7 @@ const skillSlice = createSlice({
             })
             .addCase(fetchMySkills.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? 'Failed to fetch skills';
             })
             // Create Skill
             .addCase(createSkill.pending, (state) => {
@@ -96,7 +122,7 @@ const skillSlice = createSlice({
             })
             .addCase(createSkill.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? 'Failed to create skill';
             })
             // Update Skill
             .addCase(updateSkill.pending, (state) => {
@@ -112,7 +138,7 @@ const skillSlice = createSlice({
             })
             .addCase(updateSkill.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? 'Failed to update skill';
             })
             // Toggle Block
             .addCase(toggleSkillBlock.pending, (state) => {
@@ -128,7 +154,7 @@ const skillSlice = createSlice({
             })
             .addCase(toggleSkillBlock.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload as string;
+                state.error = action.payload ?? 'Failed to toggle skill block status';
             });
     }
 });

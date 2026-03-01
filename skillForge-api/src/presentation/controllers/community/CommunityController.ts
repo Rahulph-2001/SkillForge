@@ -48,7 +48,7 @@ export class CommunityController {
   ) { }
   public createCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
 
       // Parse FormData fields - FormData sends everything as strings
       const dto: CreateCommunityDTO = {
@@ -82,7 +82,7 @@ export class CommunityController {
   };
   public updateCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
 
       // Parse FormData fields - FormData sends everything as strings
@@ -164,7 +164,7 @@ export class CommunityController {
   };
   public joinCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
       await this.joinCommunityUseCase.execute(userId, id);
       const response = this.responseBuilder.success(
@@ -179,7 +179,7 @@ export class CommunityController {
   };
   public leaveCommunity = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
       await this.leaveCommunityUseCase.execute(userId, id);
       const response = this.responseBuilder.success(
@@ -194,7 +194,7 @@ export class CommunityController {
   };
   public sendMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const dto: SendMessageDTO = req.body;
       const file = req.file;
       const message = await this.sendMessageUseCase.execute(
@@ -219,7 +219,7 @@ export class CommunityController {
   };
   public getMessages = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id } = req.params;
       const limit = parseInt(req.query.limit as string) || 50;
       const offset = parseInt(req.query.offset as string) || 0;
@@ -237,7 +237,7 @@ export class CommunityController {
   };
   public pinMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { messageId } = req.params;
       const message = await this.pinMessageUseCase.execute(userId, messageId);
       const messageDTO = await this.communityMessageMapper.toDTO(message);
@@ -253,7 +253,7 @@ export class CommunityController {
   };
   public unpinMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { messageId } = req.params;
       const message = await this.unpinMessageUseCase.execute(userId, messageId);
       const messageDTO = await this.communityMessageMapper.toDTO(message);
@@ -269,7 +269,7 @@ export class CommunityController {
   };
   public deleteMessage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { messageId } = req.params;
       await this.deleteMessageUseCase.execute(userId, messageId);
       const response = this.responseBuilder.success(
@@ -285,7 +285,7 @@ export class CommunityController {
 
   public removeMember = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { id: communityId, memberId } = req.params;
       await this.removeCommunityMemberUseCase.execute(userId, communityId, memberId);
       const response = this.responseBuilder.success(
@@ -320,7 +320,7 @@ export class CommunityController {
 
   public addReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { messageId } = req.params;
       const { emoji } = req.body;
 
@@ -339,7 +339,7 @@ export class CommunityController {
 
   public removeReaction = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { messageId, emoji } = req.params;
 
       await this.removeReactionUseCase.execute(userId, messageId, emoji);

@@ -1,4 +1,4 @@
-import { IPaginationParams,IPaginationResult } from "../types/IPaginationParams";
+import { type IPaginationParams,type IPaginationResult } from "../types/IPaginationParams";
 
 export interface IPaginationService {
     createParams(page: number,limit: number): IPaginationParams;

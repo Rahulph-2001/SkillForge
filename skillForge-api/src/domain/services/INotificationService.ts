@@ -1,4 +1,4 @@
-import { Notification, NotificationType } from '../entities/Notification';
+import { type Notification, type NotificationType } from '../entities/Notification';
 
 export interface SendNotificationParams {
   userId: string;

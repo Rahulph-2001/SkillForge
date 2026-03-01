@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IMCQImportJobRepository } from '../../../domain/repositories/IMCQImportJobRepository';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IMCQRepository } from '../../../domain/repositories/IMCQRepository';
 import { IStorageService } from '../../../domain/services/IStorageService';
 import { ITemplateQuestionRepository } from '../../../domain/repositories/ITemplateQuestionRepository';
@@ -10,7 +11,7 @@ import { Readable } from 'stream';
 import { TemplateQuestion } from '../../../domain/entities/TemplateQuestion';
 import { v4 as uuidv4 } from 'uuid';
 import { AppError, ValidationError } from '../../../domain/errors/AppError';
-import * as XLSX from 'xlsx'; 
+import * as XLSX from 'xlsx';
 
 
 interface ProcessedRowData {
@@ -37,7 +38,7 @@ export class MCQImportJobProcessor {
 
     public async execute(jobId: string): Promise<void> {
         console.log(`[MCQProcessor] Starting job execution:`, { jobId });
-        
+
         const job = await this.jobRepository.findById(jobId);
         if (!job) {
             console.error(`[MCQProcessor] Job ${jobId} not found in database`);
@@ -59,7 +60,7 @@ export class MCQImportJobProcessor {
         let processedRows = 0;
         let successfulRows = 0;
         let failedRows = 0;
-        const errors: { row: number; reason: string; data: any }[] = [];
+        const errors: { row: number; reason: string; data: Record<string, unknown> }[] = [];
         let errorFilePath: string | null = null;
 
         try {
@@ -69,12 +70,14 @@ export class MCQImportJobProcessor {
             try {
                 fileBuffer = await this.storageService.downloadFile(job.filePath);
                 console.log(`[MCQProcessor] File downloaded successfully:`, { size: fileBuffer.length });
-            } catch (error: any) {
-                if (error.statusCode === 404 || error.name === 'NotFoundError') {
+            } catch (error: unknown) {
+                const err = error instanceof Error ? error : new Error(String(error));
+                const statusCode = (error as Record<string, unknown>)['statusCode'];
+                if (statusCode === 404 || err.name === 'NotFoundError') {
                     console.error(`[MCQProcessor] File not found in S3:`, {
                         jobId,
                         filePath: job.filePath,
-                        error: error.message
+                        error: err.message
                     });
                     job.markFailed();
                     await this.jobRepository.update(job);
@@ -82,16 +85,16 @@ export class MCQImportJobProcessor {
                 }
                 console.error(`[MCQProcessor] Error downloading file:`, {
                     jobId,
-                    error: error.message,
-                    stack: error.stack
+                    error: err.message,
+                    stack: err.stack
                 });
                 throw error;
             }
-            
+
             // 2. Determine file type and parse
             const isExcel = job.fileName.endsWith('.xlsx') || job.fileName.endsWith('.xls');
             console.log(`[MCQProcessor] Parsing file:`, { fileName: job.fileName, isExcel });
-            let rowsToProcess: any[] = [];
+            let rowsToProcess: Record<string, unknown>[] = [];
 
             if (isExcel) {
                 rowsToProcess = this.parseExcel(fileBuffer);
@@ -108,7 +111,7 @@ export class MCQImportJobProcessor {
                 try {
                     // A. Map and Validate row
                     const questionData = this.validateAndMapRow(row, job.templateId);
-                    
+
                     // B. Create Domain Entity and save
                     const question = TemplateQuestion.create(
                         uuidv4(),
@@ -125,11 +128,12 @@ export class MCQImportJobProcessor {
                     await this.questionRepository.create(question);
                     successfulRows++;
 
-                } catch (e: any) {
+                } catch (e: unknown) {
                     failedRows++;
+                    const eMsg = e instanceof Error ? e.message : String(e);
                     errors.push({
                         row: rowNumber,
-                        reason: e instanceof AppError ? e.message : e.message || 'Unknown validation error',
+                        reason: e instanceof AppError ? e.message : eMsg || 'Unknown validation error',
                         data: row
                     });
                 }
@@ -172,16 +176,16 @@ export class MCQImportJobProcessor {
         }
     }
 
-    private parseExcel(buffer: Buffer): any[] {
+    private parseExcel(buffer: Buffer): Record<string, unknown>[] {
         const workbook = XLSX.read(buffer, { type: 'buffer' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        
+
         // Parse to JSON
-        const rawData = XLSX.utils.sheet_to_json(sheet);
-        
-        
-        return rawData.map((row: any) => {
+        const rawData = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
+
+
+        return rawData.map((row) => {
             return {
                 level: row['Level'] || row['level'],
                 question: row['Question'] || row['question'],
@@ -195,20 +199,21 @@ export class MCQImportJobProcessor {
         });
     }
 
-    private parseCSV(buffer: Buffer): Promise<any[]> {
+    private parseCSV(buffer: Buffer): Promise<Record<string, unknown>[]> {
         return new Promise((resolve, reject) => {
-            const results: any[] = [];
+            const results: Record<string, unknown>[] = [];
             const stream = Readable.from(buffer);
             stream
                 .pipe(csv())
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 .on('data', (data) => results.push(data))
                 .on('end', () => resolve(results))
                 .on('error', (err) => reject(err));
         });
     }
 
-    private validateAndMapRow(row: any, templateId: string) {
-        
+    private validateAndMapRow(row: Record<string, unknown>, templateId: string) {
+
         const level = row.level || row.Level;
         const question = row.question || row.Question;
         const optionA = row.optionA || row.option_a || row['Option A'] || row.Option_A;
@@ -224,14 +229,15 @@ export class MCQImportJobProcessor {
         }
 
         // 2. Level Validation
-        if (!this.validLevels.includes(level.trim())) {
-            throw new ValidationError(`Invalid level: ${level}. Must be one of: ${this.validLevels.join(', ')}`);
+        const levelStr = String(level as string).trim();
+        if (!this.validLevels.includes(levelStr)) {
+            throw new ValidationError(`Invalid level: ${levelStr}. Must be one of: ${this.validLevels.join(', ')}`);
         }
 
         // 3. Correct Answer Mapping
-        const answerKey = correctAnswer.toString().toUpperCase().trim();
+        const answerKey = String(correctAnswer as string).toUpperCase().trim();
         if (!this.validAnswers.includes(answerKey)) {
-            throw new ValidationError(`Invalid correctAnswer: ${correctAnswer}. Must be A, B, C, or D.`);
+            throw new ValidationError(`Invalid correctAnswer: ${answerKey}. Must be A, B, C, or D.`);
         }
 
         const answerMap: Record<string, number> = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
@@ -245,19 +251,19 @@ export class MCQImportJobProcessor {
 
         return {
             templateId,
-            level: level.trim(),
-            question: question.trim(),
+            level: String(level as string).trim(),
+            question: String(question as string).trim(),
             options: options.map(o => o.trim()),
             correctAnswerIndex,
             explanation: explanation?.toString().trim() || null,
         };
     }
-    private createErrorCSV(errors: { row: number; reason: string; data: any }[]): string {
+    private createErrorCSV(errors: { row: number; reason: string; data: Record<string, unknown> }[]): string {
         const headers = ['Row_Number', 'Reason', 'Level', 'Question', 'Option_A', 'Option_B', 'Option_C', 'Option_D', 'Correct_Answer', 'Explanation'];
         let csvContent = headers.join(',') + '\n';
 
         errors.forEach(err => {
-            const data = err.data as ProcessedRowData;
+            const data = err.data as unknown as ProcessedRowData;
             const rowData = [
                 err.row,
                 `"${err.reason.replace(/"/g, '""')}"`, // Escape quotes in reason

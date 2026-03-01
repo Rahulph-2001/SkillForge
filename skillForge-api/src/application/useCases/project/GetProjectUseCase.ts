@@ -25,6 +25,7 @@ export class GetProjectUseCase implements IGetProjectUseCase {
 
         // Map to responses DTO
         return {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: project.id!,
             clientId: project.clientId,
             title: project.title,

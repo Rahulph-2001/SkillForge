@@ -5,6 +5,7 @@ import { IProjectRepository } from '../../../domain/repositories/IProjectReposit
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IGetPendingPaymentRequestsUseCase } from './interfaces/IGetPendingPaymentRequestsUseCase';
 import { PendingPaymentRequestDTO } from '../../dto/admin/PendingPaymentRequestDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ProjectPaymentRequestType } from '../../../domain/entities/ProjectPaymentRequest';
 
 @injectable()
@@ -27,6 +28,7 @@ export class GetPendingPaymentRequestsUseCase implements IGetPendingPaymentReque
 
                 if (project && requester && !project.isSuspended) {
                     dtos.push({
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         id: req.id!,
                         projectId: req.projectId,
                         projectTitle: project.title,

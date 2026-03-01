@@ -42,7 +42,7 @@ export class GetUserSubscriptionUseCase implements IGetUserSubscriptionUseCase {
 
         // Fetch features to build limits object
         const features = await this.featureRepository.findByPlanId(plan.id);
-        const planLimits: any = {};
+        const planLimits: Record<string, number> = {};
 
         // 1. Map Legacy Limits
         if (plan.projectPosts !== null) planLimits['project_posts'] = plan.projectPosts;
@@ -54,10 +54,9 @@ export class GetUserSubscriptionUseCase implements IGetUserSubscriptionUseCase {
                 // Determine key (snake_case conversion if needed, but usually exact match expected by frontend)
                 // We'll trust the feature name is the key or map common ones
                 const key = f.name.toLowerCase().replace(/ /g, '_');
-                planLimits[key] = f.limitValue;
-            } else if (f.featureType === 'BOOLEAN' && f.isEnabled) {
+                planLimits[key] = f.limitValue as number;
+            } else if ((f.featureType as string) === 'BOOLEAN' && f.isEnabled) {
                 // Boolean features are usually "Unlimited" (-1) if just presence checked
-                const key = f.name.toLowerCase().replace(/ /g, '_');
                 // Only add if not already present or if we want to show boolean features as usage
                 // Usually usage only makes sense for limits. 
                 // We can skip boolean features for usage tracking unless we want to show "Active"
@@ -68,7 +67,7 @@ export class GetUserSubscriptionUseCase implements IGetUserSubscriptionUseCase {
         return this.userSubscriptionMapper.toDTO(
             subscription,
             plan.name,
-            currentUsageRecords,
+            currentUsageRecords as { featureKey: string; usageCount: number; limitValue?: number | null }[],
             planLimits
         );
     }

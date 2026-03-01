@@ -7,7 +7,7 @@ export interface WalletTransactionProps {
   source: string;
   referenceId?: string;
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   previousBalance: number;
   newBalance: number;
   status: 'COMPLETED' | 'PENDING' | 'FAILED';
@@ -68,7 +68,7 @@ export class WalletTransaction {
     return this.props.description;
   }
 
-  get metadata(): Record<string, any> | undefined {
+  get metadata(): Record<string, unknown> | undefined {
     return this.props.metadata;
   }
 
@@ -96,22 +96,22 @@ export class WalletTransaction {
     return { ...this.props };
   }
 
-  static fromDatabaseRow(data: any): WalletTransaction {
+  static fromDatabaseRow(data: Record<string, unknown>): WalletTransaction {
     return new WalletTransaction({
-      id: data.id,
-      adminId: data.adminId || data.admin_id,
-      type: data.type,
-      amount: Number(data.amount),
-      currency: data.currency,
-      source: data.source,
-      referenceId: data.referenceId || data.reference_id,
-      description: data.description,
-      metadata: data.metadata,
-      previousBalance: Number(data.previousBalance || data.previous_balance),
-      newBalance: Number(data.newBalance || data.new_balance),
-      status: data.status,
-      createdAt: new Date(data.createdAt || data.created_at),
-      updatedAt: new Date(data.updatedAt || data.updated_at),
+      id: data['id'] as string,
+      adminId: (data['adminId'] || data['admin_id']) as string,
+      type: data['type'] as 'CREDIT' | 'WITHDRAWAL' | 'DEBIT',
+      amount: Number(data['amount']),
+      currency: data['currency'] as string,
+      source: data['source'] as string,
+      referenceId: (data['referenceId'] || data['reference_id']) as string | undefined,
+      description: data['description'] as string | undefined,
+      metadata: data['metadata'] as Record<string, unknown> | undefined,
+      previousBalance: Number(data['previousBalance'] || data['previous_balance']),
+      newBalance: Number(data['newBalance'] || data['new_balance']),
+      status: data['status'] as 'COMPLETED' | 'PENDING' | 'FAILED',
+      createdAt: new Date((data['createdAt'] || data['created_at']) as string | Date),
+      updatedAt: new Date((data['updatedAt'] || data['updated_at']) as string | Date),
     });
   }
 }

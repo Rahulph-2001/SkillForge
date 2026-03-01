@@ -89,6 +89,7 @@ export class ScheduleInterviewUseCase implements IScheduleInterviewUseCase {
             message: `Interview for "${project.title}" scheduled on ${formattedDate} at ${formattedTime} (${data.durationMinutes} mins)`,
             data: {
                 interviewId: updatedInterview.id,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 projectId: project.id!,
                 applicationId: data.applicationId,
                 scheduledAt: data.scheduledAt.toISOString(),

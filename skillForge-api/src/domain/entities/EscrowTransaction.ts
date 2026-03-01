@@ -134,19 +134,19 @@ export class EscrowTransaction {
     return { ...this.props };
   }
 
-  static fromDatabaseRow(data: any): EscrowTransaction {
+  static fromDatabaseRow(data: Record<string, unknown>): EscrowTransaction {
     return new EscrowTransaction({
-      id: data.id,
-      bookingId: data.bookingId || data.booking_id,
-      learnerId: data.learnerId || data.learner_id,
-      providerId: data.providerId || data.provider_id,
-      amount: Number(data.amount),
-      status: data.status as EscrowStatus,
-      heldAt: new Date(data.heldAt || data.held_at),
-      releasedAt: data.releasedAt || data.released_at ? new Date(data.releasedAt || data.released_at) : null,
-      refundedAt: data.refundedAt || data.refunded_at ? new Date(data.refundedAt || data.refunded_at) : null,
-      createdAt: new Date(data.createdAt || data.created_at),
-      updatedAt: new Date(data.updatedAt || data.updated_at),
+      id: data['id'] as string | undefined,
+      bookingId: (data['bookingId'] || data['booking_id']) as string,
+      learnerId: (data['learnerId'] || data['learner_id']) as string,
+      providerId: (data['providerId'] || data['provider_id']) as string,
+      amount: Number(data['amount']),
+      status: data['status'] as EscrowStatus,
+      heldAt: new Date((data['heldAt'] || data['held_at']) as string | Date),
+      releasedAt: (data['releasedAt'] || data['released_at']) ? new Date((data['releasedAt'] || data['released_at']) as string | Date) : null,
+      refundedAt: (data['refundedAt'] || data['refunded_at']) ? new Date((data['refundedAt'] || data['refunded_at']) as string | Date) : null,
+      createdAt: new Date((data['createdAt'] || data['created_at']) as string | Date),
+      updatedAt: new Date((data['updatedAt'] || data['updated_at']) as string | Date),
     });
   }
 }

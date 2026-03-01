@@ -1,4 +1,4 @@
-import { FeatureResponseDTO } from '../../../dto/feature/FeatureResponseDTO';
+import { type FeatureResponseDTO } from '../../../dto/feature/FeatureResponseDTO';
 
 export interface ListFeaturesResult {
     features: FeatureResponseDTO[];

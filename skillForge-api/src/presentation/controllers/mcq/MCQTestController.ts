@@ -18,7 +18,7 @@ export class MCQTestController {
   public startTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
 
       const testSession = await this.startMCQTestUseCase.execute({ skillId, userId });
 
@@ -39,7 +39,7 @@ export class MCQTestController {
    */
   public submitTest = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const { skillId, questionIds, answers, timeTaken } = req.body;
 
       // Validate input

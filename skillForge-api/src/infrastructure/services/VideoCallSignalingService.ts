@@ -20,6 +20,7 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
     this.io = io;
     io.on('connection', (socket: Socket) => {
       // WebSocketService stores the decoded JWT as socket.data.user (with userId property)
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       const userId = socket.data.user?.userId || socket.data.userId;
       if (!userId) {
         console.error('[VideoCallSignaling] No userId found on socket, disconnecting:', socket.id);
@@ -28,51 +29,65 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
       }
       console.log(`[VideoCallSignaling] Socket connected: ${socket.id}, userId: ${userId}`);
 
-      socket.on('video:join-room', async ({ roomId }) => {
+      socket.on('video:join-room', ({ roomId }: { roomId: string }) => {
         try {
           console.log(`[VideoCallSignaling] video:join-room received - userId: ${userId}, roomId: ${roomId}, socketId: ${socket.id}`);
           // Track this as the video socket for this user
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           this.videoSockets.set(userId, socket.id);
-          await this.handleJoinRoom(userId, roomId, socket);
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          void this.handleJoinRoom(userId, roomId, socket).catch((e: unknown) => {
+            const msg = e instanceof Error ? e.message : String(e);
+            console.error(`[VideoCallSignaling] Error joining room: ${msg}`);
+            socket.emit('video:error', { message: msg });
+          });
         }
-        catch (e: any) {
-          console.error(`[VideoCallSignaling] Error joining room: ${e.message}`);
-          socket.emit('video:error', { message: e.message });
-        }
-      });
-
-      socket.on('video:leave-room', async ({ roomId }) => {
-        try {
-          console.log(`[VideoCallSignaling] video:leave-room received - userId: ${userId}, roomId: ${roomId}`);
-          this.videoSockets.delete(userId);
-          await this.handleLeaveRoom(userId, roomId, socket);
-        }
-        catch (e: any) {
-          console.error(`[VideoCallSignaling] Error leaving room: ${e.message}`);
-          socket.emit('video:error', { message: e.message });
+        catch (e: unknown) {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error(`[VideoCallSignaling] Error joining room: ${msg}`);
+          socket.emit('video:error', { message: msg });
         }
       });
 
-      socket.on('video:offer', ({ roomId, offer, toUserId }) => {
+      socket.on('video:leave-room', (data: { roomId: string }) => {
+        const { roomId } = data;
+        console.log(`[VideoCallSignaling] video:leave-room received - userId: ${userId}, roomId: ${roomId}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        this.videoSockets.delete(userId);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        void this.handleLeaveRoom(userId, roomId, socket).catch((e: unknown) => {
+          const msg = e instanceof Error ? e.message : String(e);
+          console.error(`[VideoCallSignaling] Error leaving room: ${msg}`);
+          socket.emit('video:error', { message: msg });
+        });
+      });
+
+      socket.on('video:offer', (data: { roomId: string, offer: unknown, toUserId: string }) => {
+        const { roomId, offer, toUserId } = data;
         console.log(`[VideoCallSignaling] 📤 Relaying offer from ${userId} to ${toUserId} in room ${roomId}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         socket.to(`video:${roomId}`).emit('video:offer', { roomId, offer, fromUserId: userId, toUserId });
       });
 
-      socket.on('video:answer', ({ roomId, answer, toUserId }) => {
+      socket.on('video:answer', (data: { roomId: string, answer: unknown, toUserId: string }) => {
+        const { roomId, answer, toUserId } = data;
         console.log(`[VideoCallSignaling] 📤 Relaying answer from ${userId} to ${toUserId} in room ${roomId}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         socket.to(`video:${roomId}`).emit('video:answer', { roomId, answer, fromUserId: userId, toUserId });
       });
 
-      socket.on('video:ice-candidate', ({ roomId, candidate, toUserId }) => {
+      socket.on('video:ice-candidate', (data: { roomId: string, candidate: unknown, toUserId: string }) => {
+        const { roomId, candidate, toUserId } = data;
         console.log(`[VideoCallSignaling] 🧊 Relaying ICE candidate from ${userId} to ${toUserId} in room ${roomId}`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         socket.to(`video:${roomId}`).emit('video:ice-candidate', { roomId, candidate, fromUserId: userId, toUserId });
       });
 
-      socket.on('disconnect', async () => {
+      socket.on('disconnect', () => {
         console.log(`[VideoCallSignaling] Socket disconnected: ${socket.id}, userId: ${userId}`);
 
         // CRITICAL: Only handle video room leave if this was the actual video socket
-        // This prevents the WebSocketContext socket disconnect from removing the user
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const videoSocketId = this.videoSockets.get(userId);
         if (videoSocketId !== socket.id) {
           console.log(`[VideoCallSignaling] Ignoring disconnect - not the video socket (video: ${videoSocketId}, disconnected: ${socket.id})`);
@@ -80,9 +95,13 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
         }
 
         console.log(`[VideoCallSignaling] Video socket disconnected for ${userId}, removing from room`);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         this.videoSockets.delete(userId);
-        const session = await this.presenceService.getUserSession(userId);
-        if (session) await this.handleLeaveRoom(userId, session.roomId, socket);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        void this.presenceService.getUserSession(userId).then(async (session) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          if (session) await this.handleLeaveRoom(userId, session.roomId, socket);
+        });
       });
     });
   }
@@ -100,7 +119,7 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
 
     console.log(`[VideoCallSignaling] Adding participant ${userId} to room ${roomId}`);
     await this.presenceService.addParticipant(roomId, userId, socket.id);
-    socket.join(`video:${roomId}`);
+    void socket.join(`video:${roomId}`);
 
     const participants = await this.presenceService.getParticipants(roomId);
     const participantDTOs = participants.map(p => ({ userId: p.userId, joinedAt: p.joinedAt }));
@@ -121,7 +140,7 @@ export class VideoCallSignalingService implements IVideoCallSignalingService {
   async handleLeaveRoom(userId: string, roomId: string, socket: Socket): Promise<void> {
     console.log(`[VideoCallSignaling] Removing participant ${userId} from room ${roomId}`);
     await this.presenceService.removeParticipant(roomId, userId);
-    socket.leave(`video:${roomId}`);
+    void socket.leave(`video:${roomId}`);
     socket.to(`video:${roomId}`).emit('video:user-left', { userId, roomId });
 
     const count = await this.presenceService.getParticipantCount(roomId);

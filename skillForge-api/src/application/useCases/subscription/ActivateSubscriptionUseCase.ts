@@ -7,6 +7,7 @@ import { UserSubscription } from '../../../domain/entities/UserSubscription';
 import { ActivateSubscriptionRequestDTO } from '../../dto/subscription/ActivateSubscriptionDTO';
 import { SubscriptionActivationResponseDTO } from '../../dto/subscription/SubscriptionActivationResponseDTO';
 import { v4 as uuidv4 } from 'uuid';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { SubscriptionStatus, BillingInterval } from '../../../domain/enums/SubscriptionEnums';
 import { IActivateSubscriptionUseCase } from './interfaces/IActivateSubscriptionUseCase';

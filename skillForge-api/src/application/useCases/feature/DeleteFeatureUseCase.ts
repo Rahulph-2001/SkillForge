@@ -1,6 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundError, ConflictError } from '../../../domain/errors/AppError';
 import { IDeleteFeatureUseCase } from './interfaces/IDeleteFeatureUseCase';
 

@@ -12,7 +12,7 @@ export interface CreateWithdrawalRequestProps {
     amount: number;
     currency?: string;
     status?: WithdrawalStatus;
-    bankDetails: Record<string, any>;
+    bankDetails: Record<string, unknown>;
     adminNote?: string | null;
     processedBy?: string | null;
     processedAt?: Date | null;
@@ -27,7 +27,7 @@ export class WithdrawalRequest {
     private readonly _amount: number;
     private readonly _currency: string;
     private _status: WithdrawalStatus;
-    private readonly _bankDetails: Record<string, any>;
+    private readonly _bankDetails: Record<string, unknown>;
     private _adminNote: string | null;
     private _processedBy: string | null;
     private _processedAt: Date | null;
@@ -69,7 +69,7 @@ export class WithdrawalRequest {
     get amount(): number { return this._amount; }
     get currency(): string { return this._currency; }
     get status(): WithdrawalStatus { return this._status; }
-    get bankDetails(): Record<string, any> { return this._bankDetails; }
+    get bankDetails(): Record<string, unknown> { return this._bankDetails; }
     get adminNote(): string | null { return this._adminNote; }
     get processedBy(): string | null { return this._processedBy; }
     get processedAt(): Date | null { return this._processedAt; }

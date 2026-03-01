@@ -63,6 +63,7 @@ function createRedisStore(windowMs: number = 15 * 60 * 1000, prefix: string = 'r
         // ignore
       }
     },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     async resetAll() {
       
     },

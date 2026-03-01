@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { createContext, useContext, useEffect, useRef, type ReactNode } from 'react';
+import { io, type Socket } from 'socket.io-client';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { updateUserBalance } from '../store/slices/authSlice';
 
@@ -99,6 +99,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWebSocket() {
   const context = useContext(WebSocketContext);
   if (!context) {

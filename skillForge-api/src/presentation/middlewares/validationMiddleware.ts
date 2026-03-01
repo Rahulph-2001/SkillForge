@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
+import { type Request, type Response, type NextFunction } from 'express';
+import { type z } from 'zod';
 import { ValidationError } from '../../domain/errors/AppError';
 
 /**
@@ -55,7 +55,7 @@ export const validateQuery = (schema: z.ZodSchema) => {
                 throw new ValidationError(errorMessage);
             }
 
-            req.query = result.data as any;
+            req.query = result.data as Record<string, string>;
             next();
         } catch (error) {
             next(error);
@@ -85,7 +85,7 @@ export const validateParams = (schema: z.ZodSchema) => {
                 throw new ValidationError(errorMessage);
             }
 
-            req.params = result.data as any;
+            req.params = result.data as Record<string, string>;
             next();
         } catch (error) {
             next(error);

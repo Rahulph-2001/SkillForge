@@ -1,7 +1,7 @@
 
 
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
-import { ApiResponse, ApiSuccessResponse, ApiErrorResponse } from './ApiResponse';
+import { type ApiResponse, type ApiSuccessResponse, type ApiErrorResponse } from './ApiResponse';
 
 export interface HttpResponse<T = unknown> {
   statusCode: HttpStatusCode;

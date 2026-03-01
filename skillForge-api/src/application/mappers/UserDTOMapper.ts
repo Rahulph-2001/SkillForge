@@ -19,11 +19,12 @@ export class UserDTOMapper implements IUserDTOMapper {
 
     try {
       const subscription = await this.subscriptionRepository.findByUserId(user.id);
-      if (subscription && subscription.status === 'ACTIVE') {
+      if (subscription && (subscription.status as string) === 'ACTIVE') {
         const plan = await this.planRepository.findById(subscription.planId);
         if (plan) {
           // Map plan badge to subscription plan type (badge is the tier: Free, Starter, Professional, Enterprise)
-          subscriptionPlan = plan.badge.toLowerCase() as any;
+          // eslint-disable-next-line @typescript-eslint/consistent-type-imports
+          subscriptionPlan = plan.badge.toLowerCase() as import('../../domain/entities/User').SubscriptionPlan;
         }
       }
     } catch (error) {

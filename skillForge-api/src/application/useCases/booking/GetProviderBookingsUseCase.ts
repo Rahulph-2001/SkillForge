@@ -3,13 +3,14 @@ import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { IBookingRepository } from '../../../domain/repositories/IBookingRepository';
 import { IGetProviderBookingsUseCase, GetProviderBookingsRequestDTO, GetProviderBookingsResponseDTO } from './interfaces/IGetProviderBookingsUseCase';
+import { BookingStatus } from '../../../domain/entities/Booking';
 
 @injectable()
 export class GetProviderBookingsUseCase implements IGetProviderBookingsUseCase {
   constructor(
     @inject(TYPES.IBookingRepository)
     private readonly bookingRepository: IBookingRepository
-  ) {}
+  ) { }
 
   async execute(request: GetProviderBookingsRequestDTO): Promise<GetProviderBookingsResponseDTO> {
     try {
@@ -18,7 +19,7 @@ export class GetProviderBookingsUseCase implements IGetProviderBookingsUseCase {
       if (request.status) {
         bookings = await this.bookingRepository.findByProviderIdAndStatus(
           request.providerId,
-          request.status as any
+          request.status as BookingStatus
         );
       } else {
         bookings = await this.bookingRepository.findByProviderId(request.providerId);
@@ -30,13 +31,13 @@ export class GetProviderBookingsUseCase implements IGetProviderBookingsUseCase {
       return {
         success: true,
         message: 'Bookings retrieved successfully',
-        bookings: bookings.map((b) => b.toObject()),
+        bookings: bookings.map((b) => b.toObject() as unknown as Record<string, unknown>),
         stats,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        message: error.message || 'Failed to retrieve bookings',
+        message: (error as Error).message || 'Failed to retrieve bookings',
       };
     }
   }

@@ -1,4 +1,4 @@
-import { FeatureType } from '../enums/SubscriptionEnums';
+import { type FeatureType } from '../enums/SubscriptionEnums';
 
 export interface SubscriptionFeature {
   id: string;
@@ -295,20 +295,20 @@ export class SubscriptionPlan {
   /**
    * Create from plain object (for repository)
    */
-  public static fromJSON(data: any): SubscriptionPlan {
+  public static fromJSON(data: Record<string, unknown>): SubscriptionPlan {
     return new SubscriptionPlan(
-      data.id || data._id?.toString(),
-      data.name,
-      data.price,
-      data.projectPosts ?? data.project_posts,
-      data.createCommunity ?? data.create_community,
-      data.features || [],
-      data.badge,
-      data.color,
-      data.isActive ?? data.is_active ?? true,
-      data.createdAt ? new Date(data.createdAt) : new Date(data.created_at),
-      data.updatedAt ? new Date(data.updatedAt) : new Date(data.updated_at),
-      data.trialDays ?? data.trial_days ?? 0
+      (data['id'] || (data['_id'] as { toString(): string })?.toString()) as string,
+      data['name'] as string,
+      data['price'] as number,
+      (data['projectPosts'] ?? data['project_posts']) as number | null,
+      (data['createCommunity'] ?? data['create_community']) as number | null,
+      (data['features'] || []) as SubscriptionFeature[],
+      data['badge'] as PlanBadge,
+      data['color'] as string,
+      (data['isActive'] ?? data['is_active'] ?? true) as boolean,
+      data['createdAt'] ? new Date(data['createdAt'] as string) : new Date(data['created_at'] as string),
+      data['updatedAt'] ? new Date(data['updatedAt'] as string) : new Date(data['updated_at'] as string),
+      (data['trialDays'] ?? data['trial_days'] ?? 0) as number
     );
   }
 }

@@ -55,7 +55,7 @@ export class BookingController {
 
       const response = this.responseBuilder.success(booking, 'Booking created successfully', HttpStatusCode.CREATED);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }
@@ -73,7 +73,7 @@ export class BookingController {
       const bookings = await this.getMyBookingsUseCase.execute(userId);
       const response = this.responseBuilder.success(bookings, 'Bookings fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }
@@ -91,7 +91,7 @@ export class BookingController {
       const bookings = await this.getUpcomingSessionsUseCase.execute(userId);
       const response = this.responseBuilder.success(bookings, 'Upcoming sessions fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }
@@ -110,7 +110,7 @@ export class BookingController {
       const booking = await this.getBookingByIdUseCase.execute(id, userId);
       const response = this.responseBuilder.success(booking, 'Booking fetched successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }
@@ -137,7 +137,7 @@ export class BookingController {
 
       const response = this.responseBuilder.success(null, 'Booking cancelled successfully', HttpStatusCode.OK);
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }
@@ -164,7 +164,7 @@ export class BookingController {
         HttpStatusCode.OK
       );
       res.status(response.statusCode).json(response.body);
-    } catch (error: any) {
+    } catch (error: unknown) {
       next(error);
     }
   }

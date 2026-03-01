@@ -1,12 +1,12 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
-import { IAdminListSessionsUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminListSessionsUseCase';
+import { type IAdminListSessionsUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminListSessionsUseCase';
 import { AdminListSessionsUseCase } from '../../../application/useCases/admin/session/AdminListSessionsUseCase';
-import { IAdminGetSessionStatsUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminGetSessionStatsUseCase';
+import { type IAdminGetSessionStatsUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminGetSessionStatsUseCase';
 import { AdminGetSessionStatsUseCase } from '../../../application/useCases/admin/session/AdminGetSessionStatsUseCase';
-import { IAdminCancelSessionUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminCancelSessionUseCase';
+import { type IAdminCancelSessionUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminCancelSessionUseCase';
 import { AdminCancelSessionUseCase } from '../../../application/useCases/admin/session/AdminCancelSessionUseCase';
-import { IAdminCompleteSessionUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminCompleteSessionUseCase';
+import { type IAdminCompleteSessionUseCase } from '../../../application/useCases/admin/session/interfaces/IAdminCompleteSessionUseCase';
 import { AdminCompleteSessionUseCase } from '../../../application/useCases/admin/session/AdminCompleteSessionUseCase';
 import { AdminSessionController } from '../../../presentation/controllers/admin/AdminSessionController';
 import { AdminSessionRoutes } from '../../../presentation/routes/admin/adminSessionRoutes';

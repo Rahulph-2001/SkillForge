@@ -45,12 +45,32 @@ export class UpdateSkillUseCase implements IUpdateSkillUseCase {
             );
         }
 
-        // Create a new Skill instance with updated properties
-        // We do NOT allow updating the title
+        // Construct updated Skill using named getters to preserve type safety
         const updatedSkill = new Skill({
-            ...skill.toJSON() as any, // Spread existing properties
-            ...updates, // Overwrite with allowed updates
-            imageUrl: imageUrl || skill.imageUrl, // Use new URL if uploaded, or existing
+            id: skill.id,
+            providerId: skill.providerId,
+            title: skill.title, // Title is not updatable
+            description: updates.description ?? skill.description,
+            category: updates.category ?? skill.category,
+            level: updates.level ?? skill.level,
+            durationHours: updates.durationHours ?? skill.durationHours,
+            creditsPerHour: updates.creditsPerHour ?? skill.creditsPerHour,
+            tags: updates.tags ?? skill.tags,
+            imageUrl: imageUrl ?? skill.imageUrl,
+            templateId: skill.templateId,
+            status: skill.status,
+            verificationStatus: skill.verificationStatus,
+            mcqScore: skill.mcqScore,
+            mcqTotalQuestions: skill.mcqTotalQuestions,
+            mcqPassingScore: skill.mcqPassingScore,
+            verifiedAt: skill.verifiedAt,
+            totalSessions: skill.totalSessions,
+            rating: skill.rating,
+            isBlocked: skill.isBlocked,
+            blockedReason: skill.blockedReason,
+            blockedAt: skill.blockedAt,
+            isAdminBlocked: skill.isAdminBlocked,
+            createdAt: skill.createdAt,
             updatedAt: new Date()
         });
 

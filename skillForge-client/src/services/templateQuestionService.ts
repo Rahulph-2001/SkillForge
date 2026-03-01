@@ -32,20 +32,20 @@ export interface UpdateQuestionDTO {
 
 const templateQuestionService = {
   // Create a new question
-  async createQuestion(templateId: string, data: Omit<CreateQuestionDTO, 'templateId'>) {
+  async createQuestion(templateId: string, data: Omit<CreateQuestionDTO, 'templateId'>): Promise<{ data: TemplateQuestion }> {
     const response = await api.post(`/admin/skill-templates/${templateId}/questions`, data);
     return response.data;
   },
 
   // Get all questions for a template (optionally filtered by level)
-  async getQuestions(templateId: string, level?: string) {
+  async getQuestions(templateId: string, level?: string): Promise<{ data: TemplateQuestion[] }> {
     const params = level ? { level } : {};
     const response = await api.get(`/admin/skill-templates/${templateId}/questions`, { params });
     return response.data;
   },
 
   // Update a question
-  async updateQuestion(templateId: string, questionId: string, data: UpdateQuestionDTO) {
+  async updateQuestion(templateId: string, questionId: string, data: UpdateQuestionDTO): Promise<{ data: TemplateQuestion }> {
     const response = await api.put(`/admin/skill-templates/${templateId}/questions/${questionId}`, data);
     return response.data;
   },

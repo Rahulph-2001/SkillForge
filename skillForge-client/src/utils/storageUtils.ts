@@ -54,11 +54,16 @@ export const hasValidUserData = (): boolean => {
     const persistedData = localStorage.getItem('persist:root');
     if (!persistedData) return false;
 
-    const parsed = JSON.parse(persistedData);
-    if (!parsed.auth) return false;
+    const parsed = JSON.parse(persistedData) as unknown;
+    if (!parsed || typeof parsed !== 'object' || !('auth' in parsed)) return false;
 
-    const authData = JSON.parse(parsed.auth);
-    return !!authData.user;
+    const authString = (parsed as Record<string, unknown>).auth;
+    if (typeof authString !== 'string') return false;
+
+    const authData = JSON.parse(authString) as unknown;
+    if (!authData || typeof authData !== 'object') return false;
+
+    return !!(authData as Record<string, unknown>).user;
   } catch {
     return false;
   }

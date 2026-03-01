@@ -35,9 +35,13 @@ export class GetInterviewSessionInfoUseCase implements IGetInterviewSessionInfoU
       scheduledAt: interview.scheduledAt,
       duration: interview.durationMinutes,
       status: interview.status,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       providerId: client!.id, // Treating client as "provider"/host
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       providerName: client!.name,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       providerAvatar: client!.avatarUrl,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       learnerName: applicant!.name,
       skillTitle: `Interview: ${project.title}`,
       meetingLink: interview.meetingLink

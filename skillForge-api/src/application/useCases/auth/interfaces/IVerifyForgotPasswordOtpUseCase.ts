@@ -1,4 +1,4 @@
-import { VerifyForgotPasswordOtpDTO } from '../../../dto/auth/VerifyForgotPasswordOtpDTO';
+import { type VerifyForgotPasswordOtpDTO } from '../../../dto/auth/VerifyForgotPasswordOtpDTO';
 
 export interface VerifyForgotPasswordOtpResponseDTO {
   success: boolean;

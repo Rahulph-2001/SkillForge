@@ -8,6 +8,7 @@ import { IConfirmPaymentUseCase } from '../../../application/useCases/payment/in
 import { IHandleWebhookUseCase } from '../../../application/useCases/payment/interfaces/IHandleWebhookUseCase';
 import { CreatePaymentIntentDTOSchema } from '../../../application/dto/payment/CreatePaymentIntentDTO';
 import { ConfirmPaymentDTOSchema } from '../../../application/dto/payment/ConfirmPaymentDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
 import { env } from '../../../config/env';
 import Stripe from 'stripe';
@@ -29,7 +30,7 @@ export class PaymentController {
 
     async createPaymentIntent(req: Request, res: Response, next: NextFunction): Promise<void> {
         try {
-            const userId = req.user!.id;
+            const userId = req.user?.id as string;
             const validatedData = CreatePaymentIntentDTOSchema.parse(req.body);
             const result = await this.createPaymentIntentUseCase.execute(userId, validatedData);
 

@@ -1,4 +1,5 @@
-import { ProjectPaymentRequest, ProjectPaymentRequestStatus, ProjectPaymentRequestType } from '../entities/ProjectPaymentRequest';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { type ProjectPaymentRequest, ProjectPaymentRequestStatus, type ProjectPaymentRequestType } from '../entities/ProjectPaymentRequest';
 
 export interface IProjectPaymentRequestRepository {
     create(request: ProjectPaymentRequest): Promise<ProjectPaymentRequest>;

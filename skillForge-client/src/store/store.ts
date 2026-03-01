@@ -1,4 +1,4 @@
-import { configureStore, combineReducers, Middleware } from '@reduxjs/toolkit';
+import { configureStore, combineReducers, type Middleware, type Action } from '@reduxjs/toolkit';
 import {
   persistStore,
   persistReducer,
@@ -31,13 +31,15 @@ const persistConfig = {
 };
 
 // Middleware to reset transient UI states after rehydration
-const resetTransientStatesMiddleware: Middleware = (store) => (next) => (action: any) => {
+const resetTransientStatesMiddleware: Middleware = (store) => (next) => (action: unknown) => {
   const result = next(action);
 
+  const typedAction = action as Action;
+
   // After rehydration, reset transient UI states
-  if (action.type === REHYDRATE) {
+  if (typedAction && typedAction.type === REHYDRATE) {
     console.log('[Store] Rehydration detected, resetting transient UI states');
-    const state = store.getState();
+    const state = store.getState() as ReturnType<typeof rootReducer>;
     if (state.auth) {
       // Reset loading and error states that shouldn't persist
       store.dispatch({ type: 'auth/resetTransientStates' });

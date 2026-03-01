@@ -1,4 +1,4 @@
-import { ProjectApplication, ProjectApplicationStatus } from '../entities/ProjectApplication';
+import { type ProjectApplication, type ProjectApplicationStatus } from '../entities/ProjectApplication';
 
 export interface IProjectApplicationRepository {
   create(application: ProjectApplication): Promise<ProjectApplication>;

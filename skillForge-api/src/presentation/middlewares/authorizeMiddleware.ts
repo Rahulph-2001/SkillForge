@@ -1,8 +1,8 @@
-import { Response, NextFunction } from 'express';
+import { type Response, type NextFunction } from 'express';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { errorResponse } from '../../shared/http/responseHelpers';
-import { UserRole } from '../../domain/enums/UserRole';
-import { AuthenticatedRequest } from '../../domain/interfaces/AuthenticatedRequest';
+import { type UserRole } from '../../domain/enums/UserRole';
+import { type AuthenticatedRequest } from '../../domain/interfaces/AuthenticatedRequest';
 
 export const authorize = (roles: (UserRole | string)[]) => {
     return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {

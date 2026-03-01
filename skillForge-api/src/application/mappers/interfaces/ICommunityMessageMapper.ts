@@ -1,5 +1,5 @@
-import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
-import { MessageResponseDTO } from '../../dto/community/MessageResponseDTO';
+import { type CommunityMessage } from '../../../domain/entities/CommunityMessage';
+import { type MessageResponseDTO } from '../../dto/community/MessageResponseDTO';
 
 
 export interface ICommunityMessageMapper {

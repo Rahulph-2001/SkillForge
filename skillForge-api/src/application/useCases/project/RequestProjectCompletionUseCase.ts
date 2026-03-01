@@ -48,6 +48,7 @@ export class RequestProjectCompletionUseCase implements IRequestProjectCompletio
             title: 'Project Completion Requested',
             message: `${contributor?.name || 'Contributor'} marked "${project.title}" as completed and is requesting your approval`,
             data: {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 projectId: project.id!,
                 contributorId: userId
             },

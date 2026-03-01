@@ -51,7 +51,7 @@ export class AdminSkillController {
   public approve = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
 
       await this.approveSkillUseCase.execute(skillId, adminId);
 
@@ -74,7 +74,7 @@ export class AdminSkillController {
     try {
       const { skillId } = req.params;
       const { reason } = req.body;
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -129,7 +129,7 @@ export class AdminSkillController {
    */
   public listSkills = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const search = req.query.search as string | undefined;
@@ -164,7 +164,7 @@ export class AdminSkillController {
     try {
       const { skillId } = req.params;
       const { reason } = req.body;
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
 
       // Validate reason
       if (!reason || reason.trim().length === 0) {
@@ -201,7 +201,7 @@ export class AdminSkillController {
   public unblockSkill = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { skillId } = req.params;
-      const adminId = req.user!.userId;
+      const adminId = req.user?.userId as string;
 
       await this.unblockSkillUseCase.execute(skillId, adminId);
 

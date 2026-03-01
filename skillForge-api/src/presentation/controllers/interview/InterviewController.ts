@@ -17,7 +17,7 @@ export class InterviewController {
 
     public schedule = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user!.userId;
+            const userId = req.user?.userId as string;
             const result = await this.scheduleUseCase.execute(userId, req.body);
 
             const response = this.responseBuilder.success(
@@ -33,7 +33,7 @@ export class InterviewController {
 
     public getByApplication = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user!.userId;
+            const userId = req.user?.userId as string;
             const { applicationId } = req.params;
             const result = await this.getInterviewUseCase.execute(userId, applicationId);
 

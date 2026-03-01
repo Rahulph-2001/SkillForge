@@ -1,5 +1,5 @@
 
-import { UsageRecord } from '../entities/UsageRecord';
+import { type UsageRecord } from '../entities/UsageRecord';
 
 export interface IUsageRecordRepository {
     create(record: UsageRecord): Promise<UsageRecord>;

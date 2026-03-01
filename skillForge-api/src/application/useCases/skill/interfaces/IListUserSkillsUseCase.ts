@@ -1,4 +1,4 @@
-import { SkillResponseDTO } from '../../../dto/skill/SkillResponseDTO';
+import { type SkillResponseDTO } from '../../../dto/skill/SkillResponseDTO';
 
 export interface ListUserSkillsFilters {
   page?: number;

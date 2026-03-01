@@ -66,7 +66,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
       orderBy: { createdAt: 'desc' },
     });
 
-    return questions.map((q: any) =>
+    return questions.map((q) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,
@@ -88,7 +88,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
       orderBy: { createdAt: 'desc' },
     });
 
-    return questions.map((q: any) =>
+    return questions.map((q) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,
@@ -104,7 +104,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
     );
   }
 
-  async update(id: string, data: any): Promise<TemplateQuestion> {
+  async update(id: string, data: Record<string, unknown>): Promise<TemplateQuestion> {
     const updated = await this.prisma.templateQuestion.update({
       where: { id },
       data,
@@ -163,7 +163,7 @@ export class TemplateQuestionRepository extends BaseRepository<TemplateQuestion>
     const shuffled = questions.sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, count);
 
-    return selected.map((q: any) =>
+    return selected.map((q) =>
       TemplateQuestion.create(
         q.id,
         q.templateId,

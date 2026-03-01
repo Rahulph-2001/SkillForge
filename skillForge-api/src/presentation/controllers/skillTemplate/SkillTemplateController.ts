@@ -9,6 +9,7 @@ import { IGetSkillTemplateByIdUseCase } from '../../../application/useCases/skil
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { CreateSkillTemplateDTO } from '../../../application/dto/skillTemplate/CreateSkillTemplateDTO';
 import { HttpStatusCode } from '../../../domain/enums/HttpStatusCode';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SUCCESS_MESSAGES } from '../../../config/messages';
 
 @injectable()
@@ -28,7 +29,7 @@ export class SkillTemplateController {
    */
   async create(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const dto: CreateSkillTemplateDTO = req.body;
 
       const template = await this.createSkillTemplateUseCase.execute(adminUserId, dto);
@@ -51,7 +52,7 @@ export class SkillTemplateController {
   async list(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
 
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const page = req.query.page ? parseInt(req.query.page as string) : 1;
       const limit = req.query.limit ? parseInt(req.query.limits as string) : 10;
       const search = req.query.search as string | undefined;
@@ -85,7 +86,7 @@ export class SkillTemplateController {
    */
   async getById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const templateId = req.params.id;
 
       const template = await this.getSkillTemplateByIdUseCase.execute(adminUserId, templateId);
@@ -107,7 +108,7 @@ export class SkillTemplateController {
    */
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const templateId = req.params.id;
       const dto = req.body;
 
@@ -132,7 +133,7 @@ export class SkillTemplateController {
    */
   async toggleStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const templateId = req.params.id;
 
       const template = await this.toggleSkillTemplateStatusUseCase.execute(adminUserId, templateId);

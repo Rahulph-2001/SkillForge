@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../di/types';
 import { IEscrowRepository } from '../../../domain/repositories/IEscrowRepository';
-import { EscrowTransaction, EscrowStatus } from '../../../domain/entities/EscrowTransaction';
+import { EscrowTransaction } from '../../../domain/entities/EscrowTransaction';
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
@@ -13,7 +13,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
     super(db, 'escrowTransaction');
   }
 
-  private mapToDomain(data: any): EscrowTransaction {
+  private mapToDomain(data: Record<string, unknown>): EscrowTransaction {
     return EscrowTransaction.fromDatabaseRow(data);
   }
 
@@ -31,7 +31,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       orderBy: { createdAt: 'desc' },
     });
 
-    return escrows.map((e: any) => this.mapToDomain(e));
+    return escrows.map((e) => this.mapToDomain(e));
   }
 
   async findByProviderId(providerId: string): Promise<EscrowTransaction[]> {
@@ -40,7 +40,7 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       orderBy: { createdAt: 'desc' },
     });
 
-    return escrows.map((e: any) => this.mapToDomain(e));
+    return escrows.map((e) => this.mapToDomain(e));
   }
 
   async holdCredits(
@@ -119,7 +119,6 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       });
 
       // Log Transaction for Provider
-      // @ts-ignore
       await tx.userWalletTransaction.create({
         data: {
           userId: escrow.providerId,
@@ -173,7 +172,6 @@ export class EscrowRepository extends BaseRepository<EscrowTransaction> implemen
       });
 
       // Log Transaction for Learner (Refund)
-      // @ts-ignore
       await tx.userWalletTransaction.create({
         data: {
           userId: escrow.learnerId,

@@ -16,6 +16,7 @@ console.log('[App] Checking localStorage health...');
 repairStorage();
 
 // Wrapper component to handle PersistGate timeout
+// eslint-disable-next-line react-refresh/only-export-components
 function AppWrapper() {
   const [showApp, setShowApp] = useState(false);
   const [persistError, setPersistError] = useState(false);
@@ -95,6 +96,7 @@ function AppWrapper() {
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>

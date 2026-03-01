@@ -15,7 +15,7 @@ export class OTPTimerService {
   static saveTimerState(state: OTPTimerState): void {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(state));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to save OTP timer state:', error);
     }
   }
@@ -37,7 +37,7 @@ export class OTPTimerService {
       }
 
       return state;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to get OTP timer state:', error);
       return null;
     }
@@ -52,7 +52,7 @@ export class OTPTimerService {
       const now = Date.now();
       const remaining = Math.max(0, Math.floor((expiryTime - now) / 1000));
       return remaining;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to calculate remaining seconds:', error);
       return 0;
     }
@@ -65,7 +65,7 @@ export class OTPTimerService {
     try {
       const expiryTime = new Date(expiresAt).getTime();
       return Date.now() >= expiryTime;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to check expiry:', error);
       return true;
     }
@@ -77,7 +77,7 @@ export class OTPTimerService {
   static clearTimerState(): void {
     try {
       localStorage.removeItem(this.STORAGE_KEY);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to clear OTP timer state:', error);
     }
   }
@@ -94,7 +94,7 @@ export class OTPTimerService {
           expiresAt,
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update expiry time:', error);
     }
   }

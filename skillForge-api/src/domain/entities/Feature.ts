@@ -190,6 +190,7 @@ export class Feature {
         if (!this.hasLimit()) {
             throw new Error('Feature does not have a numeric limit');
         }
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this._limitValue!;
     }
 
@@ -215,19 +216,19 @@ export class Feature {
     /**
      * Create from plain object (for repository)
      */
-    public static fromJSON(data: any): Feature {
+    public static fromJSON(data: Record<string, unknown>): Feature {
         return new Feature({
-            id: data.id,
-            planId: data.planId || data.plan_id,
-            name: data.name,
-            description: data.description,
-            featureType: data.featureType || data.feature_type,
-            limitValue: data.limitValue || data.limit_value,
-            isEnabled: data.isEnabled !== undefined ? data.isEnabled : data.is_enabled !== undefined ? data.is_enabled : true,
-            displayOrder: data.displayOrder || data.display_order || 0,
-            isHighlighted: data.isHighlighted !== undefined ? data.isHighlighted : data.is_highlighted !== undefined ? data.is_highlighted : false,
-            createdAt: data.createdAt ? new Date(data.createdAt) : data.created_at ? new Date(data.created_at) : new Date(),
-            updatedAt: data.updatedAt ? new Date(data.updatedAt) : data.updated_at ? new Date(data.updated_at) : new Date(),
+            id: data['id'] as string,
+            planId: (data['planId'] || data['plan_id']) as string | undefined,
+            name: data['name'] as string,
+            description: data['description'] as string | undefined,
+            featureType: (data['featureType'] || data['feature_type']) as FeatureType,
+            limitValue: (data['limitValue'] || data['limit_value']) as number | undefined,
+            isEnabled: data['isEnabled'] !== undefined ? data['isEnabled'] as boolean : data['is_enabled'] !== undefined ? data['is_enabled'] as boolean : true,
+            displayOrder: (data['displayOrder'] || data['display_order'] || 0) as number,
+            isHighlighted: data['isHighlighted'] !== undefined ? data['isHighlighted'] as boolean : data['is_highlighted'] !== undefined ? data['is_highlighted'] as boolean : false,
+            createdAt: data['createdAt'] ? new Date(data['createdAt'] as string) : data['created_at'] ? new Date(data['created_at'] as string) : new Date(),
+            updatedAt: data['updatedAt'] ? new Date(data['updatedAt'] as string) : data['updated_at'] ? new Date(data['updated_at'] as string) : new Date(),
         });
     }
 }

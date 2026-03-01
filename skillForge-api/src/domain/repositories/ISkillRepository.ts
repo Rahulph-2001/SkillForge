@@ -1,4 +1,4 @@
-import { Skill } from '../entities/Skill';
+import { type Skill } from '../entities/Skill';
 
 export interface SkillPaginationFilters {
   page?: number;

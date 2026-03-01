@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { type Request, type Response, type NextFunction } from 'express';
 
 
 export const asyncHandler = (
@@ -13,10 +13,5 @@ export const asyncHandler = (
 export const executeUseCase = async <T>(
   fn: () => Promise<T>
 ): Promise<T> => {
-  try {
-    return await fn();
-  } catch (error) {
-    // Re-throw to let error middleware handle it
-    throw error;
-  }
+  return fn();
 };

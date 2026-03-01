@@ -6,7 +6,7 @@ export type WebSocketMessage = {
   data: Record<string, unknown>;
 };
 export interface IWebSocketService {
-  initialize(io: any): void;
+  initialize(io: unknown): void;
   sendToCommunity(communityId: string, message: WebSocketMessage): void;
   sendToUser(userId: string, message: WebSocketMessage): void;
   joinCommunity(userId: string, communityId: string): void;

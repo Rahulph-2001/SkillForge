@@ -28,11 +28,11 @@ export class GetCreditTransactionsUseCase implements IGetCreditTransactionsUseCa
             id: t.id,
             type: t.type as string,
             amount: t.amount,
-            credits: t.metadata?.credits,
+            credits: t.metadata?.credits as number | undefined,
             description: t.description ?? null,
             status: t.status as 'PENDING' | 'COMPLETED' | 'FAILED',
             createdAt: t.createdAt.toISOString(),
-            metadata: (t.metadata as Record<string, any>) ?? null,
+            metadata: (t.metadata as Record<string, unknown>) ?? null,
         }));
 
         return {

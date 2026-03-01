@@ -1,4 +1,4 @@
-import { Feature } from '../entities/Feature';
+import { type Feature } from '../entities/Feature';
 
 export interface IFeatureRepository {
   

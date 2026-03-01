@@ -17,7 +17,7 @@ export const CreditTransactionSchema = z.object({
   description: z.string().nullable(),
   status: z.enum(['COMPLETED', 'PENDING', 'FAILED']),
   createdAt: z.string(),
-  metadata: z.record(z.string(), z.any()).nullable(),
+  metadata: z.record(z.string(), z.unknown()).nullable(),
 });
 
 export type CreditTransactionDTO = z.infer<typeof CreditTransactionSchema>;

@@ -62,6 +62,7 @@ export class AdminSuspendProjectUseCase implements IAdminSuspendProjectUseCase {
                         amount: payment.amount,
                         currency: payment.currency,
                         source: 'PROJECT_REFUND',
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                         referenceId: project.id!,
                         metadata: {
                             projectTitle: project.title,
@@ -115,10 +116,13 @@ export class AdminSuspendProjectUseCase implements IAdminSuspendProjectUseCase {
         });
 
         return {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             id: project.id!,
             title: project.title,
             isSuspended: project.isSuspended,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             suspendedAt: project.suspendedAt!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             suspendReason: project.suspendReason!,
             refundProcessed,
         };

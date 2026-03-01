@@ -29,14 +29,14 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
 
     // If we have fewer questions than requested, return all
     if (allQuestions.length <= limit) {
-      return allQuestions.map(this.toDomainQuestion);
+      return allQuestions.map((q) => this.toDomainQuestion(q));
     }
 
     // Randomly shuffle and select 'limit' number of questions
     const shuffled = this.shuffleArray([...allQuestions]);
     const selectedQuestions = shuffled.slice(0, limit);
 
-    return selectedQuestions.map(this.toDomainQuestion);
+    return selectedQuestions.map((q) => this.toDomainQuestion(q));
   }
 
   // Fisher-Yates shuffle algorithm for random question selection
@@ -68,9 +68,9 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
     // Maintain the order of the input IDs
     const orderedQuestions = ids
       .map(id => questions.find(q => q.id === id))
-      .filter((q): q is any => q !== undefined);
+      .filter((q): q is NonNullable<typeof q> => q !== undefined);
 
-    return orderedQuestions.map(this.toDomainQuestion);
+    return orderedQuestions.map((q) => this.toDomainQuestion(q));
   }
 
   async createAttempt(
@@ -97,7 +97,7 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
       orderBy: { attemptedAt: 'desc' },
     });
 
-    return attempts.map(this.toDomainAttempt);
+    return attempts.map((a) => this.toDomainAttempt(a));
   }
 
   async getAttemptsByUser(userId: string): Promise<MCQAttempt[]> {
@@ -106,7 +106,7 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
       orderBy: { attemptedAt: 'desc' },
     });
 
-    return attempts.map(this.toDomainAttempt);
+    return attempts.map((a) => this.toDomainAttempt(a));
   }
 
   async getLatestAttempt(
@@ -124,7 +124,16 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
     return attempt ? this.toDomainAttempt(attempt) : null;
   }
 
-  private toDomainQuestion(question: any): MCQQuestion {
+  private toDomainQuestion(question: {
+    id: string;
+    templateId: string;
+    level: string;
+    question: string;
+    options: unknown;
+    correctAnswer: number;
+    explanation?: string | null | undefined;
+    isActive: boolean;
+  }): MCQQuestion {
     return {
       id: question.id,
       templateId: question.templateId,
@@ -132,12 +141,22 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
       question: question.question,
       options: question.options as string[],
       correctAnswer: question.correctAnswer,
-      explanation: question.explanation,
+      explanation: question.explanation ?? undefined,
       isActive: question.isActive,
     };
   }
 
-  private toDomainAttempt(attempt: any): MCQAttempt {
+  private toDomainAttempt(attempt: {
+    id: string;
+    skillId: string;
+    userId: string;
+    questionsAsked: unknown;
+    userAnswers: unknown;
+    score: number;
+    passed: boolean;
+    timeTaken?: number | null | undefined;
+    attemptedAt: Date;
+  }): MCQAttempt {
     return {
       id: attempt.id,
       skillId: attempt.skillId,
@@ -146,7 +165,7 @@ export class MCQRepository extends BaseRepository<MCQAttempt> implements IMCQRep
       userAnswers: attempt.userAnswers as number[],
       score: attempt.score,
       passed: attempt.passed,
-      timeTaken: attempt.timeTaken,
+      timeTaken: attempt.timeTaken ?? undefined,
       attemptedAt: attempt.attemptedAt,
     };
   }

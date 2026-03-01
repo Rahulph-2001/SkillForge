@@ -1,5 +1,5 @@
-import { UpdateCommunityByAdminRequestDTO } from '../../../dto/admin/UpdateCommunityByAdminRequestDTO';
-import { CommunityResponseDTO } from '../../../dto/community/CommunityResponseDTO';
+import { type UpdateCommunityByAdminRequestDTO } from '../../../dto/admin/UpdateCommunityByAdminRequestDTO';
+import { type CommunityResponseDTO } from '../../../dto/community/CommunityResponseDTO';
 
 /**
  * Interface for Update Community By Admin Use Case

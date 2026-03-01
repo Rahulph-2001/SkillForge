@@ -5,6 +5,7 @@ import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubsc
 import { IUsageRecordRepository } from '../../../domain/repositories/IUsageRecordRepository';
 import { IValidateProjectPostLimitUseCase } from './interfaces/IValidateProjectPostLimitUseCase';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
+import { UserSubscription } from '../../../domain/entities/UserSubscription';
 
 @injectable()
 export class ValidateProjectPostLimitUseCase implements IValidateProjectPostLimitUseCase {
@@ -12,11 +13,11 @@ export class ValidateProjectPostLimitUseCase implements IValidateProjectPostLimi
     @inject(TYPES.IUserSubscriptionRepository) private readonly subscriptionRepository: IUserSubscriptionRepository,
     @inject(TYPES.ISubscriptionPlanRepository) private readonly planRepository: ISubscriptionPlanRepository,
     @inject(TYPES.IUsageRecordRepository) private readonly usageRepository: IUsageRecordRepository
-  ) {}
+  ) { }
 
   public async execute(userId: string): Promise<void> {
     const subscription = await this.subscriptionRepository.findByUserId(userId);
-    
+
     if (!subscription) {
       throw new ForbiddenError('You must have an active subscription to post projects');
     }
@@ -55,11 +56,11 @@ export class ValidateProjectPostLimitUseCase implements IValidateProjectPostLimi
     }
   }
 
-  private getBillingPeriodText(subscription: any): string {
+  private getBillingPeriodText(subscription: UserSubscription): string {
     const days = Math.ceil(
       (subscription.currentPeriodEnd.getTime() - subscription.currentPeriodStart.getTime()) / (1000 * 60 * 60 * 24)
     );
-    
+
     if (days <= 31) return 'month';
     if (days <= 93) return 'quarter';
     if (days <= 366) return 'year';

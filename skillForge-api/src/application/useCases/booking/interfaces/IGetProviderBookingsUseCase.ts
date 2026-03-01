@@ -6,7 +6,7 @@ export interface GetProviderBookingsRequestDTO {
 export interface GetProviderBookingsResponseDTO {
   success: boolean;
   message: string;
-  bookings?: any[];
+  bookings?: Record<string, unknown>[];
   stats?: {
     pending: number;
     confirmed: number;

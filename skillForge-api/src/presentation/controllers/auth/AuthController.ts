@@ -177,6 +177,7 @@ export class AuthController {
 
   async logout(_req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
+      await Promise.resolve();
       // Clear both accessToken and refreshToken cookies
       res.clearCookie('accessToken', {
         httpOnly: true,
@@ -262,10 +263,11 @@ export class AuthController {
         ? `${env.FRONTEND_URL}/auth/google/callback?isNewUser=true`
         : `${env.FRONTEND_URL}/auth/google/callback`;
       res.redirect(redirectUrl);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Record<string, unknown>;
       // Handle suspended user error - redirect to login with message
-      if (error.name === 'ForbiddenError' || error.statusCode === 403) {
-        const errorMessage = encodeURIComponent(error.message || 'Account suspended');
+      if (err.name === 'ForbiddenError' || err.statusCode === 403) {
+        const errorMessage = encodeURIComponent((err.message as string) || 'Account suspended');
         res.redirect(`${env.FRONTEND_URL}/login?error=account_suspended&message=${errorMessage}`);
         return;
       }

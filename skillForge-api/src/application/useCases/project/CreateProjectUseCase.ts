@@ -8,6 +8,7 @@ import { ICreateProjectUseCase } from './interfaces/ICreateProjectUseCase';
 import { CreateProjectRequestDTO } from '../../dto/project/CreateProjectDTO';
 import { ProjectResponseDTO } from '../../dto/project/ProjectResponseDTO';
 import { Project, ProjectStatus } from '../../../domain/entities/Project';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ForbiddenError, NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { v4 as uuidv4 } from 'uuid';
 import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
@@ -68,6 +69,7 @@ export class CreateProjectUseCase implements ICreateProjectUseCase {
 
     // 7. Map to response DTO
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id: savedProject.id!,
       clientId: savedProject.clientId,
       title: savedProject.title,

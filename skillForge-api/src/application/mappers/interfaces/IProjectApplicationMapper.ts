@@ -1,5 +1,5 @@
-import { ProjectApplication } from '../../../domain/entities/ProjectApplication';
-import { ProjectApplicationResponseDTO } from '../../dto/projectApplication/ProjectApplicationResponseDTO';
+import { type ProjectApplication } from '../../../domain/entities/ProjectApplication';
+import { type ProjectApplicationResponseDTO } from '../../dto/projectApplication/ProjectApplicationResponseDTO';
 
 export interface ApplicantInfo {
   id: string;

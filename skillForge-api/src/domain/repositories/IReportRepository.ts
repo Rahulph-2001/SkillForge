@@ -1,4 +1,4 @@
-import { Report, ReportStatus, ReportType } from "../entities/Report";
+import { type Report, type ReportStatus, type ReportType } from "../entities/Report";
 
 export interface CreateReportDTO {
     reporterId: string;

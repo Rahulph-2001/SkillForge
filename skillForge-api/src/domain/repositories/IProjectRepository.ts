@@ -1,4 +1,4 @@
-import { Project, ProjectStatus } from '../entities/Project';
+import { type Project, type ProjectStatus } from '../entities/Project';
 
 export interface ListProjectsFilters {
   search?: string;

@@ -1,4 +1,4 @@
-import { BlockCommunityRequestDTO } from '../../../dto/admin/BlockCommunityRequestDTO';
+import { type BlockCommunityRequestDTO } from '../../../dto/admin/BlockCommunityRequestDTO';
 
 /**
  * Interface for Block Community Use Case (Admin)

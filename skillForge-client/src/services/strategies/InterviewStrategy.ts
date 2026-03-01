@@ -1,5 +1,5 @@
-import { videoCallService, SessionInfo, SessionTimeValidation, VideoCallRoom } from '../videoCallService';
-import { IVideoCallStrategy } from './IVideoCallStrategy';
+import { videoCallService, type SessionInfo, type SessionTimeValidation, type VideoCallRoom } from '../videoCallService';
+import { type IVideoCallStrategy } from './IVideoCallStrategy';
 
 export class InterviewStrategy implements IVideoCallStrategy {
     async getSessionInfo(id: string): Promise<SessionInfo> {
@@ -23,6 +23,7 @@ export class InterviewStrategy implements IVideoCallStrategy {
         throw new Error("Interview room not ready");
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     async validateTime(_id: string): Promise<SessionTimeValidation | null> {
         // Interviews might have different or no strict backend validation endpoint yet.
         // Returning null signifies no validation needed or handled differently.

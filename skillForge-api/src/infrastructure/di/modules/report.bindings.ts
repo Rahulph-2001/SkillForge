@@ -1,13 +1,13 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
-import { IReportRepository } from '../../../domain/repositories/IReportRepository';
+import { type IReportRepository } from '../../../domain/repositories/IReportRepository';
 import { PrismaReportRepository } from '../../../infrastructure/database/repositories/PrismaReportRepository';
 import { AdminListReportsUseCase } from '../../../application/useCases/admin/AdminListReportsUseCase';
-import { IAdminListReportsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListReportsUseCase';
+import { type IAdminListReportsUseCase } from '../../../application/useCases/admin/interfaces/IAdminListReportsUseCase';
 import { AdminManageReportUseCase } from '../../../application/useCases/admin/AdminManageReportUseCase';
-import { IAdminManageReportUseCase } from '../../../application/useCases/admin/interfaces/IAdminManageReportUseCase';
+import { type IAdminManageReportUseCase } from '../../../application/useCases/admin/interfaces/IAdminManageReportUseCase';
 import { CreateReportUseCase } from '../../../application/useCases/report/CreateReportUseCase';
-import { ICreateReportUseCase } from '../../../application/useCases/report/interfaces/ICreateReportUseCase';
+import { type ICreateReportUseCase } from '../../../application/useCases/report/interfaces/ICreateReportUseCase';
 import { AdminReportController } from '../../../presentation/controllers/admin/AdminReportController';
 import { ReportController } from '../../../presentation/controllers/ReportController';
 import { AdminReportRoutes } from '../../../presentation/routes/admin/AdminReportRoutes';

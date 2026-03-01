@@ -7,6 +7,7 @@ import { IGetProjectMessagesUseCase } from '../../../application/useCases/projec
 import { CreateProjectMessageSchema } from '../../../application/dto/project/ProjectMessageDTO';
 import { IResponseBuilder } from '../../../shared/http/IResponseBuilder';
 import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../../config/messages';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ZodError } from 'zod';
 
 interface AuthenticatedRequest extends Request {
@@ -40,15 +41,17 @@ export class ProjectMessageController {
 
             const response = this.responseBuilder.success(messages, SUCCESS_MESSAGES.COMMUNITY.MESSAGES_FETCHED);
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Get Messages Error:', error);
-            if (error.type === 'NOT_FOUND') {
-                const response = this.responseBuilder.error('NOT_FOUND', error.message, 404);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((error as any).type === 'NOT_FOUND') {
+                const response = this.responseBuilder.error('NOT_FOUND', (error as Error).message, 404);
                 res.status(response.statusCode).json(response.body);
                 return;
             }
-            if (error.type === 'FORBIDDEN') {
-                const response = this.responseBuilder.error('FORBIDDEN', error.message, 403);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((error as any).type === 'FORBIDDEN') {
+                const response = this.responseBuilder.error('FORBIDDEN', (error as Error).message, 403);
                 res.status(response.statusCode).json(response.body);
                 return;
             }
@@ -78,15 +81,17 @@ export class ProjectMessageController {
 
             const response = this.responseBuilder.created(result, SUCCESS_MESSAGES.COMMUNITY.MESSAGE_SENT);
             res.status(response.statusCode).json(response.body);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Send Message Error:', error);
-            if (error.type === 'NOT_FOUND') {
-                const response = this.responseBuilder.error('NOT_FOUND', error.message, 404);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((error as any).type === 'NOT_FOUND') {
+                const response = this.responseBuilder.error('NOT_FOUND', (error as Error).message, 404);
                 res.status(response.statusCode).json(response.body);
                 return;
             }
-            if (error.type === 'FORBIDDEN') {
-                const response = this.responseBuilder.error('FORBIDDEN', error.message, 403);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            if ((error as any).type === 'FORBIDDEN') {
+                const response = this.responseBuilder.error('FORBIDDEN', (error as Error).message, 403);
                 res.status(response.statusCode).json(response.body);
                 return;
             }

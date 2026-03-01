@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { authMiddleware } from '../../middlewares/authMiddleware';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
 import { validateBody } from '../../middlewares/validationMiddleware';
 import { CreateCreditPackageSchema, UpdateCreditPackageSchema } from '../../../application/dto/credit/CreditPackageDTO';

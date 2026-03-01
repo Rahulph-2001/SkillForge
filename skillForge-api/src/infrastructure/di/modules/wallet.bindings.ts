@@ -2,13 +2,13 @@ import { ContainerModule } from 'inversify';
 import { TYPES } from '../types';
 
 // Repository
-import { IUserWalletTransactionRepository } from '../../../domain/repositories/IUserWalletTransactionRepository';
+import { type IUserWalletTransactionRepository } from '../../../domain/repositories/IUserWalletTransactionRepository';
 import { UserWalletTransactionRepository } from '../../database/repositories/UserWalletTransactionRepository';
 
 // Use Cases
-import { IGetUserWalletDataUseCase } from '../../../application/useCases/wallet/interfaces/IGetUserWalletDataUseCase';
+import { type IGetUserWalletDataUseCase } from '../../../application/useCases/wallet/interfaces/IGetUserWalletDataUseCase';
 import { GetUserWalletDataUseCase } from '../../../application/useCases/wallet/GetUserWalletDataUseCase';
-import { IGetUserWalletTransactionsUseCase } from '../../../application/useCases/wallet/interfaces/IGetUserWalletTransactionsUseCase';
+import { type IGetUserWalletTransactionsUseCase } from '../../../application/useCases/wallet/interfaces/IGetUserWalletTransactionsUseCase';
 import { GetUserWalletTransactionsUseCase } from '../../../application/useCases/wallet/GetUserWalletTransactionsUseCase';
 
 // Controller

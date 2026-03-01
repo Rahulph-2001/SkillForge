@@ -67,9 +67,11 @@ export class CreditAdminWalletUseCase implements ICreditAdminWalletUseCase {
 
     private generateDescription(dto: CreditAdminWalletRequestDTO): string {
         if (dto.source === 'SUBSCRIPTION_PAYMENT') {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const planName = dto.metadata?.planName || 'Subscription Plan';
             return `Subscription payment: ${planName}`;
         } else if (dto.source === 'PROJECT_ESCROW') {
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
             const projectTitle = dto.metadata?.projectTitle || 'Project';
             return `Project escrow: ${projectTitle}`;
         }

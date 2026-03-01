@@ -30,7 +30,7 @@ export class ProjectApplicationController {
   async applyToProject(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { projectId } = req.params;
-      const applicantId = req.user!.userId;
+      const applicantId = req.user?.userId as string;
 
       const validationResult = CreateProjectApplicationSchema.safeParse({ ...req.body, projectId });
       if (!validationResult.success) {
@@ -49,7 +49,7 @@ export class ProjectApplicationController {
   async getProjectApplications(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { projectId } = req.params;
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
 
       const applications = await this.getProjectApplicationsUseCase.execute(projectId, userId);
 
@@ -63,7 +63,7 @@ export class ProjectApplicationController {
   async updateStatus(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { applicationId } = req.params;
-      const clientId = req.user!.userId;
+      const clientId = req.user?.userId as string;
 
       const validationResult = UpdateApplicationStatusSchema.safeParse(req.body);
       if (!validationResult.success) {
@@ -84,7 +84,7 @@ export class ProjectApplicationController {
 
   async getMyApplications(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const applicantId = req.user!.userId;
+      const applicantId = req.user?.userId as string;
 
       const applications = await this.getMyApplicationsUseCase.execute(applicantId);
 
@@ -98,7 +98,7 @@ export class ProjectApplicationController {
   async withdrawApplication(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { applicationId } = req.params;
-      const applicantId = req.user!.userId;
+      const applicantId = req.user?.userId as string;
 
       const application = await this.withdrawApplicationUseCase.execute(applicationId, applicantId);
 
@@ -111,7 +111,7 @@ export class ProjectApplicationController {
 
   async getReceivedApplications(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const userId = req.user!.userId;
+      const userId = req.user?.userId as string;
       const applications = await this.getReceivedApplicationsUseCase.execute(userId);
 
       const response = this.responseBuilder.success(applications, SUCCESS_MESSAGES.PROJECT_APPLICATION.FETCHED);

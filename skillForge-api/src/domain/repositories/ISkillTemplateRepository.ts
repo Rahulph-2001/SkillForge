@@ -1,4 +1,4 @@
-import { SkillTemplate } from '../entities/SkillTemplate';
+import { type SkillTemplate } from '../entities/SkillTemplate';
 
 export interface ISkillTemplateRepository {
   create(template: SkillTemplate): Promise<SkillTemplate>;

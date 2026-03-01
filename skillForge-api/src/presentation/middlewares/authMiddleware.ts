@@ -1,8 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { type Request, type Response, type NextFunction } from 'express';
 import { container } from '../../infrastructure/di/di';
 import { TYPES } from '../../infrastructure/di/types';
-import { IJWTService } from '../../domain/services/IJWTService';
-import { IUserRepository } from '../../domain/repositories/IUserRepository';
+import { type IJWTService } from '../../domain/services/IJWTService';
+import { type IUserRepository } from '../../domain/repositories/IUserRepository';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
 import { errorResponse } from '../../shared/http/responseHelpers';
 
@@ -86,13 +86,14 @@ export const authMiddleware = async (
     }
 
     // Attach user data to request
-    (req as any).user = {
+    req.user = {
       id: decoded.userId,
       userId: decoded.userId,
       email: decoded.email,
       role: decoded.role,
     };
     next();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     const response = errorResponse(
       'UNAUTHORIZED',

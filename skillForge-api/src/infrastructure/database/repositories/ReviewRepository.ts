@@ -5,6 +5,7 @@ import { Review } from '../../../domain/entities/Review';
 import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { PrismaClient } from '@prisma/client';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ForbiddenError } from '../../../domain/errors/AppError';
 
 @injectable()
@@ -13,16 +14,16 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
         super(db, 'review');
     }
 
-    private mapToDomain(data: any): Review {
+    private mapToDomain(data: Record<string, unknown>): Review {
         return new Review({
-            id: data.id,
-            bookingId: data.bookingId,
-            providerId: data.providerId,
-            learnerId: data.learnerId,
-            skillId: data.skillId,
-            rating: data.rating,
-            review: data.review,
-            createdAt: data.createdAt,
+            id: data.id as string | undefined,
+            bookingId: data.bookingId as string,
+            providerId: data.providerId as string,
+            learnerId: data.learnerId as string,
+            skillId: data.skillId as string,
+            rating: data.rating as number,
+            review: data.review as string,
+            createdAt: data.createdAt as Date | undefined,
         });
     }
 
@@ -97,7 +98,7 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
             where: { providerId },
             orderBy: { createdAt: 'desc' },
         });
-        return data.map((item: any) => this.mapToDomain(item));
+        return data.map((item) => this.mapToDomain(item));
     }
 
     async findByLearnerId(learnerId: string): Promise<Review[]> {
@@ -106,6 +107,6 @@ export class ReviewRepository extends BaseRepository<Review> implements IReviewR
             where: { learnerId },
             orderBy: { createdAt: 'desc' },
         });
-        return data.map((item: any) => this.mapToDomain(item));
+        return data.map((item) => this.mapToDomain(item));
     }
 }

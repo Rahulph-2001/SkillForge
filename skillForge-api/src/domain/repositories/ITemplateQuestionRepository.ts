@@ -1,4 +1,4 @@
-import { TemplateQuestion } from '../entities/TemplateQuestion';
+import { type TemplateQuestion } from '../entities/TemplateQuestion';
 
 export interface ITemplateQuestionRepository {
   create(question: TemplateQuestion): Promise<TemplateQuestion>;

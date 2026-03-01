@@ -1,4 +1,4 @@
-import { SystemSettings } from '../entities/SystemSettings';
+import { type SystemSettings } from '../entities/SystemSettings';
 
 export interface ISystemSettingsRepository {
     get(key: string): Promise<SystemSettings | null>;

@@ -1,4 +1,4 @@
-import { Server as SocketIOServer, Socket } from 'socket.io'
+import { type Server as SocketIOServer, type Socket } from 'socket.io'
 
 export interface IVideoCallSignalingService {
     initialize(io: SocketIOServer): void;

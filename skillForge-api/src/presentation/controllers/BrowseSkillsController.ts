@@ -33,13 +33,13 @@ export class BrowseSkillsController {
       const filters: BrowseSkillsRequestDTO = {
         search: search as string | undefined,
         category: category as string | undefined,
-        level: level as any,
+        level: level as typeof filters.level,
         minCredits: minCredits ? Number(minCredits) : undefined,
         maxCredits: maxCredits ? Number(maxCredits) : undefined,
         page: page ? Number(page) : 1,
         limit: limit ? Number(limit) : 12,
-        sortBy: sortBy as any,
-        sortOrder: sortOrder as any,
+        sortBy: sortBy as typeof filters.sortBy,
+        sortOrder: sortOrder as typeof filters.sortOrder,
         excludeProviderId: userId, // Exclude current user's skills if authenticated
       };
 

@@ -37,7 +37,7 @@ export class CommunityMessageMapper implements ICommunityMessageMapper {
       replyToId: message.replyToId,
       forwardedFromId: message.forwardedFromId,
       replyTo,
-      reactions: (messageData.reactions as any[]) || [],
+      reactions: (messageData.reactions as unknown[]) || [],
       createdAt: message.createdAt,
       updatedAt: message.updatedAt,
     };

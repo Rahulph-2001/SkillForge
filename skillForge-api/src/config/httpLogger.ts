@@ -1,5 +1,6 @@
 import pinoHttp from 'pino-http';
 import { logger } from './logger';
+import { type SerializedRequest, type SerializedResponse } from 'pino';
 
 export const httpLogger = pinoHttp({
   logger,
@@ -9,14 +10,14 @@ export const httpLogger = pinoHttp({
     return 'info';
   },
   serializers: {
-    req: (req) => ({
+    req: (req: SerializedRequest) => ({
       id: req.id,
       method: req.method,
       url: req.url,
       remoteAddress: req.remoteAddress,
       remotePort: req.remotePort,
     }),
-    res: (res) => ({
+    res: (res: SerializedResponse) => ({
       statusCode: res.statusCode,
     })
   },

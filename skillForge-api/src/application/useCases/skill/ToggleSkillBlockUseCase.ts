@@ -28,7 +28,9 @@ export class ToggleSkillBlockUseCase implements IToggleSkillBlockUseCase {
 
         const isBlocked = !skill.isBlocked;
 
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         const updatedSkill = new Skill({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             ...skill.toJSON() as any,
             isBlocked: isBlocked,
             blockedReason: isBlocked ? 'Blocked by provider' : null,

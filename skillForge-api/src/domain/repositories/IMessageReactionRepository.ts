@@ -1,4 +1,4 @@
-import { MessageReaction } from '../entities/MessageReaction';
+import { type MessageReaction } from '../entities/MessageReaction';
 
 export interface IMessageReactionRepository {
     create(reaction: MessageReaction): Promise<MessageReaction>;

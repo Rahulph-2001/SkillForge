@@ -1,10 +1,10 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
-import { IReviewRepository } from '../../../domain/repositories/IReviewRepository';
+import { type IReviewRepository } from '../../../domain/repositories/IReviewRepository';
 import { ReviewRepository } from '../../database/repositories/ReviewRepository';
-import { ICreateReviewUseCase } from '../../../application/useCases/review/interfaces/ICreateReviewUseCase';
+import { type ICreateReviewUseCase } from '../../../application/useCases/review/interfaces/ICreateReviewUseCase';
 import { CreateReviewUseCase } from '../../../application/useCases/review/CreateReviewUseCase';
-import { IReviewMapper } from '../../../application/mappers/ReviewMapper';
+import { type IReviewMapper } from '../../../application/mappers/ReviewMapper';
 import { ReviewMapper } from '../../../application/mappers/ReviewMapper';
 import { ReviewController } from '../../../presentation/controllers/review/ReviewController';
 import { ReviewRoutes } from '../../../presentation/routes/review/ReviewRoutes';

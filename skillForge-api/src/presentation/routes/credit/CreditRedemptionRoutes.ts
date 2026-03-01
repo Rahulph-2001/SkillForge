@@ -4,6 +4,7 @@ import { TYPES } from '../../../infrastructure/di/types';
 import { CreditRedemptionController } from '../../controllers/credit/CreditRedemptionController';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { adminMiddleware } from '../../middlewares/adminMiddleware';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UserRole } from '../../../domain/enums/UserRole';
 
 @injectable()

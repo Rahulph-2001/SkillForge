@@ -1,25 +1,25 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
 import { CreateProjectUseCase } from '../../../application/useCases/project/CreateProjectUseCase';
-import { ICreateProjectUseCase } from '../../../application/useCases/project/interfaces/ICreateProjectUseCase';
+import { type ICreateProjectUseCase } from '../../../application/useCases/project/interfaces/ICreateProjectUseCase';
 import { ListProjectsUseCase } from '../../../application/useCases/project/ListProjectsUseCase';
-import { IListProjectsUseCase } from '../../../application/useCases/project/interfaces/IListProjectsUseCase';
+import { type IListProjectsUseCase } from '../../../application/useCases/project/interfaces/IListProjectsUseCase';
 import { ProjectController } from '../../../presentation/controllers/ProjectController';
 import { ProjectRoutes } from '../../../presentation/routes/project/projectRoutes';
 import { ValidateProjectPostLimitUseCase } from '../../../application/useCases/project/ValidateProjectPostLimitUseCase';
-import { IValidateProjectPostLimitUseCase } from '../../../application/useCases/project/interfaces/IValidateProjectPostLimitUseCase';
+import { type IValidateProjectPostLimitUseCase } from '../../../application/useCases/project/interfaces/IValidateProjectPostLimitUseCase';
 import { IncrementProjectPostUsageUseCase } from '../../../application/useCases/project/IncrementProjectPostUsageUseCase';
-import { IIncrementProjectPostUsageUseCase } from '../../../application/useCases/project/interfaces/IIncrementProjectPostUsageUseCase';
+import { type IIncrementProjectPostUsageUseCase } from '../../../application/useCases/project/interfaces/IIncrementProjectPostUsageUseCase';
 import { GetProjectUseCase } from '../../../application/useCases/project/GetProjectUseCase';
-import { IGetProjectUseCase } from '../../../application/useCases/project/interfaces/IGetProjectUseCase';
+import { type IGetProjectUseCase } from '../../../application/useCases/project/interfaces/IGetProjectUseCase';
 import { GetMyProjectsUseCase } from '../../../application/useCases/project/GetMyProjectsUseCase';
-import { IGetMyProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetMyProjectsUseCase';
+import { type IGetMyProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetMyProjectsUseCase';
 import { GetContributingProjectsUseCase } from '../../../application/useCases/project/GetContributingProjectsUseCase';
-import { IGetContributingProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetContributingProjectsUseCase';
+import { type IGetContributingProjectsUseCase } from '../../../application/useCases/project/interfaces/IGetContributingProjectsUseCase';
 import { RequestProjectCompletionUseCase } from '../../../application/useCases/project/RequestProjectCompletionUseCase';
-import { IRequestProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IRequestProjectCompletionUseCase';
+import { type IRequestProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IRequestProjectCompletionUseCase';
 import { ReviewProjectCompletionUseCase } from '../../../application/useCases/project/ReviewProjectCompletionUseCase';
-import { IReviewProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IReviewProjectCompletionUseCase';
+import { type IReviewProjectCompletionUseCase } from '../../../application/useCases/project/interfaces/IReviewProjectCompletionUseCase';
 
 export const bindProjectModule = (container: Container): void => {
     // Project Use Cases - bound to interfaces following SOLID principles

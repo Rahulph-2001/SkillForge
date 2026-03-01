@@ -9,6 +9,7 @@ import { CreateCommunityDTO } from '../../dto/community/CreateCommunityDTO';
 import { CommunityResponseDTO } from '../../dto/community/CommunityResponseDTO';
 import { ValidationError, InternalServerError, ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
 import { ICreateCommunityUseCase } from './interfaces/ICreateCommunityUseCase';
+import { Feature } from '../../../domain/entities/Feature';
 import { IUserSubscriptionRepository } from '../../../domain/repositories/IUserSubscriptionRepository';
 import { ISubscriptionPlanRepository } from '../../../domain/repositories/ISubscriptionPlanRepository';
 import { IFeatureRepository } from '../../../domain/repositories/IFeatureRepository';
@@ -50,10 +51,10 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
     // ============================================
     // SUBSCRIPTION AND FEATURE CHECK - INDUSTRIAL LEVEL
     // ============================================
-    
+
     // 1. Check if user has an active subscription
     const subscription = await this.subscriptionRepository.findByUserId(userId);
-    
+
     if (!subscription) {
       throw new ForbiddenError('You need an active subscription to create communities. Please subscribe to a plan first.');
     }
@@ -72,20 +73,20 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
     // 4. Check limits (legacy or feature model)
     let limitValue: number | null | undefined = undefined;
     let featureKey: string = 'create_community';
-    let createCommunityFeature: any = null;
+    let createCommunityFeature: Feature | null | undefined = null;
 
     const legacyLimit = plan.createCommunity;
-    
+
     if (legacyLimit !== null && legacyLimit !== undefined) {
       limitValue = legacyLimit;
       featureKey = 'create_community';
     } else {
       const features = await this.featureRepository.findByPlanId(plan.id);
       createCommunityFeature = features.find(
-        f => f.name.toLowerCase() === 'create_community' || 
-             f.name.toLowerCase() === 'create community' ||
-             f.name.toLowerCase() === 'community_creation' ||
-             f.name.toLowerCase() === 'communities'
+        f => f.name.toLowerCase() === 'create_community' ||
+          f.name.toLowerCase() === 'create community' ||
+          f.name.toLowerCase() === 'community_creation' ||
+          f.name.toLowerCase() === 'communities'
       );
 
       if (!createCommunityFeature) {
@@ -99,7 +100,7 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
       if (createCommunityFeature.featureType === FeatureType.NUMERIC_LIMIT) {
         limitValue = createCommunityFeature.limitValue;
         featureKey = createCommunityFeature.name;
-        
+
         if (limitValue === null || limitValue === undefined) {
           throw new ForbiddenError('Community creation limit is not configured for your plan.');
         }
@@ -116,11 +117,11 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
 
     // 5. Check current usage
     let currentUsage = 0;
-    
+
     if (limitValue !== null && limitValue !== undefined && limitValue !== -1) {
       const currentUsageRecords = await this.usageRecordRepository.findBySubscriptionId(subscription.id);
       const featureUsageRecord = currentUsageRecords.find(
-        record => 
+        record =>
           record.featureKey === featureKey &&
           record.periodStart <= subscription.currentPeriodEnd &&
           record.periodEnd >= subscription.currentPeriodStart
@@ -154,6 +155,7 @@ export class CreateCommunityUseCase implements ICreateCommunityUseCase {
           .toLowerCase(); // Convert to lowercase for consistency
         const key = `communities/${userId}/${timestamp}-${sanitizedFilename}`;
         imageUrl = await this.storageService.uploadFile(imageFile.buffer, key, imageFile.mimetype);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         throw new InternalServerError('Failed to upload image. Please try again.');
       }

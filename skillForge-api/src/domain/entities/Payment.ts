@@ -1,5 +1,5 @@
 
-import { PaymentProvider, PaymentStatus, PaymentPurpose, Currency } from '../enums/PaymentEnums';
+import { type PaymentProvider, PaymentStatus, type PaymentPurpose, type Currency } from '../enums/PaymentEnums';
 
 export interface PaymentProps {
     id: string;
@@ -11,7 +11,7 @@ export interface PaymentProps {
     currency: Currency;
     purpose: PaymentPurpose;
     status: PaymentStatus;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     failureReason?: string;
     refundedAmount?: number;
     createdAt: Date;
@@ -28,7 +28,7 @@ export class Payment {
     private _currency: Currency;
     private _purpose: PaymentPurpose;
     private _status: PaymentStatus;
-    private _metadata?: Record<string, any>;
+    private _metadata?: Record<string, unknown>;
     private _failureReason?: string;
     private _refundedAmount?: number;
     private _createdAt: Date;
@@ -72,7 +72,7 @@ export class Payment {
     get currency(): Currency { return this._currency; }
     get purpose(): PaymentPurpose { return this._purpose; }
     get status(): PaymentStatus { return this._status; }
-    get metadata(): Record<string, any> | undefined { return this._metadata; }
+    get metadata(): Record<string, unknown> | undefined { return this._metadata; }
     get failureReason(): string | undefined { return this._failureReason; }
     get refundedAmount(): number | undefined { return this._refundedAmount; }
     get createdAt(): Date { return this._createdAt; }
@@ -118,22 +118,22 @@ export class Payment {
         };
     }
 
-    public static fromJSON(data: any): Payment {
+    public static fromJSON(data: Record<string, unknown>): Payment {
         return new Payment({
-            id: data.id,
-            userId: data.userId || data.user_id,
-            provider: data.provider,
-            providerPaymentId: data.providerPaymentId || data.provider_payment_id,
-            providerCustomerId: data.providerCustomerId || data.provider_customer_id,
-            amount: data.amount,
-            currency: data.currency,
-            purpose: data.purpose,
-            status: data.status,
-            metadata: data.metadata,
-            failureReason: data.failureReason || data.failure_reason,
-            refundedAmount: data.refundedAmount || data.refunded_amount,
-            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(data.created_at),
-            updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(data.updated_at),
+            id: data['id'] as string,
+            userId: (data['userId'] || data['user_id']) as string,
+            provider: data['provider'] as PaymentProvider,
+            providerPaymentId: (data['providerPaymentId'] || data['provider_payment_id']) as string | undefined,
+            providerCustomerId: (data['providerCustomerId'] || data['provider_customer_id']) as string | undefined,
+            amount: data['amount'] as number,
+            currency: data['currency'] as Currency,
+            purpose: data['purpose'] as PaymentPurpose,
+            status: data['status'] as PaymentStatus,
+            metadata: data['metadata'] as Record<string, unknown> | undefined,
+            failureReason: (data['failureReason'] || data['failure_reason']) as string | undefined,
+            refundedAmount: (data['refundedAmount'] || data['refunded_amount']) as number | undefined,
+            createdAt: data['createdAt'] ? new Date(data['createdAt'] as string) : new Date(data['created_at'] as string),
+            updatedAt: data['updatedAt'] ? new Date(data['updatedAt'] as string) : new Date(data['updated_at'] as string),
         });
     }
 }

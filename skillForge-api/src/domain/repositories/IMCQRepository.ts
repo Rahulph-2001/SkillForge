@@ -1,4 +1,4 @@
-import { MCQAttempt, MCQQuestion } from '../entities/MCQAttempt';
+import { type MCQAttempt, type MCQQuestion } from '../entities/MCQAttempt';
 
 export interface IMCQRepository {
   // Question Management

@@ -3,12 +3,12 @@ import { AppError } from "./AppError";
 import { HttpStatusCode } from "../enums/HttpStatusCode";
 
 export class FileProcessingError extends AppError {
-    public readonly details: any;
+    public readonly details: Record<string, unknown>;
     public readonly appCode: string;
 
     constructor(
         message: string,
-        details: any = {},
+        details: Record<string, unknown> = {},
         httpCode: HttpStatusCode = HttpStatusCode.BAD_REQUEST,
         appCode: string = 'FILE_001'
     ) {

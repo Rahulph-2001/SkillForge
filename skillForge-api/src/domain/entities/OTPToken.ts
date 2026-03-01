@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { env } from '../../config/env';
-import { OTPType } from './type'; 
+import { type OTPType } from './type'; 
 
 export interface CreateOTPData {
   id?: string;

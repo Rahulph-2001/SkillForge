@@ -1,4 +1,4 @@
-import { UserWalletTransaction, UserWalletTransactionType, UserWalletTransactionStatus } from '../entities/UserWalletTransaction';
+import { type UserWalletTransaction, type UserWalletTransactionType, type UserWalletTransactionStatus } from '../entities/UserWalletTransaction';
 
 export interface UserWalletTransactionFilters {
   type?: UserWalletTransactionType;

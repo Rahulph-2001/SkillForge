@@ -6,6 +6,7 @@ import { IStorageService } from '../../../domain/services/IStorageService';
 import { IWebSocketService } from '../../../domain/services/IWebSocketService';
 import { CommunityMessage } from '../../../domain/entities/CommunityMessage';
 import { SendMessageDTO } from '../../dto/community/SendMessageDTO';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundError, ForbiddenError } from '../../../domain/errors/AppError';
 import { ICommunityMessageMapper } from '../../mappers/interfaces/ICommunityMessageMapper';
 import { ISendMessageUseCase } from './interfaces/ISendMessageUseCase';

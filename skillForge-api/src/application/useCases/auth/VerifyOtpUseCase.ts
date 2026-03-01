@@ -50,6 +50,7 @@ export class VerifyOtpUseCase implements IVerifyOtpUseCase {
       try {
         otpToken.incrementAttempts();
         await this.otpRepository.update(otpToken);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         throw new ForbiddenError(ERROR_MESSAGES.AUTH.OTP_MAX_ATTEMPTS);
       }

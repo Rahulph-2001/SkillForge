@@ -6,6 +6,7 @@ import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { IAdminListProjectsUseCase } from './interfaces/IAdminListProjectsUseCase';
 import { AdminListProjectsRequestDTO, AdminListProjectsResponseDTO, AdminProjectDTO } from '../../dto/admin/AdminProjectDTO';
 import { ProjectStatus } from '../../../domain/entities/Project';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ProjectPaymentRequestStatus } from '../../../domain/entities/ProjectPaymentRequest';
 
 @injectable()
@@ -67,6 +68,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
             }
 
             projectDTOs.push({
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 id: project.id!,
                 title: project.title,
                 description: project.description,
@@ -86,6 +88,7 @@ export class AdminListProjectsUseCase implements IAdminListProjectsUseCase {
                     avatarUrl: creator.avatarUrl || null
                 },
                 contributor,
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 hasPendingPaymentRequest: pendingProjectIds.has(project.id!),
                 // Suspension fields - defaults for pre-migration compatibility
                 isSuspended: project.isSuspended ?? false,

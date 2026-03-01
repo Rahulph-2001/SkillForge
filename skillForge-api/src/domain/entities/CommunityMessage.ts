@@ -155,8 +155,8 @@ export class CommunityMessage {
     messageAny._createdAt = (row.created_at || row.createdAt) as Date || new Date();
     messageAny._updatedAt = (row.updated_at || row.updatedAt) as Date || new Date();
     // Extract sender details from joined user relation
-    messageAny._senderName = (row.sender as any)?.name || 'Unknown User';
-    messageAny._senderAvatar = (row.sender as any)?.avatar || (row.sender as any)?.avatarUrl || null;
+    messageAny._senderName = (row.sender as Record<string, unknown>)?.name || 'Unknown User';
+    messageAny._senderAvatar = (row.sender as Record<string, unknown>)?.avatar || (row.sender as Record<string, unknown>)?.avatarUrl || null;
 
     // Map reactions if available
     if (row.reactions && Array.isArray(row.reactions)) {
@@ -174,6 +174,7 @@ export class CommunityMessage {
           });
         }
 
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const group = grouped.get(emoji)!;
         group.users.push({
           id: reaction.userId,

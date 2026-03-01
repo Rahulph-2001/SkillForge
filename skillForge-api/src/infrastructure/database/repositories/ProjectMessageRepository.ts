@@ -55,7 +55,8 @@ export class ProjectMessageRepository implements IProjectMessageRepository {
             }
         });
 
-        return messages.map(this.toDomain);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return messages.map(m => this.toDomain(m as any));
     }
 
     async findById(id: string): Promise<ProjectMessage | null> {
@@ -94,6 +95,7 @@ export class ProjectMessageRepository implements IProjectMessageRepository {
         });
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private toDomain(ormEntity: any): ProjectMessage {
         return new ProjectMessage({
             id: ormEntity.id,

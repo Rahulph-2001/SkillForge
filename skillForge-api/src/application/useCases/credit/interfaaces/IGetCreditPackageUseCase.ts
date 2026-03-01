@@ -1,5 +1,5 @@
-import { IPaginationResult } from "../../../../domain/types/IPaginationParams";
-import { CreditPackageResponseDTO } from "../../../dto/credit/CreditPackageDTO";
+import { type IPaginationResult } from "../../../../domain/types/IPaginationParams";
+import { type CreditPackageResponseDTO } from "../../../dto/credit/CreditPackageDTO";
 
 
 export interface IGetCreditPackageUseCase {

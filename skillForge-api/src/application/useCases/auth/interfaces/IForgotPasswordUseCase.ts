@@ -1,4 +1,4 @@
-import { ForgotPasswordDTO } from '../../../dto/auth/ForgotPasswordDTO';
+import { type ForgotPasswordDTO } from '../../../dto/auth/ForgotPasswordDTO';
 
 export interface ForgotPasswordResponseDTO {
   success: boolean;

@@ -119,10 +119,10 @@ export class StartMCQImportUseCase implements IStartMCQImportUseCase {
         status: 'PENDING',
         message: 'Import job initiated. Check status endpoint for progress.',
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('[StartMCQImportUseCase] Error uploading file to S3:', {
-        message: error.message,
-        stack: error.stack,
+        message: (error as Error).message,
+        stack: (error as Error).stack,
         key
       });
       throw error;

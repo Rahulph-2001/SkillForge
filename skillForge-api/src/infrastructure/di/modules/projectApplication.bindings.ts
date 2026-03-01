@@ -1,17 +1,17 @@
-import { Container } from 'inversify';
+import { type Container } from 'inversify';
 import { TYPES } from '../types';
 
 // Use Cases
 import { ApplyToProjectUseCase } from '../../../application/useCases/projectApplication/ApplyToProjectUseCase';
-import { IApplyToProjectUseCase } from '../../../application/useCases/projectApplication/interfaces/IApplyToProjectUseCase';
+import { type IApplyToProjectUseCase } from '../../../application/useCases/projectApplication/interfaces/IApplyToProjectUseCase';
 import { GetProjectApplicationsUseCase } from '../../../application/useCases/projectApplication/GetProjectApplicationsUseCase';
-import { IGetProjectApplicationsUseCase } from '../../../application/useCases/projectApplication/interfaces/IGetProjectApplicationsUseCase';
+import { type IGetProjectApplicationsUseCase } from '../../../application/useCases/projectApplication/interfaces/IGetProjectApplicationsUseCase';
 import { UpdateApplicationStatusUseCase } from '../../../application/useCases/projectApplication/UpdateApplicationStatusUseCase';
-import { IUpdateApplicationStatusUseCase } from '../../../application/useCases/projectApplication/interfaces/IUpdateApplicationStatusUseCase';
+import { type IUpdateApplicationStatusUseCase } from '../../../application/useCases/projectApplication/interfaces/IUpdateApplicationStatusUseCase';
 import { GetMyApplicationsUseCase } from '../../../application/useCases/projectApplication/GetMyApplicationsUseCase';
-import { IGetMyApplicationsUseCase } from '../../../application/useCases/projectApplication/interfaces/IGetMyApplicationsUseCase';
+import { type IGetMyApplicationsUseCase } from '../../../application/useCases/projectApplication/interfaces/IGetMyApplicationsUseCase';
 import { WithdrawApplicationUseCase } from '../../../application/useCases/projectApplication/WithdrawApplicationUseCase';
-import { IWithdrawApplicationUseCase } from '../../../application/useCases/projectApplication/interfaces/IWithdrawApplicationUseCase';
+import { type IWithdrawApplicationUseCase } from '../../../application/useCases/projectApplication/interfaces/IWithdrawApplicationUseCase';
 import { GetReceivedApplicationsUseCase } from '../../../application/useCases/projectApplication/GetReceivedApplicationsUseCase';
 
 // Controllers
@@ -21,15 +21,15 @@ import { ProjectApplicationController } from '../../../presentation/controllers/
 import { ProjectApplicationRoutes } from '../../../presentation/routes/projectApplication/ProjectApplicationRoutes';
 
 // Repository
-import { IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
+import { type IProjectApplicationRepository } from '../../../domain/repositories/IProjectApplicationRepository';
 import { ProjectApplicationRepository } from '../../database/repositories/ProjectApplicationRepository';
 
 // Mapper
-import { IProjectApplicationMapper } from '../../../application/mappers/interfaces/IProjectApplicationMapper';
+import { type IProjectApplicationMapper } from '../../../application/mappers/interfaces/IProjectApplicationMapper';
 import { ProjectApplicationMapper } from '../../../application/mappers/ProjectApplicationMapper';
 
 // Services
-import { IGeminiAIService } from '../../../domain/services/IGeminiAIService';
+import { type IGeminiAIService } from '../../../domain/services/IGeminiAIService';
 import { GeminiAIService } from '../../services/GeminiAIService';
 
 export function registerProjectApplicationBindings(container: Container) {

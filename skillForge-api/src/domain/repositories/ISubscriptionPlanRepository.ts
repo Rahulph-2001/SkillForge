@@ -1,4 +1,4 @@
-import { SubscriptionPlan } from '../entities/SubscriptionPlan';
+import { type SubscriptionPlan } from '../entities/SubscriptionPlan';
 
 export interface SubscriptionStats {
   totalRevenue: number;

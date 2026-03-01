@@ -1,7 +1,7 @@
 
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { OTPTimerService, OTPTimerState } from '../services/otpTimerService';
+import { OTPTimerService, type OTPTimerState } from '../services/otpTimerService';
 
 export interface UseOTPTimerOptions {
   email: string;

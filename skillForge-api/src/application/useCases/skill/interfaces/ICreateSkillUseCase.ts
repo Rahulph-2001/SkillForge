@@ -1,5 +1,5 @@
-import { CreateSkillDTO } from '../../../dto/skill/CreateSkillDTO';
-import { SkillResponseDTO } from '../../../dto/skill/SkillResponseDTO';
+import { type CreateSkillDTO } from '../../../dto/skill/CreateSkillDTO';
+import { type SkillResponseDTO } from '../../../dto/skill/SkillResponseDTO';
 
 export interface ICreateSkillUseCase {
   execute(

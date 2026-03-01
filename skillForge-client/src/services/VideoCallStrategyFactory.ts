@@ -1,6 +1,6 @@
 import { BookingStrategy } from './strategies/BookingStrategy';
 import { InterviewStrategy } from './strategies/InterviewStrategy';
-import { IVideoCallStrategy } from './strategies/IVideoCallStrategy';
+import { type IVideoCallStrategy } from './strategies/IVideoCallStrategy';
 
 export class VideoCallStrategyFactory {
     /**
@@ -9,6 +9,7 @@ export class VideoCallStrategyFactory {
     static getStrategy(type: 'booking' | 'interview'): IVideoCallStrategy {
         if (type === 'booking') return new BookingStrategy();
         if (type === 'interview') return new InterviewStrategy();
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unknown video call type: ${type}`);
     }
 }

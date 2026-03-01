@@ -1,5 +1,5 @@
-import { AdminLoginDTO } from '../../../dto/auth/AdminLoginDTO';
-import { UserResponseDTO } from '../../../dto/auth/UserResponseDTO';
+import { type AdminLoginDTO } from '../../../dto/auth/AdminLoginDTO';
+import { type UserResponseDTO } from '../../../dto/auth/UserResponseDTO';
 
 export interface AdminLoginResponseDTO {
   user: UserResponseDTO;

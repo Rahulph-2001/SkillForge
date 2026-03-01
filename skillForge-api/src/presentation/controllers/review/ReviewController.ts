@@ -16,7 +16,7 @@ export class ReviewController {
 
     public create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
-            const userId = req.user!.id;
+            const userId = req.user?.id as string;
             const result = await this.createReviewUseCase.execute(userId, req.body);
 
             const response = this.responseBuilder.success(

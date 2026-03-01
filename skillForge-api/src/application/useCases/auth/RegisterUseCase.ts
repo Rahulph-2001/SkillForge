@@ -5,6 +5,7 @@ import { IOTPRepository } from '../../../domain/repositories/IOTPRepository';
 import { IPasswordService } from '../../../domain/services/IPasswordService';
 import { IOTPService } from '../../../domain/services/IOTPService';
 import { IEmailService } from '../../../domain/services/IEmailService';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IAdminNotificationService } from '../../../domain/services/IAdminNotificationService';
 import { IPendingRegistrationService } from '../../../domain/services/IPendingRegistrationService';
 import { Email } from '../../../shared/value-objects/Email';

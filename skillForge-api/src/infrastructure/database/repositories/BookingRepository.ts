@@ -14,12 +14,13 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
   }
 
   // --- Helper: Mapper ---
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private mapToDomain(data: any): Booking {
     let rescheduleInfo: RescheduleInfo | null = null;
 
     // Handle Prisma JSON type safely
     if (data.rescheduleInfo && typeof data.rescheduleInfo === 'object') {
-      const info = data.rescheduleInfo as any;
+      const info = data.rescheduleInfo;
       rescheduleInfo = {
         ...info,
         requestedAt: info.requestedAt ? new Date(info.requestedAt) : new Date(),
@@ -81,6 +82,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       orderBy: { createdAt: 'desc' },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -99,6 +101,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       orderBy: { createdAt: 'desc' },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -160,6 +163,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         message: domainBooking.message,
         status: domainBooking.status,
         sessionCost: domainBooking.sessionCost,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rescheduleInfo: domainBooking.rescheduleInfo as any,
       },
       include: {
@@ -204,6 +208,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
           AND: [
             { startAt: { lt: endAt } },
             { endAt: { gt: startAt } }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ] as any
         }
       });
@@ -238,6 +243,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
           message: domainBooking.message,
           status: domainBooking.status,
           sessionCost: sessionCost,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           rescheduleInfo: domainBooking.rescheduleInfo as any,
         },
         include: {
@@ -250,7 +256,6 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
 
       // 4b. Log Wallet Transaction (SESSION_PAYMENT)
       // Amount is NEGATIVE because credits are being locked/held in escrow
-      // @ts-ignore
       await tx.userWalletTransaction.create({
         data: {
           userId: domainBooking.learnerId,
@@ -363,6 +368,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       where: { id: bookingId },
       data: {
         status: 'reschedule_requested',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         rescheduleInfo: rescheduleInfo as any,
         updatedAt: new Date(),
       },
@@ -384,6 +390,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
 
   async findByProviderIdAndStatus(providerId: string, status: BookingStatus): Promise<Booking[]> {
     const bookings = await this.prisma.booking.findMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { providerId, status: status as any, isDeleted: false },
       include: {
         skill: { select: { title: true, durationHours: true } },
@@ -393,11 +400,13 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { createdAt: 'desc' },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
   async findByLearnerIdAndStatus(learnerId: string, status: BookingStatus): Promise<Booking[]> {
     const bookings = await this.prisma.booking.findMany({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       where: { learnerId, status: status as any, isDeleted: false },
       include: {
         skill: { select: { title: true, durationHours: true } },
@@ -407,6 +416,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { createdAt: 'desc' },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -444,6 +454,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         review: { select: { id: true } },
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -477,6 +488,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
       },
       orderBy: { preferredDate: 'asc' },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -522,6 +534,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         review: { select: { id: true } },
       },
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return bookings.map((b: any) => this.mapToDomain(b));
   }
 
@@ -567,6 +580,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         throw new NotFoundError('Booking not found');
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const previousStatus = booking.status as BookingStatus;
 
 
@@ -575,7 +589,9 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
 
 
       // 3. Update booking status with appropriate reason field
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const updateData: any = {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         status: status as any,
         updatedAt: new Date(),
       };
@@ -601,6 +617,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking> {
     return await this.rescheduleBooking(bookingId, rescheduleInfo);
   }
@@ -621,6 +638,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
         throw new NotFoundError('Booking or reschedule info not found');
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const rescheduleInfo = booking.rescheduleInfo as any;
 
       // 2. Calculate new start/end times (use provided or calculate from skill duration)
@@ -652,6 +670,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
           AND: [
             { startAt: { lt: newEndAt } },
             { endAt: { gt: newStartAt } }
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ] as any
         }
       });
@@ -755,6 +774,7 @@ export class BookingRepository extends BaseRepository<Booking> implements IBooki
     ]);
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: bookings.map((b: any) => this.mapToDomain(b)),
       total,
     };

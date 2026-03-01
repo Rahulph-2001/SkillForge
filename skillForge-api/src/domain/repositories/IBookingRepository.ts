@@ -1,4 +1,4 @@
-import { Booking, BookingStatus } from '../entities/Booking';
+import { type Booking, type BookingStatus } from '../entities/Booking';
 
 export interface IBookingRepository {
   // Read Operations
@@ -37,7 +37,7 @@ export interface IBookingRepository {
   delete(bookingId: string): Promise<void>;
 
   // Rescheduling Logic
-  updateWithReschedule(bookingId: string, rescheduleInfo: any): Promise<Booking>;
+  updateWithReschedule(bookingId: string, rescheduleInfo: Record<string, unknown>): Promise<Booking>;
   acceptReschedule(bookingId: string, newDate: string, newTime: string): Promise<Booking>;
   declineReschedule(bookingId: string, reason: string): Promise<Booking>;
 

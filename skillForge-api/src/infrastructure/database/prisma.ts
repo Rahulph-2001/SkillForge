@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 class PrismaService {
   private static instance: PrismaClient;
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   private constructor() {}
 
   public static getInstance(): PrismaClient {

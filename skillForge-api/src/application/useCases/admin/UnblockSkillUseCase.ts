@@ -1,7 +1,7 @@
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../infrastructure/di/types';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
-import { Skill } from '../../../domain/entities/Skill';
+import { Skill, SkillStatus } from '../../../domain/entities/Skill';
 import { NotFoundError, ValidationError } from '../../../domain/errors/AppError';
 import { IUnblockSkillUseCase } from './interfaces/IUnblockSkillUseCase';
 
@@ -9,7 +9,7 @@ import { IUnblockSkillUseCase } from './interfaces/IUnblockSkillUseCase';
 export class UnblockSkillUseCase implements IUnblockSkillUseCase {
   constructor(
     @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
-  ) {}
+  ) { }
 
   async execute(skillId: string, _adminId: string): Promise<void> {
     // Verify skill exists
@@ -37,7 +37,7 @@ export class UnblockSkillUseCase implements IUnblockSkillUseCase {
       tags: skillData.tags as string[],
       imageUrl: skillData.imageUrl as string | null,
       templateId: skillData.templateId as string | null,
-      status: skillData.status as any,
+      status: skillData.status as SkillStatus,
       verificationStatus: skillData.verificationStatus as string | null,
       mcqScore: skillData.mcqScore as number | null,
       mcqTotalQuestions: skillData.mcqTotalQuestions as number | null,

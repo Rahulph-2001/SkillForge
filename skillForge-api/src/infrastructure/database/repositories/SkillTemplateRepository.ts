@@ -47,7 +47,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     filters: { search?: string; category?: string; status?: string },
     pagination: { skip: number; take: number }
   ): Promise<{ templates: SkillTemplate[]; total: number }> {
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (filters.search) {
       where.title = { contains: filters.search, mode: 'insensitive' };
@@ -70,7 +70,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     ]);
 
     return {
-      templates: templates.map((t: any) => this.toDomain(t)),
+      templates: templates.map((t) => this.toDomain(t)),
       total,
     };
   }
@@ -80,7 +80,7 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
       where: { category, isActive: true },
       orderBy: { createdAt: 'desc' },
     });
-    return templates.map((t: any) => this.toDomain(t));
+    return templates.map((t) => this.toDomain(t));
   }
 
   async findByStatus(status: string): Promise<SkillTemplate[]> {
@@ -88,11 +88,11 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
       where: { status, isActive: true },
       orderBy: { createdAt: 'desc' },
     });
-    return templates.map((t: any) => this.toDomain(t));
+    return templates.map((t) => this.toDomain(t));
   }
 
   async update(id: string, updates: Partial<SkillTemplate>): Promise<SkillTemplate> {
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
 
     if (updates.title) updateData.title = updates.title;
     if (updates.category) updateData.category = updates.category;
@@ -140,22 +140,22 @@ export class SkillTemplateRepository extends BaseRepository<SkillTemplate> imple
     return this.toDomain(updated);
   }
 
-  private toDomain(data: any): SkillTemplate {
+  private toDomain(data: Record<string, unknown>): SkillTemplate {
     return new SkillTemplate({
-      id: data.id,
-      title: data.title,
-      category: data.category,
-      description: data.description,
-      creditsMin: data.creditsMin,
-      creditsMax: data.creditsMax,
-      mcqCount: data.mcqCount,
-      passRange: data.passRange,
-      levels: data.levels || [],
-      tags: data.tags || [],
-      status: data.status,
-      isActive: data.isActive,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
+      id: data.id as string | undefined,
+      title: data.title as string,
+      category: data.category as string,
+      description: data.description as string,
+      creditsMin: data.creditsMin as number,
+      creditsMax: data.creditsMax as number,
+      mcqCount: data.mcqCount as number,
+      passRange: data.passRange as number,
+      levels: (data.levels || []) as string[],
+      tags: (data.tags || []) as string[],
+      status: data.status as string,
+      isActive: data.isActive as boolean | undefined,
+      createdAt: data.createdAt as Date | undefined,
+      updatedAt: data.updatedAt as Date | undefined,
     });
   }
 }

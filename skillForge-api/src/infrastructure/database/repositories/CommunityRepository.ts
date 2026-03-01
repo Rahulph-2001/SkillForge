@@ -1,5 +1,6 @@
 // skillForge-api/src/infrastructure/database/repositories/CommunityRepository.ts
 import { injectable, inject } from 'inversify';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient, Prisma } from '@prisma/client';
 import { TYPES } from '../../di/types';
 import { ICommunityRepository } from '../../../domain/repositories/ICommunityRepository';
@@ -55,7 +56,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       where,
       orderBy: { createdAt: 'desc' },
     });
-    return communities.map((c: any) => Community.fromDatabaseRow(c));
+    return communities.map((c) => Community.fromDatabaseRow(c));
   }
 
   public async findAllWithPagination(
@@ -63,7 +64,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
     pagination: { skip: number; take: number }
   ): Promise<{ communities: Community[]; total: number }> {
     // Build dynamic where clause
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // Search filter - case-insensitive search on name and description
     if (filters.search && filters.search.trim()) {
@@ -95,7 +96,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
     ]);
 
     return {
-      communities: communities.map((c: any) => Community.fromDatabaseRow(c)),
+      communities: communities.map((c) => Community.fromDatabaseRow(c)),
       total,
     };
   }
@@ -106,7 +107,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       where: { adminId },
       orderBy: { createdAt: 'desc' },
     });
-    return communities.map((c: any) => Community.fromDatabaseRow(c));
+    return communities.map((c) => Community.fromDatabaseRow(c));
   }
 
   public async update(id: string, community: Community): Promise<Community> {
@@ -182,7 +183,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       orderBy: { joinedAt: 'desc' },
     });
 
-    return members.map((m: any) => {
+    return members.map((m) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -324,7 +325,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
       orderBy: { joinedAt: 'desc' },
     });
 
-    return members.map((m: any) => {
+    return members.map((m) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -379,7 +380,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
         },
       },
     });
-    return expiredMembers.map((m: any) => {
+    return expiredMembers.map((m) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {
@@ -418,7 +419,7 @@ export class CommunityRepository extends BaseRepository<Community> implements IC
         },
       },
     });
-    return expiredMembers.map((m: any) => {
+    return expiredMembers.map((m) => {
       const member = CommunityMember.fromDatabaseRow(m);
       const memberAny = member as unknown as Record<string, unknown>;
       if (m.user) {

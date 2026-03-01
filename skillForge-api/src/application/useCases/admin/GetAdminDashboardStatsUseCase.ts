@@ -10,7 +10,6 @@ import { IGetAdminDashboardStatsUseCase } from './interfaces/IGetAdminDashboardS
 import { AdminDashboardStatsResponseDTO } from '../../dto/admin/GetAdminDashboardStatsDTO';
 import { UserRole } from '../../../domain/enums/UserRole';
 import { BookingStatus } from '../../../domain/entities/Booking';
-import { PaymentPurpose } from '../../../domain/enums/PaymentEnums';
 import { UserWalletTransactionType, UserWalletTransactionStatus } from '../../../domain/entities/UserWalletTransaction';
 import { ForbiddenError } from '../../../domain/errors/AppError';
 import { ERROR_MESSAGES } from '../../../config/messages';

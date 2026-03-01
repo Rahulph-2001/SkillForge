@@ -1,4 +1,4 @@
-import { StartMCQImportRequestDTO, StartMCQImportResponseDTO } from '../../../dto/mcq/StartMCQImportDTO';
+import { type StartMCQImportRequestDTO, type StartMCQImportResponseDTO } from '../../../dto/mcq/StartMCQImportDTO';
 
 export interface IStartMCQImportUseCase {
   execute(request: StartMCQImportRequestDTO, file: Express.Multer.File): Promise<StartMCQImportResponseDTO>;

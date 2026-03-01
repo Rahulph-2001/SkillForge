@@ -1,4 +1,4 @@
-import { CommunityMemberResponseDTO } from '../../../dto/community/CommunityMemberResponseDTO';
+import { type CommunityMemberResponseDTO } from '../../../dto/community/CommunityMemberResponseDTO';
 
 export interface IGetCommunityMembersUseCase {
   execute(communityId: string, limit: number, offset: number): Promise<{

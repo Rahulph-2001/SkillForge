@@ -55,10 +55,11 @@ export class VideoCallRoomRepository implements IVideoCallRoomRepository {
     return this.toDomain(data);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private toDomain(data: any): VideoCallRoom {
     return new VideoCallRoom({
-      id: data.id, roomCode: data.roomCode, bookingId: data.bookingId, interviewId: data.interviewId,
-      hostId: data.hostId, status: data.status, createdAt: data.createdAt, endedAt: data.endedAt
+      id: (data.id || data._id) as string, roomCode: data.roomCode as string | undefined, bookingId: data.bookingId as string, interviewId: data.interviewId as string | undefined,
+      hostId: data.hostId as string, status: data.status, createdAt: data.createdAt as Date | undefined, endedAt: data.endedAt as Date | undefined
     });
   }
 }

@@ -6,6 +6,7 @@ import { ICommunityMapper } from '../../mappers/interfaces/ICommunityMapper';
 import { Community } from '../../../domain/entities/Community';
 import { ForbiddenError, NotFoundError } from '../../../domain/errors/AppError';
 import { UserRole } from '../../../domain/enums/UserRole';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ERROR_MESSAGES } from '../../../config/messages';
 import { IUpdateCommunityByAdminUseCase } from './interfaces/IUpdateCommunityByAdminUseCase';
 import { UpdateCommunityByAdminRequestDTO } from '../../dto/admin/UpdateCommunityByAdminRequestDTO';

@@ -4,6 +4,7 @@ import { Database } from '../Database';
 import { BaseRepository } from '../BaseRepository';
 import { ISystemSettingsRepository } from '../../../domain/repositories/ISystemSettingsRepository';
 import { SystemSettings } from '../../../domain/entities/SystemSettings';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { PrismaClient } from '@prisma/client';
 
 @injectable()
@@ -36,14 +37,14 @@ export class SystemSettingsRepository extends BaseRepository<SystemSettings> imp
         return this.toDomain(data);
     }
 
-    private toDomain(data: any): SystemSettings {
+    private toDomain(data: Record<string, unknown>): SystemSettings {
         return new SystemSettings({
-            id: data.id,
-            key: data.key,
-            value: data.value,
-            description: data.description,
-            updatedBy: data.updatedBy,
-            updatedAt: data.updatedAt,
+            id: data.id as string | undefined,
+            key: data.key as string,
+            value: data.value as string,
+            description: data.description as string | null | undefined,
+            updatedBy: data.updatedBy as string | null | undefined,
+            updatedAt: data.updatedAt as Date | undefined,
         });
     }
 }

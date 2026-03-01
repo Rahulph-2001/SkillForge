@@ -10,6 +10,7 @@ import { IRequestProjectCompletionUseCase } from '../../application/useCases/pro
 import { IReviewProjectCompletionUseCase } from '../../application/useCases/project/interfaces/IReviewProjectCompletionUseCase';
 import { IResponseBuilder } from '../../shared/http/IResponseBuilder';
 import { HttpStatusCode } from '../../domain/enums/HttpStatusCode';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CreateProjectRequestDTO } from '../../application/dto/project/CreateProjectDTO';
 import { ListProjectsRequestDTO } from '../../application/dto/project/ListProjectsDTO';
 import { SUCCESS_MESSAGES } from '../../config/messages';
@@ -61,7 +62,8 @@ export class ProjectController {
   public getMyProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       // Assuming Request is extended with user, usually req.user.id
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const projects = await this.getMyProjectsUseCase.execute(userId);
 
       const response = this.responseBuilder.success(projects, SUCCESS_MESSAGES.PROJECT.MY_PROJECTS_FETCHED, HttpStatusCode.OK);
@@ -73,7 +75,8 @@ export class ProjectController {
 
   public getContributingProjects = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       const projects = await this.getContributingProjectsUseCase.execute(userId);
 
       const response = this.responseBuilder.success(projects, SUCCESS_MESSAGES.PROJECT.CONTRIBUTING_FETCHED, HttpStatusCode.OK);
@@ -86,7 +89,8 @@ export class ProjectController {
   public requestCompletion = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = req.params;
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
       await this.requestProjectCompletionUseCase.execute(id, userId);
 
       const response = this.responseBuilder.success(null, SUCCESS_MESSAGES.PROJECT.COMPLETION_REQUESTED, HttpStatusCode.OK);
@@ -100,7 +104,8 @@ export class ProjectController {
     try {
       const { id } = req.params;
       const { decision, reason } = req.body;
-      const userId = (req as any).user.id;
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const userId = req.user!.id;
 
       await this.reviewProjectCompletionUseCase.execute(id, userId, decision, reason);
 

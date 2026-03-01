@@ -55,6 +55,7 @@ export class MCQImportJob {
   }
 
   // Getters
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   get id(): string { return this.props.id!; }
   get templateId(): string { return this.props.templateId; }
   get adminId(): string { return this.props.adminId; }
@@ -66,7 +67,9 @@ export class MCQImportJob {
   get successfulRows(): number { return this.props.successfulRows; }
   get failedRows(): number { return this.props.failedRows; }
   get errorFilePath(): string | null { return this.props.errorFilePath; }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   get createdAt(): Date { return this.props.createdAt!; }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   get updatedAt(): Date { return this.props.updatedAt!; }
   get startedAt(): Date | null { return this.props.startedAt || null; }
   get completedAt(): Date | null { return this.props.completedAt || null; }

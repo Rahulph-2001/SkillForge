@@ -35,7 +35,7 @@ export class SkillDetailsMapper implements ISkillDetailsMapper {
           reason: bd.label
         })),
         timezone: availability.timezone,
-        bookedSlots: (availability as any).bookedSlots
+        bookedSlots: (availability as unknown as { bookedSlots: { id: string; title: string; date: string; startTime: string; endTime: string; }[] }).bookedSlots
       } : null
     };
   }

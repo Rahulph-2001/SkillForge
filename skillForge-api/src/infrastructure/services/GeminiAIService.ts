@@ -7,7 +7,7 @@ import { env } from '../../config/env';
 @injectable()
 export class GeminiAIService implements IGeminiAIService {
   private readonly genAI: GoogleGenerativeAI;
-  private readonly model: any;
+  private readonly model: ReturnType<GoogleGenerativeAI['getGenerativeModel']>;
 
   constructor() {
     this.genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
@@ -23,7 +23,7 @@ export class GeminiAIService implements IGeminiAIService {
 
     try {
       const result = await this.model.generateContent(prompt);
-      const response = await result.response;
+      const response = result.response;
       const text = response.text();
 
       // Parse JSON from response
@@ -111,7 +111,7 @@ Respond ONLY with the JSON, no additional text.`;
   }
 
   private validateAnalysis(analysis: MatchAnalysis): MatchAnalysis {
-    const clamp = (value: number, min: number, max: number) => 
+    const clamp = (value: number, min: number, max: number) =>
       Math.min(max, Math.max(min, value));
 
     return {

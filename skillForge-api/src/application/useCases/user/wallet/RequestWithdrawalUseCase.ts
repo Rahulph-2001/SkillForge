@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../../infrastructure/di/types';
 import { IRequestWithdrawalUseCase } from './interfaces/IRequestWithdrawalUseCase';
@@ -24,7 +25,7 @@ export class RequestWithdrawalUseCase implements IRequestWithdrawalUseCase {
     async execute(userId: string, data: RequestWithdrawalDTO): Promise<WithdrawalRequestResponseDTO> {
         const validatedData = RequestWithdrawalSchema.parse(data);
 
-        return await this.db.getClient().$transaction(async (tx: any) => {
+        return await this.db.getClient().$transaction(async (tx: Prisma.TransactionClient) => {
             // 1. Fetch User
             const user = await tx.user.findUnique({ where: { id: userId } });
             if (!user) {
@@ -82,7 +83,7 @@ export class RequestWithdrawalUseCase implements IRequestWithdrawalUseCase {
                 amount: Number(withdrawalRequest.amount),
                 currency: withdrawalRequest.currency,
                 status: withdrawalRequest.status as WithdrawalStatus,
-                bankDetails: withdrawalRequest.bankDetails as Record<string, any>,
+                bankDetails: withdrawalRequest.bankDetails as Record<string, unknown>,
                 createdAt: withdrawalRequest.createdAt,
                 updatedAt: withdrawalRequest.updatedAt,
             }));

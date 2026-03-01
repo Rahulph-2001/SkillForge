@@ -1,5 +1,5 @@
-import { CommunityMessage } from '../../../../domain/entities/CommunityMessage';
-import { SendMessageDTO } from '../../../dto/community/SendMessageDTO';
+import { type CommunityMessage } from '../../../../domain/entities/CommunityMessage';
+import { type SendMessageDTO } from '../../../dto/community/SendMessageDTO';
 
 export interface ISendMessageUseCase {
   execute(

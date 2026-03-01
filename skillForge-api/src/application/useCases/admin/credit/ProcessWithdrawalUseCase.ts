@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { injectable, inject } from 'inversify';
 import { TYPES } from '../../../../infrastructure/di/types';
 import { IProcessWithdrawalUseCase } from './interfaces/IProcessWithdrawalUseCase';
@@ -21,7 +22,7 @@ export class ProcessWithdrawalUseCase implements IProcessWithdrawalUseCase {
     async execute(adminId: string, data: ProcessWithdrawalDTO): Promise<WithdrawalRequestResponseDTO> {
         const validatedData = ProcessWithdrawalSchema.parse(data);
 
-        return await this.db.getClient().$transaction(async (tx: any) => {
+        return await this.db.getClient().$transaction(async (tx: Prisma.TransactionClient) => {
             // 1. Fetch Request
             const requestData = await tx.withdrawalRequest.findUnique({ where: { id: validatedData.withdrawalId } });
             if (!requestData) {
@@ -38,7 +39,7 @@ export class ProcessWithdrawalUseCase implements IProcessWithdrawalUseCase {
                 amount: Number(requestData.amount),
                 currency: requestData.currency,
                 status: requestData.status as WithdrawalStatus,
-                bankDetails: requestData.bankDetails as Record<string, any>,
+                bankDetails: requestData.bankDetails as Record<string, unknown>,
                 adminNote: requestData.adminNote,
                 processedBy: requestData.processedBy,
                 processedAt: requestData.processedAt,
@@ -152,7 +153,7 @@ export class ProcessWithdrawalUseCase implements IProcessWithdrawalUseCase {
                 amount: Number(updatedRequestData.amount),
                 currency: updatedRequestData.currency,
                 status: updatedRequestData.status as WithdrawalStatus,
-                bankDetails: updatedRequestData.bankDetails as Record<string, any>,
+                bankDetails: updatedRequestData.bankDetails as Record<string, unknown>,
                 adminNote: updatedRequestData.adminNote,
                 processedBy: updatedRequestData.processedBy,
                 processedAt: updatedRequestData.processedAt,

@@ -2,6 +2,7 @@ export const createImage = (url: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
     const image = new Image();
     image.addEventListener('load', () => resolve(image));
+    // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
     image.addEventListener('error', (error) => reject(error));
     image.setAttribute('crossOrigin', 'anonymous');
     image.src = url;

@@ -217,17 +217,17 @@ export class UsageRecord {
     /**
      * Create from plain object (for repository)
      */
-    public static fromJSON(data: any): UsageRecord {
+    public static fromJSON(data: Record<string, unknown>): UsageRecord {
         return new UsageRecord({
-            id: data.id,
-            subscriptionId: data.subscriptionId || data.subscription_id,
-            featureKey: data.featureKey || data.feature_key,
-            usageCount: data.usageCount !== undefined ? data.usageCount : data.usage_count !== undefined ? data.usage_count : 0,
-            limitValue: data.limitValue || data.limit_value,
-            periodStart: data.periodStart ? new Date(data.periodStart) : new Date(data.period_start),
-            periodEnd: data.periodEnd ? new Date(data.periodEnd) : new Date(data.period_end),
-            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(data.created_at),
-            updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(data.updated_at),
+            id: data['id'] as string,
+            subscriptionId: (data['subscriptionId'] || data['subscription_id']) as string,
+            featureKey: (data['featureKey'] || data['feature_key']) as string,
+            usageCount: data['usageCount'] !== undefined ? data['usageCount'] as number : data['usage_count'] !== undefined ? data['usage_count'] as number : 0,
+            limitValue: (data['limitValue'] || data['limit_value']) as number | undefined,
+            periodStart: data['periodStart'] ? new Date(data['periodStart'] as string) : new Date(data['period_start'] as string),
+            periodEnd: data['periodEnd'] ? new Date(data['periodEnd'] as string) : new Date(data['period_end'] as string),
+            createdAt: data['createdAt'] ? new Date(data['createdAt'] as string) : new Date(data['created_at'] as string),
+            updatedAt: data['updatedAt'] ? new Date(data['updatedAt'] as string) : new Date(data['updated_at'] as string),
         });
     }
 }

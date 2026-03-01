@@ -80,6 +80,7 @@ export class AdminGetProjectDetailsUseCase implements IAdminGetProjectDetailsUse
     }
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       id: project.id!,
       title: project.title,
       description: project.description,

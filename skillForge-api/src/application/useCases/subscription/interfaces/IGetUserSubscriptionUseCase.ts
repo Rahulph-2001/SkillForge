@@ -1,4 +1,4 @@
-import { UserSubscriptionResponseDTO } from '../../../dto/subscription/UserSubscriptionResponseDTO';
+import { type UserSubscriptionResponseDTO } from '../../../dto/subscription/UserSubscriptionResponseDTO';
 
 export interface IGetUserSubscriptionUseCase {
     execute(userId: string): Promise<UserSubscriptionResponseDTO>;

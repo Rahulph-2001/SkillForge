@@ -1,3 +1,3 @@
-import { PendingSkillDTO } from './PendingSkillDTO';
+import { type PendingSkillDTO } from './PendingSkillDTO';
 
 export type ListPendingSkillsResponseDTO = PendingSkillDTO[];

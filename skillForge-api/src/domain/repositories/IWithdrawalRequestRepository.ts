@@ -1,4 +1,4 @@
-import { WithdrawalRequest, WithdrawalStatus } from '../entities/WithdrawalRequest';
+import { type WithdrawalRequest, type WithdrawalStatus } from '../entities/WithdrawalRequest';
 
 export interface WithdrawalRequestFilters {
     status?: WithdrawalStatus;

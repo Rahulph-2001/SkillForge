@@ -1,4 +1,4 @@
-import { AdminProjectDetailsDTO } from '../../../dto/admin/AdminProjectDetailsDTO';
+import { type AdminProjectDetailsDTO } from '../../../dto/admin/AdminProjectDetailsDTO';
 
 export interface IAdminGetProjectDetailsUseCase {
   execute(projectId: string): Promise<AdminProjectDetailsDTO>;

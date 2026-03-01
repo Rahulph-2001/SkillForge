@@ -4,13 +4,14 @@ import { IBookingRepository } from '../../../domain/repositories/IBookingReposit
 import { IBookingMapper } from '../../mappers/interfaces/IBookingMapper';
 import { IGetUpcomingSessionsUseCase } from './interfaces/IGetUpcomingSessionsUseCase';
 import { BookingResponseDTO } from '../../dto/booking/BookingResponseDTO';
+import { BookingStatus } from '../../../domain/entities/Booking';
 
 @injectable()
 export class GetUpcomingSessionsUseCase implements IGetUpcomingSessionsUseCase {
   constructor(
     @inject(TYPES.IBookingRepository) private readonly bookingRepository: IBookingRepository,
     @inject(TYPES.IBookingMapper) private readonly bookingMapper: IBookingMapper
-  ) {}
+  ) { }
 
   async execute(userId: string): Promise<BookingResponseDTO[]> {
     const bookings = await this.bookingRepository.findByLearnerId(userId);
@@ -19,7 +20,7 @@ export class GetUpcomingSessionsUseCase implements IGetUpcomingSessionsUseCase {
 
     const upcoming = bookings.filter(b => {
       const date = new Date(b.preferredDate);
-      return date >= today && (b.status === 'pending' || b.status === 'confirmed');
+      return date >= today && ((b.status) === BookingStatus.PENDING || (b.status) === BookingStatus.CONFIRMED);
     });
 
     upcoming.sort((a, b) => new Date(a.preferredDate).getTime() - new Date(b.preferredDate).getTime());

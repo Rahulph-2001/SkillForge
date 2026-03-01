@@ -50,9 +50,9 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
       ipAddress: data.ip_address as string | undefined,
       userAgent: data.user_agent as string | undefined
     };
-    
+
     const otp = new OTPToken(otpData);
-    
+
     // Use type assertion to access private properties for mapping
     const otpAny = otp as unknown as {
       _isVerified: boolean;
@@ -62,22 +62,22 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
       _expiresAt: Date;
       _verifiedAt: Date | null;
     };
-    
+
     otpAny._isVerified = (data.is_verified as boolean) || false;
     otpAny._attempts = (data.attempts as number) || 0;
     otpAny._maxAttempts = (data.max_attempts as number) || parseInt(process.env.OTP_MAX_ATTEMPTS || '3', 10);
     otpAny._createdAt = data.created_at ? new Date(data.created_at as string) : new Date();
     otpAny._expiresAt = data.expires_at ? new Date(data.expires_at as string) : new Date();
     otpAny._verifiedAt = data.verified_at ? new Date(data.verified_at as string) : null;
-    
+
     return otp;
   }
 
   async save(otp: OTPToken): Promise<OTPToken> {
     const redis = this.redisService.getClient();
-    const otpData = otp.toJSON() as Record<string, unknown>;
-    const expiresAt = otpData.expires_at instanceof Date 
-      ? otpData.expires_at 
+    const otpData = otp.toJSON();
+    const expiresAt = otpData.expires_at instanceof Date
+      ? otpData.expires_at
       : new Date(otpData.expires_at as string);
     const createdAt = otpData.created_at instanceof Date
       ? otpData.created_at
@@ -88,10 +88,10 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
       ...otpData,
       created_at: createdAt.toISOString(),
       expires_at: expiresAt.toISOString(),
-      verified_at: otpData.verified_at 
-        ? (otpData.verified_at instanceof Date 
-            ? otpData.verified_at.toISOString() 
-            : new Date(otpData.verified_at as string).toISOString())
+      verified_at: otpData.verified_at
+        ? (otpData.verified_at instanceof Date
+          ? otpData.verified_at.toISOString()
+          : new Date(otpData.verified_at as string).toISOString())
         : null,
       otp_type: otpData.otp_type
     });
@@ -125,7 +125,7 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
     if (!otpId) {
       return null;
     }
-    const otpKey = this.getOTPKey(otpId as string);
+    const otpKey = this.getOTPKey(otpId);
     const data = await redis.get(otpKey);
     if (!data) {
       return null;
@@ -136,7 +136,7 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
 
   async update(otp: OTPToken): Promise<OTPToken> {
     const redis = this.redisService.getClient();
-    const otpData = otp.toJSON() as Record<string, unknown>;
+    const otpData = otp.toJSON();
     const otpKey = this.getOTPKey(otpData.id as string);
     const ttl = await redis.ttl(otpKey);
     if (ttl <= 0) {
@@ -152,10 +152,10 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
       ...otpData,
       created_at: createdAt.toISOString(),
       expires_at: expiresAt.toISOString(),
-      verified_at: otpData.verified_at 
-        ? (otpData.verified_at instanceof Date 
-            ? otpData.verified_at.toISOString() 
-            : new Date(otpData.verified_at as string).toISOString())
+      verified_at: otpData.verified_at
+        ? (otpData.verified_at instanceof Date
+          ? otpData.verified_at.toISOString()
+          : new Date(otpData.verified_at as string).toISOString())
         : null
     });
     const userTypeKey = this.getKey(otpData.user_id as string, otpData.otp_type as 'email' | 'password_reset');
@@ -170,19 +170,20 @@ export class RedisOTPRepository extends BaseRedisRepository implements IOTPRepos
 
   async deleteExpiredTokens(): Promise<void> {
     console.log('Redis TTL: Relying on Redis TTL for automatic key deletion');
+    await Promise.resolve();
   }
 
   async deleteById(id: string): Promise<void> {
     const redis = this.redisService.getClient();
     const otpKey = this.getOTPKey(id);
-    
+
     // Get OTP data first to delete all related keys
     const data = await redis.get(otpKey);
     if (data) {
       const otpData = JSON.parse(data) as Record<string, unknown>;
       const userTypeKey = this.getKey(otpData.user_id as string, otpData.otp_type as 'email' | 'password_reset');
       const codeKey = this.getCodeKey(otpData.otp_code as string, otpData.contact_info as string);
-      
+
       // Delete all keys related to this OTP
       const pipeline = redis.pipeline();
       pipeline.del(otpKey);

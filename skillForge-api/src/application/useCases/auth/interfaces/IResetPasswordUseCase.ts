@@ -1,4 +1,4 @@
-import { ResetPasswordDTO } from '../../../dto/auth/ResetPasswordDTO';
+import { type ResetPasswordDTO } from '../../../dto/auth/ResetPasswordDTO';
 
 export interface ResetPasswordResponseDTO {
   success: boolean;

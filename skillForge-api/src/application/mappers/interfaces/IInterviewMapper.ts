@@ -1,5 +1,5 @@
-import { Interview } from '../../../domain/entities/Interview';
-import { InterviewResponseDTO } from '../../dto/interview/ScheduleInterviewDTO';
+import { type Interview } from '../../../domain/entities/Interview';
+import { type InterviewResponseDTO } from '../../dto/interview/ScheduleInterviewDTO';
 
 export interface IInterviewMapper {
     toResponseDTO(interview: Interview): InterviewResponseDTO;

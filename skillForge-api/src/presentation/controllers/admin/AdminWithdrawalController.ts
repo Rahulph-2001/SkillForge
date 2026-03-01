@@ -24,20 +24,21 @@ export class AdminWithdrawalController {
             const filters: WithdrawalRequestFilters = {
                 page,
                 limit,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 status: status && status !== 'ALL' ? (status as any) : undefined
             };
 
             const result = await this.getWithdrawalRequestsUseCase.execute(filters);
             res.status(200).json({ success: true, data: result });
-        } catch (error: any) {
-            res.status(500).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            res.status(500).json({ success: false, message: (error as Error).message });
         }
     };
 
     processWithdrawal = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
-            const adminId = req.user!.id; // Assumes auth middleware populates user
+            const adminId = req.user?.id as string; // Assumes auth middleware populates user
             const { action, transactionId, adminNote } = req.body;
 
             const result = await this.processWithdrawalUseCase.execute(adminId, {
@@ -48,13 +49,13 @@ export class AdminWithdrawalController {
             });
 
             res.status(200).json({ success: true, data: result, message: 'Withdrawal processed successfully' });
-        } catch (error: any) {
-            if (error.name === 'NotFoundError') {
-                res.status(404).json({ success: false, message: error.message });
-            } else if (error.name === 'ValidationError') {
-                res.status(400).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            if ((error as Error).name === 'NotFoundError') {
+                res.status(404).json({ success: false, message: (error as Error).message });
+            } else if ((error as Error).name === 'ValidationError') {
+                res.status(400).json({ success: false, message: (error as Error).message });
             } else {
-                res.status(500).json({ success: false, message: error.message });
+                res.status(500).json({ success: false, message: (error as Error).message });
             }
         }
     };
@@ -62,11 +63,11 @@ export class AdminWithdrawalController {
     setConversionRate = async (req: Request, res: Response): Promise<void> => {
         try {
             const dto: SetRedemptionSettingsDTO = req.body;
-            const adminId = req.user!.id;
+            const adminId = req.user?.id as string;
             await this.updateRedemptionSettingsUseCase.execute(adminId, dto);
             res.status(200).json({ success: true, message: 'Redemption settings updated successfully' });
-        } catch (error: any) {
-            res.status(500).json({ success: false, message: error.message });
+        } catch (error: unknown) {
+            res.status(500).json({ success: false, message: (error as Error).message });
         }
     };
 }

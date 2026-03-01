@@ -21,7 +21,7 @@ export class GetRoomInfoUseCase implements IGetRoomInfoUseCase {
     if (!room) throw new NotFoundError('Room not found');
 
     const participants = await this.presenceService.getParticipants(roomId);
-    const iceServers: any[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
+    const iceServers: { urls: string | string[]; username?: string; credential?: string }[] = [{ urls: env.STUN_SERVER || 'stun:stun.l.google.com:19302' }];
     if (env.TURN_SERVER) {
       iceServers.push({
         urls: [

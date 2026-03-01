@@ -29,10 +29,11 @@ export interface CreateCreditPackageData {
     isActive: boolean;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateCreditPackageData extends Partial<CreateCreditPackageData> { }
 
 export interface PaginatedTransactionsResponse {
-    transactions: any[];
+    transactions: Record<string, unknown>[];
     total: number;
     page: number;
     limit: number;
@@ -73,14 +74,14 @@ export const adminCreditService = {
         return response.data.data;
     },
 
-    getWithdrawalRequests: async (page: number = 1, limit: number = 10, status?: string): Promise<any> => {
+    getWithdrawalRequests: async (page: number = 1, limit: number = 10, status?: string): Promise<PaginatedResponse<Record<string, unknown>>> => {
         const response = await api.get('/credit-redemption/admin/withdrawals', {
             params: { page, limit, status }
         });
         return response.data.data;
     },
 
-    processWithdrawal: async (requestId: string, action: 'APPROVE' | 'REJECT', adminNote?: string): Promise<any> => {
+    processWithdrawal: async (requestId: string, action: 'APPROVE' | 'REJECT', adminNote?: string): Promise<Record<string, unknown>> => {
         const response = await api.post('/credit-redemption/admin/withdrawals/process', {
             requestId,
             action,
@@ -89,7 +90,7 @@ export const adminCreditService = {
         return response.data.data;
     },
 
-    updateRedemptionSettings: async (settings: { rate: number; minCredits?: number; maxCredits?: number }): Promise<any> => {
+    updateRedemptionSettings: async (settings: { rate: number; minCredits?: number; maxCredits?: number }): Promise<Record<string, unknown>> => {
         const response = await api.put('/credit-redemption/admin/conversion-rate', settings);
         return response.data.data;
     },

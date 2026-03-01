@@ -1,5 +1,5 @@
 
-import { CreateProjectMessageRequestDTO, ProjectMessageResponseDTO } from '../../../dto/project/ProjectMessageDTO';
+import { type CreateProjectMessageRequestDTO, type ProjectMessageResponseDTO } from '../../../dto/project/ProjectMessageDTO';
 
 export interface ISendProjectMessageUseCase {
     execute(currentUserId: string, data: CreateProjectMessageRequestDTO): Promise<ProjectMessageResponseDTO>;

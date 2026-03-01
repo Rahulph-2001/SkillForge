@@ -49,6 +49,7 @@ export class DateTimeUtils {
             }
 
             return { valid: true };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             return {
                 valid: false,
@@ -105,6 +106,7 @@ export class DateTimeUtils {
             }
 
             return { valid: true };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             return {
                 valid: false,

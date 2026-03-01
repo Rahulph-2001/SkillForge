@@ -1,5 +1,5 @@
-import { UpdateCreditPackageDTO } from "../../../dto/credit/CreditPackageDTO";
-import { CreditPackageResponseDTO } from "../../../dto/credit/CreditPackageDTO";
+import { type UpdateCreditPackageDTO } from "../../../dto/credit/CreditPackageDTO";
+import { type CreditPackageResponseDTO } from "../../../dto/credit/CreditPackageDTO";
 
 export interface IUpdateCreditPackageUseCase {
     execute(id: string, dto: UpdateCreditPackageDTO): Promise<CreditPackageResponseDTO>;

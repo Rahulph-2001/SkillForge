@@ -10,14 +10,16 @@ export enum UserRole {
 /**
  * Helper function to check if user is admin
  */
-export const isAdmin = (role: string): boolean => {
-  return role === UserRole.ADMIN;
+export const isAdmin = (role: string | UserRole): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+  return role === UserRole.ADMIN || role === 'admin';
 };
 
 /**
  * Helper function to check if user is regular user
  */
-export const isUser = (role: string): boolean => {
-  return role === UserRole.USER;
+export const isUser = (role: string | UserRole): boolean => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+  return role === UserRole.USER || role === 'user';
 };
 

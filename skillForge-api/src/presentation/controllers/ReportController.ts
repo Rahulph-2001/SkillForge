@@ -13,9 +13,11 @@ export class ReportController {
 
     async createReport(req: Request, res: Response, next: NextFunction) {
         try {
-            const { type, category, description, targetUserId, projectId } = req.body;
+            const { type, category, description } = req.body;
+            const targetUserId = req.body.targetUserId as string | undefined;
+            const projectId = req.body.projectId as string | undefined;
             // Assuming user ID comes from auth middleware in req.user.id
-            const reporterId = (req as any).user?.id;
+            const reporterId = req.user?.id as string;
 
             const reportData: CreateReportDTO = {
                 reporterId,

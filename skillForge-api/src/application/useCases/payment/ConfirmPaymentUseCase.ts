@@ -50,7 +50,7 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
             if (updatedPayment.purpose === PaymentPurpose.SUBSCRIPTION) {
                 try {
                     // Extract metadata from payment intent (Stripe)
-                    const metadata = paymentIntent.metadata || {};
+                    const metadata = (paymentIntent.metadata as Record<string, string>) || {};
                     const planId = metadata.planId;
                     const planName = metadata.planName;
                     const billingInterval = metadata.billingInterval as BillingInterval;
@@ -79,11 +79,13 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
                                     userId: updatedPayment.userId
                                 }
                             });
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
                         } catch (walletError) {
                             // Log error but don't throw - payment confirmation should still succeed
                             // TODO: Add proper logging service for error tracking
                         }
                     }
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 } catch (error) {
                     // Failed to assign subscription after payment
                     // We don't throw here to avoid failing the payment confirmation response
@@ -97,10 +99,11 @@ export class ConfirmPaymentUseCase implements IConfirmPaymentUseCase {
             if (updatedPayment.purpose === PaymentPurpose.PROJECT_POST) {
                 try {
                     // Extract project data from payment metadata
-                    const metadata = paymentIntent.metadata || {};
+                    const metadata = (paymentIntent.metadata as Record<string, string>) || {};
                     let tags: string[] = [];
                     if (metadata.tags) {
                         try {
+                            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                             tags = JSON.parse(metadata.tags);
                         } catch {
                             tags = [];

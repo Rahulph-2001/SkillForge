@@ -68,6 +68,7 @@ export class CancelSubscriptionUseCase implements ICancelSubscriptionUseCase {
                 }
                 await this.userRepository.update(user);
             }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             // Failed to sync user entity - non-critical, subscription still cancelled
             // TODO: Add proper logging service for error tracking

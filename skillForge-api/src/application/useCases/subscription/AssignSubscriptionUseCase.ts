@@ -147,6 +147,7 @@ export class AssignSubscriptionUseCase implements IAssignSubscriptionUseCase {
                 await this.userRepository.update(user);
                 // User entity subscription data synced
             }
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
             // Failed to sync user entity - non-critical, subscription still created
             // TODO: Add proper logging service for error tracking

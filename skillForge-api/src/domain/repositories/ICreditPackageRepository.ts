@@ -1,4 +1,4 @@
-import { CreditPackage } from '../entities/CreditPackage';
+import { type CreditPackage } from '../entities/CreditPackage';
 
 export interface ICreditPackageRepository {
   create(entity: CreditPackage): Promise<CreditPackage>;

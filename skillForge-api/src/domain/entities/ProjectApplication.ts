@@ -38,6 +38,32 @@ export interface MatchAnalysis {
   confidence: number;
 }
 
+export interface ProjectApplicationProjectData {
+  id: string;
+  title: string;
+  status?: string;
+  budget?: number;
+  duration?: string;
+  [key: string]: unknown;
+}
+
+export interface ProjectApplicationApplicantData {
+  id: string;
+  name: string;
+  email?: string;
+  avatarUrl?: string;
+  [key: string]: unknown;
+}
+
+export interface ProjectApplicationInterviewData {
+  id: string;
+  status?: string;
+  scheduledAt?: Date;
+  durationMinutes?: number;
+  videoCallRoom?: { id: string };
+  [key: string]: unknown;
+}
+
 export interface CreateProjectApplicationProps {
   id?: string;
   projectId: string;
@@ -51,9 +77,9 @@ export interface CreateProjectApplicationProps {
   createdAt?: Date;
   updatedAt?: Date;
   reviewedAt?: Date | null;
-  project?: any;
-  applicant?: any;
-  interviews?: any[];
+  project?: ProjectApplicationProjectData;
+  applicant?: ProjectApplicationApplicantData;
+  interviews?: ProjectApplicationInterviewData[];
 }
 
 export class ProjectApplication {
@@ -70,9 +96,9 @@ export class ProjectApplication {
   private _updatedAt: Date;
   private _reviewedAt: Date | null;
 
-  public readonly project?: any;
-  public readonly applicant?: any;
-  public readonly interviews?: any[]; // Keep as any[] to avoid circular dependency for now
+  public readonly project?: ProjectApplicationProjectData;
+  public readonly applicant?: ProjectApplicationApplicantData;
+  public readonly interviews?: ProjectApplicationInterviewData[];
 
   constructor(props: CreateProjectApplicationProps) {
     this._id = props.id || uuidv4();
@@ -170,7 +196,7 @@ export class ProjectApplication {
     return this._status === ProjectApplicationStatus.PENDING;
   }
 
-  public toJSON(): any {
+  public toJSON(): Record<string, unknown> {
     return {
       id: this.id,
       projectId: this.projectId,

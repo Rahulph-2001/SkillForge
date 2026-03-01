@@ -46,7 +46,6 @@ import { CreditRoutes } from './routes/credit/CreditRoutes';
 import { CreditRedemptionRoutes } from './routes/credit/CreditRedemptionRoutes';
 import { AdminWithdrawalRoutes } from './routes/admin/AdminWithdrawalRoutes';
 import { httpLogger } from '../config/httpLogger';
-import { logger } from '../config/logger';
 
 
 
@@ -124,7 +123,7 @@ export class App {
         this.app.use(express.urlencoded({ extended: true, limit: '10kb' }));
         this.app.use(httpLogger)
         this.app.use(cookieParser());
-        
+
 
 
         this.app.use(this.passportService.initializePassport());

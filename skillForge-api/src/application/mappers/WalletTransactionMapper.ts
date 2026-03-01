@@ -15,7 +15,7 @@ export class WalletTransactionMapper implements IWalletTransactionMapper {
     return {
       id: data.id,
       transactionId: `wt-${data.id.substring(0, 8)}`,
-      userId: data.metadata?.userId || data.adminId,
+      userId: (data.metadata?.userId || data.adminId) as string,
       userName: userName || 'System',
       userEmail: userEmail || 'system@skillforge.com',
       type: data.type,
@@ -33,7 +33,7 @@ export class WalletTransactionMapper implements IWalletTransactionMapper {
   ): WalletTransactionDTO[] {
     return transactions.map(transaction => {
       const data = transaction.toJSON();
-      const userId = data.metadata?.userId;
+      const userId = data.metadata?.userId as string | undefined;
       const user = userId ? userMap.get(userId) : undefined;
 
       return this.toDTO(transaction, user?.name, user?.email);

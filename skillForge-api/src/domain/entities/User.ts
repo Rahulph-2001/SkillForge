@@ -495,23 +495,23 @@ export class User {
     userAny._earnedCredits = (row.earned_credits as number) || (row.earnedCredits as number) || 0;
     userAny._bonusCredits = (row.bonus_credits as number) || (row.bonusCredits as number) || 0;
     userAny._purchasedCredits = (row.purchased_credits as number) || (row.purchasedCredits as number) || 0;
-    userAny._walletBalance = parseFloat(String(row.wallet_balance || row.walletBalance || 0));
+    userAny._walletBalance = parseFloat(String(Number(row['wallet_balance'] ?? row['walletBalance'] ?? 0)));
     userAny._skillsOffered = (row.skills_offered as string[]) || (row.skillsOffered as string[]) || [];
     userAny._skillsLearning = (row.skills_learning as string[]) || (row.skillsLearning as string[]) || [];
-    userAny._rating = parseFloat(String(row.rating || 0));
+    userAny._rating = parseFloat(String(Number(row['rating'] ?? 0)));
     userAny._reviewCount = (row.review_count as number) || (row.reviewCount as number) || 0;
     userAny._totalSessionsCompleted = (row.total_sessions_completed as number) || (row.totalSessionsCompleted as number) || 0;
     userAny._memberSince = (row.member_since as Date || row.memberSince as Date) || new Date();
     userAny._verification = row.verification as VerificationData;
     // Normalize antiFraud data - handle both snake_case (from DB) and camelCase formats
-    const antiFraudData = (row.anti_fraud as any) || (row.antiFraud as any);
+    const antiFraudData = (row.anti_fraud as Record<string, unknown>) || (row.antiFraud as Record<string, unknown>);
     if (antiFraudData) {
       // Convert flagged_for_review (snake_case) to flaggedForReview (camelCase) if present
       if (antiFraudData.flagged_for_review !== undefined && antiFraudData.flaggedForReview === undefined) {
         antiFraudData.flaggedForReview = antiFraudData.flagged_for_review;
         delete antiFraudData.flagged_for_review;
       }
-      userAny._antiFraud = antiFraudData as AntiFraudData;
+      userAny._antiFraud = antiFraudData as unknown as AntiFraudData;
     } else {
       // Default antiFraud data if not present
       userAny._antiFraud = {

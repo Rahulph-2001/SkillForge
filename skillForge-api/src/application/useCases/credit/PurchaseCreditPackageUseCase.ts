@@ -39,7 +39,7 @@ export class PurchaseCreditPackageUseCase implements IPurchaseCreditPackageUseCa
         const finalPrice = creditPackage.price * discountMultiplier;
 
         const userJson = user.toJSON();
-        const currentWalletBalance = Number((userJson.walletBalance as any) || 0);
+        const currentWalletBalance = Number((userJson).walletBalance || 0);
         const currentCredits = (userJson.credits as number) || 0;
 
         // For credit purchases, amount is NEGATIVE (money spent)

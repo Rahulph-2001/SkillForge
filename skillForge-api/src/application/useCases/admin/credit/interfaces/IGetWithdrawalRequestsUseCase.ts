@@ -1,4 +1,5 @@
-import { PaginatedWithdrawalRequests, WithdrawalRequestFilters } from '../../../../../domain/repositories/IWithdrawalRequestRepository';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { PaginatedWithdrawalRequests, type WithdrawalRequestFilters } from '../../../../../domain/repositories/IWithdrawalRequestRepository';
 
 export interface IGetWithdrawalRequestsUseCase {
     execute(filters: WithdrawalRequestFilters): Promise<PaginatedWithdrawalRequestsResponseDTO>;
@@ -8,7 +9,7 @@ export interface IGetWithdrawalRequestsUseCase {
     // I should probably map it to WithdrawalRequestResponseDTO[].
 }
 
-import { WithdrawalRequestResponseDTO } from '../../../../dto/credit/WithdrawalRequestResponseDTO';
+import { type WithdrawalRequestResponseDTO } from '../../../../dto/credit/WithdrawalRequestResponseDTO';
 
 export interface PaginatedWithdrawalRequestsResponseDTO {
     requests: WithdrawalRequestResponseDTO[];

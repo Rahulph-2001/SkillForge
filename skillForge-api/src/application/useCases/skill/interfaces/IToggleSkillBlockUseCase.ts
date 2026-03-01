@@ -1,4 +1,4 @@
-import { Skill } from '../../../../domain/entities/Skill';
+import { type Skill } from '../../../../domain/entities/Skill';
 
 export interface IToggleSkillBlockUseCase {
     execute(skillId: string, providerId: string): Promise<Skill>;

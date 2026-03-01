@@ -1,5 +1,5 @@
-import { Community } from '../../../../domain/entities/Community';
-import { UpdateCommunityDTO } from '../../../dto/community/UpdateCommunityDTO';
+import { type Community } from '../../../../domain/entities/Community';
+import { type UpdateCommunityDTO } from '../../../dto/community/UpdateCommunityDTO';
 
 export interface IUpdateCommunityUseCase {
   execute(

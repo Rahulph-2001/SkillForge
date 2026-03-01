@@ -1,4 +1,4 @@
-import { UnblockCommunityRequestDTO } from '../../../dto/admin/UnblockCommunityRequestDTO';
+import { type UnblockCommunityRequestDTO } from '../../../dto/admin/UnblockCommunityRequestDTO';
 
 /**
  * Interface for Unblock Community Use Case (Admin)

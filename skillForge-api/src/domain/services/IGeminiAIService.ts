@@ -1,4 +1,4 @@
-import { MatchAnalysis } from '../entities/ProjectApplication';
+import { type MatchAnalysis } from '../entities/ProjectApplication';
 
 export interface ApplicantProfile {
   id: string;

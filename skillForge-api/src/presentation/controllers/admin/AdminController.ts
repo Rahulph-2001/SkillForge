@@ -28,7 +28,7 @@ export class AdminController {
 
   async listUsers(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 20;
       const search = req.query.search as string | undefined;
@@ -55,7 +55,7 @@ export class AdminController {
 
   async suspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       // Support both 'targetUserId' and 'userId' from frontend
       const { targetUserId, userId, reason, duration } = req.body;
       const userToSuspend = targetUserId || userId;
@@ -77,7 +77,7 @@ export class AdminController {
 
   async unsuspendUser(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       // Support both 'targetUserId' and 'userId' from frontend
       const { targetUserId, userId } = req.body;
       const userToUnsuspend = targetUserId || userId;
@@ -98,7 +98,7 @@ export class AdminController {
 
   async listCommunities(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 20;
       const search = req.query.search as string | undefined;
@@ -126,7 +126,7 @@ export class AdminController {
 
   async updateCommunity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const communityId = req.params.id;
       const { name, description, category, creditsCost, creditsPeriod, isActive } = req.body;
 
@@ -153,7 +153,7 @@ export class AdminController {
 
   async blockCommunity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const communityId = req.params.id;
       const { reason } = req.body;
 
@@ -175,7 +175,7 @@ export class AdminController {
 
   async unblockCommunity(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const communityId = req.params.id;
       const { reason } = req.body;
 
@@ -201,7 +201,7 @@ export class AdminController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const adminUserId = req.user!.userId;
+      const adminUserId = req.user?.userId as string;
       const result = await this.getDashboardStatsUseCase.execute(adminUserId);
 
       const response = this.responseBuilder.success(

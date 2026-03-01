@@ -16,18 +16,8 @@ export class AdminCancelSessionUseCase implements IAdminCancelSessionUseCase {
     ) { }
 
     async execute(bookingId: string, reason: string): Promise<BookingResponseDTO> {
-        // Admin cancellation - process refund via escrow
-        try {
-            await this.escrowRepository.refundCredits(bookingId);
-        } catch (error) {
-            // Log error or handle specific cases (e.g. if already refunded or no escrow)
-            // For now, allow proceeding to update status if refund fails (e.g. legacy booking)
-            // But usually we should propagate unless we want to force status update.
-            // Given "Strict Architecture", we should probably propagate error if escrow is expected.
-            // However, to be robust for legacy, we can check error type.
-            // Let's assume we propagate for now to ensure data consistency.
-            throw error;
-        }
+        // Process refund via escrow before cancelling (will throw if fails)
+        await this.escrowRepository.refundCredits(bookingId);
 
         const booking = await this.bookingRepository.updateStatus(bookingId, BookingStatus.CANCELLED, reason);
         return this.bookingMapper.toDTO(booking);

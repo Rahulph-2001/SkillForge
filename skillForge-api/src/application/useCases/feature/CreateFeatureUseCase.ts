@@ -6,6 +6,7 @@ import { Feature } from '../../../domain/entities/Feature';
 import { CreateFeatureDTO } from '../../dto/feature/CreateFeatureDTO';
 import { FeatureResponseDTO } from '../../dto/feature/FeatureResponseDTO';
 import { v4 as uuidv4 } from 'uuid';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { ConflictError, NotFoundError } from '../../../domain/errors/AppError';
 import { ICreateFeatureUseCase } from './interfaces/ICreateFeatureUseCase';
 

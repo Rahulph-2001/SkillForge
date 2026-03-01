@@ -1,5 +1,5 @@
-import { UserResponseDTO } from '../../../../application/dto/auth/UserResponseDTO';
-import { AuthSuccessResponse } from '../AuthResponseMapper';
+import { type UserResponseDTO } from '../../../../application/dto/auth/UserResponseDTO';
+import { type AuthSuccessResponse } from '../AuthResponseMapper';
 
 export interface IAuthResponseMapper {
   mapRegisterResponse(email: string, expiresAt: string, message: string): AuthSuccessResponse<{ email: string; expiresAt: string; message: string }>;

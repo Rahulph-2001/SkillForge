@@ -27,6 +27,7 @@ export class JWTService implements IJWTService {
     try {
       const decoded = jwt.verify(token, this.secret) as { userId: string; email: string; role: string };
       return decoded;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return null;
     }
@@ -42,6 +43,7 @@ export class JWTService implements IJWTService {
     try {
       const decoded = jwt.verify(token, this.refreshSecret) as { userId: string; email: string };
       return decoded;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       return null;
     }

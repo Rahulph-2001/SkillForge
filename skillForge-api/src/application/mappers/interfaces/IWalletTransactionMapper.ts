@@ -1,5 +1,5 @@
-import { WalletTransaction } from '../../../domain/entities/WalletTransaction';
-import { WalletTransactionDTO } from '../../dto/admin/GetWalletTransactionsDTO';
+import { type WalletTransaction } from '../../../domain/entities/WalletTransaction';
+import { type WalletTransactionDTO } from '../../dto/admin/GetWalletTransactionsDTO';
 
 export interface IWalletTransactionMapper {
     toDTO(

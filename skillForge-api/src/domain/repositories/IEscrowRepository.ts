@@ -1,4 +1,4 @@
-import { EscrowTransaction } from '../entities/EscrowTransaction';
+import { type EscrowTransaction } from '../entities/EscrowTransaction';
 
 export interface IEscrowRepository {
   findByBookingId(bookingId: string): Promise<EscrowTransaction | null>;

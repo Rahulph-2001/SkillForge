@@ -24,7 +24,7 @@ export class AdminReportController {
 
             const paginationParams = this.paginationService.validatePaginationParams(page, limit);
             const result = await this.listReportsUseCase.execute(paginationParams.page, paginationParams.limit, { status, type, projectId });
-            
+
             const paginationResult = this.paginationService.createResult(
                 result.reports,
                 result.total,
@@ -42,7 +42,7 @@ export class AdminReportController {
         try {
             const { reportId } = req.params;
             const { action, resolution } = req.body;
-            const adminId = (req as any).user?.id;
+            const adminId = req.user?.id as string;
 
             await this.manageReportUseCase.execute(reportId, adminId, action, resolution);
             res.json({ message: "Report updated successfully" });

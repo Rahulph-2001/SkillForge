@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { container } from '../../../infrastructure/di/container';
 import { TYPES } from '../../../infrastructure/di/types';
-import { ProjectController } from '../../controllers/ProjectController';
+import { type ProjectController } from '../../controllers/ProjectController';
 import { asyncHandler } from '../../../shared/utils/asyncHandler';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { ENDPOINTS } from '../../../config/routes';

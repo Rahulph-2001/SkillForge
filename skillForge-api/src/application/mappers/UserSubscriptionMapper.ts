@@ -14,8 +14,8 @@ export class UserSubscriptionMapper implements IUserSubscriptionMapper {
     toDTO(
         subscription: UserSubscription,
         planName?: string,
-        usageRecords: any[] = [],
-        planLimits: any = {}
+        usageRecords: { featureKey: string; usageCount: number; limitValue?: number | null }[] = [],
+        planLimits: Record<string, number> = {}
     ): UserSubscriptionResponseDTO {
         const now = new Date();
         const daysUntilRenewal = Math.ceil(
@@ -38,7 +38,7 @@ export class UserSubscriptionMapper implements IUserSubscriptionMapper {
                 usageStats.push({
                     feature: record.featureKey,
                     used: record.usageCount,
-                    limit: record.limitValue
+                    limit: record.limitValue as number
                 });
             }
         });

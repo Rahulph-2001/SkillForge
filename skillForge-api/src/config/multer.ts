@@ -58,14 +58,15 @@
 
 
 
-import multer, { Options, FileFilterCallback } from 'multer';
-import { Request } from 'express';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import multer, { Options, type FileFilterCallback } from 'multer';
+import { type Request } from 'express';
 import { ValidationError } from '../domain/errors/AppError';
 
 
 const storage = multer.memoryStorage();
 
-const communityFileFilter = (_req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+const communityFileFilter = (_req: Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowedMimeTypes = [
     // Images
     'image/jpeg',

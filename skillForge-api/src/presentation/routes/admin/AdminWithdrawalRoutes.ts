@@ -19,6 +19,7 @@ export class AdminWithdrawalRoutes {
     private initializeRoutes() {
         // All routes require Admin authentication
         this.router.use(authenticate);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         this.router.use(authorize(['admin']) as any);
 
         this.router.get('/', this.withdrawalController.getWithdrawals);

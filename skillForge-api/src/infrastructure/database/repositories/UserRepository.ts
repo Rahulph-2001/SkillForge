@@ -23,7 +23,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
         id: { in: ids }
       }
     });
-    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+    return users.map((u) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
   }
 
   async findByEmail(email: string): Promise<User | null> {
@@ -32,7 +32,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
         email: email.toLowerCase(),
         isDeleted: false
       }
-    } as any);
+    } as Record<string, unknown>);
     if (!user) {
       return null;
     }
@@ -41,7 +41,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
   async findAll(): Promise<User[]> {
     const users = await super.findAll();
-    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+    return users.map((u) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
   }
 
   async findAllAdmins(): Promise<User[]> {
@@ -51,7 +51,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
         isDeleted: false
       }
     });
-    return users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
+    return users.map((u) => User.fromDatabaseRow(u as unknown as Record<string, unknown>));
   }
 
   private mapUserDataToPrisma(user: User): Record<string, unknown> {
@@ -95,7 +95,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
 
   async save(user: User): Promise<User> {
     const data = this.mapUserDataToPrisma(user);
-    const savedUser = await this.create(data as any);
+    const savedUser = await this.create(data as unknown as Record<string, unknown>);
     return User.fromDatabaseRow(savedUser as unknown as Record<string, unknown>);
   }
 
@@ -105,6 +105,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
       Object.entries(data).filter(([key]) => key !== 'id' && key !== 'created_at')
     );
     // Directly use Prisma client to avoid signature conflict with base class
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const modelClient = (this.prisma as any)[this.model];
     const updatedUser = await modelClient.update({
       where: { id: user.id },
@@ -117,7 +118,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     filters: { search?: string; role?: 'user' | 'admin'; isActive?: boolean },
     pagination: { skip: number; take: number }
   ): Promise<{ users: User[]; total: number }> {
-    const where: any = { isDeleted: false };
+    const where: Record<string, unknown> = { isDeleted: false };
 
     if (filters.search) {
       where.OR = [
@@ -143,7 +144,7 @@ export class UserRepository extends BaseRepository<User> implements IUserReposit
     ]);
 
     return {
-      users: users.map((u: any) => User.fromDatabaseRow(u as unknown as Record<string, unknown>)),
+      users: users.map((u) => User.fromDatabaseRow(u as unknown as Record<string, unknown>)),
       total,
     };
   }

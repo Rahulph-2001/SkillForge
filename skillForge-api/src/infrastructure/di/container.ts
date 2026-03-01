@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Container } from 'inversify';
 import { container } from './di';
 import { TYPES } from './types';

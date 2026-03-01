@@ -24,6 +24,7 @@ const MessageResponseDTOSchemaBase = z.object({
 /**
  * Zod schema for Message Response DTO
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const MessageResponseDTOSchema: z.ZodType<any> = MessageResponseDTOSchemaBase.extend({
   replyTo: z.lazy(() => MessageResponseDTOSchema).optional(),
 });
