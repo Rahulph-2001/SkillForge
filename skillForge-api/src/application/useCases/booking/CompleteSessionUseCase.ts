@@ -14,6 +14,8 @@ import { INotificationService } from '../../../domain/services/INotificationServ
 import { NotificationType } from '../../../domain/entities/Notification';
 import { IUserRepository } from '../../../domain/repositories/IUserRepository';
 import { ISkillRepository } from '../../../domain/repositories/ISkillRepository';
+import { ISocketNotificationService } from '../../../domain/services/ISocketNotificationService';
+import { IVideoCallRoomRepository } from '../../../domain/repositories/IVideoCallRoomRepository';
 
 @injectable()
 export class CompleteSessionUseCase implements ICompleteSessionUseCase {
@@ -24,7 +26,9 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
         @inject(TYPES.Database) private readonly database: Database,
         @inject(TYPES.INotificationService) private readonly notificationService: INotificationService,
         @inject(TYPES.IUserRepository) private readonly userRepository: IUserRepository,
-        @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository
+        @inject(TYPES.ISkillRepository) private readonly skillRepository: ISkillRepository,
+        @inject(TYPES.ISocketNotificationService) private readonly socketNotificationService: ISocketNotificationService,
+        @inject(TYPES.IVideoCallRoomRepository) private readonly videoCallRoomRepository: IVideoCallRoomRepository
     ) { }
 
     async execute(request: CompleteSessionRequestDTO): Promise<BookingResponseDTO> {
@@ -107,9 +111,17 @@ export class CompleteSessionUseCase implements ICompleteSessionUseCase {
             data: { bookingId: booking.id, creditsEarned: booking.sessionCost },
         });
 
+        // CRITICAL: End the video call for ALL participants
+        // Look up the video room linked to this booking and broadcast termination
+        const videoRoom = await this.videoCallRoomRepository.findByBookingId(bookingId);
+        if (videoRoom && videoRoom.status !== 'ended') {
+            await this.videoCallRoomRepository.updateStatus(videoRoom.id, 'ended', new Date());
+            this.socketNotificationService.notifyRoomEnded(videoRoom.id);
+        }
+
         // Fetch the updated booking for response
         const updatedBooking = await this.bookingRepository.findById(bookingId);
-         
+
         return this.bookingMapper.toDTO(updatedBooking!);
     }
 }
