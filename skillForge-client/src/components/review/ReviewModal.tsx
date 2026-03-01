@@ -3,6 +3,7 @@ import { Star, Send } from 'lucide-react';
 import { videoCallService } from '../../services/videoCallService';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface ReviewModalProps {
     bookingId: string;
@@ -37,8 +38,9 @@ export default function ReviewModal({ bookingId, onSubmitted }: ReviewModalProps
             toast.success('Review submitted successfully!');
             onSubmitted();
             navigate('/dashboard/user/sessions'); // Redirect to sessions or home
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to submit review');
+        } catch (error: unknown) {
+            const message = getErrorMessage(error, 'Failed to submit review');
+            toast.error(message);
         } finally {
             setIsSubmitting(false);
         }

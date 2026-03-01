@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Bell, Check, CheckCheck, Calendar, MessageSquare, CreditCard, Users, Briefcase, Shield, Video, Star, Trash2 } from 'lucide-react';
-import notificationService, { Notification, NotificationType } from '@/services/notificationService';
+import notificationService, { type Notification, NotificationType } from '@/services/notificationService';
 import { formatDistanceToNow } from 'date-fns';
 
 const AdminNotificationsPage = () => {
@@ -33,7 +33,7 @@ const AdminNotificationsPage = () => {
     }, [page, activeTab]);
 
     useEffect(() => {
-        fetchNotifications();
+        void fetchNotifications();
     }, [fetchNotifications]);
 
     const handleMarkAsRead = async (notificationId: string) => {

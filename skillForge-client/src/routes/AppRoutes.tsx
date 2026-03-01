@@ -52,6 +52,7 @@ import WalletPage from '../pages/user/WalletPage';
 import CreditManagementPage from '../pages/user/CreditManagementPage';
 import NotificationsPage from '@/pages/user/NotificationsPage';
 import AdminNotificationsPage from '../pages/admin/AdminNotificationsPage';
+import { ROUTES } from "@/constants/routes";
 
 const AppRoutes = () => {
 
@@ -59,108 +60,108 @@ const AppRoutes = () => {
         <Routes>
             {/* Public & User Routes wrapped in MainLayout */}
             <Route element={<MainLayout />}>
-                <Route path="/" element={<LandingPage />} />
+                <Route path={ROUTES.HOME} element={<LandingPage />} />
                 <Route
-                    path="/home"
+                    path={ROUTES.LANDING}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <HomePage />
                         </ProtectedRoute>
                     }
                 />
-                <Route path="/plans" element={<SubscriptionPlansPage />} />
+                <Route path={ROUTES.PLANS} element={<SubscriptionPlansPage />} />
                 <Route
-                    path="/explore"
+                    path={ROUTES.EXPLORE}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <BrowseSkillsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/skills/:skillId"
+                    path={ROUTES.SKILL_DETAILS(':skillId')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <SkillDetailPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/provider/:providerId"
+                    path={ROUTES.PROVIDER_PROFILE(':providerId')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ProviderProfilePage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/my-skills"
+                    path={ROUTES.MY_SKILLS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <SkillsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/profile"
+                    path={ROUTES.PROFILE}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <UserProfilePage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/sessions"
+                    path={ROUTES.SESSIONS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <SessionManagementPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/session-management"
+                    path={ROUTES.SESSION_MANAGEMENT}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <SessionManagementPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects"
+                    path={ROUTES.PROJECTS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ProjectsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects/create"
+                    path={ROUTES.PROJECT_CREATE}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <CreateProjectPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/communities"
+                    path={ROUTES.COMMUNITIES}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <CommunitiesPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/communities/:id"
+                    path={ROUTES.COMMUNITY_DETAILS(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <CommunityDetailsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/communities/:id/settings"
+                    path={ROUTES.COMMUNITY_SETTINGS(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
 
                             <CommunityDetailsPage />
                         </ProtectedRoute>
@@ -169,114 +170,114 @@ const AppRoutes = () => {
 
                 {/* Project Routes */}
                 <Route
-                    path="/projects"
+                    path={ROUTES.PROJECTS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ProjectsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects/create"
+                    path={ROUTES.PROJECT_CREATE}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <CreateProjectPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects/:id"
+                    path={ROUTES.PROJECT_DETAILS(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ProjectDetailsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects/:id/applications"
+                    path={ROUTES.PROJECT_APPLICATIONS(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ManageApplicationsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/projects/:id/manage"
+                    path={ROUTES.PROJECT_MANAGE(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <ManageApplicationsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/provider/availability"
+                    path={ROUTES.PROVIDER_AVAILABILITY}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <AvailabilitySettingsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/profile/edit"
+                    path={ROUTES.PROFILE_EDIT}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <EditProfilePage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/mcq-test/:skillId"
+                    path={ROUTES.MCQ_TEST(':skillId')}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <MCQTestPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/dashboard"
+                    path={ROUTES.DASHBOARD}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <div>Dashboard Page</div>
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/my-applications"
+                    path={ROUTES.MY_APPLICATIONS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <MyApplicationsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/my-projects"
+                    path={ROUTES.MY_PROJECTS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <MyProjectsDashboardPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/wallet"
+                    path={ROUTES.WALLET}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <WalletPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/credits"
+                    path={ROUTES.CREDITS}
                     element={
-                        <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                        <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                             <CreditManagementPage />
                         </ProtectedRoute>
                     }
                 />
             </Route>
             <Route
-                path="/notifications"
+                path={ROUTES.NOTIFICATIONS}
                 element={
-                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                    <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                         <NotificationsPage />
                     </ProtectedRoute>
                 }
@@ -285,129 +286,129 @@ const AppRoutes = () => {
             {/* Admin Routes wrapped in AdminLayout */}
             <Route element={<AdminLayout />}>
                 <Route
-                    path="/admin/dashboard"
+                    path={ROUTES.ADMIN.DASHBOARD}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminDashboard />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/users"
+                    path={ROUTES.ADMIN.USERS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <UserManagement />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/subscriptions"
+                    path={ROUTES.ADMIN.SUBSCRIPTIONS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <SubscriptionManagement />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/feature-management"
+                    path={ROUTES.ADMIN.FEATURES}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <FeatureManagement />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/skill-templates"
+                    path={ROUTES.ADMIN.SKILL_TEMPLATES}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <SkillTemplateListPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/skill-templates/new"
+                    path={ROUTES.ADMIN.SKILL_TEMPLATE_CREATE}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <SkillTemplateCreatePage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/skill-templates/:id/edit"
+                    path={ROUTES.ADMIN.SKILL_TEMPLATE_EDIT(':id')}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <SkillTemplateCreatePage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/skills"
+                    path={ROUTES.ADMIN.SKILLS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminSkillVerificationPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/wallet"
+                    path={ROUTES.ADMIN.WALLET}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminWalletManagement />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/communities"
+                    path={ROUTES.ADMIN.COMMUNITIES}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminCommunitiesPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/sessions"
+                    path={ROUTES.ADMIN.SESSIONS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminSessionManagementPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/projects"
+                    path={ROUTES.ADMIN.PROJECTS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminProjectsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/reports"
+                    path={ROUTES.ADMIN.REPORTS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminReportsPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/credits"
+                    path={ROUTES.ADMIN.CREDITS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminCreditManagementPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/withdrawals"
+                    path={ROUTES.ADMIN.WITHDRAWALS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminWithdrawalManagementPage />
                         </ProtectedRoute>
                     }
                 />
                 <Route
-                    path="/admin/notifications"
+                    path={ROUTES.ADMIN.NOTIFICATIONS}
                     element={
-                        <ProtectedRoute allowedRoles={['admin']} redirectTo="/admin/login" preventUserAccess={true}>
+                        <ProtectedRoute allowedRoles={['admin']} redirectTo={ROUTES.ADMIN.LOGIN} preventUserAccess={true}>
                             <AdminNotificationsPage />
                         </ProtectedRoute>
                     }
@@ -418,7 +419,7 @@ const AppRoutes = () => {
 
             {/* Auth Routes (No Layout) */}
             <Route
-                path="/signup"
+                path={ROUTES.SIGNUP}
                 element={
                     <GuestRoute>
                         <SignupPage />
@@ -426,48 +427,48 @@ const AppRoutes = () => {
                 }
             />
             <Route
-                path="/login"
+                path={ROUTES.LOGIN}
                 element={
                     <GuestRoute>
                         <LoginPage />
                     </GuestRoute>
                 }
             />
-            <Route path="/verify-otp" element={<OTPVerificationPage />} />
-            <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
+            <Route path={ROUTES.VERIFY_OTP} element={<OTPVerificationPage />} />
+            <Route path={ROUTES.AUTH_GOOGLE_CALLBACK} element={<GoogleCallbackPage />} />
             <Route
-                path="/forgot-password"
+                path={ROUTES.FORGOT_PASSWORD}
                 element={
                     <GuestRoute>
                         <ForgotPasswordPage />
                     </GuestRoute>
                 }
             />
-            <Route path="/verify-forgot-password-otp" element={<VerifyForgotPasswordOtpPage />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path={ROUTES.VERIFY_FORGOT_PASSWORD_OTP} element={<VerifyForgotPasswordOtpPage />} />
+            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
             <Route
-                path="/admin/login"
+                path={ROUTES.ADMIN.LOGIN}
                 element={
-                    <GuestRoute redirectTo="/admin/dashboard">
+                    <GuestRoute redirectTo={ROUTES.ADMIN.DASHBOARD}>
                         <AdminLoginPage />
                     </GuestRoute>
                 }
             />
-            <Route path="/welcome" element={<WelcomePage />} />
+            <Route path={ROUTES.WELCOME} element={<WelcomePage />} />
 
             {/* Video Call Route (No Layout - Full Screen) */}
             <Route
-                path="/session/:bookingId/call"
+                path={ROUTES.SESSION_CALL(':bookingId')}
                 element={
-                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                    <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                         <SessionVideoCallPage />
                     </ProtectedRoute>
                 }
             />
             <Route
-                path="/session/interview/:interviewId/call"
+                path={ROUTES.INTERVIEW_CALL(':interviewId')}
                 element={
-                    <ProtectedRoute allowedRoles={['user']} redirectTo="/login" preventAdminAccess={true}>
+                    <ProtectedRoute allowedRoles={['user']} redirectTo={ROUTES.LOGIN} preventAdminAccess={true}>
                         <InterviewVideoCallPage />
                     </ProtectedRoute>
                 }

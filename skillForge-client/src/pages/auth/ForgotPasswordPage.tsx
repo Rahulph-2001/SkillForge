@@ -3,6 +3,8 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { authService } from "../../services/authService"
 import { ErrorModal } from "../../components/common/Modal"
+import { getErrorMessage } from "../../utils/errorUtils"
+import { ROUTES } from "@/constants/routes";
 
 export default function ForgotPasswordPage() {
     const navigate = useNavigate()
@@ -35,10 +37,9 @@ export default function ForgotPasswordPage() {
                 localStorage.setItem('otpEmail', email)
             }
 
-            navigate('/verify-forgot-password-otp', { state: { email, expiresAt: response.data?.expiresAt } })
-        } catch (err: any) {
-            const errorMessage = err?.error || err?.message || 'Failed to send OTP'
-            setError(errorMessage)
+            navigate(ROUTES.VERIFY_FORGOT_PASSWORD_OTP, { state: { email, expiresAt: response.data?.expiresAt } })
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to send OTP')
             setShowErrorModal(true)
         } finally {
             setLoading(false)

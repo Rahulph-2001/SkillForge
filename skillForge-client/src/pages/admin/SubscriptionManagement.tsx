@@ -6,10 +6,11 @@ import PlanCard from '../../components/admin/PlanCard';
 import EditPlanModal from '../../components/admin/EditPlanModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
+import { getErrorMessage } from '../../utils/errorUtils';
 import subscriptionService, {
-  SubscriptionPlan,
-  SubscriptionStats,
-  SubscriptionFeature,
+  type SubscriptionPlan,
+  type SubscriptionStats,
+  type SubscriptionFeature,
 } from '../../services/subscriptionService';
 
 import Pagination from '../../components/common/pagination/Pagination';
@@ -36,7 +37,8 @@ const SubscriptionManagement: React.FC = () => {
 
   // Load data on component mount
   useEffect(() => {
-    loadData();
+    void loadData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit]);
 
 
@@ -54,9 +56,9 @@ const SubscriptionManagement: React.FC = () => {
       setTotalItems(plansResponse.total);
       setTotalPages(plansResponse.totalPages);
       setStats(statsResponse);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading subscription data:', err);
-      setError(err.message || 'Failed to load subscription data');
+      setError(getErrorMessage(err) || 'Failed to load subscription data');
     } finally {
       setLoading(false);
     }
@@ -98,9 +100,9 @@ const SubscriptionManagement: React.FC = () => {
       // Reload stats
       const statsResponse = await subscriptionService.getStats();
       setStats(statsResponse);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error deleting plan:', err);
-      setError(err.message || 'Failed to delete plan');
+      setError(getErrorMessage(err) || 'Failed to delete plan');
       setShowDeleteConfirm(false);
       setPlanToDelete(null);
     }
@@ -124,12 +126,16 @@ const SubscriptionManagement: React.FC = () => {
   ) => {
     try {
       const planData = {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         name: updatedPlan.name!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         price: updatedPlan.price!,
         projectPosts: updatedPlan.projectPosts ?? null,
         createCommunity: updatedPlan.createCommunity ?? null,
         features: updatedPlan.features,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         badge: updatedPlan.badge!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         color: updatedPlan.color!,
       };
 
@@ -157,9 +163,9 @@ const SubscriptionManagement: React.FC = () => {
       // Reload stats
       const statsResponse = await subscriptionService.getStats();
       setStats(statsResponse);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error saving plan:', err);
-      setError(err.message || 'Failed to save plan');
+      setError(getErrorMessage(err) || 'Failed to save plan');
       setShowEditModal(false);
       setSelectedPlan(null);
     }

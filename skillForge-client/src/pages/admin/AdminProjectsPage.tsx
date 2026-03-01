@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Search, FolderOpen, Play, CheckCircle, Clock, XCircle, DollarSign, RefreshCw, Eye, AlertTriangle, Ban } from 'lucide-react';
-import adminService, { AdminProject, AdminProjectStats, PendingPaymentRequest } from '../../services/adminService';
+import adminService, { type AdminProject, type AdminProjectStats, type PendingPaymentRequest } from '../../services/adminService';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
 import ErrorModal from '../../components/common/Modal/ErrorModal';
 import ProjectDetailsModal from '../../components/admin/ProjectDetailsModal';
 import Pagination from '../../components/common/pagination/Pagination';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 const AdminProjectsPage: React.FC = () => {
     const [projects, setProjects] = useState<AdminProject[]>([]);
@@ -52,8 +53,8 @@ const AdminProjectsPage: React.FC = () => {
     const [totalItems, setTotalItems] = useState(0);
 
     useEffect(() => {
-        fetchStats();
-        fetchPendingRequests();
+        void fetchStats();
+        void fetchPendingRequests();
     }, []);
 
     // Debounce search
@@ -66,7 +67,8 @@ const AdminProjectsPage: React.FC = () => {
     }, [searchQuery]);
 
     useEffect(() => {
-        fetchProjects();
+        void fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, debouncedSearch, statusFilter, isSuspendedFilter]);
 
     const fetchStats = async () => {
@@ -154,11 +156,11 @@ const AdminProjectsPage: React.FC = () => {
             setSuccessMessage(`${selectedRequest.type === 'RELEASE' ? 'Payment released' : 'Refund processed'} successfully!`);
             setShowSuccessModal(true);
             setShowApproveConfirm(false);
-            fetchStats();
-            fetchProjects();
-            fetchPendingRequests();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to process request');
+            void fetchStats();
+            void fetchProjects();
+            void fetchPendingRequests();
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error, 'Failed to process request'));
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -173,11 +175,11 @@ const AdminProjectsPage: React.FC = () => {
             setSuccessMessage('Payment request rejected');
             setShowSuccessModal(true);
             setShowRejectConfirm(false);
-            fetchStats();
-            fetchProjects();
-            fetchPendingRequests();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to reject request');
+            void fetchStats();
+            void fetchProjects();
+            void fetchPendingRequests();
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error, 'Failed to reject request'));
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -199,11 +201,11 @@ const AdminProjectsPage: React.FC = () => {
             setSuccessMessage('Refund rejected and payment released to contributor successfully!');
             setShowSuccessModal(true);
             setShowOverrideConfirm(false);
-            fetchStats();
-            fetchProjects();
-            fetchPendingRequests();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to process override');
+            void fetchStats();
+            void fetchProjects();
+            void fetchPendingRequests();
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error, 'Failed to process override'));
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -258,10 +260,10 @@ const AdminProjectsPage: React.FC = () => {
             setSuccessMessage(`Project suspended successfully${suspendWithRefund ? ' with refund' : ''}!`);
             setShowSuccessModal(true);
             setShowSuspendConfirm(false);
-            fetchStats();
-            fetchProjects();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to suspend project');
+            void fetchStats();
+            void fetchProjects();
+        } catch (error: unknown) {
+            setErrorMessage(getErrorMessage(error, 'Failed to suspend project'));
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);

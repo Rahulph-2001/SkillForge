@@ -7,6 +7,7 @@ import { logout } from '../../../store/slices/authSlice';
 import { toast } from 'react-hot-toast';
 import notificationService from '../../../services/notificationService';
 import { ThemeToggle } from '../ThemeToggle';
+import { ROUTES } from "@/constants/routes";
 
 export default function Navbar() {
     const { user } = useAppSelector((state) => state.auth);
@@ -27,9 +28,10 @@ export default function Navbar() {
                     console.error('Failed to fetch unread count:', error);
                 }
             };
-            fetchUnreadCount();
+            void fetchUnreadCount();
 
             // Refresh every 30 seconds
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             const interval = setInterval(fetchUnreadCount, 30000);
             return () => clearInterval(interval);
         }
@@ -48,7 +50,7 @@ export default function Navbar() {
         try {
             await dispatch(logout()).unwrap();
             toast.success('Logged out successfully');
-            navigate('/login');
+            navigate(ROUTES.LOGIN);
         } catch {
             toast.error('Logout failed');
         }
@@ -129,7 +131,7 @@ export default function Navbar() {
                             <ThemeToggle />
                         </div>
                         <button
-                            onClick={() => { setShowMobileMenu(false); handleLogout(); }}
+                            onClick={() => { setShowMobileMenu(false); void handleLogout(); }}
                             className="w-full flex items-center gap-2 px-4 py-3 text-destructive font-medium hover:bg-destructive/10 rounded-lg transition-colors"
                         >
                             <LogOut className="w-5 h-5" />
@@ -175,7 +177,7 @@ export default function Navbar() {
             <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
                     {/* Logo */}
-                    <Link to="/" className="flex items-center gap-2">
+                    <Link to={ROUTES.HOME} className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="text-primary-foreground font-bold text-sm">S</span>
                         </div>
@@ -185,11 +187,11 @@ export default function Navbar() {
                     {/* Desktop Right Side */}
                     <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
-                        <Link to="/login" className="text-muted-foreground font-medium hover:text-foreground transition-colors">
+                        <Link to={ROUTES.LOGIN} className="text-muted-foreground font-medium hover:text-foreground transition-colors">
                             Log In
                         </Link>
                         <Link
-                            to="/signup"
+                            to={ROUTES.SIGNUP}
                             className="bg-primary text-primary-foreground px-6 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
                         >
                             Get Started
@@ -220,7 +222,7 @@ export default function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
                 {/* Logo and navigation */}
                 <div className="flex items-center gap-8">
-                    <Link to="/home" className="flex items-center gap-2">
+                    <Link to={ROUTES.LANDING} className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                             <span className="text-primary-foreground font-bold text-sm">S</span>
                         </div>
@@ -244,7 +246,7 @@ export default function Navbar() {
 
                     {/* Subscription Plan Badge */}
                     <Link
-                        to="/plans"
+                        to={ROUTES.PLANS}
                         className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all border ${(user?.subscriptionPlan?.toLowerCase() || 'free') === 'free'
                             ? 'bg-secondary border-border hover:bg-secondary/80'
                             : 'bg-orange-50 dark:bg-orange-950/30 border-orange-200 dark:border-orange-800'
@@ -269,14 +271,14 @@ export default function Navbar() {
                     </Link>
 
                     <Link
-                        to="/credits"
+                        to={ROUTES.CREDITS}
                         className="hidden sm:flex items-center gap-1 bg-amber-50 dark:bg-amber-950/30 px-3 py-1.5 rounded-lg border border-amber-100 dark:border-amber-900 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
                     >
                         <span className="text-sm font-semibold text-amber-600 dark:text-amber-500">{user?.credits || 0}</span>
                         <span className="text-xs text-amber-600/80 dark:text-amber-500/80">credits</span>
                     </Link>
 
-                    <Link to="/notifications" className="relative p-2 hover:bg-muted rounded-lg transition-colors">
+                    <Link to={ROUTES.NOTIFICATIONS} className="relative p-2 hover:bg-muted rounded-lg transition-colors">
                         <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
                         {unreadNotificationCount > 0 && (
                             <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full px-1 border-2 border-background">
@@ -321,24 +323,24 @@ export default function Navbar() {
                                         <p className="text-sm font-semibold truncate">{user?.name || 'User'}</p>
                                         <p className="text-xs text-muted-foreground mt-1">{user?.credits || 0} credits available</p>
                                     </div>
-                                    <Link to="/profile" className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
+                                    <Link to={ROUTES.PROFILE} className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
                                         <User className="w-4 h-4" />
                                         <span className="text-sm">My Profile</span>
                                     </Link>
-                                    <Link to="/credits" className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
+                                    <Link to={ROUTES.CREDITS} className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
                                         <CreditCard className="w-4 h-4" />
                                         <span className="text-sm">Manage Credits</span>
                                     </Link>
-                                    <Link to="/sessions" className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
+                                    <Link to={ROUTES.SESSIONS} className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
                                         <div className="w-4 h-4 flex items-center justify-center font-bold text-xs border border-current rounded-sm px-px">S</div>
                                         <span className="text-sm">Sessions</span>
                                     </Link>
-                                    <Link to="/plans" className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
+                                    <Link to={ROUTES.PLANS} className="flex items-center gap-3 px-4 py-2.5 hover:bg-secondary transition-colors" onClick={() => setShowUserMenu(false)}>
                                         <div className="w-4 h-4 flex items-center justify-center font-bold text-xs">💎</div>
                                         <span className="text-sm">My Subscription</span>
                                     </Link>
                                     <div className="border-t border-border mt-2 pt-2">
-                                        <button onClick={() => { setShowUserMenu(false); handleLogout(); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-destructive/10 text-destructive w-full text-left transition-colors">
+                                        <button onClick={() => { setShowUserMenu(false); void handleLogout(); }} className="flex items-center gap-3 px-4 py-2.5 hover:bg-destructive/10 text-destructive w-full text-left transition-colors">
                                             <LogOut className="w-4 h-4" />
                                             <span className="text-sm font-medium">Logout</span>
                                         </button>

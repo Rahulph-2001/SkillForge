@@ -18,11 +18,13 @@ import {
     Calendar
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import projectService, { Project } from '../../services/projectService';
-import projectApplicationService, { ProjectApplication } from '../../services/projectApplicationService';
+import projectService, { type Project } from '../../services/projectService';
+import projectApplicationService, { type ProjectApplication, ProjectApplicationStatus } from '../../services/projectApplicationService';
 import { createReport } from '../../services/reportService';
 import { toast } from 'react-hot-toast';
 import ScheduleInterviewModal from '../../components/projects/ScheduleInterviewModal';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 // Tabs configuration
 const TABS = [
@@ -52,31 +54,36 @@ export default function MyProjectsDashboardPage() {
     };
 
     useEffect(() => {
-        fetchData();
+        void fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTab]);
 
     const fetchData = async () => {
         setIsLoading(true);
         try {
             switch (activeTab) {
-                case 'created':
+                case 'created': {
                     const created = await projectService.getMyProjects();
                     setCreatedProjects(created);
                     break;
-                case 'contributing':
+                }
+                case 'contributing': {
                     const contributing = await projectService.getContributingProjects();
                     setContributingProjects(contributing);
                     break;
-                case 'applications':
+                }
+                case 'applications': {
                     const applications = await projectApplicationService.getMyApplications();
                     setMyApplications(applications);
                     break;
-                case 'applicants':
+                }
+                case 'applicants': {
                     const applicants = await projectApplicationService.getReceivedApplications();
                     setReceivedApplications(applicants);
                     break;
+                }
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch data:', error);
             // toast.error('Failed to load data');
         } finally {
@@ -94,7 +101,7 @@ export default function MyProjectsDashboardPage() {
                         <p className="text-muted-foreground mt-1">Manage your projects and applications</p>
                     </div>
                     <button
-                        onClick={() => navigate('/projects/create')}
+                        onClick={() => navigate(ROUTES.PROJECT_CREATE)}
                         className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium transition-colors"
                     >
                         <Plus className="w-5 h-5" />
@@ -195,7 +202,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                 toast.success('Modifications requested from contributor');
             }
             window.location.reload();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error('Failed to submit review');
         }
@@ -216,7 +223,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
             setRejectionReason('');
             setSelectedProjectId(null);
             window.location.reload();
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error);
             toast.error('Failed to submit rejection');
         }
@@ -229,7 +236,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                 title="No projects created"
                 description="Create your first project to start hiring freelancers."
                 actionLabel="Create Project"
-                onAction={() => navigate('/projects/create')}
+                onAction={() => navigate(ROUTES.PROJECT_CREATE)}
             />
         );
     }
@@ -244,7 +251,7 @@ function CreatedProjectsTab({ projects }: { projects: Project[] }) {
                             <div className="flex items-center gap-3 mb-2">
                                 <h3
                                     className="text-lg font-bold text-primary hover:underline cursor-pointer"
-                                    onClick={() => navigate(`/projects/${project.id}`)}
+                                    onClick={() => navigate(ROUTES.PROJECT_DETAILS(project.id))}
                                 >
                                     {project.title}
                                 </h3>
@@ -443,9 +450,10 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
             });
             toast.success('Dispute reported to admin successfully');
             setIsReportModalOpen(false);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to submit report:', error);
-            toast.error(error?.response?.data?.message || 'Failed to submit report');
+            const message = getErrorMessage(error);
+            toast.error((message) || 'Failed to submit report');
         }
     };
 
@@ -468,9 +476,10 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                 duration: 4000
             });
             await refreshData();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to request completion:', error);
-            toast.error(error?.response?.data?.message || 'Failed to request project completion');
+            const message = getErrorMessage(error);
+            toast.error((message) || 'Failed to request project completion');
         } finally {
             setLoadingProjectId(null);
         }
@@ -485,7 +494,7 @@ function ContributingProjectsTab({ projects, refreshData }: { projects: Project[
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <h3
-                                    onClick={() => navigate(`/projects/${project.id}`)}
+                                    onClick={() => navigate(ROUTES.PROJECT_DETAILS(project.id))}
                                     className="text-lg font-semibold text-primary hover:underline cursor-pointer"
                                 >
                                     {project.title}
@@ -683,7 +692,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
         return () => clearInterval(timer);
     }, []);
 
-    const getInterviewState = (interview: any) => {
+    const getInterviewState = (interview: { status?: string, scheduledAt: string, durationMinutes?: number } | null) => {
         if (!interview) return 'none';
 
         // Check explicit status first
@@ -721,7 +730,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                     ? app.interviews[0]
                     : null;
                 const interviewState = getInterviewState(interview);
-                const isShortlisted = app.status === 'SHORTLISTED';
+                const isShortlisted = app.status === ProjectApplicationStatus.SHORTLISTED;
 
                 return (
                     <div key={app.id} className="bg-card rounded-xl border border-border p-6 shadow-sm hover:shadow-md transition-shadow">
@@ -729,15 +738,15 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
                             <div>
                                 <h3
                                     className="text-lg font-semibold text-foreground mb-1 hover:text-primary cursor-pointer transition-colors"
-                                    onClick={() => navigate(`/projects/${app.projectId}`)}
+                                    onClick={() => navigate(ROUTES.PROJECT_DETAILS(app.projectId))}
                                 >
                                     {app.project?.title || 'Unknown Project'}
                                 </h3>
                                 <div className="flex items-center gap-2">
                                     <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium 
-                                        ${app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600' :
-                                            app.status === 'SHORTLISTED' ? 'bg-primary/10 text-primary' :
-                                                app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' :
+                                        ${app.status === ProjectApplicationStatus.ACCEPTED ? 'bg-green-500/10 text-green-600' :
+                                            app.status === ProjectApplicationStatus.SHORTLISTED ? 'bg-primary/10 text-primary' :
+                                                app.status === ProjectApplicationStatus.REJECTED ? 'bg-destructive/10 text-destructive' :
                                                     'bg-secondary text-muted-foreground'}`}>
                                         {app.status}
                                     </span>
@@ -808,7 +817,7 @@ function MyApplicationsTab({ applications }: { applications: ProjectApplication[
 
                                 {interviewState === 'active' && (
                                     <button
-                                        onClick={() => navigate(`/session/interview/${interview.id}/call`)}
+                                        onClick={() => navigate(ROUTES.INTERVIEW_CALL(interview.id))}
                                         className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm animate-pulse flex items-center gap-2"
                                     >
                                         <Video className="w-4 h-4" />
@@ -865,7 +874,7 @@ function ApplicantsTab({
         }
     };
 
-    const getInterviewState = (interview: any) => {
+    const getInterviewState = (interview: { status?: string, scheduledAt: Date | string, durationMinutes: number } | null | undefined) => {
         if (!interview) return 'none';
 
         // Check explicit status first
@@ -908,15 +917,15 @@ function ApplicantsTab({
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <span className="text-sm text-muted-foreground">Application for:</span>
-                                <span className="text-sm font-medium text-primary cursor-pointer hover:underline" onClick={() => navigate(`/projects/${app.projectId}`)}>{app.project?.title}</span>
+                                <span className="text-sm font-medium text-primary cursor-pointer hover:underline" onClick={() => navigate(ROUTES.PROJECT_DETAILS(app.projectId))}>{app.project?.title}</span>
                             </div>
                             <span className={`px-3 py-1 rounded-full text-xs font-medium 
-                                ${app.status === 'PENDING' ? 'bg-secondary text-muted-foreground' :
-                                    app.status === 'SHORTLISTED' ? 'bg-primary/10 text-primary' :
-                                        app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600' :
-                                            app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive' :
+                                ${app.status === ProjectApplicationStatus.PENDING ? 'bg-secondary text-muted-foreground' :
+                                    app.status === ProjectApplicationStatus.SHORTLISTED ? 'bg-primary/10 text-primary' :
+                                        app.status === ProjectApplicationStatus.ACCEPTED ? 'bg-green-500/10 text-green-600' :
+                                            app.status === ProjectApplicationStatus.REJECTED ? 'bg-destructive/10 text-destructive' :
                                                 'bg-secondary text-foreground'}`}>
-                                {app.status === 'SHORTLISTED' && isInterviewScheduled
+                                {app.status === ProjectApplicationStatus.SHORTLISTED && isInterviewScheduled
                                     ? (interviewState === 'completed' ? 'Interview Completed' : 'Interview Scheduled')
                                     : app.status}
                             </span>
@@ -994,7 +1003,7 @@ function ApplicantsTab({
                         {/* Action Buttons */}
                         <div className="flex items-center gap-3">
                             {/* Case 1: Shortlisted with Interview */}
-                            {app.status === 'SHORTLISTED' && isInterviewScheduled ? (
+                            {app.status === ProjectApplicationStatus.SHORTLISTED && isInterviewScheduled ? (
                                 <>
                                     {/* Future Interview */}
                                     {interviewState === 'upcoming' && (
@@ -1007,7 +1016,7 @@ function ApplicantsTab({
                                     {/* Active Interview Window (Join Button) */}
                                     {interviewState === 'active' && (
                                         <button
-                                            onClick={() => navigate(`/session/interview/${interview.id}/call`)}
+                                            onClick={() => navigate(ROUTES.INTERVIEW_CALL(interview.id))}
                                             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold transition-all shadow-md animate-pulse"
                                         >
                                             <Video className="w-4 h-4" />
@@ -1039,7 +1048,7 @@ function ApplicantsTab({
                                 </>
                             ) : (
                                 /* Case 2: Pending/Reviewed (Decision or Schedule) */
-                                (app.status === 'PENDING' || app.status === 'REVIEWED') ? (
+                                (app.status === ProjectApplicationStatus.PENDING || app.status === ProjectApplicationStatus.REVIEWED) ? (
                                     <>
                                         <button
                                             onClick={() => onScheduleInterview(app.id)}
@@ -1064,12 +1073,12 @@ function ApplicantsTab({
                                 ) : (
                                     /* Case 3: Final States */
                                     <div className={`px-4 py-2 rounded-lg text-sm font-medium border
-                                        ${app.status === 'ACCEPTED' ? 'bg-green-500/10 text-green-600 border-green-500/20' :
-                                            app.status === 'REJECTED' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+                                        ${app.status === ProjectApplicationStatus.ACCEPTED ? 'bg-green-500/10 text-green-600 border-green-500/20' :
+                                            app.status === ProjectApplicationStatus.REJECTED ? 'bg-destructive/10 text-destructive border-destructive/20' :
                                                 'bg-secondary text-muted-foreground border-border'}`}>
-                                        {app.status === 'ACCEPTED' ? 'Application Accepted' :
-                                            app.status === 'REJECTED' ? 'Application Rejected' :
-                                                app.status === 'WITHDRAWN' ? 'Application Withdrawn' : app.status}
+                                        {app.status === ProjectApplicationStatus.ACCEPTED ? 'Application Accepted' :
+                                            app.status === ProjectApplicationStatus.REJECTED ? 'Application Rejected' :
+                                                app.status === ProjectApplicationStatus.WITHDRAWN ? 'Application Withdrawn' : app.status}
                                     </div>
                                 )
                             )}
@@ -1081,7 +1090,15 @@ function ApplicantsTab({
     );
 }
 
-function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: any) {
+interface EmptyStateProps {
+    icon: React.ElementType;
+    title: string;
+    description: string;
+    actionLabel?: string;
+    onAction?: () => void;
+}
+
+function EmptyState({ icon: Icon, title, description, actionLabel, onAction }: EmptyStateProps) {
     return (
         <div className="py-16 text-center bg-card rounded-xl border border-border border-dashed">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

@@ -4,7 +4,7 @@ import {
     X, Mail, CreditCard, Shield, User as UserIcon, CheckCircle,
     Activity, AlertTriangle
 } from 'lucide-react'
-import { User } from '../../services/adminService'
+import { type User } from '../../services/adminService'
 
 interface UserDetailsModalProps {
     isOpen: boolean
@@ -123,10 +123,10 @@ export default function UserDetailsModal({ isOpen, onClose, user }: UserDetailsM
                                 ].map((tab) => (
                                     <button
                                         key={tab.id}
-                                        onClick={() => setActiveTab(tab.id as any)}
+                                        onClick={() => setActiveTab(tab.id as "overview" | "activity" | "security")}
                                         className={`flex items-center gap-2 pb-3 text-sm font-medium border-b-2 transition-all ${activeTab === tab.id
-                                                ? 'border-slate-800 text-slate-800'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            ? 'border-slate-800 text-slate-800'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                             }`}
                                     >
                                         <tab.icon className="w-4 h-4" />

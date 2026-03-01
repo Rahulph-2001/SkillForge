@@ -1,10 +1,11 @@
 
-import { useState, FormEvent, useEffect } from "react"
+import { useState, type FormEvent, useEffect } from "react"
 import { X } from "lucide-react"
 import { useNavigate, useParams } from "react-router-dom"
-import { skillTemplateService, CreateSkillTemplateRequest } from "../../services/skillTemplateService"
+import { skillTemplateService, type CreateSkillTemplateRequest } from "../../services/skillTemplateService"
 import { ErrorModal, SuccessModal } from "../../components/common/Modal"
-
+import { getErrorMessage } from "../../utils/errorUtils"
+import { ROUTES } from "@/constants/routes";
 
 interface SkillTemplateForm {
   title: string
@@ -42,7 +43,7 @@ export default function SkillTemplateCreatePage() {
 
   useEffect(() => {
     if (isEditMode && id) {
-      fetchTemplate(id)
+      void fetchTemplate(id)
     }
   }, [id, isEditMode])
 
@@ -61,8 +62,9 @@ export default function SkillTemplateCreatePage() {
         levels: template.levels,
         status: template.status,
       })
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.message || error.response?.data?.error || "Failed to fetch template")
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'Failed to fetch template');
+      setErrorMessage(message);
     } finally {
       setLoading(false)
     }
@@ -117,10 +119,11 @@ export default function SkillTemplateCreatePage() {
       }
 
       setTimeout(() => {
-        navigate("/admin/skill-templates")
+        navigate(ROUTES.ADMIN.SKILL_TEMPLATES)
       }, 1500)
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.error || "Failed to save template")
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'Failed to save template');
+      setErrorMessage(message);
     } finally {
       setLoading(false)
     }
@@ -154,7 +157,7 @@ export default function SkillTemplateCreatePage() {
               </p>
             </div>
             <button
-              onClick={() => navigate("/admin/skill-templates")}
+              onClick={() => navigate(ROUTES.ADMIN.SKILL_TEMPLATES)}
               className="p-2 hover:bg-muted rounded-lg transition-colors text-muted-foreground hover:text-foreground"
               type="button"
             >
@@ -299,7 +302,7 @@ export default function SkillTemplateCreatePage() {
             <div className="flex gap-3 justify-end pt-6 border-t border-border">
               <button
                 type="button"
-                onClick={() => navigate("/admin/skill-templates")}
+                onClick={() => navigate(ROUTES.ADMIN.SKILL_TEMPLATES)}
                 className="px-6 py-2 text-foreground border border-border rounded-lg hover:bg-muted transition-colors font-medium"
               >
                 Cancel

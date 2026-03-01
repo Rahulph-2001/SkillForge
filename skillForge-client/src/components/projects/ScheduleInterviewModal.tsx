@@ -6,6 +6,7 @@ import { X, Calendar, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import projectApplicationService from '../../services/projectApplicationService';
 import { SuccessModal } from '../common/Modal'; // Import reusable SuccessModal
+import { getErrorMessage } from '../../utils/errorUtils';
 
 const scheduleInterviewSchema = z.object({
     scheduledAt: z.string().min(1, 'Date and time is required').refine((val) => new Date(val) > new Date(), {
@@ -49,8 +50,9 @@ export default function ScheduleInterviewModal({ isOpen, onClose, applicationId,
             setShowSuccess(true);
             reset();
             onScheduled(); // Refresh parent data in background
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to schedule interview');
+        } catch (error: unknown) {
+            const message = getErrorMessage(error, 'Failed to schedule interview');
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }

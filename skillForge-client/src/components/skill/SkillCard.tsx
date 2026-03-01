@@ -1,5 +1,6 @@
 import { Clock, Users, Star, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 interface SkillCardProps {
   skill: {
@@ -21,8 +22,8 @@ interface SkillCardProps {
     isAdminBlocked?: boolean;
     blockedReason?: string;
   };
-  onEdit?: (skill: any) => void;
-  onToggleBlock?: (skill: any) => void;
+  onEdit?: (skill: SkillCardProps['skill']) => void;
+  onToggleBlock?: (skill: SkillCardProps['skill']) => void;
 }
 
 export default function SkillCard({ skill, onEdit, onToggleBlock }: SkillCardProps) {
@@ -48,7 +49,7 @@ export default function SkillCard({ skill, onEdit, onToggleBlock }: SkillCardPro
   const statusColor = statusColors[displayStatus as keyof typeof statusColors] || 'bg-muted text-muted-foreground';
 
   const handleAttendMCQ = () => {
-    navigate(`/mcq-test/${skill.id}`);
+    navigate(ROUTES.MCQ_TEST(skill.id));
   };
 
   return (
@@ -60,8 +61,8 @@ export default function SkillCard({ skill, onEdit, onToggleBlock }: SkillCardPro
             src={skill.imageUrl}
             alt={skill.title}
             className="h-full w-full object-cover"
-            onError={(e) => {
-              const target = e.currentTarget as HTMLImageElement;
+            onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+              const target = e.currentTarget;
               target.style.display = 'none';
               const parent = target.parentElement;
               if (parent) {

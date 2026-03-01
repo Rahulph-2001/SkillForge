@@ -1,5 +1,5 @@
 import { Calendar, Crown, X } from 'lucide-react';
-import { UserSubscription } from '../../services/subscriptionService';
+import { type UserSubscription } from '../../services/subscriptionService';
 
 interface CurrentSubscriptionCardProps {
     subscription: UserSubscription;

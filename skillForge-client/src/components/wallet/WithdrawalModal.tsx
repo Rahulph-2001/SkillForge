@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { AlertCircle, Building, Upload } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import walletService from '../../services/walletService';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface WithdrawalModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
     currentBalance: number;
-    bankDetails: any; // Ideally strictly typed from User interface
+    bankDetails: { bank_name?: string; account_number?: string } | null;
 }
 
 const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
@@ -57,10 +58,11 @@ const WithdrawalModal: React.FC<WithdrawalModalProps> = ({
             onSuccess();
             onClose();
             setAmount('');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Withdrawal error:', err);
-            setError(err.response?.data?.message || 'Failed to request withdrawal. Please try again.');
-            toast.error(err.response?.data?.message || 'Withdrawal failed');
+            const errorMessage = getErrorMessage(err, 'Failed to request withdrawal. Please try again.');
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setLoading(false);
         }

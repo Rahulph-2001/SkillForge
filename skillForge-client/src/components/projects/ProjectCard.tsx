@@ -1,7 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Project } from '../../types/project';
+import { type Project } from '../../types/project';
 import { Clock, Users, CheckCircle } from 'lucide-react';
+import { ROUTES } from "@/constants/routes";
 
 interface ProjectCardProps {
     project: Project;
@@ -48,7 +49,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project }) => {
 
     return (
         <div
-            onClick={() => navigate(`/projects/${project.id}`)}
+            onClick={() => navigate(ROUTES.PROJECT_DETAILS(project.id))}
             className="bg-card rounded-xl border border-border p-6 hover:shadow-md transition-shadow cursor-pointer"
         >
             <div className="flex justify-between items-start mb-4">

@@ -7,7 +7,7 @@ import {
     AlertCircle,
     Loader2
 } from 'lucide-react';
-import adminService, { WithdrawalRequest } from '../../services/adminService';
+import adminService, { type WithdrawalRequest } from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 import Pagination from '../../components/common/Pagination';
 
@@ -33,7 +33,7 @@ const AdminWithdrawalManagementPage = () => {
             setRequests(response.requests);
             setTotalPages(response.totalPages);
             setTotalItems(response.total);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch withdrawal requests:', error);
             toast.error('Failed to load withdrawal requests');
         } finally {
@@ -42,7 +42,8 @@ const AdminWithdrawalManagementPage = () => {
     };
 
     useEffect(() => {
-        fetchRequests();
+        void fetchRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, statusFilter]);
 
     const handleProcess = async () => {
@@ -70,8 +71,8 @@ const AdminWithdrawalManagementPage = () => {
             setActionType(null);
             setAdminNote('');
             setTransactionId('');
-            fetchRequests();
-        } catch (error) {
+            void fetchRequests();
+        } catch (error: unknown) {
             console.error('Failed to process withdrawal:', error);
             toast.error('Failed to process withdrawal');
         } finally {

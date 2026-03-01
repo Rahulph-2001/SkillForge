@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Loader2, Upload } from 'lucide-react';
-import { SkillResponse, CreateSkillPayload } from '../../services/skillService';
+import { type SkillResponse, type CreateSkillPayload } from '../../services/skillService';
 import ImageCropper from '../common/imageCropper';
 
 interface EditSkillModalProps {
@@ -86,6 +86,7 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
         e.target.value = '';
     };
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     const handleCropComplete = async (croppedBlob: Blob) => {
         // Create a File from the Blob
         const file = new File([croppedBlob], "skill-image.jpg", { type: "image/jpeg" });
@@ -109,6 +110,7 @@ export default function EditSkillModal({ isOpen, onClose, onSubmit, skill }: Edi
         setLoading(true);
         try {
             // Exclude title from updates as it's not editable
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { title, ...updates } = formData;
             await onSubmit(skill.id, updates, imageFile || undefined);
             onClose();

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Calendar,
   Clock,
@@ -16,49 +16,61 @@ import {
 // import { useNavigate } from 'react-router-dom';
 
 // import { useAppSelector } from '../../store/hooks';
-import { sessionManagementService, SessionStats } from '../../services/sessionManagementService';
+import { sessionManagementService, type SessionStats, type ProviderSession } from '../../services/sessionManagementService';
 import { toast } from 'react-hot-toast';
 import RescheduleModal from '../../components/booking/RescheduleModal';
 
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import PromptModal from '../../components/common/Modal/PromptModal';
 import JoinSessionButton from '../../components/session/JoinSessionButton';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 type FilterType = 'All' | 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled';
 type ViewMode = 'learner' | 'provider';
 
+type ExtendedSession = ProviderSession & {
+  skill?: { title?: string; durationHours?: number; category?: string };
+  provider?: { name?: string; avatarUrl?: string };
+};
+
 export default function SessionManagementPage() {
   // const { user } = useAppSelector((state) => state.auth);
   const [viewMode, setViewMode] = useState<ViewMode>('learner');
-  const [sessions, setSessions] = useState<any[]>([]); // Changed to any to support both provider/learner session types
+  const [sessions, setSessions] = useState<ExtendedSession[]>([]); // Typed for both provider/learner session types
   const [stats, setStats] = useState<SessionStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('All');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [rescheduleModalOpen, setRescheduleModalOpen] = useState(false);
-  const [selectedSession, setSelectedSession] = useState<any | null>(null);
+  const [selectedSession, setSelectedSession] = useState<ExtendedSession | null>(null);
 
   // Modal States
-  const [confirmModal, setConfirmModal] = useState({
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void | Promise<void>;
+  }>({
     isOpen: false,
     title: '',
     message: '',
     onConfirm: () => { },
   });
 
-  const [promptModal, setPromptModal] = useState({
+  const [promptModal, setPromptModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: (value: string) => void | Promise<void>;
+  }>({
     isOpen: false,
     title: '',
     message: '',
-    onConfirm: (_value: string) => { }, // eslint-disable-line @typescript-eslint/no-unused-vars
+    onConfirm: (_value: string) => { },
   });
   // const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchSessions();
-  }, [viewMode]);
-
-  const fetchSessions = async () => {
+  const fetchSessions = useCallback(async () => {
     try {
       setLoading(true);
       const data = viewMode === 'provider'
@@ -70,7 +82,7 @@ export default function SessionManagementPage() {
 
       // If in learner mode, map provider details to be accessible
       if (viewMode === 'learner') {
-        mappedSessions = mappedSessions.map((s: any) => ({
+        mappedSessions = mappedSessions.map((s: ExtendedSession) => ({
           ...s,
           // Improved provider name extraction
           providerName: s.providerName || s.provider?.name || 'Unknown Provider',
@@ -84,20 +96,25 @@ export default function SessionManagementPage() {
 
       setSessions(mappedSessions);
       setStats(data?.stats || { pending: 0, confirmed: 0, rescheduleRequested: 0, completed: 0 });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch sessions:', error);
       // Set empty data on error
       setSessions([]);
       setStats({ pending: 0, confirmed: 0, rescheduleRequested: 0, completed: 0 });
 
       // Only show error toast if it's not a "no skills" scenario
-      if (error.response?.status !== 404) {
-        toast.error(error.response?.data?.message || 'Failed to load sessions');
+      const err = error as { response?: { status?: number } };
+      if (err.response?.status !== 404) {
+        toast.error(getErrorMessage(error, 'Failed to load sessions'));
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [viewMode]);
+
+  useEffect(() => {
+    void fetchSessions();
+  }, [fetchSessions]);
 
   const filteredSessions = sessions.filter((session) => {
     if (activeFilter === 'All') return true;
@@ -163,9 +180,9 @@ export default function SessionManagementPage() {
       await sessionManagementService.acceptBooking(bookingId);
       toast.success('Booking accepted successfully');
       await fetchSessions();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to accept booking:', error);
-      toast.error(error.response?.data?.message || 'Failed to accept booking');
+      toast.error(getErrorMessage(error, 'Failed to accept booking'));
     } finally {
       setActionLoading(null);
     }
@@ -182,9 +199,9 @@ export default function SessionManagementPage() {
           await sessionManagementService.declineBooking(bookingId, reason);
           toast.success('Booking declined successfully');
           await fetchSessions();
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Failed to decline booking:', error);
-          toast.error(error.response?.data?.message || 'Failed to decline booking');
+          toast.error(getErrorMessage(error, 'Failed to decline booking'));
         } finally {
           setActionLoading(null);
           setPromptModal((prev) => ({ ...prev, isOpen: false }));
@@ -204,9 +221,9 @@ export default function SessionManagementPage() {
           await sessionManagementService.cancelSession(bookingId, reason);
           toast.success('Session cancelled successfully');
           await fetchSessions();
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Failed to cancel session:', error);
-          toast.error(error.response?.data?.message || 'Failed to cancel session');
+          toast.error(getErrorMessage(error, 'Failed to cancel session'));
         } finally {
           setActionLoading(null);
           setPromptModal((prev) => ({ ...prev, isOpen: false }));
@@ -226,9 +243,9 @@ export default function SessionManagementPage() {
           await sessionManagementService.acceptReschedule(bookingId);
           toast.success('Reschedule request accepted successfully');
           await fetchSessions();
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Failed to accept reschedule:', error);
-          toast.error(error.response?.data?.message || 'Failed to accept reschedule');
+          toast.error(getErrorMessage(error, 'Failed to accept reschedule'));
         } finally {
           setActionLoading(null);
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
@@ -248,9 +265,9 @@ export default function SessionManagementPage() {
           await sessionManagementService.declineReschedule(bookingId, reason);
           toast.success('Reschedule request declined');
           await fetchSessions();
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Failed to decline reschedule:', error);
-          toast.error(error.response?.data?.message || 'Failed to decline reschedule');
+          toast.error(getErrorMessage(error, 'Failed to decline reschedule'));
         } finally {
           setActionLoading(null);
           setPromptModal((prev) => ({ ...prev, isOpen: false }));
@@ -259,7 +276,7 @@ export default function SessionManagementPage() {
     });
   };
 
-  const handleRescheduleSession = (session: any) => {
+  const handleRescheduleSession = (session: ExtendedSession) => {
     setSelectedSession(session);
     setRescheduleModalOpen(true);
   };
@@ -271,14 +288,14 @@ export default function SessionManagementPage() {
       setRescheduleModalOpen(false);
       setSelectedSession(null);
       await fetchSessions();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to reschedule session:', error);
-      toast.error(error.response?.data?.message || 'Failed to request reschedule');
+      toast.error(getErrorMessage(error, 'Failed to request reschedule'));
       throw error;
     }
   };
 
-  const renderSessionActions = (session: any) => {
+  const renderSessionActions = (session: ExtendedSession) => {
     const isLoading = actionLoading === session.id;
 
     // Helper: Check if session has started or is within 15-minute join window
@@ -682,22 +699,22 @@ export default function SessionManagementPage() {
                       {viewMode === 'learner' ? (
                         session.providerAvatar ? (
                           <img
-                            src={session.providerAvatar}
+                            src={session.providerAvatar || ''}
                             alt={session.providerName}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-2xl font-bold text-primary">{getInitials(session.providerName)}</span>
+                          <span className="text-2xl font-bold text-primary">{getInitials(session.providerName || 'Unknown')}</span>
                         )
                       ) : (
                         session.learnerAvatar ? (
                           <img
-                            src={session.learnerAvatar}
+                            src={session.learnerAvatar || ''}
                             alt={session.learnerName}
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <span className="text-2xl font-bold text-primary">{getInitials(session.learnerName)}</span>
+                          <span className="text-2xl font-bold text-primary">{getInitials(session.learnerName || 'Unknown')}</span>
                         )
                       )}
                     </div>

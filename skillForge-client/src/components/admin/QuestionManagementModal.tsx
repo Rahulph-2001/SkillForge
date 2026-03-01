@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Plus, Edit2, Trash2, Loader2, Upload } from "lucide-react";
-import templateQuestionService, { TemplateQuestion } from "../../services/templateQuestionService";
+import templateQuestionService, { type TemplateQuestion } from "../../services/templateQuestionService";
 import McqImportManager from "../mcq/McqImportManager";
 import ErrorModal from "../common/Modal/ErrorModal";
 import ConfirmModal from "../common/Modal/ConfirmModal";
@@ -44,8 +44,9 @@ export default function QuestionManagementModal({
   // Fetch questions when modal opens or level changes
   useEffect(() => {
     if (isOpen && templateId && activeLevel && !isImporting) {
-      fetchQuestions();
+      void fetchQuestions();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, templateId, activeLevel, isImporting]);
 
   const fetchQuestions = async () => {

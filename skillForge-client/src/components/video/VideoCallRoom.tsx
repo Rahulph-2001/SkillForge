@@ -4,13 +4,13 @@ import {
     MessageSquare, Users, Settings, MoreVertical, Grid3X3, Clock,
     User, X, Send
 } from 'lucide-react';
-import { io, Socket } from 'socket.io-client';
+import { io, type Socket } from 'socket.io-client';
 import { useAppSelector } from '../../store/hooks';
 import {
     videoCallService,
-    VideoCallRoom as IVideoCallRoom,
-    Participant,
-    SessionInfo
+    type VideoCallRoom as IVideoCallRoom,
+    type Participant,
+    type SessionInfo
 } from '../../services/videoCallService';
 import { toast } from 'react-hot-toast';
 
@@ -64,26 +64,27 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                 setLocalStream(stream);
                 localStreamRef.current = stream;
                 console.log('[VideoCall] Local stream set successfully');
-            } catch (err: any) {
-                console.error("[VideoCall] Failed to get user media:", err);
-                console.error("[VideoCall] Error name:", err.name);
-                console.error("[VideoCall] Error message:", err.message);
+            } catch (err: unknown) {
+                const error = err instanceof Error ? err : new Error(String(err));
+                console.error("[VideoCall] Failed to get user media:", error);
+                console.error("[VideoCall] Error name:", error.name);
+                console.error("[VideoCall] Error message:", error.message);
 
                 // Provide specific error messages
-                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
                     toast.error("Camera/microphone permission denied. Please allow access and refresh.");
-                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
                     toast.error("No camera/microphone found. Please connect a device.");
-                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
                     toast.error("Camera/microphone is already in use by another application.");
-                } else if (err.message?.includes('HTTPS')) {
+                } else if (error.message?.includes('HTTPS')) {
                     toast.error("Camera access requires HTTPS. Please use localhost or enable HTTPS.");
                 } else {
-                    toast.error(`Failed to access camera/microphone: ${err.message}`);
+                    toast.error(`Failed to access camera/microphone: ${error.message}`);
                 }
             }
         };
-        initMedia();
+        initMedia().catch(console.error);
     }, []);
 
     // Assign local stream to video element
@@ -166,6 +167,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             const tracks = localStreamRef.current.getTracks();
             console.log('[VideoCall] Adding', tracks.length, 'local tracks to peer connection');
             tracks.forEach((track) => {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 pc.addTrack(track, localStreamRef.current!);
             });
 
@@ -219,7 +221,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                         offer: pc.localDescription,
                         toUserId: peerId,
                     });
-                } catch (err) {
+                } catch (err: unknown) {
                     console.error('[VideoCall] Error creating offer:', err);
                 }
             }
@@ -233,12 +235,12 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             socket.emit('video:join-room', { roomId: room.id });
         });
 
-        socket.on('connect_error', (err) => {
+        socket.on('connect_error', (err: Error) => {
             console.error('[VideoCall] ❌ Socket connection error:', err.message);
             toast.error('Failed to connect to video call server');
         });
 
-        socket.on('video:room-joined', ({ participants: p }) => {
+        socket.on('video:room-joined', ({ participants: p }: { participants: Participant[] }) => {
             console.log('[VideoCall] Room joined, participants:', JSON.stringify(p));
             setParticipants(p);
             setConnectionState('connected');
@@ -247,19 +249,19 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             p.forEach((participant: Participant) => {
                 if (participant.userId !== user?.id) {
                     console.log('[VideoCall] Found existing participant, creating offer for:', participant.userId);
-                    setupPeerConnection(participant.userId, true);
+                    setupPeerConnection(participant.userId, true).catch(err => console.error('Error setting up peer connection:', err));
                 }
             });
         });
 
-        socket.on('video:user-joined', ({ userId: joinedUserId, participants: p }) => {
+        socket.on('video:user-joined', ({ userId: joinedUserId, participants: p }: { userId: string, participants: Participant[] }) => {
             console.log('[VideoCall] New user joined:', joinedUserId);
             setParticipants(p);
             // Don't create peer connection here — wait for the joiner to send an offer
             // The joining user (who received video:room-joined with existing participants) is the offerer
         });
 
-        socket.on('video:user-left', ({ userId: leftUserId }) => {
+        socket.on('video:user-left', ({ userId: leftUserId }: { userId: string }) => {
             console.log('[VideoCall] User left:', leftUserId);
             setParticipants((prev) => prev.filter((p) => p.userId !== leftUserId));
             setRemoteStream(null);
@@ -269,7 +271,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             }
         });
 
-        socket.on('video:offer', async ({ offer, fromUserId }) => {
+        socket.on('video:offer', async ({ offer, fromUserId }: { offer: RTCSessionDescriptionInit, fromUserId: string }) => {
             console.log('[VideoCall] 📨 Received offer from:', fromUserId);
             try {
                 // Create a peer connection to handle the incoming offer (we are the answerer)
@@ -282,24 +284,24 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                     console.log('[VideoCall] 📤 Sending answer to:', fromUserId);
                     socket.emit('video:answer', { roomId: room.id, answer: peerConnectionRef.current.localDescription, toUserId: fromUserId });
                 }
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('[VideoCall] Error handling offer:', err);
             }
         });
 
-        socket.on('video:answer', async ({ answer, fromUserId }) => {
+        socket.on('video:answer', async ({ answer, fromUserId }: { answer: RTCSessionDescriptionInit, fromUserId: string }) => {
             console.log('[VideoCall] 📨 Received answer from:', fromUserId);
             try {
                 if (peerConnectionRef.current) {
                     await peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(answer));
                     console.log('[VideoCall] ✅ Remote description set from answer');
                 }
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('[VideoCall] Error handling answer:', err);
             }
         });
 
-        socket.on('video:ice-candidate', async ({ candidate, fromUserId }) => {
+        socket.on('video:ice-candidate', async ({ candidate, fromUserId }: { candidate: RTCIceCandidateInit, fromUserId: string }) => {
             if (candidate) {
                 try {
                     if (peerConnectionRef.current) {
@@ -308,13 +310,13 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                     } else {
                         console.warn('[VideoCall] Received ICE candidate but no peer connection exists yet');
                     }
-                } catch (err) {
+                } catch (err: unknown) {
                     console.warn('[VideoCall] Failed to add ICE candidate:', err);
                 }
             }
         });
 
-        socket.on('video:error', ({ message }) => {
+        socket.on('video:error', ({ message }: { message: string }) => {
             console.error('[VideoCall] Server error:', message);
             toast.error(message);
         });
@@ -350,7 +352,7 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
             const videoTrack = localStreamRef.current?.getVideoTracks()[0];
             if (videoTrack) {
                 const sender = peerConnectionRef.current?.getSenders().find((s) => s.track?.kind === 'video');
-                if (sender) sender.replaceTrack(videoTrack);
+                if (sender) sender.replaceTrack(videoTrack).catch(err => console.error('Error replacing track:', err));
             }
             setIsScreenSharing(false);
         } else {
@@ -358,16 +360,16 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                 const screenStream = await videoCallService.getDisplayMedia();
                 const screenTrack = screenStream.getVideoTracks()[0];
                 const sender = peerConnectionRef.current?.getSenders().find((s) => s.track?.kind === 'video');
-                if (sender) sender.replaceTrack(screenTrack);
+                if (sender) await sender.replaceTrack(screenTrack);
 
                 screenTrack.onended = () => {
                     setIsScreenSharing(false);
                     const cameraTrack = localStreamRef.current?.getVideoTracks()[0];
-                    if (cameraTrack && sender) sender.replaceTrack(cameraTrack);
+                    if (cameraTrack && sender) sender.replaceTrack(cameraTrack).catch(err => console.error('Error reverting track:', err));
                 };
 
                 setIsScreenSharing(true);
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('Screen share error:', err);
             }
         }
@@ -395,9 +397,8 @@ export default function VideoCallRoom({ room, sessionInfo, onLeave, onSessionEnd
                 } else {
                     await videoCallService.leaveRoom(room.id);
                 }
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('End/Leave room error:', err);
-                // Fallback to leave if end fails? Or just log.
             }
         }
 

@@ -41,7 +41,8 @@ export default function AvatarSync() {
     };
 
     // Sync avatar on mount
-    syncAvatar();
+    void syncAvatar();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, dispatch]); // Only re-run if user ID changes
 
   // This component doesn't render anything

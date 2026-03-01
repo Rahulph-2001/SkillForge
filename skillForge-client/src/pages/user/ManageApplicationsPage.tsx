@@ -11,9 +11,11 @@ import {
     MoreHorizontal,
     MessageSquare
 } from 'lucide-react';
-import projectApplicationService, { ProjectApplication, ProjectApplicationStatus } from '../../services/projectApplicationService';
-import projectService, { Project } from '../../services/projectService';
+import projectApplicationService, { type ProjectApplication, ProjectApplicationStatus } from '../../services/projectApplicationService';
+import projectService, { type Project } from '../../services/projectService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function ManageApplicationsPage() {
     const { id } = useParams<{ id: string }>();
@@ -24,20 +26,23 @@ export default function ManageApplicationsPage() {
 
     useEffect(() => {
         if (id) {
-            fetchApplications();
+            void fetchApplications();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     const fetchApplications = async () => {
         try {
             setLoading(true);
             const [appsData, projectData] = await Promise.all([
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 projectApplicationService.getProjectApplications(id!),
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 projectService.getProject(id!)
             ]);
             setApplications(appsData);
             setProject(projectData);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch data:', error);
             toast.error('Failed to load data');
         } finally {
@@ -49,10 +54,11 @@ export default function ManageApplicationsPage() {
         try {
             await projectApplicationService.updateStatus(applicationId, status);
             toast.success(`Application ${status.toLowerCase()} successfully`);
-            fetchApplications(); // Refresh list
-        } catch (error: any) {
+            void fetchApplications(); // Refresh list
+        } catch (error: unknown) {
             console.error('Failed to update status:', error);
-            toast.error(error.response?.data?.message || 'Failed to update application status');
+            const message = getErrorMessage(error, 'Failed to update application status');
+            toast.error(message);
         }
     };
 
@@ -70,7 +76,7 @@ export default function ManageApplicationsPage() {
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <button
-                        onClick={() => navigate(`/projects/${id}`)}
+                        onClick={() => navigate(ROUTES.PROJECT_DETAILS(id as string))}
                         className="p-2 hover:bg-card rounded-full transition-colors"
                     >
                         <ChevronLeft className="w-6 h-6 text-muted-foreground" />
@@ -121,7 +127,7 @@ export default function ManageApplicationsPage() {
                                                     <div>
                                                         <h3
                                                             className="text-lg font-bold text-foreground cursor-pointer hover:text-primary transition-colors"
-                                                            onClick={() => navigate(`/profile/${app.applicantId}`)}
+                                                            onClick={() => navigate(ROUTES.PUBLIC_PROFILE(app.applicantId))}
                                                         >
                                                             {app.applicant?.name}
                                                         </h3>
@@ -223,7 +229,7 @@ export default function ManageApplicationsPage() {
                                                         </button>
 
                                                         {/* Shortlist Button */}
-                                                        {app.status !== 'SHORTLISTED' && (
+                                                        {app.status !== ProjectApplicationStatus.SHORTLISTED && (
                                                             <button
                                                                 onClick={() => handleStatusUpdate(app.id, 'SHORTLISTED')}
                                                                 className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 rounded-lg text-sm font-medium transition-colors border border-blue-500/20"

@@ -12,8 +12,8 @@ interface BookSessionModalProps {
   userBalance: number;
   onBookSession: (bookingData: BookingData) => Promise<void>;
   availability?: {
-    weeklySchedule: any;
-    blockedDates: any[];
+    weeklySchedule: Record<string, { enabled?: boolean; slots?: Array<{ start: string; end: string }> }>;
+    blockedDates: Array<{ date: string }>;
     timezone: string;
   };
 }
@@ -114,7 +114,7 @@ export default function BookSessionModal({
           const daySchedule = availability.weeklySchedule[dayName];
 
           if (daySchedule && daySchedule.enabled && daySchedule.slots) {
-            const isTimeValid = daySchedule.slots.some((slot: any) => {
+            const isTimeValid = daySchedule.slots.some((slot) => {
               const slotStart = new Date(`${preferredDate}T${slot.start}`);
               const slotEnd = new Date(`${preferredDate}T${slot.end}`);
               // Assuming 1 hour duration if not passed, but industrial needs strict check.
@@ -202,16 +202,17 @@ export default function BookSessionModal({
       setMessage('');
       setErrors({});
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [BookSessionModal] Booking failed:', error);
+      const err = error as { message?: string; response?: { data?: { message?: string }; status?: number } };
       console.error('❌ [BookSessionModal] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
       });
       // If backend returns validation error, show it
-      if (error.response?.status === 400) {
-        setErrors(prev => ({ ...prev, form: error.response.data.message }));
+      if (err.response?.status === 400) {
+        setErrors(prev => ({ ...prev, form: err.response?.data?.message }));
       }
     } finally {
       setIsSubmitting(false);
@@ -267,9 +268,9 @@ export default function BookSessionModal({
         {/* Body */}
         <div className="p-5 space-y-4">
           {/* Global Error */}
-          {(errors as any).form && (
+          {((errors || {}) as Record<string, string>).form && (
             <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded relative" role="alert">
-              <span className="block sm:inline">{(errors as any).form}</span>
+              <span className="block sm:inline">{((errors || {}) as Record<string, string>).form}</span>
             </div>
           )}
 

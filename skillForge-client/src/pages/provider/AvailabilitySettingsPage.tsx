@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { availabilityService, ProviderAvailability, WeeklySchedule } from '../../services/availabilityService';
+import { availabilityService, type ProviderAvailability, type WeeklySchedule } from '../../services/availabilityService';
 import { toast } from 'react-hot-toast';
 import { Clock, Calendar, Save, Plus, Trash2 } from 'lucide-react';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
@@ -16,17 +16,17 @@ const EMPTY_SCHEDULE: WeeklySchedule = DAYS.reduce((acc, day) => ({
     [day]: { enabled: false, slots: [] },
 }), {});
 
-const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
+const normalizeWeeklySchedule = (rawSchedule: unknown): WeeklySchedule => {
     const parsed =
         typeof rawSchedule === 'string'
             ? (() => {
                 try {
-                    return JSON.parse(rawSchedule);
+                    return JSON.parse(rawSchedule) as Record<string, unknown>;
                 } catch {
                     return {};
                 }
             })()
-            : rawSchedule || {};
+            : (rawSchedule as Record<string, unknown>) || {};
 
     const normalized: WeeklySchedule = { ...EMPTY_SCHEDULE };
 
@@ -37,12 +37,12 @@ const normalizeWeeklySchedule = (rawSchedule: any): WeeklySchedule => {
 
         if (!foundKey) return;
 
-        const loadedDay = parsed[foundKey] || {};
+        const loadedDay = (parsed[foundKey] || {}) as { enabled?: boolean; slots?: Array<{ start?: string; end?: string }> };
         const slots = Array.isArray(loadedDay.slots) ? loadedDay.slots : [];
 
         normalized[day] = {
             enabled: loadedDay.enabled ?? false,
-            slots: slots.map((s: any) => ({
+            slots: slots.map((s) => ({
                 start: s?.start ?? '09:00',
                 end: s?.end ?? '17:00',
             })),
@@ -56,7 +56,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [pendingSaveData, setPendingSaveData] = useState<any>(null);
+    const [pendingSaveData, setPendingSaveData] = useState<Partial<ProviderAvailability> | null>(null);
     const [availability, setAvailability] = useState<Partial<ProviderAvailability>>({
         weeklySchedule: EMPTY_SCHEDULE,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -68,7 +68,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
     });
 
     useEffect(() => {
-        loadAvailability();
+        void loadAvailability();
     }, []);
 
     const loadAvailability = async () => {
@@ -166,7 +166,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
         await executeSave({ ...pendingSaveData, weeklySchedule: optimizedSchedule }, true);
     };
 
-    const executeSave = async (data: any, optimized = false) => {
+    const executeSave = async (data: Partial<ProviderAvailability>, optimized = false) => {
         setSaving(true);
         try {
             const updated = await availabilityService.updateAvailability(data);
@@ -223,7 +223,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
         return merged.map(r => ({ start: minToTime(r.start), end: minToTime(r.end) }));
     };
 
-    const updateSchedule = (day: string, updates: any) => {
+    const updateSchedule = (day: string, updates: Partial<{ enabled: boolean; slots: { start: string; end: string }[] }>) => {
         setAvailability(prev => {
             const currentSchedule = prev.weeklySchedule || normalizeWeeklySchedule({});
             return {
@@ -340,7 +340,7 @@ export const AvailabilitySettingsPage: React.FC = () => {
                             onChange={(e) => setAvailability(prev => ({ ...prev, timezone: e.target.value }))}
                             className="w-full rounded-lg border-border bg-background text-foreground focus:ring-ring focus:border-primary"
                         >
-                            {(Intl as any).supportedValuesOf('timeZone').map((tz: string) => (
+                            {((Intl as unknown) as { supportedValuesOf: (key: string) => string[] }).supportedValuesOf('timeZone').map((tz: string) => (
                                 <option key={tz} value={tz}>{tz}</option>
                             ))}
                         </select>

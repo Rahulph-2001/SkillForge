@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Calendar, Clock, DollarSign, User, Award } from 'lucide-react';
-import { AdminSession } from '../../../services/adminService';
+import { type AdminSession } from '../../../services/adminService';
 
 interface SessionDetailsModalProps {
     session: AdminSession | null;

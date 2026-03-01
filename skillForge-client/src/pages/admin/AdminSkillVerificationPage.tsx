@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Eye, Check, X, Search, Loader2, Ban, Unlock } from 'lucide-react';
 
-import { adminSkillService, PendingSkill } from '../../services/adminSkillService';
+import { adminSkillService, type PendingSkill } from '../../services/adminSkillService';
 import { ErrorModal, SuccessModal } from '../../components/common/Modal';
 import Pagination from '../../components/common/Pagination';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 type FilterType = 'all' | 'in-review' | 'approved' | 'rejected' | 'blocked';
 
@@ -42,7 +43,8 @@ export default function AdminSkillVerificationPage() {
 
   // Fetch skills when page, filter, or debounced search changes
   useEffect(() => {
-    fetchSkills();
+    void fetchSkills();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, filter, debouncedSearch]);
 
   const fetchSkills = async () => {
@@ -57,7 +59,7 @@ export default function AdminSkillVerificationPage() {
       if (filter === 'blocked') {
         isBlocked = true;
       } else if (filter !== 'all') {
-        status = filter as 'in-review' | 'approved' | 'rejected';
+        status = filter;
         isBlocked = false;
       }
 
@@ -73,9 +75,9 @@ export default function AdminSkillVerificationPage() {
       setSkills(response.skills);
       setTotalPages(response.totalPages);
       setTotalItems(response.total);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AdminSkillVerificationPage] Error fetching skills:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to load skills');
+      setErrorMessage(getErrorMessage(error, 'Failed to load skills'));
     } finally {
       setLoading(false);
     }
@@ -100,9 +102,9 @@ export default function AdminSkillVerificationPage() {
 
       // Refresh the list
       await fetchSkills();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AdminSkillVerificationPage] Error approving skill:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to approve skill');
+      setErrorMessage(getErrorMessage(error, 'Failed to approve skill'));
     } finally {
       setActionLoading(false);
     }
@@ -134,9 +136,9 @@ export default function AdminSkillVerificationPage() {
 
       // Refresh the list
       await fetchSkills();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AdminSkillVerificationPage] Error rejecting skill:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to reject skill');
+      setErrorMessage(getErrorMessage(error, 'Failed to reject skill'));
     } finally {
       setActionLoading(false);
     }
@@ -168,9 +170,9 @@ export default function AdminSkillVerificationPage() {
 
       // Refresh the list
       await fetchSkills();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AdminSkillVerificationPage] Error blocking skill:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to block skill');
+      setErrorMessage(getErrorMessage(error, 'Failed to block skill'));
     } finally {
       setActionLoading(false);
     }
@@ -195,9 +197,9 @@ export default function AdminSkillVerificationPage() {
 
       // Refresh the list
       await fetchSkills();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [AdminSkillVerificationPage] Error unblocking skill:', error);
-      setErrorMessage(error.response?.data?.message || 'Failed to unblock skill');
+      setErrorMessage(getErrorMessage(error, 'Failed to unblock skill'));
     } finally {
       setActionLoading(false);
     }

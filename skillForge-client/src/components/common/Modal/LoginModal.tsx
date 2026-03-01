@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
+import { ROUTES } from "@/constants/routes";
 
 interface LoginModalProps {
     isOpen: boolean;
@@ -36,13 +37,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
 
                     <div className="space-y-3">
                         <button
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate(ROUTES.LOGIN)}
                             className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
                         >
                             Log In
                         </button>
                         <button
-                            onClick={() => navigate('/signup')}
+                            onClick={() => navigate(ROUTES.SIGNUP)}
                             className="w-full bg-card text-foreground border border-border py-3 rounded-lg font-semibold hover:bg-muted/50 transition-colors"
                         >
                             Create Account

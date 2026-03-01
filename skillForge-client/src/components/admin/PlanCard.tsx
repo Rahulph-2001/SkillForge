@@ -1,6 +1,6 @@
 import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
-import { SubscriptionPlan } from '../../services/subscriptionService';
+import { type SubscriptionPlan } from '../../services/subscriptionService';
 
 interface PlanCardProps {
   plan: SubscriptionPlan;

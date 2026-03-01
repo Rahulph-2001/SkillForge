@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Bell, Check, CheckCheck, Calendar, MessageSquare, CreditCard, Users, Briefcase, Shield, Video, Star, Trash2 } from 'lucide-react';
-import notificationService, { Notification, NotificationType } from '@/services/notificationService';
+import notificationService, { type Notification, NotificationType } from '@/services/notificationService';
 import { formatDistanceToNow } from 'date-fns';
 
 const NotificationsPage = () => {
@@ -25,7 +25,7 @@ const NotificationsPage = () => {
       setUnreadCount(response.unreadCount);
       setTotalPages(response.totalPages);
       setTotal(response.total);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to fetch notifications:', error);
     } finally {
       setLoading(false);
@@ -33,7 +33,7 @@ const NotificationsPage = () => {
   }, [page, activeTab]);
 
   useEffect(() => {
-    fetchNotifications();
+    void fetchNotifications();
   }, [fetchNotifications]);
 
   const handleMarkAsRead = async (notificationId: string) => {
@@ -43,7 +43,7 @@ const NotificationsPage = () => {
         prev.map(n => (n.id === notificationId ? { ...n, isRead: true, readAt: new Date().toISOString() } : n))
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to mark notification as read:', error);
     }
   };
@@ -53,7 +53,7 @@ const NotificationsPage = () => {
       await notificationService.markAllAsRead();
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true, readAt: new Date().toISOString() })));
       setUnreadCount(0);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to mark all notifications as read:', error);
     }
   };
@@ -63,7 +63,7 @@ const NotificationsPage = () => {
       await notificationService.deleteNotification(notificationId);
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       setTotal(prev => prev - 1);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to delete notification:', error);
     }
   };
@@ -108,7 +108,8 @@ const NotificationsPage = () => {
   const formatTime = (dateString: string) => {
     try {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    } catch {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error: unknown) {
       return dateString;
     }
   };

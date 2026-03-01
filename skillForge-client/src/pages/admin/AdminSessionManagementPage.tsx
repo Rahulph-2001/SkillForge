@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Calendar, Users, CheckCircle, Clock } from 'lucide-react';
-import adminService, { AdminSession, SessionStats } from '../../services/adminService';
+import adminService, { type AdminSession, type SessionStats } from '../../services/adminService';
 import SessionTable from '../../components/admin/session/SessionTable';
 import SessionDetailsModal from '../../components/admin/session/SessionDetailsModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
 import ErrorModal from '../../components/common/Modal/ErrorModal';
 import { usePagination } from '../../hooks/usePagination';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 const AdminSessionManagementPage: React.FC = () => {
     const [sessions, setSessions] = useState<AdminSession[]>([]);
@@ -39,18 +40,19 @@ const AdminSessionManagementPage: React.FC = () => {
     } = usePagination({ initialLimit: 10 });
 
     useEffect(() => {
-        fetchStats();
+        void fetchStats();
     }, []);
 
     useEffect(() => {
-        fetchSessions();
+        void fetchSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, searchQuery]);
 
     const fetchStats = async () => {
         try {
             const data = await adminService.getSessionStats();
             setStats(data);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch session stats:', error);
         }
     };
@@ -86,7 +88,7 @@ const AdminSessionManagementPage: React.FC = () => {
             // `usePagination(options)` -> `options` is an object.
             // If I call `usePagination({ totalItems: backendTotal })`, on next render it uses new totalItems.
             // So if I have `const [totalItems, setTotalItems] = useState(0)` and pass it to hook, it should work.
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch sessions:', error);
             setErrorMessage('Failed to load sessions.');
             setShowErrorModal(true);
@@ -107,7 +109,7 @@ const AdminSessionManagementPage: React.FC = () => {
             const response = await adminService.listSessions(page, limit, debouncedSearch);
             setSessions(response.data);
             setTotalItems(response.total);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch sessions:', error);
             setErrorMessage('Failed to load sessions.');
             setShowErrorModal(true);
@@ -123,11 +125,13 @@ const AdminSessionManagementPage: React.FC = () => {
             if (page !== 1) goToPage(1);
         }, 300);
         return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery]);
 
     // Use effect to call fetchSessionsWithTotal
     useEffect(() => {
-        fetchSessionsWithTotal();
+        void fetchSessionsWithTotal();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, debouncedSearch]);
 
 
@@ -160,10 +164,11 @@ const AdminSessionManagementPage: React.FC = () => {
             setSuccessMessage('Session cancelled successfully');
             setShowSuccessModal(true);
             setShowCancelConfirm(false);
-            fetchStats();
-            fetchSessionsWithTotal();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to cancel session');
+            void fetchStats();
+            void fetchSessionsWithTotal();
+        } catch (error: unknown) {
+            const message = getErrorMessage(error, 'Failed to cancel session');
+            setErrorMessage(message);
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -178,10 +183,11 @@ const AdminSessionManagementPage: React.FC = () => {
             setSuccessMessage('Session marked as completed');
             setShowSuccessModal(true);
             setShowCompleteConfirm(false);
-            fetchStats();
-            fetchSessionsWithTotal();
-        } catch (error: any) {
-            setErrorMessage(error.response?.data?.message || 'Failed to complete session');
+            void fetchStats();
+            void fetchSessionsWithTotal();
+        } catch (error: unknown) {
+            const message = getErrorMessage(error, 'Failed to complete session');
+            setErrorMessage(message);
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);

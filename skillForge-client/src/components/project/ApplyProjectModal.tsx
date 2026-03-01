@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { X, Send, Loader2 } from 'lucide-react';
-import { Project } from '../../services/projectService';
+import { type Project } from '../../services/projectService';
 import projectApplicationService from '../../services/projectApplicationService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface ApplyProjectModalProps {
     isOpen: boolean;
@@ -60,9 +61,9 @@ export default function ApplyProjectModal({
                 proposedDuration: '',
                 proposedBudget: project.budget,
             });
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to submit application:', error);
-            toast.error(error.response?.data?.message || 'Failed to submit application');
+            toast.error(getErrorMessage(error) || 'Failed to submit application');
         } finally {
             setIsSubmitting(false);
         }

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import featureService, { Feature, CreateFeatureRequest, UpdateFeatureRequest, FeatureListResponse } from '../../../services/featureService';
+import featureService, { type Feature, type CreateFeatureRequest, type UpdateFeatureRequest, type FeatureListResponse } from '../../../services/featureService';
 import { toast } from 'react-toastify';
 import ConfirmModal from '../../../components/common/Modal/ConfirmModal';
 import Pagination from '../../../components/common/pagination/Pagination';
+import { getErrorMessage } from '../../../utils/errorUtils';
 import './FeatureManagement.css';
 
 const FeatureManagement: React.FC = () => {
@@ -35,7 +36,8 @@ const FeatureManagement: React.FC = () => {
 
     // Fetch features when pagination or search changes
     useEffect(() => {
-        loadFeatures();
+        void loadFeatures();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, debouncedSearch]);
 
     const loadFeatures = useCallback(async () => {
@@ -49,8 +51,8 @@ const FeatureManagement: React.FC = () => {
             setFeatures(data.features);
             setTotalPages(data.pagination.totalPages);
             setTotalItems(data.pagination.total);
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to load features');
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, 'Failed to load features'));
         } finally {
             setLoading(false);
         }
@@ -78,9 +80,9 @@ const FeatureManagement: React.FC = () => {
         try {
             await featureService.updateFeature(featureToToggle.id, { isEnabled: newStatus });
             toast.success(`Feature ${newStatus ? 'unblocked' : 'blocked'} successfully`);
-            loadFeatures();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || `Failed to update feature`);
+            void loadFeatures();
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, `Failed to update feature`));
         } finally {
             setShowConfirmModal(false);
             setFeatureToToggle(null);
@@ -218,7 +220,7 @@ const FeatureManagement: React.FC = () => {
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={() => {
                         setShowCreateModal(false);
-                        loadFeatures();
+                        void loadFeatures();
                     }}
                 />
             )}
@@ -233,7 +235,7 @@ const FeatureManagement: React.FC = () => {
                     onSuccess={() => {
                         setShowEditModal(false);
                         setSelectedFeature(null);
-                        loadFeatures();
+                        void loadFeatures();
                     }}
                 />
             )}
@@ -279,8 +281,8 @@ const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({ onClose, onSucc
             await featureService.createFeature(formData);
             toast.success('Feature created successfully');
             onSuccess();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to create feature');
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, 'Failed to create feature'));
         } finally {
             setLoading(false);
         }
@@ -318,7 +320,7 @@ const CreateFeatureModal: React.FC<CreateFeatureModalProps> = ({ onClose, onSucc
                         <label>Feature Type *</label>
                         <select
                             value={formData.featureType}
-                            onChange={(e) => setFormData({ ...formData, featureType: e.target.value as any })}
+                            onChange={(e) => setFormData({ ...formData, featureType: e.target.value as "BOOLEAN" | "NUMERIC_LIMIT" | "TEXT" })}
                             required
                         >
                             <option value="BOOLEAN">Boolean</option>
@@ -375,8 +377,8 @@ const EditFeatureModal: React.FC<EditFeatureModalProps> = ({ feature, onClose, o
             await featureService.updateFeature(feature.id, formData);
             toast.success('Feature updated successfully');
             onSuccess();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || 'Failed to update feature');
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error, 'Failed to update feature'));
         } finally {
             setLoading(false);
         }

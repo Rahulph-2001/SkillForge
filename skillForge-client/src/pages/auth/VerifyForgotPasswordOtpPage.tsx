@@ -4,6 +4,7 @@ import { OTPInput } from "../../components/common/OTP"
 import { authService } from "../../services/authService"
 import { useOTPTimer } from "../../hooks/useOTPTimer"
 import { ErrorModal, SuccessModal } from "../../components/common/Modal"
+import { ROUTES } from "@/constants/routes";
 
 export default function VerifyForgotPasswordOtpPage() {
     const navigate = useNavigate()
@@ -17,13 +18,14 @@ export default function VerifyForgotPasswordOtpPage() {
 
     // Get email and expiresAt from navigation state or localStorage
     useEffect(() => {
-        const emailFromState = location.state?.email
-        const emailFromStorage = localStorage.getItem('otpEmail')
+        const state = location.state as { email?: string; expiresAt?: string } | null;
+        const emailFromState = state?.email;
+        const emailFromStorage = localStorage.getItem('otpEmail');
         const emailToUse = emailFromState || emailFromStorage || ""
         setEmail(emailToUse)
 
         if (!emailToUse) {
-            navigate('/forgot-password')
+            navigate(ROUTES.FORGOT_PASSWORD)
             return
         }
 
@@ -36,7 +38,7 @@ export default function VerifyForgotPasswordOtpPage() {
     // Use industrial-level OTP timer hook with persistence
     const { countdown, isExpired, formattedTime, resetTimer } = useOTPTimer({
         email: email || '',
-        expiresAt: location.state?.expiresAt || localStorage.getItem('otpExpiresAt'),
+        expiresAt: (location.state as { expiresAt?: string } | null)?.expiresAt || localStorage.getItem('otpExpiresAt'),
         type: 'forgot-password',
         defaultMinutes: 2,
         onExpire: () => {
@@ -60,14 +62,14 @@ export default function VerifyForgotPasswordOtpPage() {
             if (response.data?.verified) {
                 setShowSuccessModal(true);
                 setTimeout(() => {
-                    navigate('/reset-password', { state: { email, otpCode: code } });
+                    navigate(ROUTES.RESET_PASSWORD, { state: { email, otpCode: code } });
                 }, 1500);
             }
         } catch (err: unknown) {
-            const error = err as { error?: string; message?: string };
-            const errorMessage = error?.error || error?.message || 'Invalid OTP code'
-            setError(errorMessage)
-            setShowErrorModal(true)
+            const error = err as { response?: { data?: { error?: string; message?: string } } };
+            const errorMessage = error?.response?.data?.error || error?.response?.data?.message || 'Invalid OTP code';
+            setError(errorMessage);
+            setShowErrorModal(true);
         } finally {
             setLoading(false)
         }
@@ -94,10 +96,10 @@ export default function VerifyForgotPasswordOtpPage() {
                 resetTimer();
             }
         } catch (err: unknown) {
-            const error = err as { error?: string; message?: string };
-            const errorMessage = error?.error || error?.message || 'Failed to resend OTP'
-            setError(errorMessage)
-            setShowErrorModal(true)
+            const error = err as { response?: { data?: { error?: string; message?: string } } };
+            const errorMessage = error?.response?.data?.error || error?.response?.data?.message || 'Failed to resend OTP';
+            setError(errorMessage);
+            setShowErrorModal(true);
         } finally {
             setResending(false)
         }

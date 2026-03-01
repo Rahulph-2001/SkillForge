@@ -4,6 +4,7 @@ import { logout } from '../../../store/slices/authSlice'
 import { clearPersistedState } from '../../../store/persistUtils'
 
 import { useLocation } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 export default function AdminNavbar() {
     const location = useLocation();
@@ -39,13 +40,13 @@ export default function AdminNavbar() {
             await clearPersistedState()
 
             // Navigate to admin login page
-            navigate('/admin/login')
+            navigate(ROUTES.ADMIN.LOGIN)
         } catch (error) {
             console.error('Logout error:', error)
 
             // Even if logout fails, clear local state and redirect
             await clearPersistedState()
-            navigate('/admin/login')
+            navigate(ROUTES.ADMIN.LOGIN)
         }
     }
 
@@ -78,7 +79,7 @@ export default function AdminNavbar() {
                     </div>
                     <div className="flex items-center gap-6">
                         <button
-                            onClick={() => navigate('/admin/notifications')}
+                            onClick={() => navigate(ROUTES.ADMIN.NOTIFICATIONS)}
                             className="text-muted-foreground hover:text-foreground transition-colors"
                             aria-label="Notifications"
                         >

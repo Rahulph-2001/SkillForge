@@ -9,8 +9,10 @@ import {
     Loader2,
     Video
 } from 'lucide-react';
-import projectApplicationService, { ProjectApplication, ProjectApplicationStatus } from '../../services/projectApplicationService';
+import projectApplicationService, { type ProjectApplication, ProjectApplicationStatus } from '../../services/projectApplicationService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function MyApplicationsPage() {
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ export default function MyApplicationsPage() {
     const [currentTime, setCurrentTime] = useState(new Date());
 
     useEffect(() => {
-        fetchApplications();
+        void fetchApplications();
         const timer = setInterval(() => setCurrentTime(new Date()), 60000);
         return () => clearInterval(timer);
     }, []);
@@ -29,7 +31,7 @@ export default function MyApplicationsPage() {
             setLoading(true);
             const data = await projectApplicationService.getMyApplications();
             setApplications(data);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch applications:', error);
             toast.error('Failed to load your applications');
         } finally {
@@ -45,10 +47,11 @@ export default function MyApplicationsPage() {
         try {
             await projectApplicationService.withdrawApplication(applicationId);
             toast.success('Application withdrawn successfully');
-            fetchApplications(); // Refresh list
-        } catch (error: any) {
+            void fetchApplications(); // Refresh list
+        } catch (error: unknown) {
             console.error('Failed to withdraw application:', error);
-            toast.error(error.response?.data?.message || 'Failed to withdraw application');
+            const message = getErrorMessage(error);
+            toast.error((message) || 'Failed to withdraw application');
         }
     };
 
@@ -67,7 +70,7 @@ export default function MyApplicationsPage() {
         }
     };
 
-    const getInterviewState = (interview: any) => {
+    const getInterviewState = (interview: { status?: string, scheduledAt: Date | string, durationMinutes?: number } | null) => {
         if (!interview) return 'none';
 
         // Check explicit status first
@@ -113,7 +116,7 @@ export default function MyApplicationsPage() {
                         <h3 className="text-lg font-medium text-foreground mb-2">No applications yet</h3>
                         <p className="text-muted-foreground mb-6">Start exploring projects and find your next opportunity.</p>
                         <button
-                            onClick={() => navigate('/projects')}
+                            onClick={() => navigate(ROUTES.PROJECTS)}
                             className="bg-primary text-primary-foreground px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
                         >
                             Browse Projects
@@ -138,7 +141,7 @@ export default function MyApplicationsPage() {
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <h3
-                                                    onClick={() => navigate(`/projects/${application.projectId}`)}
+                                                    onClick={() => navigate(ROUTES.PROJECT_DETAILS(application.projectId))}
                                                     className="text-lg font-semibold text-foreground hover:text-primary cursor-pointer"
                                                 >
                                                     {application.project?.title || 'Unknown Project'}
@@ -175,7 +178,7 @@ export default function MyApplicationsPage() {
 
                                                     {interviewState === 'active' && (
                                                         <button
-                                                            onClick={() => navigate(`/session/interview/${interview.id}/call`)}
+                                                            onClick={() => navigate(ROUTES.INTERVIEW_CALL(interview.id))}
                                                             className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-sm font-bold transition-all shadow-md animate-pulse"
                                                         >
                                                             <Video className="w-4 h-4" />
@@ -216,7 +219,7 @@ export default function MyApplicationsPage() {
                                                 </button>
                                             )}
                                             <button
-                                                onClick={() => navigate(`/projects/${application.projectId}`)}
+                                                onClick={() => navigate(ROUTES.PROJECT_DETAILS(application.projectId))}
                                                 className="p-2 text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <ChevronRight className="w-5 h-5" />

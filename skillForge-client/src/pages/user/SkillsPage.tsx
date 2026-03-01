@@ -5,13 +5,15 @@ import { toast } from "react-hot-toast";
 
 import StatCard from "../../components/admin/StatCard";
 import SkillCard from "../../components/skill/SkillCard";
-import SkillAddModal, { NewSkill } from "../../components/skill/SkillAddModal";
+import SkillAddModal, { type NewSkill } from "../../components/skill/SkillAddModal";
 import EditSkillModal from "../../components/skill/EditSkillModal";
 import Pagination from "../../components/common/Pagination";
 import { useAppDispatch } from "../../store/hooks";
 import { createSkill, updateSkill, toggleSkillBlock } from "../../store/slices/skillSlice";
-import { skillService, SkillResponse } from "../../services/skillService";
+import { skillService, type SkillResponse } from "../../services/skillService";
+import { getErrorMessage } from "../../utils/errorUtils";
 import { SuccessModal, ErrorModal } from "../../components/common/Modal";
+import { ROUTES } from "@/constants/routes";
 
 export default function SkillsPage() {
   const navigate = useNavigate();
@@ -31,7 +33,7 @@ export default function SkillsPage() {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [activeFilter, setActiveFilter] = useState<string>("all");
-  const [editingSkill, setEditingSkill] = useState<any>(null);
+  const [editingSkill, setEditingSkill] = useState<SkillResponse | null>(null);
 
   const fetchSkills = async () => {
     try {
@@ -46,8 +48,8 @@ export default function SkillsPage() {
       setTotal(response.data.total);
       setCurrentPage(response.data.page);
       setTotalPages(response.data.totalPages);
-    } catch (err: any) {
-      setErrorMessage(err?.message || 'Failed to fetch skills');
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'Failed to fetch skills');
       setShowError(true);
     } finally {
       setLoading(false);
@@ -55,7 +57,8 @@ export default function SkillsPage() {
   };
 
   useEffect(() => {
-    fetchSkills();
+    void fetchSkills();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, limit, activeFilter]);
 
   const handlePageChange = (page: number) => {
@@ -85,32 +88,32 @@ export default function SkillsPage() {
 
       setIsModalOpen(false);
       setShowSuccess(true);
-      fetchSkills();
-    } catch (err: any) {
-      setErrorMessage(err?.message || `Failed to add skill: ${err}`);
+      void fetchSkills();
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'Failed to add skill');
       setShowError(true);
     }
   };
 
-  const handleEditSkill = async (id: string, updates: any, imageFile?: File) => {
+  const handleEditSkill = async (id: string, updates: Partial<SkillResponse>, imageFile?: File) => {
     try {
       await dispatch(updateSkill({ id, data: updates, imageFile })).unwrap();
       setEditingSkill(null);
       toast.success('Skill updated successfully');
-      fetchSkills();
-    } catch (err: any) {
-      setErrorMessage(err?.message || `Failed to update skill: ${err}`);
+      void fetchSkills();
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'Failed to update skill');
       setShowError(true);
     }
   };
 
-  const handleToggleBlock = async (skill: any) => {
+  const handleToggleBlock = async (skill: SkillResponse) => {
     try {
       await dispatch(toggleSkillBlock(skill.id)).unwrap();
       toast.success(skill.isBlocked ? 'Skill unblocked successfully' : 'Skill blocked successfully');
-      fetchSkills();
-    } catch (err: any) {
-      setErrorMessage(err?.message || `Failed to update skill status: ${err}`);
+      void fetchSkills();
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'Failed to update skill status');
       setShowError(true);
     }
   };
@@ -144,7 +147,7 @@ export default function SkillsPage() {
             </div>
             <div className="flex gap-3">
               <button
-                onClick={() => navigate('/provider/availability')}
+                onClick={() => navigate(ROUTES.PROVIDER_AVAILABILITY)}
                 className="flex items-center gap-2 rounded-lg border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
               >
                 Availability Settings

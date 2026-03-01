@@ -16,8 +16,10 @@ import {
 
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { updateUserAvatar } from '../../store/slices/authSlice';
-import { userProfileService, UserProfile } from '../../services/userProfileService';
+import { userProfileService, type UserProfile } from '../../services/userProfileService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 interface Session {
   id: number;
@@ -43,8 +45,9 @@ export default function UserProfilePage() {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
+      void fetchProfile();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchProfile = async () => {
@@ -58,9 +61,10 @@ export default function UserProfilePage() {
         console.log('🔵 [UserProfilePage] Updating Redux avatar:', data.avatarUrl);
         dispatch(updateUserAvatar(data.avatarUrl));
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch profile:', error);
-      toast.error(error.response?.data?.message || 'Failed to load profile');
+      const message = getErrorMessage(error);
+      toast.error((message) || 'Failed to load profile');
     } finally {
       setLoading(false);
     }
@@ -75,7 +79,7 @@ export default function UserProfilePage() {
   };
 
   const handleEditProfile = () => {
-    navigate('/profile/edit');
+    navigate(ROUTES.PROFILE_EDIT);
   };
 
   const handleRedeemCredits = () => {
@@ -83,7 +87,7 @@ export default function UserProfilePage() {
   };
 
   const handleManageAllSessions = () => {
-    navigate('/sessions');
+    navigate(ROUTES.SESSIONS);
   };
 
   if (loading) {
@@ -177,7 +181,7 @@ export default function UserProfilePage() {
               </p>
             </div>
             <button
-              onClick={() => navigate('/plans')}
+              onClick={() => navigate(ROUTES.PLANS)}
               className="bg-primary text-primary-foreground px-3 py-1.5 rounded-md border border-primary hover:bg-primary/90 transition-all text-xs font-medium flex items-center gap-1"
             >
               <span>⬆</span> Upgrade Plan
@@ -217,7 +221,7 @@ export default function UserProfilePage() {
         <div className="flex gap-3 mb-8">
           {/* Wallet Balance */}
           <div
-            onClick={() => navigate('/wallet')}
+            onClick={() => navigate(ROUTES.WALLET)}
             className="flex-1 bg-card border border-border rounded-lg p-4 cursor-pointer hover:shadow-md transition-all"
           >
             <div className="flex items-center gap-2 mb-3">
@@ -292,7 +296,7 @@ export default function UserProfilePage() {
                 Manage All Sessions
               </button>
               <button
-                onClick={() => navigate('/explore')}
+                onClick={() => navigate(ROUTES.EXPLORE)}
                 className="bg-primary text-primary-foreground px-4 py-2 rounded-md border border-primary hover:bg-primary/90 transition-all text-sm font-medium flex items-center gap-1.5"
               >
                 <span className="text-base">+</span> Book New Session
@@ -309,7 +313,7 @@ export default function UserProfilePage() {
                   You don't have any scheduled sessions yet. Browse skills and book a session to start learning!
                 </p>
                 <button
-                  onClick={() => navigate('/explore')}
+                  onClick={() => navigate(ROUTES.EXPLORE)}
                   className="bg-primary text-primary-foreground px-4 py-2 rounded-md border border-primary hover:bg-primary/90 transition-all text-sm font-medium"
                 >
                   Browse Skills

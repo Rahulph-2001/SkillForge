@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowLeft, User, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ErrorModal } from '../Modal';
+import { ROUTES } from "@/constants/routes";
 
 interface SignupFormProps {
     onSubmit?: (data: SignupFormData) => void;
@@ -54,24 +55,28 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
         if (touched.name && formData.name) {
             validateField('name', formData.name);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.name, touched.name]);
 
     useEffect(() => {
         if (touched.email && formData.email) {
             validateField('email', formData.email);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.email, touched.email]);
 
     useEffect(() => {
         if (touched.password && formData.password) {
             validateField('password', formData.password);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.password, touched.password]);
 
     useEffect(() => {
         if (touched.confirmPassword) {
             validateField('confirmPassword', formData.confirmPassword);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [formData.confirmPassword, formData.password, touched.confirmPassword]);
 
     const validateField = (fieldName: keyof SignupFormData, value: string): boolean => {
@@ -167,7 +172,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
         <div className="w-full max-w-md bg-card text-card-foreground rounded-lg shadow-lg p-8 border border-border">
             {/* Back button */}
             <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate(ROUTES.HOME)}
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
             >
                 <ArrowLeft className="w-5 h-5" />
@@ -378,11 +383,11 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
                     />
                     <label htmlFor="terms" className="text-sm text-foreground">
                         I agree to the{' '}
-                        <Link to="/terms" className="text-primary hover:underline font-medium">
+                        <Link to={ROUTES.TERMS} className="text-primary hover:underline font-medium">
                             Terms of Service
                         </Link>{' '}
                         and{' '}
-                        <Link to="/privacy" className="text-primary hover:underline font-medium">
+                        <Link to={ROUTES.PRIVACY} className="text-primary hover:underline font-medium">
                             Privacy Policy
                         </Link>
                     </label>
@@ -402,7 +407,7 @@ export default function SignupForm({ onSubmit }: SignupFormProps) {
             <div className="text-center mt-6">
                 <p className="text-muted-foreground">
                     Already have an account?{' '}
-                    <Link to="/login" className="text-primary hover:underline font-medium">
+                    <Link to={ROUTES.LOGIN} className="text-primary hover:underline font-medium">
                         Log in
                     </Link>
                 </p>

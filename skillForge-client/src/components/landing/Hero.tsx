@@ -1,5 +1,6 @@
 import { Star } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 export default function Hero() {
     return (
@@ -20,7 +21,7 @@ export default function Hero() {
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                     <Link
-                        to="/signup"
+                        to={ROUTES.SIGNUP}
                         className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 flex items-center justify-center gap-2 whitespace-nowrap transition-colors"
                     >
                         Join Free - Get 20 Credits

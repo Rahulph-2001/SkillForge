@@ -117,12 +117,13 @@ export default function RescheduleModal({
       setReason('');
       setErrors({});
       onClose();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [RescheduleModal] Reschedule failed:', error);
+      const err = error as { message?: string; response?: { data?: { message?: string }; status?: number } };
       console.error('❌ [RescheduleModal] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status,
       });
     } finally {
       setIsSubmitting(false);
@@ -260,8 +261,8 @@ export default function RescheduleModal({
                   type="button"
                   onClick={() => setTime({ ...time, period: 'AM' })}
                   className={`px-3 py-2 text-sm font-medium transition-colors ${time.period === 'AM'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-card text-foreground hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card text-foreground hover:bg-muted'
                     }`}
                 >
                   AM
@@ -270,8 +271,8 @@ export default function RescheduleModal({
                   type="button"
                   onClick={() => setTime({ ...time, period: 'PM' })}
                   className={`px-3 py-2 text-sm font-medium transition-colors border-l border-border ${time.period === 'PM'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-card text-foreground hover:bg-muted'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card text-foreground hover:bg-muted'
                     }`}
                 >
                   PM

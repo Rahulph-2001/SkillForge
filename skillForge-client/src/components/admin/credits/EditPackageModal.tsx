@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Loader2 } from 'lucide-react';
-import { CreditPackage } from '../../../services/adminCreditService';
+import { type CreditPackage } from '../../../services/adminCreditService';
+import { getErrorMessage } from '../../../utils/errorUtils';
 
 interface EditPackageModalProps {
     isOpen: boolean;
@@ -64,8 +65,8 @@ export default function EditPackageModal({ isOpen, onClose, onSubmit, packageToE
             setLoading(true);
             await onSubmit(packageToEdit.id, formData);
             onClose();
-        } catch (err: any) {
-            setError(err.message || 'Failed to update package');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to update package');
         } finally {
             setLoading(false);
         }

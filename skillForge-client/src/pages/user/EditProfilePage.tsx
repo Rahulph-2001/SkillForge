@@ -7,6 +7,8 @@ import { updateUserAvatar } from '../../store/slices/authSlice';
 import { userProfileService } from '../../services/userProfileService';
 import { toast } from 'react-hot-toast';
 import ImageCropper from '../../components/common/imageCropper';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
@@ -31,8 +33,9 @@ export default function EditProfilePage() {
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
+      void fetchProfile();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const fetchProfile = async () => {
@@ -46,10 +49,10 @@ export default function EditProfilePage() {
         location: data.location || '',
       });
       setAvatarPreview(data.avatarUrl);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch profile:', error);
-      toast.error(error.response?.data?.message || 'Failed to load profile');
-      navigate('/profile');
+      toast.error(getErrorMessage(error, 'Failed to load profile'));
+      navigate(ROUTES.PROFILE);
     } finally {
       setLoading(false);
     }
@@ -154,15 +157,16 @@ export default function EditProfilePage() {
       }
 
       toast.success('Profile updated successfully!');
-      navigate('/profile');
-    } catch (error: any) {
-      console.error('❌ [EditProfilePage] Failed to update profile:', error);
+      navigate(ROUTES.PROFILE);
+    } catch (error: unknown) {
+      const err = error as { message?: string; response?: { data?: unknown; status?: number } };
+      console.error('❌ [EditProfilePage] Failed to update profile:', err);
       console.error('❌ [EditProfilePage] Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status
+        message: err.message,
+        response: err.response?.data,
+        status: err.response?.status
       });
-      toast.error(error.response?.data?.message || 'Failed to update profile');
+      toast.error(getErrorMessage(err, 'Failed to update profile'));
     } finally {
       setSaving(false);
     }
@@ -188,7 +192,7 @@ export default function EditProfilePage() {
       <div className="bg-card px-6 py-4 border-b border-border">
         <div className="max-w-3xl mx-auto">
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate(ROUTES.PROFILE)}
             className="flex items-center gap-2 text-foreground hover:text-muted-foreground transition"
           >
             <ArrowLeft size={20} />
@@ -295,7 +299,7 @@ export default function EditProfilePage() {
             <div className="flex gap-4 pt-4">
               <button
                 type="button"
-                onClick={() => navigate('/profile')}
+                onClick={() => navigate(ROUTES.PROFILE)}
                 className="flex-1 px-4 py-2 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition"
                 disabled={saving}
               >

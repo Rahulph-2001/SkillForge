@@ -3,12 +3,13 @@ import { X, Users, UserMinus } from 'lucide-react';
 import {
     getCommunityMembers,
     removeCommunityMember,
-    CommunityMember,
+    type CommunityMember,
 } from '../../services/communityService';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
 import ConfirmModal from '../common/Modal/ConfirmModal';
 import { useEffect } from 'react';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface MemberListModalProps {
     isOpen: boolean;
@@ -32,8 +33,9 @@ export default function MemberListModal({
 
     useEffect(() => {
         if (isOpen) {
-            loadMembers();
+            void loadMembers();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, communityId]);
 
     const loadMembers = async () => {
@@ -41,8 +43,8 @@ export default function MemberListModal({
             setLoading(true);
             const data = await getCommunityMembers(communityId);
             setMembers(data.members);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to load members');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to load members');
         } finally {
             setLoading(false);
         }
@@ -67,9 +69,9 @@ export default function MemberListModal({
             setTimeout(() => {
                 setShowSuccess(false);
             }, 2000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             setShowRemoveConfirm(false);
-            setError(err.response?.data?.message || 'Failed to remove member');
+            setError(getErrorMessage(err) || 'Failed to remove member');
         }
     };
 

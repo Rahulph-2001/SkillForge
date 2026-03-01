@@ -59,7 +59,8 @@ export default function DataTable<T>({
                                         <td key={column.key} className="px-6 py-4">
                                             {column.render
                                                 ? column.render(item)
-                                                : String((item as any)[column.key] ?? '-')
+                                                // eslint-disable-next-line @typescript-eslint/no-base-to-string
+                                                : String((item as Record<string, unknown>)[column.key] ?? '-')
                                             }
                                         </td>
                                     ))}

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { X, Upload, Image as ImageIcon } from 'lucide-react';
-import { updateCommunity, Community } from '../../services/communityService';
+import { updateCommunity, type Community } from '../../services/communityService';
 import ImageCropper from '../common/imageCropper';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface EditCommunityModalProps {
     isOpen: boolean;
@@ -106,8 +107,8 @@ export default function EditCommunityModal({
                 onClose();
                 if (onSuccess) onSuccess();
             }, 2000);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update community');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to update community');
         } finally {
             setIsSubmitting(false);
         }

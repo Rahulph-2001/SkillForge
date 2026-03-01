@@ -49,15 +49,15 @@ function CheckoutForm({ amount, onSuccess, onError, onClose }: {
                     await paymentService.confirmPayment(paymentIntent.id);
                     console.log('[PaymentModal] Backend confirmation successful');
                     onSuccess(paymentIntent.id);
-                } catch (backendError: any) {
+                } catch (backendError: unknown) {
                     console.error('[PaymentModal] Backend confirmation failed:', backendError);
-                    onError(backendError.message || 'Payment succeeded but subscription assignment failed');
+                    onError(backendError instanceof Error ? backendError.message : 'Payment succeeded but subscription assignment failed');
                 }
             } else {
                 onError('Payment did not complete. Status: ' + (paymentIntent?.status || 'unknown'));
             }
-        } catch (err: any) {
-            onError(err.message || 'An unexpected error occurred');
+        } catch (err: unknown) {
+            onError(err instanceof Error ? err.message : 'An unexpected error occurred');
         } finally {
             setIsProcessing(false);
         }

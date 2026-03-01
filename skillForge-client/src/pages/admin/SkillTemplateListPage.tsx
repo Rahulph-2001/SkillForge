@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react"
 import { Search, Plus, Edit2, TrendingUp, FileQuestion } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { skillTemplateService, SkillTemplate, SkillTemplateListResponse } from "../../services/skillTemplateService"
+import { skillTemplateService, type SkillTemplate, type SkillTemplateListResponse } from "../../services/skillTemplateService"
 import { ErrorModal, SuccessModal } from "../../components/common/Modal"
 import QuestionManagementModal from "../../components/admin/QuestionManagementModal"
 import Pagination from "../../components/common/pagination/Pagination"
-
+import { getErrorMessage } from "../../utils/errorUtils"
+import { ROUTES } from "@/constants/routes";
 
 export default function SkillTemplateListPage() {
   const navigate = useNavigate()
@@ -47,7 +48,8 @@ export default function SkillTemplateListPage() {
 
   // Fetch templates when dependencies change
   useEffect(() => {
-    fetchTemplates()
+    void fetchTemplates()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit, debouncedSearch, selectedCategory, selectedStatus])
 
   const fetchTemplates = useCallback(async () => {
@@ -70,9 +72,10 @@ export default function SkillTemplateListPage() {
         totalItems: response.pagination.total,
         fullResponse: response
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Fetch templates error:', error)
-      setErrorMessage(error.response?.data?.message || error.response?.data?.error || "Failed to fetch templates")
+      const message = getErrorMessage(error, 'Failed to fetch templates');
+      setErrorMessage(message);
     } finally {
       setLoading(false)
     }
@@ -91,9 +94,10 @@ export default function SkillTemplateListPage() {
     try {
       await skillTemplateService.toggleStatus(id)
       setSuccessMessage("Status updated successfully")
-      fetchTemplates()
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.error || "Failed to update status")
+      void fetchTemplates()
+    } catch (error: unknown) {
+      const message = getErrorMessage(error, 'Failed to update status');
+      setErrorMessage(message);
     }
   }
 
@@ -137,7 +141,7 @@ export default function SkillTemplateListPage() {
             </p>
           </div>
           <button
-            onClick={() => navigate("/admin/skill-templates/new")}
+            onClick={() => navigate(ROUTES.ADMIN.SKILL_TEMPLATE_CREATE)}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
           >
             <Plus className="w-5 h-5" />
@@ -230,7 +234,7 @@ export default function SkillTemplateListPage() {
               key={template.id}
               template={template}
               onToggleStatus={() => handleToggleStatus(template.id)}
-              onEdit={() => navigate(`/admin/skill-templates/${template.id}/edit`)}
+              onEdit={() => navigate(ROUTES.ADMIN.SKILL_TEMPLATE_EDIT(template.id))}
               onManageQuestions={() => {
                 setSelectedTemplate(template)
                 setQuestionModalOpen(true)

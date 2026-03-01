@@ -6,7 +6,8 @@ import ProfileHeader from '../../components/profile/ProfileHeader';
 import ProfileTabs from '../../components/profile/ProfileTabs';
 import ReviewsTab from '../../components/profile/ReviewsTab';
 import AboutTab from '../../components/profile/AboutTab';
-import { providerService, ProviderProfile } from '../../services/providerService';
+import { providerService, type ProviderProfile } from '../../services/providerService';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 export default function ProviderProfilePage() {
   const { providerId } = useParams<{ providerId: string }>();
@@ -17,8 +18,9 @@ export default function ProviderProfilePage() {
 
   useEffect(() => {
     if (providerId) {
-      fetchProviderProfile(providerId);
+      void fetchProviderProfile(providerId);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerId]);
 
   const fetchProviderProfile = async (id: string) => {
@@ -26,9 +28,10 @@ export default function ProviderProfilePage() {
       setLoading(true);
       const data = await providerService.getProviderProfile(id);
       setProfile(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch provider profile:', error);
-      toast.error(error.response?.data?.message || 'Failed to load profile');
+      const message = getErrorMessage(error, 'Failed to load profile');
+      toast.error(message);
       navigate(-1);
     } finally {
       setLoading(false);

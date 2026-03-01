@@ -16,6 +16,7 @@ import BuyCreditsModal from '../../components/credits/BuyCreditsModal';
 import creditService from '../../services/creditService';
 import { toast } from 'react-hot-toast';
 import { useAppSelector } from '../../store/hooks';
+import { ROUTES } from "@/constants/routes";
 
 const CreditManagementPage: React.FC = () => {
     const [activeTab, setActiveTab] = useState<'all' | 'purchases' | 'earned' | 'spent'>('all');
@@ -42,7 +43,7 @@ const CreditManagementPage: React.FC = () => {
                     spent: data.stats.totalSpent
                 });
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch credit data', error);
             toast.error('Failed to load credit data');
         } finally {
@@ -51,7 +52,7 @@ const CreditManagementPage: React.FC = () => {
     }, [user?.credits]);
 
     useEffect(() => {
-        fetchCreditData();
+        void fetchCreditData();
     }, [fetchCreditData, refreshKey]);
 
     const handlePurchaseSuccess = () => {
@@ -72,7 +73,7 @@ const CreditManagementPage: React.FC = () => {
                 {/* Header */}
                 <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
                     <div>
-                        <Link to="/dashboard" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
+                        <Link to={ROUTES.DASHBOARD} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
                             <ArrowLeft className="w-4 h-4" />
                             Back to Dashboard
                         </Link>

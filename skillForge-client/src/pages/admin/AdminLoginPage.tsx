@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks"
 import { adminLogin, clearError } from "../../store/slices/authSlice"
 import { ErrorModal } from "../../components/common/Modal"
 import { isAdmin } from "../../config/userRole"
+import { ROUTES } from "@/constants/routes";
 
 export default function AdminLoginPage() {
     const navigate = useNavigate()
@@ -28,7 +29,7 @@ export default function AdminLoginPage() {
     // Redirect to admin dashboard if already logged in as admin
     useEffect(() => {
         if (user && isAdmin(user.role)) {
-            navigate('/admin/dashboard')
+            navigate(ROUTES.ADMIN.DASHBOARD)
         }
     }, [user, navigate])
 
@@ -73,7 +74,7 @@ export default function AdminLoginPage() {
             <div className="w-full max-w-md">
                 <div className="bg-card rounded-xl shadow-xl p-8">
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate(ROUTES.LOGIN)}
                         className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 font-medium transition-colors"
                     >
                         <ArrowLeft size={18} />

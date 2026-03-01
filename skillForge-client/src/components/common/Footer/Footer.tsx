@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 export default function Footer() {
     return (
@@ -21,17 +22,17 @@ export default function Footer() {
                         <h4 className="font-semibold text-foreground mb-4">Platform</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link to="/how-it-works" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.HOW_IT_WORKS} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     How It Works
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/explore" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.EXPLORE} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Explore Skills
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/become-teacher" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.BECOME_TEACHER} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Become Teacher
                                 </Link>
                             </li>
@@ -48,22 +49,22 @@ export default function Footer() {
                         <h4 className="font-semibold text-foreground mb-4">Company</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link to="/about" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.ABOUT} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     About Us
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/blog" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.BLOG} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Blog
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/careers" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.CAREERS} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Careers
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/press" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.PRESS} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Press
                                 </Link>
                             </li>
@@ -75,17 +76,17 @@ export default function Footer() {
                         <h4 className="font-semibold text-foreground mb-4">Legal</h4>
                         <ul className="space-y-2">
                             <li>
-                                <Link to="/terms" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.TERMS} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Terms of Service
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/privacy" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.PRIVACY} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Privacy Policy
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/guidelines" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
+                                <Link to={ROUTES.GUIDELINES} className="text-muted-foreground hover:text-foreground text-sm transition-colors">
                                     Guidelines
                                 </Link>
                             </li>

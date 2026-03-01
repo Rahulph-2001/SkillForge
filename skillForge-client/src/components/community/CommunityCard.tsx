@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Users, MessageSquare, Plus, Check } from 'lucide-react';
-import { Community } from '../../services/communityService';
+import { type Community } from '../../services/communityService';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 interface CommunityCardProps {
     community: Community;
@@ -53,7 +54,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({ community, onJoin, onLeav
             {/* Content Section */}
             <div className="p-5 flex flex-col flex-1">
                 <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-foreground line-clamp-1 hover:text-primary transition-colors cursor-pointer" onClick={() => onViewMessages ? onViewMessages(community) : navigate(`/communities/${community.id}`)}>
+                    <h3 className="text-lg font-bold text-foreground line-clamp-1 hover:text-primary transition-colors cursor-pointer" onClick={() => onViewMessages ? onViewMessages(community) : navigate(ROUTES.COMMUNITY_DETAILS(community.id))}>
                         {community.name}
                     </h3>
                 </div>
@@ -79,7 +80,7 @@ const CommunityCard: React.FC<CommunityCardProps> = ({ community, onJoin, onLeav
                     {community.isJoined || community.isAdmin ? (
                         <div className="space-y-3">
                             <button
-                                onClick={() => onViewMessages ? onViewMessages(community) : navigate(`/communities/${community.id}`)}
+                                onClick={() => onViewMessages ? onViewMessages(community) : navigate(ROUTES.COMMUNITY_DETAILS(community.id))}
                                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-2.5 rounded-lg text-sm font-semibold transition-colors flex items-center justify-center gap-2"
                             >
                                 <MessageSquare className="w-4 h-4" />

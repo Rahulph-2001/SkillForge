@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 import VideoCallRoom from '../../components/video/VideoCallRoom';
 import { VideoCallStrategyFactory } from '../../services/VideoCallStrategyFactory';
-import { VideoCallRoom as IVideoCallRoom, SessionInfo } from '../../services/videoCallService';
+import { type VideoCallRoom as IVideoCallRoom, type SessionInfo } from '../../services/videoCallService';
 import { useAppSelector } from '../../store/hooks';
+import { ROUTES } from "@/constants/routes";
 
 export default function InterviewVideoCallPage() {
     const { interviewId } = useParams<{ interviewId: string }>();
@@ -48,26 +50,27 @@ export default function InterviewVideoCallPage() {
 
                 setRoom(roomData);
                 setSessionInfo(sessionData);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('Failed to join interview session:', err);
-                setError(err.response?.data?.error || err.message || 'Failed to join interview');
+                setError(getErrorMessage(err) || 'Failed to join interview');
             } finally {
                 setLoading(false);
             }
         };
 
-        initInterview();
+        void initInterview();
     }, [interviewId, user]);
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     const handleSessionEnd = async () => {
         // For interviews, we might not have a formal "complete" step yet, 
         // or it's just leaving.
         toast.success('Interview ended');
-        navigate('/my-projects');
+        navigate(ROUTES.MY_PROJECTS);
     };
 
     const handleLeave = () => {
-        navigate('/my-projects');
+        navigate(ROUTES.MY_PROJECTS);
     };
 
     if (loading) {
@@ -87,7 +90,7 @@ export default function InterviewVideoCallPage() {
                 <div className="text-center">
                     <p className="text-destructive mb-4">{error}</p>
                     <button
-                        onClick={() => navigate('/my-projects')}
+                        onClick={() => navigate(ROUTES.MY_PROJECTS)}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                     >
                         Go Back

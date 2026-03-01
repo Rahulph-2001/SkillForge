@@ -3,6 +3,7 @@ import { X, Upload } from 'lucide-react';
 import { createCommunity } from '../../services/communityService';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface CreateCommunityModalProps {
     isOpen: boolean;
@@ -88,12 +89,13 @@ export default function CreateCommunityModal({
                 onClose();
                 if (onSuccess) onSuccess();
             }, 2000);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('=== CREATE COMMUNITY ERROR ===');
             console.error('Full error:', err);
-            console.error('Error response:', err.response);
-            console.error('Error data:', err.response?.data);
-            setError(err.response?.data?.message || 'Failed to create community');
+            const apiErr = err as { response?: { data?: { message?: string } } };
+            console.error('Error response:', apiErr.response);
+            console.error('Error data:', apiErr.response?.data);
+            setError(getErrorMessage(err) || 'Failed to create community');
         } finally {
             setIsSubmitting(false);
         }

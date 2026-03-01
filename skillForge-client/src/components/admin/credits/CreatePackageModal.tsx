@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
+import { getErrorMessage } from '../../../utils/errorUtils';
 
 interface CreatePackageModalProps {
     isOpen: boolean;
@@ -51,8 +52,8 @@ export default function CreatePackageModal({ isOpen, onClose, onSubmit }: Create
             setLoading(true);
             await onSubmit(formData);
             onClose();
-        } catch (err: any) {
-            setError(err.message || 'Failed to create package');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to create package');
         } finally {
             setLoading(false);
         }

@@ -3,6 +3,8 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { authService } from "../../services/authService"
 import { ErrorModal, SuccessModal } from "../../components/common/Modal"
+import { getErrorMessage } from "../../utils/errorUtils"
+import { ROUTES } from "@/constants/routes";
 
 export default function ResetPasswordPage() {
     const navigate = useNavigate()
@@ -17,15 +19,16 @@ export default function ResetPasswordPage() {
     const [showSuccessModal, setShowSuccessModal] = useState(false)
 
     useEffect(() => {
-        const emailFromState = location.state?.email
-        const otpCodeFromState = location.state?.otpCode
-        const emailFromStorage = localStorage.getItem('otpEmail')
+        const state = location.state as { email?: string; otpCode?: string } | null;
+        const emailFromState = state?.email;
+        const otpCodeFromState = state?.otpCode;
+        const emailFromStorage = localStorage.getItem('otpEmail');
 
         const emailToUse = emailFromState || emailFromStorage || ""
         const otpCodeToUse = otpCodeFromState || ""
 
         if (!emailToUse || !otpCodeToUse) {
-            navigate('/forgot-password')
+            navigate(ROUTES.FORGOT_PASSWORD)
             return
         }
 
@@ -62,11 +65,10 @@ export default function ResetPasswordPage() {
 
             setShowSuccessModal(true);
             setTimeout(() => {
-                navigate('/login');
+                navigate(ROUTES.LOGIN);
             }, 2000);
-        } catch (err: any) {
-            const errorMessage = err?.error || err?.message || 'Failed to reset password'
-            setError(errorMessage)
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to reset password')
             setShowErrorModal(true)
         } finally {
             setLoading(false)

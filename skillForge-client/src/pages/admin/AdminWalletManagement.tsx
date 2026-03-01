@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import adminWalletService, { WalletStats, WalletTransaction } from '../../services/adminWalletService';
+import adminWalletService, { type WalletStats, type WalletTransaction } from '../../services/adminWalletService';
 import toast from 'react-hot-toast';
 import Pagination from '../../components/common/Pagination';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 const Icons = {
     Wallet: () => (
@@ -79,11 +80,12 @@ export default function AdminWalletManagement() {
     const [activeTab, setActiveTab] = useState('transactions');
 
     useEffect(() => {
-        loadWalletStats();
+        void loadWalletStats();
     }, []);
 
     useEffect(() => {
-        loadTransactions();
+        void loadTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, search, typeFilter, statusFilter]);
 
     const loadWalletStats = async () => {
@@ -91,9 +93,10 @@ export default function AdminWalletManagement() {
             setLoading(true);
             const data = await adminWalletService.getWalletStats();
             setStats(data);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error loading wallet stats:', error);
-            toast.error(error.message || 'Failed to load wallet statistics');
+            const message = getErrorMessage(error, 'Failed to load wallet statistics');
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -112,9 +115,10 @@ export default function AdminWalletManagement() {
             setTransactions(data.transactions);
             setTotalPages(data.totalPages);
             setTotalItems(data.total);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error loading transactions:', error);
-            toast.error(error.message || 'Failed to load transactions');
+            const message = getErrorMessage(error, 'Failed to load transactions');
+            toast.error(message);
         } finally {
             setTransactionsLoading(false);
         }
@@ -255,8 +259,8 @@ export default function AdminWalletManagement() {
                                     key={tab}
                                     onClick={() => setActiveTab(tab)}
                                     className={`px-6 py-4 text-sm font-medium border-b-2 transition-colors ${activeTab === tab
-                                            ? 'border-primary text-primary'
-                                            : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
+                                        ? 'border-primary text-primary'
+                                        : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                                         }`}
                                 >
                                     {tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
@@ -303,7 +307,7 @@ export default function AdminWalletManagement() {
                                 <select
                                     value={typeFilter}
                                     onChange={(e) => {
-                                        setTypeFilter(e.target.value as any);
+                                        setTypeFilter(e.target.value as "" | "CREDIT" | "WITHDRAWAL");
                                         setPage(1);
                                     }}
                                     className="px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
@@ -315,7 +319,7 @@ export default function AdminWalletManagement() {
                                 <select
                                     value={statusFilter}
                                     onChange={(e) => {
-                                        setStatusFilter(e.target.value as any);
+                                        setStatusFilter(e.target.value as "" | "COMPLETED" | "PENDING" | "FAILED");
                                         setPage(1);
                                     }}
                                     className="px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent text-foreground"
@@ -367,8 +371,8 @@ export default function AdminWalletManagement() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${transaction.type === 'CREDIT'
-                                                            ? 'bg-green-500/10 text-green-600'
-                                                            : 'bg-orange-500/10 text-orange-600'
+                                                        ? 'bg-green-500/10 text-green-600'
+                                                        : 'bg-orange-500/10 text-orange-600'
                                                         }`}>
                                                         {transaction.type === 'CREDIT' ? (
                                                             <Icons.TrendingDown />
@@ -391,10 +395,10 @@ export default function AdminWalletManagement() {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${transaction.status === 'COMPLETED'
-                                                            ? 'bg-green-500/10 text-green-600'
-                                                            : transaction.status === 'PENDING'
-                                                                ? 'bg-yellow-500/10 text-yellow-600'
-                                                                : 'bg-destructive/10 text-destructive'
+                                                        ? 'bg-green-500/10 text-green-600'
+                                                        : transaction.status === 'PENDING'
+                                                            ? 'bg-yellow-500/10 text-yellow-600'
+                                                            : 'bg-destructive/10 text-destructive'
                                                         }`}>
                                                         {transaction.status === 'COMPLETED' && <Icons.CheckCircle />}
                                                         {transaction.status === 'PENDING' && <Icons.Clock />}

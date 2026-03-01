@@ -13,13 +13,15 @@ import {
     Sparkles,
     MessageSquare
 } from 'lucide-react';
-import projectService, { Project } from '../../services/projectService';
+import projectService, { type Project } from '../../services/projectService';
 import ApplyProjectModal from '../../components/project/ApplyProjectModal';
 import ProjectChatModal from '../../components/project/ProjectChatModal';
 import { useSearchParams } from 'react-router-dom';
-import { RootState } from '../../store/store';
+import { type RootState } from '../../store/store';
 // import api from '../../services/api'; // Removed as we use service now
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function ProjectDetailsPage() {
     const { id } = useParams<{ id: string }>();
@@ -34,8 +36,9 @@ export default function ProjectDetailsPage() {
 
     useEffect(() => {
         if (id) {
-            fetchProjectDetails();
+            void fetchProjectDetails();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id]);
 
     useEffect(() => {
@@ -47,11 +50,13 @@ export default function ProjectDetailsPage() {
     const fetchProjectDetails = async () => {
         try {
             setLoading(true);
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             const data = await projectService.getProject(id!);
             setProject(data);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch project:', error);
-            toast.error(error.response?.data?.message || 'Failed to load project details');
+            const message = getErrorMessage(error, 'Failed to load project details');
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -70,7 +75,7 @@ export default function ProjectDetailsPage() {
             <div className="min-h-screen bg-background flex flex-col items-center justify-center">
                 <p className="text-muted-foreground mb-4">Project not found</p>
                 <button
-                    onClick={() => navigate('/projects')}
+                    onClick={() => navigate(ROUTES.PROJECTS)}
                     className="text-primary hover:underline"
                 >
                     Back to Projects
@@ -95,7 +100,7 @@ export default function ProjectDetailsPage() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Button */}
                 <button
-                    onClick={() => navigate('/projects')}
+                    onClick={() => navigate(ROUTES.PROJECTS)}
                     className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
                 >
                     <ArrowLeft className="w-5 h-5" />
@@ -304,7 +309,7 @@ export default function ProjectDetailsPage() {
                                             </div>
                                         )}
                                         <button
-                                            onClick={() => navigate(`/profile/${project.clientId}`)}
+                                            onClick={() => navigate(ROUTES.PUBLIC_PROFILE(project.clientId))}
                                             className="text-sm text-primary hover:underline mt-2"
                                         >
                                             View Profile
@@ -354,7 +359,7 @@ export default function ProjectDetailsPage() {
                         onSuccess={() => {
                             setShowApplyModal(false);
                             toast.success('Application submitted successfully!');
-                            fetchProjectDetails(); // Refresh to update application count
+                            void fetchProjectDetails(); // Refresh to update application count
                         }}
                     />
                 )

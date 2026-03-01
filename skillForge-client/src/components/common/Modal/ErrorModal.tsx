@@ -32,7 +32,7 @@ export default function ErrorModal({
   // Safely extract message if it's an object (defensive programming)
   const errorMessage = typeof message === 'string'
     ? message
-    : (message as any)?.message || 'An error occurred';
+    : (message as { message?: string })?.message || 'An error occurred';
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

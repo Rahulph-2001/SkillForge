@@ -1,9 +1,10 @@
-import { SignupForm, SignupFormData } from '../../components/common/Signup';
+import { SignupForm, type SignupFormData } from '../../components/common/Signup';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { signup, clearError } from '../../store/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { SuccessModal, ErrorModal } from '../../components/common/Modal';
+import { ROUTES } from "@/constants/routes";
 
 export default function SignupPage() {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ export default function SignupPage() {
 
     const handleSuccessModalClose = () => {
         setShowSuccessModal(false);
-        navigate('/verify-otp', { state: { email: signupEmail, expiresAt, isNewUser: true } });
+        navigate(ROUTES.VERIFY_OTP, { state: { email: signupEmail, expiresAt, isNewUser: true } });
     };
 
     const handleSignup = async (data: SignupFormData) => {

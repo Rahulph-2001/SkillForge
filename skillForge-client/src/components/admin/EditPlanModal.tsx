@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, ChevronDown } from 'lucide-react';
-import { SubscriptionPlan, SubscriptionFeature } from '../../services/subscriptionService';
-import featureService, { Feature } from '../../services/featureService';
+import { type SubscriptionPlan, type SubscriptionFeature } from '../../services/subscriptionService';
+import featureService, { type Feature } from '../../services/featureService';
 import { toast } from 'react-toastify';
 
 interface EditPlanModalProps {
     plan: SubscriptionPlan | null;
     isOpen: boolean;
-    onSave: (plan: Partial<SubscriptionPlan> & { features: any[] }) => void;
+    onSave: (plan: Partial<SubscriptionPlan> & { features: Partial<SubscriptionFeature>[] }) => void;
     onCancel: () => void;
 }
 
@@ -35,7 +35,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
     // Load library features on mount
     useEffect(() => {
         if (isOpen) {
-            loadLibraryFeatures();
+            void loadLibraryFeatures();
         }
     }, [isOpen]);
 
@@ -170,7 +170,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
             ...formData,
         };
 
-        onSave(planToSave as any);
+        onSave(planToSave as unknown as Parameters<typeof onSave>[0]);
     };
 
     return (
@@ -350,7 +350,7 @@ const EditPlanModal: React.FC<EditPlanModalProps> = ({
                                                 />
                                                 <select
                                                     value={feature.featureType}
-                                                    onChange={(e) => updateFeature(index, { featureType: e.target.value as any })}
+                                                    onChange={(e) => updateFeature(index, { featureType: e.target.value as "BOOLEAN" | "NUMERIC_LIMIT" | "TEXT" })}
                                                     className="w-32 px-2 py-1 bg-background border border-border rounded text-xs text-muted-foreground"
                                                 >
                                                     <option value="BOOLEAN">Boolean</option>

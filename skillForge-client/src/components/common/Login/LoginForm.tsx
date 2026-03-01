@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowLeft, Mail, Lock } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 interface LoginFormProps {
     onSubmit?: (data: LoginFormData) => void;
@@ -69,7 +70,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         <div className="w-full max-w-md bg-card text-card-foreground rounded-lg shadow-lg p-8 border border-border">
             {/* Back button */}
             <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate(ROUTES.HOME)}
                 className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8 transition-colors"
             >
                 <ArrowLeft className="w-5 h-5" />
@@ -140,7 +141,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                 <div>
                     <div className="flex items-center justify-between mb-2">
                         <label className="block text-foreground font-semibold">Password</label>
-                        <Link to="/forgot-password" className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
+                        <Link to={ROUTES.FORGOT_PASSWORD} className="text-primary hover:text-primary/80 text-sm font-semibold transition-colors">
                             Forgot password?
                         </Link>
                     </div>
@@ -180,7 +181,7 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
             <div className="text-center mt-6">
                 <p className="text-muted-foreground">
                     Don't have an account?{' '}
-                    <Link to="/signup" className="text-primary hover:text-primary/80 font-semibold transition-colors">
+                    <Link to={ROUTES.SIGNUP} className="text-primary hover:text-primary/80 font-semibold transition-colors">
                         Sign up for free
                     </Link>
                 </p>

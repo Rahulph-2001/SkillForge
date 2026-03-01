@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Video, Loader2, Clock, AlertCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { videoCallService, SessionTimeValidation } from '../../services/videoCallService';
+import { videoCallService, type SessionTimeValidation } from '../../services/videoCallService';
 import { useSessionCountdown } from '../../hooks/useSessionCountdown';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 interface JoinSessionButtonProps {
     sessionId: string;
@@ -63,9 +65,10 @@ export default function JoinSessionButton({
             }
         };
 
-        validateTime();
+        void validateTime();
 
         // Re-validate every 30 seconds
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         const interval = setInterval(validateTime, 30000);
         return () => clearInterval(interval);
     }, [sessionId, status]);
@@ -84,9 +87,10 @@ export default function JoinSessionButton({
             }
 
             // Navigate to video call page
-            navigate(`/session/${sessionId}/call`);
-        } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Cannot join session at this time');
+            navigate(ROUTES.SESSION_CALL(sessionId));
+        } catch (err: unknown) {
+            const message = getErrorMessage(err, 'Cannot join session at this time');
+            toast.error(message);
         } finally {
             setLoading(false);
         }

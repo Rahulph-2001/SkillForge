@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 import { updateSubscription } from '../../store/slices/authSlice';
-import subscriptionService, { SubscriptionPlan } from '../../services/subscriptionService';
+import subscriptionService, { type SubscriptionPlan } from '../../services/subscriptionService';
 
 /**
  * Component to sync user subscription plan from database to Redux on app load
@@ -60,7 +60,8 @@ export default function SubscriptionSync() {
     };
 
     // Sync subscription on mount
-    syncSubscription();
+    void syncSubscription();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id, dispatch]); // Only re-run if user ID changes
 
   // This component doesn't render anything

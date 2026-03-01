@@ -1,7 +1,7 @@
 
 
 import { useEffect, useState } from 'react';
-import { adminDashboardService, AdminDashboardStats } from '../../services/adminDashboardService';
+import { adminDashboardService, type AdminDashboardStats } from '../../services/adminDashboardService';
 
 const Icons = {
     Users: () => (
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
                 setLoading(false);
             }
         };
-        fetchStats();
+        void fetchStats();
     }, []);
 
     if (loading || !stats) {

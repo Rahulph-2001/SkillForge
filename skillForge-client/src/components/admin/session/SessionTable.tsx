@@ -1,6 +1,6 @@
 import React from 'react';
 import { Eye, CheckCircle, Ban, AlertCircle } from 'lucide-react';
-import { AdminSession } from '../../../services/adminService';
+import { type AdminSession } from '../../../services/adminService';
 import Pagination from '../../common/Pagination';
 
 interface SessionTableProps {

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { googleAuth } from '../../store/slices/authSlice';
+import { ROUTES } from "@/constants/routes";
 
 export default function GoogleCallbackPage() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function GoogleCallbackPage() {
 
         if (errorParam) {
             // Handle OAuth error
-            navigate('/login', {
+            navigate(ROUTES.LOGIN, {
                 state: { error: 'Google authentication failed. Please try again.' }
             });
             return;
@@ -28,15 +29,15 @@ export default function GoogleCallbackPage() {
                 // Success - redirect based on whether user is new or existing
                 if (isNewUser) {
                     // New user - show welcome page with 20 credits info
-                    navigate('/welcome');
+                    navigate(ROUTES.WELCOME);
                 } else {
                     // Existing user - go to home
-                    navigate('/home');
+                    navigate(ROUTES.LANDING);
                 }
             })
             .catch(() => {
                 // Error - redirect to login
-                navigate('/login', {
+                navigate(ROUTES.LOGIN, {
                     state: { error: 'Failed to complete Google sign-in. Please try again.' }
                 });
             });

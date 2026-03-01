@@ -2,7 +2,7 @@ import { Star } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
+import { browseSkillsService, type BrowseSkill } from '../../services/browseSkillsService';
 import { LoginModal } from '../common/Modal/LoginModal';
 
 export default function PopularSkills() {
@@ -24,7 +24,7 @@ export default function PopularSkills() {
             }
         };
 
-        fetchSkills();
+        void fetchSkills();
     }, []);
 
     const handleSkillClick = (skillId: string) => {

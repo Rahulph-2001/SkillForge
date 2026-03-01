@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { McqImportApi, McqImportJobResponse } from '../../services/mcqService';
+import { McqImportApi, type McqImportJobResponse } from '../../services/mcqService';
 import { Upload, FileText, CheckCircle, AlertCircle, Clock, Download } from 'lucide-react';
 import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 // --- Utility Components ---
 const JobStatusBadge: React.FC<{ status: McqImportJobResponse['status'] }> = ({ status }) => {
@@ -81,10 +82,11 @@ const McqImportManager: React.FC<McqImportManagerProps> = ({ templateId }) => {
 
   // Initial fetch and start polling
   useEffect(() => {
-    fetchJobs();
+    void fetchJobs();
 
     // Start polling every 5 seconds if not already running
     if (!intervalRef.current) {
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       intervalRef.current = setInterval(fetchJobs, 5000) as unknown as number;
     }
 
@@ -118,14 +120,14 @@ const McqImportManager: React.FC<McqImportManagerProps> = ({ templateId }) => {
       setFile(null);
 
       // Force refresh the job list and restart polling
-      fetchJobs();
+      void fetchJobs();
       if (!intervalRef.current) {
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
         intervalRef.current = setInterval(fetchJobs, 5000) as unknown as number;
       }
 
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.message || err.response?.data?.error || 'File upload failed.';
-      setErrorMessage(errorMsg);
+    } catch (err: unknown) {
+      setErrorMessage(getErrorMessage(err) || 'File upload failed.');
     } finally {
       setIsUploading(false);
     }

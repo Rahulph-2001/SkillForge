@@ -6,6 +6,8 @@ import paymentService from '../../services/paymentService';
 import PaymentModal from '../../components/payment/PaymentModal';
 import PaymentSuccessModal from '../../components/payment/PaymentSuccessModal';
 import PaymentFailureModal from '../../components/payment/PaymentFailureModal';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function CreateProjectPage() {
     const navigate = useNavigate();
@@ -87,9 +89,10 @@ export default function CreateProjectPage() {
 
             setClientSecret(response.clientSecret);
             setIsPaymentModalOpen(true);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error creating payment intent:', error);
-            toast.error(error.message || 'Failed to initiate payment');
+            const message = getErrorMessage(error, 'Failed to initiate payment');
+            toast.error(message);
         } finally {
             setIsProcessing(false);
         }
@@ -110,7 +113,7 @@ export default function CreateProjectPage() {
 
     const handleContinueSuccess = () => {
         setShowSuccessModal(false);
-        navigate('/projects');
+        navigate(ROUTES.PROJECTS);
     };
 
     const handleCloseFailure = () => {
@@ -123,7 +126,7 @@ export default function CreateProjectPage() {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Back Link */}
                 <button
-                    onClick={() => navigate('/projects')}
+                    onClick={() => navigate(ROUTES.PROJECTS)}
                     className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors text-sm font-medium"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
@@ -316,7 +319,7 @@ export default function CreateProjectPage() {
                     <div className="flex gap-4 pt-4">
                         <button
                             type="button"
-                            onClick={() => navigate('/projects')}
+                            onClick={() => navigate(ROUTES.PROJECTS)}
                             className="flex-1 px-6 py-3 border border-border text-foreground font-medium rounded-lg hover:bg-muted transition-colors shadow-sm"
                         >
                             Cancel

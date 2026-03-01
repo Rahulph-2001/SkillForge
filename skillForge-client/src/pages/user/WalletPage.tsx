@@ -16,12 +16,13 @@ import {
     ArrowUpRight
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import walletService, { WalletData, WalletTransaction, WalletTransactionFilters } from '../../services/walletService';
+import walletService, { type WalletData, type WalletTransaction, type WalletTransactionFilters } from '../../services/walletService';
 
 type TabType = 'all' | 'credits' | 'withdrawals' | 'pending';
 
 import RedeemModal from '../../components/wallet/RedeemModal';
 import WithdrawalModal from '../../components/wallet/WithdrawalModal';
+import { ROUTES } from "@/constants/routes";
 
 const WalletPage = () => {
     const [walletData, setWalletData] = useState<WalletData | null>(null);
@@ -42,7 +43,7 @@ const WalletPage = () => {
         try {
             const data = await walletService.getWalletData();
             setWalletData(data);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch wallet data:', error);
             toast.error('Failed to load wallet data');
         }
@@ -54,7 +55,7 @@ const WalletPage = () => {
             const response = await walletService.getTransactions(filters);
             setTransactions(response.transactions);
             setPagination(response.pagination || { total: 0, page: 1, limit: 10, totalPages: 0 });
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch transactions:', error);
             toast.error('Failed to load transactions');
         } finally {
@@ -68,7 +69,7 @@ const WalletPage = () => {
             await Promise.all([fetchWalletData(), fetchTransactions()]);
             setLoading(false);
         };
-        loadData();
+        void loadData();
     }, [fetchWalletData, fetchTransactions]);
 
     useEffect(() => {
@@ -82,7 +83,7 @@ const WalletPage = () => {
             filters.status = 'PENDING';
         }
 
-        fetchTransactions(filters);
+        void fetchTransactions(filters);
     }, [activeTab, fetchTransactions]);
 
     const handlePageChange = (newPage: number) => {
@@ -96,12 +97,12 @@ const WalletPage = () => {
             filters.status = 'PENDING';
         }
 
-        fetchTransactions(filters);
+        void fetchTransactions(filters);
     };
 
     const handleOperationSuccess = () => {
-        fetchWalletData();
-        fetchTransactions();
+        void fetchWalletData();
+        void fetchTransactions();
     };
 
     const getTransactionIcon = (type: WalletTransaction['type'], status: WalletTransaction['status']) => {
@@ -149,6 +150,7 @@ const WalletPage = () => {
             case 'CREDIT_PURCHASE':
                 return 'Credits Purchased';
             case 'WITHDRAWAL':
+                // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
                 return `Withdrawn to ${transaction.metadata?.method || 'Bank Account'}`;
             case 'REFUND':
                 return transaction.description || 'Refund Received';
@@ -230,7 +232,7 @@ const WalletPage = () => {
             <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="mb-8">
-                    <Link to="/dashboard" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
+                    <Link to={ROUTES.DASHBOARD} className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4 transition-colors">
                         <ArrowLeft className="w-4 h-4" />
                         Back to Dashboard
                     </Link>
@@ -479,7 +481,14 @@ const WalletPage = () => {
                 onClose={() => setIsWithdrawalModalOpen(false)}
                 onSuccess={handleOperationSuccess}
                 currentBalance={walletData?.walletBalance || 0}
-                bankDetails={walletData?.verification?.bank_details}
+                bankDetails={
+                    walletData?.verification?.bank_details
+                        ? {
+                            bank_name: walletData.verification.bank_details.bank_name || undefined,
+                            account_number: walletData.verification.bank_details.account_number || undefined,
+                        }
+                        : null
+                }
             />
         </div>
     );

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Users, Search, Plus, Zap, LayoutGrid, CheckCircle, Loader2 } from 'lucide-react';
-import { getCommunities, joinCommunity, Community, leaveCommunity } from '../../services/communityService';
+import { getCommunities, joinCommunity, type Community, leaveCommunity } from '../../services/communityService';
 import { usePagination } from '../../hooks/usePagination';
 import Pagination from '../common/Pagination';
 import CreateCommunityModal from './CreateCommunityModal';
@@ -8,9 +8,10 @@ import SuccessModal from '../common/Modal/SuccessModal';
 import ErrorModal from '../common/Modal/ErrorModal';
 import ConfirmModal from '../common/Modal/ConfirmModal';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store/store';
+import { type RootState } from '../../store/store';
 import ChatModal from './ChatModal';
 import CommunityCard from './CommunityCard';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 export default function CommunityList() {
     const user = useSelector((state: RootState) => state.auth.user);
@@ -45,7 +46,8 @@ export default function CommunityList() {
     const [successMessage, setSuccessMessage] = useState('');
 
     useEffect(() => {
-        loadCommunities();
+        void loadCommunities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, searchQuery, selectedCategory]);
 
     const loadCommunities = async () => {
@@ -59,8 +61,8 @@ export default function CommunityList() {
             );
             setCommunities(data.communities);
             setTotalItems(data.total);
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to load communities');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to load communities');
         } finally {
             setLoading(false);
         }
@@ -90,10 +92,10 @@ export default function CommunityList() {
                 `Successfully joined ${selectedCommunity.name}! ${selectedCommunity.creditsCost} credits deducted.`
             );
             setShowSuccess(true);
-            loadCommunities(); // Reload to update UI state
-        } catch (err: any) {
+            void loadCommunities(); // Reload to update UI state
+        } catch (err: unknown) {
             setShowJoinConfirm(false);
-            setError(err.response?.data?.message || 'Failed to join community');
+            setError(getErrorMessage(err) || 'Failed to join community');
         }
     };
 
@@ -105,10 +107,10 @@ export default function CommunityList() {
             setShowLeaveConfirm(false);
             setSuccessMessage(`You have left ${selectedCommunity.name}.`);
             setShowSuccess(true);
-            loadCommunities();
-        } catch (err: any) {
+            void loadCommunities();
+        } catch (err: unknown) {
             setShowLeaveConfirm(false);
-            setError(err.response?.data?.message || 'Failed to leave community');
+            setError(getErrorMessage(err) || 'Failed to leave community');
         }
     };
 
@@ -273,7 +275,7 @@ export default function CommunityList() {
                     isOpen={showCreateModal}
                     onClose={() => setShowCreateModal(false)}
                     onSuccess={() => {
-                        loadCommunities();
+                        void loadCommunities();
                         setShowCreateModal(false);
                     }}
                 />

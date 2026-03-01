@@ -9,7 +9,7 @@ import {
     FaTimesCircle
 } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import creditService, { CreditTransaction } from '../../services/creditService';
+import creditService, { type CreditTransaction } from '../../services/creditService';
 import { toast } from 'react-hot-toast';
 
 interface TransactionListProps {
@@ -55,7 +55,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ filter }) => {
             }
         };
 
-        fetchTransactions();
+        void fetchTransactions();
     }, [filter]);
 
     const getIcon = (type: string, status: string) => {
@@ -114,7 +114,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ filter }) => {
         // For credit purchases, show the credits added (from metadata), not the money amount
         if (transaction.type === 'CREDIT_PURCHASE' && transaction.metadata?.creditsAdded) {
             return {
-                value: transaction.metadata.creditsAdded,
+                value: Number(transaction.metadata.creditsAdded),
                 isPositive: true,
                 label: 'Credits'
             };

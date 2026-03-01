@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 export default function WelcomePage() {
     return (
@@ -137,7 +138,7 @@ export default function WelcomePage() {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                     <Link
-                        to="/home"
+                        to={ROUTES.LANDING}
                         className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-3 px-8 rounded-lg transition-colors flex items-center justify-center gap-2"
                     >
                         Set Up Profile
@@ -146,7 +147,7 @@ export default function WelcomePage() {
                         </svg>
                     </Link>
                     <Link
-                        to="/home"
+                        to={ROUTES.LANDING}
                         className="w-full sm:w-auto text-muted-foreground font-semibold hover:text-foreground transition-colors"
                     >
                         Skip for Now

@@ -9,13 +9,14 @@ import PaymentFailureModal from '@/components/payment/PaymentFailureModal';
 import CurrentSubscriptionCard from '@/components/subscription/CurrentSubscriptionCard';
 import ConfirmModal from '@/components/common/Modal/ConfirmModal';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 import { Check, ChevronDown, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 
 import { Footer } from '../../components/common/Footer';
-import subscriptionService, { SubscriptionPlan, UserSubscription } from '../../services/subscriptionService';
+import subscriptionService, { type SubscriptionPlan, type UserSubscription } from '../../services/subscriptionService';
 import type { AppDispatch } from '../../store/store';
-
+import { ROUTES } from "@/constants/routes";
 
 interface FAQItem {
   question: string;
@@ -366,8 +367,8 @@ export default function SubscriptionPlansPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
-    loadPlans();
-    loadCurrentSubscription();
+    void loadPlans();
+    void loadCurrentSubscription();
   }, []);
 
   const loadPlans = async () => {
@@ -386,9 +387,9 @@ export default function SubscriptionPlansPage() {
       } else {
         setCurrentSlide(0);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading plans:', err);
-      setError(err.message || 'Failed to load subscription plans');
+      setError(getErrorMessage(err) || 'Failed to load subscription plans');
     } finally {
       setLoading(false);
     }
@@ -398,7 +399,7 @@ export default function SubscriptionPlansPage() {
     try {
       const subscription = await subscriptionService.getCurrentSubscription();
       setCurrentSubscription(subscription);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error loading current subscription:', err);
       // Don't show error to user - just means they don't have a subscription
     } finally {
@@ -432,9 +433,9 @@ export default function SubscriptionPlansPage() {
 
       setClientSecret(response.clientSecret);
       setIsPaymentModalOpen(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating payment intent:', error);
-      toast.error(error.message || 'Failed to initiate payment');
+      toast.error(getErrorMessage(error) || 'Failed to initiate payment');
     } finally {
       setIsProcessing(false);
     }
@@ -447,7 +448,7 @@ export default function SubscriptionPlansPage() {
     }
 
     // Reload current subscription to get full data with expiry
-    loadCurrentSubscription();
+    void loadCurrentSubscription();
 
     // Wait slightly for modal transition
     setIsPaymentModalOpen(false);
@@ -473,7 +474,7 @@ export default function SubscriptionPlansPage() {
     setSelectedPlan(null);
     setClientSecret('');
     // Navigate to profile page to see new subscription status
-    navigate('/profile');
+    navigate(ROUTES.PROFILE);
   };
 
   const handleCancelSubscription = () => {
@@ -489,9 +490,9 @@ export default function SubscriptionPlansPage() {
       toast.success('Subscription will be canceled at the end of the billing period');
       // Reload subscription to show updated status
       await loadCurrentSubscription();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error canceling subscription:', error);
-      toast.error(error.message || 'Failed to cancel subscription');
+      toast.error(getErrorMessage(error) || 'Failed to cancel subscription');
     }
   };
 
@@ -509,9 +510,9 @@ export default function SubscriptionPlansPage() {
       await subscriptionService.reactivateSubscription();
       toast.success('Subscription reactivated successfully!');
       await loadCurrentSubscription();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error reactivating subscription:', error);
-      toast.error(error.message || 'Failed to reactivate subscription');
+      toast.error(getErrorMessage(error) || 'Failed to reactivate subscription');
     }
   };
 

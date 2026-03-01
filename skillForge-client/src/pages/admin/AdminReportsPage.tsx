@@ -5,7 +5,7 @@ import {
     CheckCircle,
     XCircle
 } from 'lucide-react';
-import adminService, { Report, ReportFilters } from '../../services/adminService';
+import adminService, { type Report, type ReportFilters } from '../../services/adminService';
 import { toast } from 'react-hot-toast';
 import { format } from 'date-fns';
 import Pagination from '../../components/common/Pagination';
@@ -26,7 +26,8 @@ export default function AdminReportsPage() {
     const [totalItems, setTotalItems] = useState(0);
 
     useEffect(() => {
-        fetchReports();
+        void fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters, page, limit]);
 
     const fetchReports = async () => {
@@ -63,7 +64,7 @@ export default function AdminReportsPage() {
             await adminService.updateReport(selectedReport.id, actionType, resolutionNote);
             toast.success(`Report ${actionType === 'RESOLVE' ? 'resolved' : 'dismissed'} successfully`);
             setIsResolveModalOpen(false);
-            fetchReports();
+            void fetchReports();
         } catch (error) {
             console.error('Failed to update report:', error);
             toast.error('Failed to update report status');

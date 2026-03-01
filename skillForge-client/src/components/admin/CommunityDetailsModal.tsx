@@ -1,5 +1,5 @@
 import { X, Users, Calendar, DollarSign, Shield, CheckCircle, XCircle } from 'lucide-react';
-import { Community } from '../../types/community';
+import { type Community } from '../../types/community';
 
 interface CommunityDetailsModalProps {
     isOpen: boolean;

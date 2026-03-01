@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { ROUTES } from "@/constants/routes";
 
 export default function CTA() {
     return (
@@ -9,7 +10,7 @@ export default function CTA() {
                     Join thousands of learners and teachers. Get 20 free credits when you sign up today.
                 </p>
                 <Link
-                    to="/signup"
+                    to={ROUTES.SIGNUP}
                     className="inline-block bg-background text-primary px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition-colors"
                 >
                     Create Free Account

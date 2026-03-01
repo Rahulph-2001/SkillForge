@@ -44,6 +44,7 @@ import ConfirmModal from '../common/Modal/ConfirmModal';
 import EditCommunityModal from './EditCommunityModal';
 import { type RootState } from '../../store/store';
 import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 interface CommunityDetailsProps {
     communityId?: string;
@@ -172,7 +173,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             // If current user was removed, redirect
             if (data.userId === user?.id) {
                 setError(`You have been removed from this community`);
-                setTimeout(() => navigate('/communities'), 2000);
+                setTimeout(() => navigate(ROUTES.COMMUNITIES), 2000);
             }
         });
 
@@ -432,7 +433,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             setSuccessMessage('You have left the community successfully.');
             setShowSuccess(true);
             setTimeout(() => {
-                navigate('/communities');
+                navigate(ROUTES.COMMUNITIES);
             }, 2000);
         } catch (err: unknown) {
             setShowLeaveConfirm(false);
@@ -453,7 +454,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
             <div className="flex flex-col items-center justify-center h-full min-h-[50vh]">
                 <p className="text-gray-600 mb-4">Community not found</p>
                 {!isModal && (
-                    <button onClick={() => navigate('/communities')} className="text-blue-600 hover:underline">
+                    <button onClick={() => navigate(ROUTES.COMMUNITIES)} className="text-blue-600 hover:underline">
                         Back to Communities
                     </button>
                 )}
@@ -470,7 +471,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                 <div className="flex justify-between items-center mb-4">
                     <div className="flex items-center gap-4">
                         {!isModal && (
-                            <button onClick={() => navigate('/communities')} className="lg:hidden text-muted-foreground hover:text-foreground">
+                            <button onClick={() => navigate(ROUTES.COMMUNITIES)} className="lg:hidden text-muted-foreground hover:text-foreground">
                                 <ArrowLeft className="w-6 h-6" />
                             </button>
                         )}
@@ -490,7 +491,7 @@ export default function CommunityDetails({ communityId: propCommunityId, isModal
                                     </button>
                                 )}
                                 {community.isAdmin && (
-                                    <button onClick={() => navigate(`/communities/${id}/settings`)} className="text-muted-foreground hover:text-foreground">
+                                    <button onClick={() => navigate(ROUTES.COMMUNITY_SETTINGS(id as string))} className="text-muted-foreground hover:text-foreground">
                                         <Settings className="w-4 h-4" />
                                     </button>
                                 )}

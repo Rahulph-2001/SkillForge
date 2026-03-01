@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Search, Ban, CheckCircle, Eye, RotateCcw } from 'lucide-react'
 
-import adminService, { User } from '../../services/adminService'
+import adminService, { type User } from '../../services/adminService'
 import { ConfirmModal, SuccessModal, ErrorModal } from '../../components/common/Modal'
 import UserDetailsModal from '../../components/admin/UserDetailsModal'
 import Pagination from '../../components/common/pagination/Pagination';
@@ -55,7 +55,8 @@ export default function UserManagement() {
     }, [searchQuery]);
 
     useEffect(() => {
-        loadUsers()
+        void loadUsers()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, debouncedSearch, selectedFilter])
 
     const loadUsers = async () => {
@@ -96,28 +97,29 @@ export default function UserManagement() {
                 });
                 setUsers([]);
             }
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as { message?: string; response?: { data?: unknown; status?: number }; stack?: string };
             console.error('[UserManagement] Error loading users:', {
-                message: error?.message,
-                response: error?.response?.data,
-                status: error?.response?.status,
-                stack: error?.stack
+                message: err?.message,
+                response: err?.response?.data,
+                status: err?.response?.status,
+                stack: err?.stack
             });
 
-            if (error?.response?.status === 401) {
+            if (err?.response?.status === 401) {
                 setErrorModal({
                     isOpen: true,
                     title: 'Session Expired',
                     message: 'Session expired. Please login again.'
                 });
-            } else if (error?.response?.status === 403) {
+            } else if (err?.response?.status === 403) {
                 setErrorModal({
                     isOpen: true,
                     title: 'Access Denied',
                     message: 'Access denied. Admin privileges required.'
                 });
             } else {
-                const errorMessage = error?.message || 'Failed to load users. Please try again.';
+                const errorMessage = err?.message || 'Failed to load users. Please try again.';
                 setErrorModal({
                     isOpen: true,
                     title: 'Load Error',
@@ -136,6 +138,7 @@ export default function UserManagement() {
         setViewUserModal({ isOpen: true, user })
     }
 
+    // eslint-disable-next-line @typescript-eslint/require-await
     const handleVerifyUser = async (userId: string, userName: string) => {
         console.log('[UserManagement] Verify user:', { userId, userName })
         setSuccessModal({
@@ -158,6 +161,7 @@ export default function UserManagement() {
             title,
             message,
             type: isCurrentlyActive ? 'danger' : 'warning',
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
             onConfirm: () => executeToggleSuspend(userId, userName, isCurrentlyActive)
         })
     }
@@ -193,28 +197,29 @@ export default function UserManagement() {
                 title: successTitle,
                 message: successMessage
             })
-        } catch (error: any) {
+        } catch (error) {
+            const err = error as { message?: string; response?: { data?: unknown; status?: number } };
             console.error(`[UserManagement] Error ${action}ing user:`, {
-                message: error?.message,
-                response: error?.response?.data,
-                status: error?.response?.status
+                message: err?.message,
+                response: err?.response?.data,
+                status: err?.response?.status
             })
 
             // Handle specific error cases
-            if (error?.response?.status === 401) {
+            if (err?.response?.status === 401) {
                 setErrorModal({
                     isOpen: true,
                     title: 'Session Expired',
                     message: 'Session expired. Please login again.'
                 });
-            } else if (error?.response?.status === 403) {
+            } else if (err?.response?.status === 403) {
                 setErrorModal({
                     isOpen: true,
                     title: 'Access Denied',
                     message: `Access denied. Cannot ${action} this user.`
                 });
             } else {
-                const errorMessage = error?.message || `Failed to ${action} user. Please try again.`
+                const errorMessage = err?.message || `Failed to ${action} user. Please try again.`
                 setErrorModal({
                     isOpen: true,
                     title: 'Action Failed',

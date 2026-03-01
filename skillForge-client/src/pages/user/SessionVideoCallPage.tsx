@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { Loader2 } from 'lucide-react';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 import VideoCallRoom from '../../components/video/VideoCallRoom';
 import ReviewModal from '../../components/review/ReviewModal';
 import { VideoCallStrategyFactory } from '../../services/VideoCallStrategyFactory';
-import { videoCallService, VideoCallRoom as IVideoCallRoom, SessionInfo } from '../../services/videoCallService';
+import { videoCallService, type VideoCallRoom as IVideoCallRoom, type SessionInfo } from '../../services/videoCallService';
 import { useAppSelector } from '../../store/hooks';
+import { ROUTES } from "@/constants/routes";
 
 export default function SessionVideoCallPage() {
     const { bookingId } = useParams<{ bookingId: string }>();
@@ -44,15 +46,15 @@ export default function SessionVideoCallPage() {
 
                 setRoom(roomData);
                 setSessionInfo(sessionData);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('Failed to join booking session:', err);
-                setError(err.response?.data?.error || err.message || 'Failed to join video call');
+                setError(getErrorMessage(err) || 'Failed to join video call');
             } finally {
                 setLoading(false);
             }
         };
 
-        initBooking();
+        void initBooking();
     }, [bookingId, user]);
 
     const handleSessionEnd = async () => {
@@ -60,6 +62,7 @@ export default function SessionVideoCallPage() {
 
         try {
             // 1. Mark session as complete in backend
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             await videoCallService.completeSession(room.bookingId!);
 
             // 2. Check if user is learner to show review modal
@@ -69,7 +72,7 @@ export default function SessionVideoCallPage() {
                 setShowReviewModal(true);
             } else {
                 toast.success('Session completed');
-                navigate('/sessions'); // Or provider session dashboard
+                navigate(ROUTES.SESSIONS); // Or provider session dashboard
             }
         } catch (err) {
             console.error('Error ending session:', err);
@@ -78,13 +81,13 @@ export default function SessionVideoCallPage() {
             if (isLearner) {
                 setShowReviewModal(true);
             } else {
-                navigate('/sessions');
+                navigate(ROUTES.SESSIONS);
             }
         }
     };
 
     const handleLeave = () => {
-        navigate('/sessions');
+        navigate(ROUTES.SESSIONS);
     };
 
     if (loading) {
@@ -104,7 +107,7 @@ export default function SessionVideoCallPage() {
                 <div className="text-center">
                     <p className="text-destructive mb-4">{error}</p>
                     <button
-                        onClick={() => navigate('/sessions')}
+                        onClick={() => navigate(ROUTES.SESSIONS)}
                         className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
                     >
                         Go Back
@@ -128,9 +131,10 @@ export default function SessionVideoCallPage() {
 
             {showReviewModal && (
                 <ReviewModal
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     bookingId={room.bookingId!}
                     onSubmitted={() => {
-                        navigate('/sessions');
+                        navigate(ROUTES.SESSIONS);
                     }}
                 />
             )}

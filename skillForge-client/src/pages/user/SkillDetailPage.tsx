@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 
 import { useAppSelector } from '../../store/hooks';
-import { skillDetailsService, SkillDetail } from '../../services/skillDetailsService';
+import { skillDetailsService, type SkillDetail } from '../../services/skillDetailsService';
 import { bookingService } from '../../services/bookingService';
-import BookSessionModal, { BookingData } from '../../components/booking/BookSessionModal';
+import BookSessionModal, { type BookingData } from '../../components/booking/BookSessionModal';
 import BookingSuccessModal from '../../components/booking/BookingSuccessModal';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function SkillDetailPage() {
   const { skillId } = useParams<{ skillId: string }>();
@@ -34,19 +36,22 @@ export default function SkillDetailPage() {
 
   useEffect(() => {
     if (skillId) {
-      fetchSkillDetails();
+      void fetchSkillDetails();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skillId]);
 
   const fetchSkillDetails = async () => {
     try {
       setLoading(true);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const data = await skillDetailsService.getSkillDetails(skillId!);
       setSkill(data);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch skill details:', error);
-      toast.error(error.response?.data?.message || 'Failed to load skill details');
-      navigate('/explore');
+      const message = getErrorMessage(error, 'Failed to load skill details');
+      toast.error(message);
+      navigate(ROUTES.EXPLORE);
     } finally {
       setLoading(false);
     }
@@ -83,10 +88,10 @@ export default function SkillDetailPage() {
         time: bookingData.preferredTime,
       });
       setIsSuccessModalOpen(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [SkillDetailPage] Failed to create booking:', error);
-      const errorMessage = error.response?.data?.message || 'Failed to create booking';
-      toast.error(errorMessage);
+      const message = getErrorMessage(error, 'Failed to create booking');
+      toast.error(message);
       throw error;
     }
   };
@@ -98,11 +103,11 @@ export default function SkillDetailPage() {
         text: skill.description,
         url: window.location.href,
       }).catch(() => {
-        navigator.clipboard.writeText(window.location.href);
+        void navigator.clipboard.writeText(window.location.href);
         toast.success('Link copied to clipboard!');
       });
     } else {
-      navigator.clipboard.writeText(window.location.href);
+      void navigator.clipboard.writeText(window.location.href);
       toast.success('Link copied to clipboard!');
     }
   };
@@ -134,7 +139,7 @@ export default function SkillDetailPage() {
       <div className="bg-card px-6 py-4 border-b border-border">
         <div className="max-w-7xl mx-auto">
           <button
-            onClick={() => navigate('/explore')}
+            onClick={() => navigate(ROUTES.EXPLORE)}
             className="flex items-center gap-2 text-foreground/80 hover:text-foreground transition"
           >
             <ArrowLeft size={20} />
@@ -429,6 +434,7 @@ export default function SkillDetailPage() {
                     <div className="bg-muted/40 rounded-lg p-4 border border-border">
                       <div className="space-y-3">
                         {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(day => {
+                          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                           const schedule = skill.availability!.weeklySchedule[day];
                           const isAvailable = schedule && schedule.enabled && schedule.slots.length > 0;
 
@@ -507,7 +513,13 @@ export default function SkillDetailPage() {
           sessionCost={skill.creditsPerHour * skill.durationHours}
           userBalance={user?.credits || 0}
           onBookSession={handleBookingSubmit}
-          availability={skill.availability || undefined}
+          availability={skill.availability ? {
+            ...skill.availability,
+            blockedDates: skill.availability.blockedDates.map(bd => ({
+              ...bd,
+              date: new Date(bd.date).toISOString()
+            }))
+          } : undefined}
         />
       )}
 

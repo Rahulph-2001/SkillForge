@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { AlertCircle, Wallet } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import walletService from '../../services/walletService';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface RedeemModalProps {
     isOpen: boolean;
@@ -103,10 +104,11 @@ const RedeemModal: React.FC<RedeemModalProps> = ({
             onSuccess();
             onClose();
             setCreditsToRedeem('');
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Redemption error:', err);
-            setError(err.response?.data?.message || 'Failed to redeem credits. Please try again.');
-            toast.error(err.response?.data?.message || 'Redemption failed');
+            const errMsg = getErrorMessage(err, 'Failed to redeem credits. Please try again.');
+            setError(errMsg);
+            toast.error(errMsg);
         } finally {
             setLoading(false);
         }

@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FaTimes, FaLock, FaCreditCard } from 'react-icons/fa';
 import CreditPackageCard from './CreditPackageCard';
 import PaymentModal from '../payment/PaymentModal';
-import creditService, { CreditPackageData } from '../../services/creditService';
+import creditService, { type CreditPackageData } from '../../services/creditService';
 import paymentService from '../../services/paymentService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 interface BuyCreditsModalProps {
     isOpen: boolean;
@@ -25,7 +26,7 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
 
     useEffect(() => {
         if (isOpen) {
-            fetchPackages();
+            void fetchPackages();
         } else {
             // Reset state when modal closes
             setSelectedPackageId(null);
@@ -39,9 +40,9 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
             setLoading(true);
             const response = await creditService.getPackages();
             setPackages(response);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch credit packages:', error);
-            toast.error(error.response?.data?.message || 'Failed to load credit packages');
+            toast.error(getErrorMessage(error) || 'Failed to load credit packages');
         } finally {
             setLoading(false);
         }
@@ -71,9 +72,9 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
             setClientSecret(paymentIntent.clientSecret);
             setShowPaymentModal(true);
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to initiate payment:', error);
-            toast.error(error.response?.data?.message || 'Failed to initiate payment');
+            toast.error(getErrorMessage(error) || 'Failed to initiate payment');
             setProcessing(false);
         }
     };
@@ -82,6 +83,7 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
         try {
             // Step 3: Confirm credit purchase with backend
             const result = await creditService.purchasePackage(
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                 selectedPackageId!,
                 stripePaymentIntentId
             );
@@ -92,9 +94,9 @@ const BuyCreditsModal: React.FC<BuyCreditsModalProps> = ({ isOpen, onClose, onPu
             setShowPaymentModal(false);
             onPurchaseSuccess?.();
             onClose();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to complete credit purchase:', error);
-            toast.error(error.response?.data?.message || 'Failed to complete credit purchase');
+            toast.error(getErrorMessage(error) || 'Failed to complete credit purchase');
         } finally {
             setProcessing(false);
         }

@@ -5,6 +5,7 @@ import { SuccessModal, ErrorModal } from '../../components/common/Modal';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { verifyOtp, resendOtp } from '../../store/slices/authSlice';
 import { useOTPTimer } from '../../hooks/useOTPTimer';
+import { ROUTES } from "@/constants/routes";
 
 export default function OTPVerificationPage() {
     const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function OTPVerificationPage() {
     useEffect(() => {
         // Redirect if no email provided
         if (!email) {
-            navigate('/signup');
+            navigate(ROUTES.SIGNUP);
         }
     }, [email, navigate]);
 
@@ -111,9 +112,9 @@ export default function OTPVerificationPage() {
         const isNewUser = state?.isNewUser;
 
         if (isNewUser) {
-            navigate('/welcome');
+            navigate(ROUTES.WELCOME);
         } else {
-            navigate('/home');
+            navigate(ROUTES.LANDING);
         }
     };
 
@@ -178,7 +179,7 @@ export default function OTPVerificationPage() {
                 {/* Back to Signup */}
                 <div className="text-center">
                     <button
-                        onClick={() => navigate('/signup')}
+                        onClick={() => navigate(ROUTES.SIGNUP)}
                         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
                         ← Back to Signup

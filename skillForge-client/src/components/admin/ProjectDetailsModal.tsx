@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import adminService, { AdminProjectDetails } from '../../services/adminService';
+import adminService, { type AdminProjectDetails } from '../../services/adminService';
+import { getErrorMessage } from '../../utils/errorUtils';
 import './ProjectDetailsModal.css';
 
 interface ProjectDetailsModalProps {
@@ -21,8 +22,9 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
 
     useEffect(() => {
         if (isOpen && projectId) {
-            loadProjectDetails();
+            void loadProjectDetails();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, projectId]);
 
     const loadProjectDetails = async () => {
@@ -31,8 +33,8 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({
         try {
             const details = await adminService.getProjectDetails(projectId);
             setProject(details);
-        } catch (err: any) {
-            setError(err?.message || 'Failed to load project details');
+        } catch (err: unknown) {
+            setError(getErrorMessage(err) || 'Failed to load project details');
         } finally {
             setLoading(false);
         }

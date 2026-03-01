@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, Check } from 'lucide-react';
 import { useWebSocket } from '../../contexts/WebSocketContext';
-import projectService, { ProjectMessage } from '../../services/projectService';
+import projectService, { type ProjectMessage } from '../../services/projectService';
 import { useAppSelector } from '../../store/hooks';
 import { toast } from 'react-hot-toast';
 
@@ -23,7 +23,8 @@ export default function ProjectChat({ projectId, currentUserId, isClient, isModa
     const user = useAppSelector(state => state.auth.user);
 
     useEffect(() => {
-        fetchMessages();
+        void fetchMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [projectId]);
 
     useEffect(() => {

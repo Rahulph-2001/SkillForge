@@ -5,8 +5,10 @@ import { Search, Star, Award, Loader2, Filter, X } from 'lucide-react';
 import Pagination from '../../components/common/Pagination';
 import { usePagination } from '../../hooks/usePagination';
 import { useAppSelector } from '../../store/hooks';
-import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
+import { browseSkillsService, type BrowseSkill } from '../../services/browseSkillsService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function BrowseSkillsPage() {
     const { user } = useAppSelector((state) => state.auth);
@@ -46,7 +48,8 @@ export default function BrowseSkillsPage() {
     const levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced'];
 
     useEffect(() => {
-        fetchSkills();
+        void fetchSkills();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery, selectedCategory, selectedLevel, currentPage]);
 
     const fetchSkills = async () => {
@@ -64,16 +67,17 @@ export default function BrowseSkillsPage() {
             setSkills(response.skills);
             setTotal(response.total);
             // totalPages is calculated by the hook based on 'total'
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch skills:', error);
-            toast.error(error.response?.data?.message || 'Failed to load skills');
+            const message = getErrorMessage(error, 'Failed to load skills');
+            toast.error(message);
         } finally {
             setLoading(false);
         }
     };
 
     const handleViewDetails = (skillId: string) => {
-        navigate(`/skills/${skillId}`);
+        navigate(ROUTES.SKILL_DETAILS(skillId));
     };
 
     const handleClearFilters = () => {

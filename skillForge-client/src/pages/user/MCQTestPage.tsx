@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { CheckCircle, XCircle, Loader2, ArrowLeft } from "lucide-react";
-import { mcqTestService, MCQTestSession, MCQResult } from "../../services/mcqTestService";
+import { mcqTestService, type MCQTestSession, type MCQResult } from "../../services/mcqTestService";
 import { ErrorModal, ConfirmModal } from "../../components/common/Modal";
+import { getErrorMessage } from "../../utils/errorUtils";
+import { ROUTES } from "@/constants/routes";
 
 export default function MCQTestPage() {
   const { skillId } = useParams<{ skillId: string }>();
@@ -27,22 +29,25 @@ export default function MCQTestPage() {
 
   useEffect(() => {
     if (skillId) {
-      fetchTest();
+      void fetchTest();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [skillId]);
 
   const fetchTest = async () => {
     try {
       setLoading(true);
       console.log('🔵 [MCQTestPage] Starting MCQ test for skill:', skillId);
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const response = await mcqTestService.startTest(skillId!);
       console.log('✅ [MCQTestPage] Test session loaded:', response.data);
       const session = response.data.data;
       setTestSession(session);
       setSelectedAnswers(new Array(session.questions.length).fill(-1));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [MCQTestPage] Error loading test:', error);
-      setErrorMessage(error.response?.data?.message || "Failed to load test. Please ensure questions are available for this skill level.");
+      const message = getErrorMessage(error, 'Failed to load test. Please ensure questions are available for this skill level.');
+      setErrorMessage(message);
     } finally {
       setLoading(false);
     }
@@ -60,6 +65,7 @@ export default function MCQTestPage() {
       const timeTaken = Math.floor((Date.now() - startTime) / 1000); // Time in seconds
 
       // Extract question IDs from the test session
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const questionIds = testSession!.questions.map(q => q.id);
 
       console.log('🔵 [MCQTestPage] Submitting test:', {
@@ -70,6 +76,7 @@ export default function MCQTestPage() {
       });
 
       const response = await mcqTestService.submitTest({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         skillId: skillId!,
         questionIds,
         answers: selectedAnswers,
@@ -79,9 +86,10 @@ export default function MCQTestPage() {
       console.log('✅ [MCQTestPage] Test submitted. Result:', response.data);
       setTestResult(response.data.data);
       setShowResults(true);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [MCQTestPage] Error submitting test:', error);
-      setErrorMessage(error.response?.data?.message || "Failed to submit test");
+      const message = getErrorMessage(error, 'Failed to submit test');
+      setErrorMessage(message);
     } finally {
       setSubmitting(false);
     }
@@ -99,7 +107,7 @@ export default function MCQTestPage() {
         message: `You have ${unanswered} unanswered questions. Submit anyway?`,
         onConfirm: () => {
           setConfirmModal((prev) => ({ ...prev, isOpen: false }));
-          submitTest();
+          void submitTest();
         },
       });
       return;
@@ -125,7 +133,7 @@ export default function MCQTestPage() {
         <div className="text-center">
           <p className="text-muted-foreground">Test not found</p>
           <button
-            onClick={() => navigate("/my-skills")}
+            onClick={() => navigate(ROUTES.MY_SKILLS)}
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
           >
             Back to My Skills
@@ -235,7 +243,7 @@ export default function MCQTestPage() {
           {/* Actions */}
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => navigate("/my-skills")}
+              onClick={() => navigate(ROUTES.MY_SKILLS)}
               className="px-6 py-3 bg-muted text-foreground rounded-lg hover:bg-muted/80 transition-colors"
             >
               Back to My Skills
@@ -265,7 +273,7 @@ export default function MCQTestPage() {
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-4">
             <button
-              onClick={() => navigate("/my-skills")}
+              onClick={() => navigate(ROUTES.MY_SKILLS)}
               className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -349,7 +357,7 @@ export default function MCQTestPage() {
             </button>
 
             <div className="flex gap-2">
-              {testSession.questions.map((_: any, idx: number) => (
+              {testSession.questions.map((_: unknown, idx: number) => (
                 <button
                   key={idx}
                   onClick={() => setCurrentQuestion(idx)}

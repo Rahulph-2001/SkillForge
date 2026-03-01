@@ -1,9 +1,10 @@
-import { LoginForm, LoginFormData } from '../../components/common/Login';
+import { LoginForm, type LoginFormData } from '../../components/common/Login';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { login, clearError } from '../../store/slices/authSlice';
 import { useEffect, useState } from 'react';
 import { ErrorModal } from '../../components/common/Modal';
+import { ROUTES } from "@/constants/routes";
 
 export default function LoginPage() {
     const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function LoginPage() {
     // Navigate to home after successful login (OTP verification not required)
     useEffect(() => {
         if (user) {
-            navigate('/home');
+            navigate(ROUTES.LANDING);
         }
     }, [user, navigate]);
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Search, Users, Eye, Edit2, Ban, CheckCircle } from 'lucide-react';
-import { getAdminCommunities, blockCommunityByAdmin, unblockCommunityByAdmin, Community } from '../../services/communityService';
+import { getAdminCommunities, blockCommunityByAdmin, unblockCommunityByAdmin, type Community } from '../../services/communityService';
 import CommunityDetailsModal from '../../components/admin/CommunityDetailsModal';
 import EditCommunityModal from '../../components/community/EditCommunityModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import SuccessModal from '../../components/common/Modal/SuccessModal';
 import ErrorModal from '../../components/common/Modal/ErrorModal';
 import Pagination from '../../components/common/pagination/Pagination';
+import { getErrorMessage } from '../../utils/errorUtils';
 
 const AdminCommunitiesPage: React.FC = () => {
     const [communities, setCommunities] = useState<Community[]>([]);
@@ -48,7 +49,8 @@ const AdminCommunitiesPage: React.FC = () => {
 
     // Fetch communities when page, limit, or debounced search changes
     useEffect(() => {
-        fetchCommunities();
+        void fetchCommunities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, limit, debouncedSearch]);
 
     const fetchCommunities = useCallback(async () => {
@@ -60,7 +62,7 @@ const AdminCommunitiesPage: React.FC = () => {
             setStats(data.stats);
             setTotalPages(data.pagination.totalPages);
             setTotalItems(data.pagination.total);
-        } catch (error) {
+        } catch (error: unknown) {
             console.error('Failed to fetch communities:', error);
             setErrorMessage('Failed to load communities. Please try again.');
             setShowErrorModal(true);
@@ -115,9 +117,9 @@ const AdminCommunitiesPage: React.FC = () => {
             setShowSuccessModal(true);
             setShowBlockConfirm(false);
             setSelectedCommunity(null);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to block community:', error);
-            setErrorMessage(error.response?.data?.message || 'Failed to block community. Please try again.');
+            setErrorMessage(getErrorMessage(error, 'Failed to block community. Please try again.'));
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -140,9 +142,10 @@ const AdminCommunitiesPage: React.FC = () => {
             setShowSuccessModal(true);
             setShowUnblockConfirm(false);
             setSelectedCommunity(null);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to unblock community:', error);
-            setErrorMessage(error.response?.data?.message || 'Failed to unblock community. Please try again.');
+            const message = getErrorMessage(error, 'Failed to unblock community. Please try again.');
+            setErrorMessage(message);
             setShowErrorModal(true);
         } finally {
             setIsProcessing(false);
@@ -152,7 +155,7 @@ const AdminCommunitiesPage: React.FC = () => {
     const handleEditSuccess = () => {
         setShowEditModal(false);
         setSelectedCommunity(null);
-        fetchCommunities(); // Refresh the list
+        void fetchCommunities(); // Refresh the list
     };
 
     return (

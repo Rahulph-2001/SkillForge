@@ -20,6 +20,8 @@ import RescheduleModal from '../../components/booking/RescheduleModal';
 import ConfirmModal from '../../components/common/Modal/ConfirmModal';
 import JoinSessionButton from '../../components/session/JoinSessionButton';
 import ReviewModal from '../../components/review/ReviewModal';
+import { getErrorMessage } from '../../utils/errorUtils';
+import type { RescheduleInfo, ProviderSession } from '../../services/sessionManagementService';
 
 interface UserSession {
   id: string;
@@ -32,7 +34,7 @@ interface UserSession {
   sessionType: string;
   status: string;
   notes: string | null;
-  rescheduleInfo: any;
+  rescheduleInfo?: RescheduleInfo | null;
   rejectionReason?: string;
   isReviewed?: boolean;
   sessionCost: number;
@@ -69,7 +71,7 @@ export default function SessionManagementPage() {
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   useEffect(() => {
-    fetchSessions();
+    void fetchSessions();
   }, []);
 
   const fetchSessions = async () => {
@@ -80,7 +82,10 @@ export default function SessionManagementPage() {
       console.log('📊 [SessionManagementPage] First session raw:', data.sessions[0]);
 
       // Map the response to match UserSession interface
-      const mappedSessions = data.sessions.map((s: any) => {
+      const mappedSessions = data.sessions.map((s: ProviderSession & {
+        provider?: { name?: string; avatarUrl?: string };
+        skill?: { title?: string; durationHours?: number; category?: string };
+      }) => {
         // Explicit extraction with detailed logging
         const provider = s.provider || {};
         const skill = s.skill || {};
@@ -106,13 +111,13 @@ export default function SessionManagementPage() {
           id: s.id,
           skillTitle,
           providerName,
-          providerAvatar: s.providerAvatar || s.provider?.avatarUrl || null,
+          providerAvatar: s.providerAvatar || provider.avatarUrl || null,
           preferredDate: s.preferredDate,
           preferredTime: s.preferredTime,
           duration,
-          sessionType: s.skill?.category || 'Video Call',
+          sessionType: skill.category || s.sessionType || 'Video Call',
           status: s.status,
-          notes: s.notes,
+          notes: s.notes ?? null,
           rescheduleInfo: s.rescheduleInfo,
           rejectionReason: s.rejectionReason,
           isReviewed: s.isReviewed,
@@ -130,10 +135,11 @@ export default function SessionManagementPage() {
         rescheduleRequested: data.stats.rescheduleRequested || 0,
         completed: data.stats.completed || 0,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('❌ [SessionManagementPage] Failed to fetch sessions:', error);
-      console.error('❌ [SessionManagementPage] Error response:', error.response);
-      toast.error(error.response?.data?.message || 'Failed to load sessions');
+      const err = error as { response?: unknown };
+      console.error('❌ [SessionManagementPage] Error response:', err.response);
+      toast.error(getErrorMessage(error, 'Failed to load sessions'));
     } finally {
       setLoading(false);
     }
@@ -151,10 +157,10 @@ export default function SessionManagementPage() {
       setActionLoading(sessionToCancel);
       await sessionManagementService.cancelSession(sessionToCancel, 'User requested cancellation');
       toast.success('Session cancelled successfully');
-      fetchSessions();
-    } catch (error: any) {
+      void fetchSessions();
+    } catch (error: unknown) {
       console.error('Failed to cancel session:', error);
-      toast.error(error.response?.data?.message || 'Failed to cancel session');
+      toast.error(getErrorMessage(error, 'Failed to cancel session'));
     } finally {
       setActionLoading(null);
       setShowCancelConfirm(false);
@@ -176,10 +182,10 @@ export default function SessionManagementPage() {
       toast.success('Reschedule request sent successfully');
       setRescheduleModalOpen(false);
       setSelectedSession(null);
-      fetchSessions();
-    } catch (error: any) {
+      void fetchSessions();
+    } catch (error: unknown) {
       console.error('Failed to reschedule session:', error);
-      toast.error(error.response?.data?.message || 'Failed to request reschedule');
+      toast.error(getErrorMessage(error, 'Failed to request reschedule'));
       throw error; // Re-throw to let modal handle the error state
     }
   };
@@ -247,7 +253,7 @@ export default function SessionManagementPage() {
   };
 
   // Helper: Check if session has started or is within 15-minute join window
-  const isSessionStarted = (session: any) => {
+  const isSessionStarted = (session: UserSession) => {
     if (session.status.toLowerCase() !== 'confirmed') return false;
     const [hours, minutes] = session.preferredTime.split(':').map(Number);
     const sessionStart = new Date(session.preferredDate);
@@ -581,7 +587,7 @@ export default function SessionManagementPage() {
         confirmText="Yes, Cancel Session"
         cancelText="No, Keep Session"
         type="danger"
-        onConfirm={confirmCancelSession}
+        onConfirm={() => { void confirmCancelSession(); }}
         onCancel={() => {
           setShowCancelConfirm(false);
           setSessionToCancel(null);
@@ -594,7 +600,7 @@ export default function SessionManagementPage() {
           onSubmitted={() => {
             setShowReviewModal(false);
             setSessionToReview(null);
-            fetchSessions();
+            void fetchSessions();
           }}
         />
       )}

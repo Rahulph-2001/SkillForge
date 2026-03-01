@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Star } from 'lucide-react';
-import { providerService, ProviderReview } from '../../services/providerService';
+import { providerService, type ProviderReview } from '../../services/providerService';
 
 interface ReviewsTabProps {
   providerId: string;
@@ -36,7 +36,8 @@ export default function ReviewsTab({ providerId, averageRating, totalReviews }: 
   const ratingDistribution = calculateRatingDistribution();
 
   useEffect(() => {
-    fetchReviews();
+    void fetchReviews();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [providerId]);
 
   const fetchReviews = async () => {
@@ -150,14 +151,13 @@ export default function ReviewsTab({ providerId, averageRating, totalReviews }: 
                       <p className="font-semibold text-gray-900">{review.userName}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="flex gap-0.5">
-                          {[...Array(5)].map((_, i) => (
+                          {Array.from({ length: 5 }).map((_, i) => (
                             <Star
                               key={i}
-                              className={`w-4 h-4 ${
-                                i < review.rating
+                              className={`w-4 h-4 ${i < review.rating
                                   ? 'text-yellow-400 fill-yellow-400'
                                   : 'text-gray-300 fill-gray-300'
-                              }`}
+                                }`}
                             />
                           ))}
                         </div>

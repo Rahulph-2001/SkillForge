@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { browseSkillsService, BrowseSkill } from '../../services/browseSkillsService';
+import { browseSkillsService, type BrowseSkill } from '../../services/browseSkillsService';
+import { ROUTES } from "@/constants/routes";
 
 export default function HomePage() {
     const [featuredSkills, setFeaturedSkills] = useState<BrowseSkill[]>([]);
@@ -16,7 +17,7 @@ export default function HomePage() {
                     // in real app, we might want to sort by rating, but for now strict to plan
                 });
                 setFeaturedSkills(response.skills);
-            } catch (err) {
+            } catch (err: unknown) {
                 console.error('Failed to fetch featured skills:', err);
                 setError('Failed to load featured skills');
             } finally {
@@ -24,7 +25,7 @@ export default function HomePage() {
             }
         };
 
-        fetchSkills();
+        void fetchSkills();
     }, []);
 
     const getCategoryIcon = (category: string) => {
@@ -70,7 +71,7 @@ export default function HomePage() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
                         <Link
-                            to="/explore"
+                            to={ROUTES.EXPLORE}
                             className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 flex items-center justify-center gap-2 whitespace-nowrap transition-colors"
                         >
                             Explore Skills
@@ -167,7 +168,7 @@ export default function HomePage() {
                             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Featured Skills</h2>
                             <p className="text-muted-foreground">Popular skills from our top-rated providers</p>
                         </div>
-                        <Link to="/explore" className="text-primary font-semibold hover:text-primary/80 flex items-center gap-1 transition-colors">
+                        <Link to={ROUTES.EXPLORE} className="text-primary font-semibold hover:text-primary/80 flex items-center gap-1 transition-colors">
                             View All
                             <span>→</span>
                         </Link>
@@ -320,14 +321,14 @@ export default function HomePage() {
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
-                            to="/explore"
+                            to={ROUTES.EXPLORE}
                             className="bg-primary-foreground text-primary px-8 py-3 rounded-lg font-semibold hover:bg-secondary transition-colors inline-flex items-center justify-center"
                         >
                             Get Started Free
                             <span className="ml-2">→</span>
                         </Link>
                         <Link
-                            to="/how-it-works"
+                            to={ROUTES.HOW_IT_WORKS}
                             className="bg-primary/80 border border-primary-foreground/20 text-primary-foreground px-8 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
                         >
                             Learn More

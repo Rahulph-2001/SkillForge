@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { X, Upload, Trash2, Search, Loader2 } from "lucide-react";
 import ImageCropper from "../common/imageCropper";
-import { skillTemplateService, SkillTemplate } from "../../services/skillTemplateService";
+import { skillTemplateService, type SkillTemplate } from "../../services/skillTemplateService";
 
 export interface NewSkill {
   title: string;
@@ -74,7 +74,7 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
       }
     };
     if (isOpen) {
-      fetchTemplates();
+      void fetchTemplates();
     }
   }, [isOpen]);
 
@@ -148,6 +148,7 @@ export default function SkillAddModal({ isOpen, onClose, onSubmit }: SkillAddMod
     if (file && file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.addEventListener('load', () => {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
         setSelectedImage(reader.result?.toString() || null);
         setShowCropper(true);
       });

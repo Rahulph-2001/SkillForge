@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Plus } from 'lucide-react';
 import ProjectCard from '../../components/projects/ProjectCard';
 import Pagination from '../../components/common/Pagination';
-import projectService, { Project } from '../../services/projectService';
+import projectService, { type Project } from '../../services/projectService';
 import { toast } from 'react-hot-toast';
+import { getErrorMessage } from '../../utils/errorUtils';
+import { ROUTES } from "@/constants/routes";
 
 export default function ProjectsPage() {
     const navigate = useNavigate();
@@ -20,7 +22,8 @@ export default function ProjectsPage() {
     const [limit, setLimit] = useState(20);
 
     useEffect(() => {
-        fetchProjects();
+        void fetchProjects();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchQuery, statusFilter, categoryFilter, currentPage, limit]);
 
     const fetchProjects = async () => {
@@ -38,9 +41,10 @@ export default function ProjectsPage() {
             setTotal(response.total);
             setCurrentPage(response.page);
             setTotalPages(response.totalPages);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to fetch projects:', error);
-            toast.error(error.response?.data?.message || 'Failed to load projects');
+            const message = getErrorMessage(error, 'Failed to load projects');
+            toast.error(message);
         } finally {
             setLoading(false);
         }
@@ -67,13 +71,13 @@ export default function ProjectsPage() {
                     </div>
                     <div className="flex gap-3">
                         <button
-                            onClick={() => navigate('/my-projects')}
+                            onClick={() => navigate(ROUTES.MY_PROJECTS)}
                             className="bg-card text-primary border border-primary/20 hover:bg-primary/5 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
                             My Projects
                         </button>
                         <button
-                            onClick={() => navigate('/projects/create')}
+                            onClick={() => navigate(ROUTES.PROJECT_CREATE)}
                             className="bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
                         >
                             <Plus className="w-4 h-4" />
