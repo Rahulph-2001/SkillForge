@@ -1,4 +1,4 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 
 
 const api = axios.create({
@@ -21,82 +21,60 @@ api.interceptors.request.use(
 
 
 api.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     async (error: AxiosError) => {
+        // Handle Network Errors universally (API down, no internet)
+        if (error.message === 'Network Error' || error.code === 'ERR_NETWORK') {
+            const { toast } = await import('react-hot-toast');
+            toast.error('Network Error: Please check your internet connection.');
+            return Promise.reject(error);
+        }
+
+        const status = error.response?.status;
+        const errorData = error.response?.data as { message?: string; error?: string };
+        const errorMessage = typeof errorData?.error === 'string'
+            ? errorData.error
+            : (typeof errorData?.message === 'string' ? errorData.message : 'An unexpected error occurred');
+
         // Handle 403 Forbidden - User account suspended
-        if (error.response?.status === 403) {
-            const errorData = error.response?.data as any;
+        if (status === 403 && (errorMessage.toLowerCase().includes('suspended') || errorMessage.toLowerCase().includes('account'))) {
+            const { store } = await import('../store/store');
+            const { resetAuth } = await import('../store/slices/authSlice');
+            store.dispatch(resetAuth());
 
-            // Get error message string safely (handle both string and object formats)
-            const errorMessage = typeof errorData?.error === 'string'
-                ? errorData.error
-                : (typeof errorData?.message === 'string' ? errorData.message : '');
-
-            // Check if this is a suspension error
-            if (errorMessage.toLowerCase().includes('suspended') ||
-                errorMessage.toLowerCase().includes('account')) {
-
-                // Lazy import to avoid circular dependency
-                const { store } = await import('../store/store');
-                const { resetAuth } = await import('../store/slices/authSlice');
-
-                // Clear user data from Redux store
-                store.dispatch(resetAuth());
-
-                // Redirect to login page with suspension message
-                if (window.location.pathname !== '/login' &&
-                    window.location.pathname !== '/admin/login') {
-
-                    const isAdminRoute = window.location.pathname.startsWith('/admin');
-                    const loginPath = isAdminRoute ? '/admin/login' : '/login';
-
-                    // Store suspension message in sessionStorage for display on login page
-                    sessionStorage.setItem('suspensionMessage',
-                        errorMessage || 'Your account has been suspended. Please contact support.');
-
-                    window.location.href = loginPath;
-                }
+            if (window.location.pathname !== '/login' && window.location.pathname !== '/admin/login') {
+                const isAdminRoute = window.location.pathname.startsWith('/admin');
+                const loginPath = isAdminRoute ? '/admin/login' : '/login';
+                sessionStorage.setItem('suspensionMessage', errorMessage);
+                window.location.href = loginPath;
             }
         }
 
         // Handle 401 Unauthorized - Invalid/expired token
-        if (error.response?.status === 401) {
+        if (status === 401) {
             const requestUrl = error.config?.url || '';
-
-            // Don't auto-logout for these endpoints (they're expected to return 401)
-            const excludedEndpoints = [
-                '/auth/validate-status',
-                '/auth/me',
-                '/auth/login',
-                '/auth/verify-otp',
-                '/auth/google/callback'
-            ];
-
+            const excludedEndpoints = ['/auth/validate-status', '/auth/me', '/auth/login', '/auth/verify-otp', '/auth/google/callback'];
             const isExcluded = excludedEndpoints.some(endpoint => requestUrl.includes(endpoint));
 
             if (!isExcluded) {
-                // Lazy import to avoid circular dependency
                 const { store } = await import('../store/store');
                 const { resetAuth } = await import('../store/slices/authSlice');
-
-                // Clear user data from Redux store
                 store.dispatch(resetAuth());
 
-                // Don't redirect to /login if user is on a public page (landing, plans, etc.)
                 const publicPaths = ['/', '/plans', '/login', '/admin/login'];
                 const isPublicPage = publicPaths.includes(window.location.pathname);
 
-                // Redirect to login if not already there and not on a public page
-                if (!isPublicPage &&
-                    !window.location.pathname.startsWith('/auth')) {
-
+                if (!isPublicPage && !window.location.pathname.startsWith('/auth')) {
                     const isAdminRoute = window.location.pathname.startsWith('/admin');
-                    const loginPath = isAdminRoute ? '/admin/login' : '/login';
-                    window.location.href = loginPath;
+                    window.location.href = isAdminRoute ? '/admin/login' : '/login';
                 }
             }
+        }
+
+        // Global 500 Internal Server Errors
+        if (status && status >= 500) {
+            const { toast } = await import('react-hot-toast');
+            toast.error('Internal Server Error. Our engineers have been notified.');
         }
 
         return Promise.reject(error);

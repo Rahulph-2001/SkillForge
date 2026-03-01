@@ -1,4 +1,4 @@
-import axiosInstance from '../lib/axios'; // Assuming you have a centralized axios instance
+import api from '../services/api';
 
 export interface McqImportJobResponse {
   id: string;
@@ -27,7 +27,7 @@ export const McqImportApi = {
     const formData = new FormData();
     formData.append('csvFile', file); // 'csvFile' must match the key used in Multer on the backend
 
-    const response = await axiosInstance.post<{ data: { jobId: string; message: string } }>(
+    const response = await api.post<{ data: { jobId: string; message: string } }>(
       `/admin/mcq/${templateId}/import`,
       formData,
       {
@@ -44,7 +44,7 @@ export const McqImportApi = {
    * @param templateId The ID of the skill template.
    */
   listJobs: async (templateId: string): Promise<McqImportJobResponse[]> => {
-    const response = await axiosInstance.get<{ data: { jobs: McqImportJobResponse[] } }>(
+    const response = await api.get<{ data: { jobs: McqImportJobResponse[] } }>(
       `/admin/mcq/${templateId}/status`
     );
     return response.data.data.jobs;
@@ -56,7 +56,6 @@ export const McqImportApi = {
    * @param jobId The ID of the failed job.
    */
   getDownloadErrorUrl: (jobId: string): string => {
-    // This assumes your axiosInstance base URL is set correctly
-    return `${axiosInstance.defaults.baseURL}/admin/mcq/errors/${jobId}/download`;
+    return `${api.defaults.baseURL}/admin/mcq/errors/${jobId}/download`;
   },
 };

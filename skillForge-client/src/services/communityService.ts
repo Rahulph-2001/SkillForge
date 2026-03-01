@@ -1,12 +1,4 @@
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
-
-// Configure axios defaults for this service
-const api = axios.create({
-    baseURL: API_URL,
-    withCredentials: true,
-});
+import api from './api';
 
 // Community interfaces
 export interface Community {
@@ -76,7 +68,7 @@ export const getCommunities = async (
     limit: number;
     totalPages: number;
 }> => {
-    const params: any = { page, limit };
+    const params: Record<string, unknown> = { page, limit };
     if (search) params.search = search;
     if (category) params.category = category;
 
