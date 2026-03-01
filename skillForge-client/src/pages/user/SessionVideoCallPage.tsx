@@ -60,30 +60,36 @@ export default function SessionVideoCallPage() {
     const handleSessionEnd = async () => {
         if (!room || !sessionInfo || !user) return;
 
-        try {
-            // 1. Mark session as complete in backend
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            await videoCallService.completeSession(room.bookingId!);
+        const isLearner = user.id !== sessionInfo.providerId;
 
-            // 2. Check if user is learner to show review modal
-            const isLearner = user.id !== sessionInfo.providerId;
-
-            if (isLearner) {
-                setShowReviewModal(true);
-            } else {
+        if (isLearner) {
+            // Learner: Show review modal FIRST — session completes only after review submission
+            setShowReviewModal(true);
+        } else {
+            // Provider: Complete session immediately (broadcasts video:room-ended to learner)
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                await videoCallService.completeSession(room.bookingId!);
                 toast.success('Session completed');
-                navigate(ROUTES.SESSIONS); // Or provider session dashboard
+            } catch (err) {
+                console.error('Error ending session:', err);
             }
-        } catch (err) {
-            console.error('Error ending session:', err);
-            // Even on error, try to show appropriate UI
-            const isLearner = user.id !== sessionInfo.providerId;
-            if (isLearner) {
-                setShowReviewModal(true);
-            } else {
-                navigate(ROUTES.SESSIONS);
+            navigate(ROUTES.SESSIONS);
+        }
+    };
+
+    const handleReviewSubmitted = async () => {
+        // After learner submits review, NOW complete the session
+        // This triggers video:room-ended broadcast → provider's call drops
+        if (room) {
+            try {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                await videoCallService.completeSession(room.bookingId!);
+            } catch (err) {
+                console.error('Error completing session after review:', err);
             }
         }
+        navigate(ROUTES.SESSIONS);
     };
 
     const handleLeave = () => {
@@ -133,9 +139,7 @@ export default function SessionVideoCallPage() {
                 <ReviewModal
                     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
                     bookingId={room.bookingId!}
-                    onSubmitted={() => {
-                        navigate(ROUTES.SESSIONS);
-                    }}
+                    onSubmitted={handleReviewSubmitted}
                 />
             )}
         </>
