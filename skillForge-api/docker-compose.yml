@@ -8,7 +8,7 @@ services:
     env_file:
       - .env
     ports:
-      - "3000:3000"
+      - "4000:3000"
     depends_on:
       - redis
 
@@ -18,7 +18,7 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6380:6379"
 
   coturn:
     image: coturn/coturn:latest
