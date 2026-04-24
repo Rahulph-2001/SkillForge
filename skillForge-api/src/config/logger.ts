@@ -12,7 +12,7 @@ const transport = pino.transport({
         frequency: 'daily',
         extension: '.log',
         mkdir: true,
-        symlink: true,
+        symlink: false,
       },
       level: 'info',
     },
