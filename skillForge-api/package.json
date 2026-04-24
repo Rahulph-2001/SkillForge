@@ -5,7 +5,7 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "npx prisma generate && tsc",
-    "start": "node dist/server.js",
+    "start": "npx prisma migrate deploy && node dist/server.js",
     "predev": "node scripts/kill-port.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "dev:clean": "node scripts/kill-port.js && ts-node-dev --respawn --transpile-only src/server.ts",
