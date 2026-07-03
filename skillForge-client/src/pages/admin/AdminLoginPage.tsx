@@ -43,6 +43,35 @@ export default function AdminLoginPage() {
             // Error is handled by Redux
             console.error('Admin login error:', err)
         }
+
+    }
+
+    const handleDemoAdminLogin = () => {
+        setEmail('')
+        setPassword('')
+        if (error) dispatch(clearError())
+
+        const demoEmail = 'admin@skillforge.com'
+        const demoPassword = 'admin123'
+        let i = 0
+        let j = 0
+
+        const typeEmail = setInterval(() => {
+            if (i <= demoEmail.length) {
+                setEmail(demoEmail.slice(0, i))
+                i++
+            } else {
+                clearInterval(typeEmail)
+                const typePassword = setInterval(() => {
+                    if (j <= demoPassword.length) {
+                        setPassword(demoPassword.slice(0, j))
+                        j++
+                    } else {
+                        clearInterval(typePassword)
+                    }
+                }, 50)
+            }
+        }, 50)
     }
 
     const handleDismissError = () => {
@@ -93,6 +122,14 @@ export default function AdminLoginPage() {
 
                     {/* Form */}
                     <form onSubmit={handleLogin} className="space-y-6">
+                        {/* Demo Admin Button */}
+                        <button
+                            type="button"
+                            onClick={handleDemoAdminLogin}
+                            className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 rounded-lg py-3 px-4 font-semibold transition-colors flex items-center justify-center gap-2 shadow-inner mb-6"
+                        >
+                            <span className="text-yellow-400">✨</span> Load Demo Admin Credentials
+                        </button>
                         <div>
                             <label htmlFor="email" className="block text-sm font-semibold text-foreground mb-2">
                                 Admin Email

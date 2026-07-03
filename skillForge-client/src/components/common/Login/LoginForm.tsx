@@ -62,6 +62,33 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
         }
     };
 
+    const handleDemoLogin = () => {
+        setFormData({ email: '', password: '' });
+        if (errors.email || errors.password) setErrors({});
+        
+        const demoEmail = 'demo@skillforge.com';
+        const demoPassword = 'demo123';
+        let i = 0;
+        let j = 0;
+
+        const typeEmail = setInterval(() => {
+            if (i <= demoEmail.length) {
+                setFormData(prev => ({ ...prev, email: demoEmail.slice(0, i) }));
+                i++;
+            } else {
+                clearInterval(typeEmail);
+                const typePassword = setInterval(() => {
+                    if (j <= demoPassword.length) {
+                        setFormData(prev => ({ ...prev, password: demoPassword.slice(0, j) }));
+                        j++;
+                    } else {
+                        clearInterval(typePassword);
+                    }
+                }, 50);
+            }
+        }, 50);
+    };
+
     const handleGoogleLogin = () => {
         window.location.href = `${import.meta.env.VITE_API_BASE_URL}/auth/google`;
     };
@@ -108,6 +135,15 @@ export default function LoginForm({ onSubmit }: LoginFormProps) {
                     />
                 </svg>
                 Google
+            </button>
+
+            {/* Load Demo Credentials Button */}
+            <button
+                type="button"
+                onClick={handleDemoLogin}
+                className="w-full bg-slate-800 hover:bg-slate-700 text-white border-2 border-slate-700 rounded-lg py-3 px-4 font-semibold transition-colors flex items-center justify-center gap-2 shadow-inner"
+            >
+                <span className="text-yellow-400">✨</span> Load Demo Credentials
             </button>
 
             {/* Divider */}
