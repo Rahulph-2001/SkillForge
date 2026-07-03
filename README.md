@@ -51,7 +51,7 @@ graph TD
     Client["React Frontend (Vite)"]
     API["Express API Gateway"]
     
-    subgraph Infrastructure Layer
+    subgraph InfraLayer ["Infrastructure Layer"]
         Stripe["Stripe Payments"]
         Gemini["Google Gemini AI"]
         S3["AWS S3 Storage"]
@@ -59,26 +59,22 @@ graph TD
         Postgres[(PostgreSQL)]
     end
 
-    subgraph Application Layer
+    subgraph AppLayer ["Application Layer"]
         UseCases["Use Cases (Business Logic)"]
         DTOs["Data Transfer Objects (Zod)"]
     end
 
-    subgraph Domain Layer
+    subgraph DomainLayer ["Domain Layer"]
         Entities["Domain Entities"]
         Interfaces["Interfaces"]
     end
 
-    Client -- HTTP / REST --> API
-    Client -- Socket.io / WebRTC --> API
+    Client -- "HTTP / REST" --> API
+    Client -- "Socket.io / WebRTC" --> API
     
-    API -- Presentation --> UseCases
-    UseCases -- Interacts --> Interfaces
-    Interfaces -- Implemented by --> Infrastructure Layer
-    
-    Infrastructure Layer -- Persists --> Postgres
-    Infrastructure Layer -- Syncs --> Redis
-    Infrastructure Layer -- AI Analysis --> Gemini
+    API -- "Presentation" --> UseCases
+    UseCases -- "Interacts" --> Interfaces
+    Interfaces -- "Implemented by" --> InfraLayer
 ```
 
 ---
